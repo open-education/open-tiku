@@ -1,87 +1,66 @@
-# Welcome to React Router!
+# 开放题库
 
-A modern, production-ready template for building full-stack React applications using React Router.
+## 项目
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+### 安装
 
-## Features
+安装依赖和配置后端 nginx 代理
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+##### 1. 安装依赖
 
-## Getting Started
-
-### Installation
-
-Install the dependencies:
+现在前端基本都需要运行在 Node.js 之上，如果没有 Node 环境的先安装 Node 环境
 
 ```bash
-npm install
+npm install 或者 npm i
 ```
 
-### Development
+##### 2. 配置 nginx 代理
 
-Start the development server with HMR:
+比如一个最简单的 nginx 代理配置，根据自己电脑酌情处理，任何代理服务均可，目的是为了解决开发阶段前端访问后端服务跨域问题
+
+```
+server {
+    # 监听端口
+    listen 9010;
+    server_name localhost;
+    
+    # 字符集
+    charset utf-8;
+
+    # 前端静态文件服务 (React/Vue)
+    location / {
+        # 代理到前端开发服务器
+        proxy_pass http://localhost:5173;
+    }
+
+    # API 代理到后端服务
+    location /api/ {
+        # 代理到后端服务器
+	    proxy_pass http://localhost:8080/;
+    }
+
+    # 错误页面
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+}
+```
+
+##### 3 后端接口配置
+
+目前后端接口配置在 .env.development 文件中，形如:
+
+```
+VITE_API_BASE_URL=http://192.168.19.191:9010/api
+```
+
+这里的 /api 对应 nginx 中的转发路由前缀
+
+
+### 开发环境
+
 
 ```bash
 npm run dev
 ```
-
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
