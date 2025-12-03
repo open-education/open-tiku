@@ -8,10 +8,16 @@
 
 ##### 1. 安装依赖
 
-现在前端基本都需要运行在 Node.js 之上，如果没有 Node 环境的先安装 Node 环境
+现在前端基本都需要运行在 [Node.js](https://nodejs.org/en/download/) 之上，如果没有 Node 环境的先安装 Node 环境
 
 ```bash
-npm install 或者 npm i
+npm install
+```
+
+或者
+
+```bash
+npm i
 ```
 
 ##### 2. 配置 nginx 代理
@@ -57,9 +63,7 @@ VITE_API_BASE_URL=http://192.168.19.191:9010/api
 
 这里的 /api 对应 nginx 中的转发路由前缀
 
-
 ### 开发环境
-
 
 ```bash
 npm run dev

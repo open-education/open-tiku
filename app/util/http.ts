@@ -33,6 +33,16 @@ class HttpClient {
         return this.handleResponse(response);
     }
 
+    async delete<T = any>(path: string, options?: RequestInit): Promise<T> {
+        const url = this.buildUrl(path);
+        console.log(`=== Delete path: ${path}`);
+        const response = await fetch(url, {
+            method: 'DELETE',
+            ...options,
+        });
+        return this.handleResponse(response);
+    }
+
     private buildUrl(path: string): string {
         const normalizedPath = path.startsWith('/') ? path : `/${path}`;
         return `${this.baseURL}${normalizedPath}`;

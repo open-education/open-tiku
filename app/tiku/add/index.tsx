@@ -123,8 +123,6 @@ export default function Add(props: any) {
     };
 
     const handleImageChange: UploadProps["onChange"] = (info) => {
-        console.log("触发改变....");
-        console.log(info);
         let newFileList = [...info.fileList];
 
         // 1. Limit the number of uploaded files
@@ -143,12 +141,12 @@ export default function Add(props: any) {
         });
 
         setImageFileList(newFileList);
-        console.log(newFileList);
     };
 
     const handleImageDelete: UploadProps["onRemove"] = (info) => {
-        console.log("点击删除返回数据...");
-        console.log(info);
+        httpClient.delete<boolean>(`/file/delete/${textbookKey}/${catalogKey}/${info.name}`).then(res => {
+        }).catch(err => {
+        })
     };
 
     const uploadButton = (
@@ -358,604 +356,602 @@ export default function Add(props: any) {
         }
     };
 
-    return (
-        <div>
-            <Row>
-                <Col span={24}>
-                    {/* 面包屑快速导航 */}
-                    {CommonBreadcrumb(subjectList, catalogList, textbookKey, catalogKey)}
-                </Col>
-            </Row>
+    return <div>
+        <Row>
+            <Col span={24}>
+                {/* 面包屑快速导航 */}
+                {CommonBreadcrumb(subjectList, catalogList, textbookKey, catalogKey)}
+            </Col>
+        </Row>
 
-            <Row gutter={[20, 20]}>
-                <Col span={24}>
-                    {uploadQuestionIng}
-                    {uploadQuestionErr}
-                    {reqQuestionInfoErr}
-                </Col>
-            </Row>
+        <Row gutter={[20, 20]}>
+            <Col span={24}>
+                {uploadQuestionIng}
+                {uploadQuestionErr}
+                {reqQuestionInfoErr}
+            </Col>
+        </Row>
 
-            <Row style={{marginTop: "20px"}}>
-                <Col>
-                    <Flex gap="small" wrap>
-                        <Button type="dashed" onClick={onToPreview}>
-                            预览
-                        </Button>
-                        <Button type="primary" onClick={onToUploadQuestion}>
-                            保存
-                        </Button>
-                    </Flex>
-                </Col>
-            </Row>
+        <Row style={{marginTop: "20px"}}>
+            <Col>
+                <Flex gap="small" wrap>
+                    <Button type="dashed" onClick={onToPreview}>
+                        预览
+                    </Button>
+                    <Button type="primary" onClick={onToUploadQuestion}>
+                        保存
+                    </Button>
+                </Flex>
+            </Col>
+        </Row>
 
-            <Splitter
-                style={{boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)", marginTop: "10px"}}
-            >
-                <Splitter.Panel defaultSize={"50%"}>
-                    <Row>
-                        {/* 题型 */}
-                        <Col
-                            span={24}
+        <Splitter
+            style={{boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)", marginTop: "10px"}}
+        >
+            <Splitter.Panel defaultSize={"50%"}>
+                <Row>
+                    {/* 题型 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div
                             style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
+                                color: "blue",
+                                fontSize: "15px",
+                                marginBottom: "10px",
                             }}
                         >
-                            <div
-                                style={{
-                                    color: "blue",
-                                    fontSize: "15px",
-                                    marginBottom: "10px",
-                                }}
-                            >
-                                题型
-                            </div>
-                            <Flex vertical gap="middle">
-                                <Radio.Group
-                                    defaultValue={questionTypeVal}
-                                    buttonStyle="solid"
-                                    onChange={onQuestionsChange}
-                                >
-                                    {questionTypeList.map(item => {
-                                        return (
-                                            <Radio.Button key={item.key} value={item.key}>
-                                                {item.label}
-                                            </Radio.Button>
-                                        );
-                                    })}
-                                </Radio.Group>
-                            </Flex>
-                        </Col>
-
-                        {/* 标签 */}
-                        <Col
-                            span={24}
-                            style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    color: "blue",
-                                    fontSize: "15px",
-                                    marginBottom: "10px",
-                                }}
-                            >
-                                标签
-                            </div>
-                            <Checkbox.Group
-                                defaultValue={tagVal}
-                                style={{width: "100%"}}
-                                onChange={onTagsChange}
-                            >
-                                <Row>
-                                    {tagList.map(item => {
-                                        return (
-                                            <Col span={6} key={item.key}>
-                                                <Checkbox value={item.key}>{item.label}</Checkbox>
-                                            </Col>
-                                        );
-                                    })}
-                                </Row>
-                            </Checkbox.Group>
-                        </Col>
-
-                        {/* 难易程度 */}
-                        <Col
-                            span={24}
-                            style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    color: "blue",
-                                    fontSize: "15px",
-                                    marginBottom: "10px",
-                                }}
-                            >
-                                难易程度
-                            </div>
-                            <Rate allowHalf defaultValue={rateVal} onChange={onRateChange}/>
-                        </Col>
-
-                        {/* 变式题 */}
-                        <Col
-                            span={24}
-                            style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    color: "blue",
-                                    fontSize: "15px",
-                                    marginBottom: "10px",
-                                }}
-                            >
-                                变式题
-                            </div>
-                            <Search
-                                placeholder="请输入要关联父题题目的关键字"
-                                style={{width: 300}}
-                            />
+                            题型
+                        </div>
+                        <Flex vertical gap="middle">
                             <Radio.Group
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 8,
-                                }}
-                                onChange={onBianShiChange}
-                                value={bianShiValue}
-                                options={[
-                                    {
-                                        value: 1,
-                                        label: (
-                                            <Markdown
-                                                remarkPlugins={[remarkMath]}
-                                                rehypePlugins={[rehypeKatex]}
-                                            >
-                                                {`已知向量$\\overrightarrow{a}$,$\\overrightarrow{b}$满足$|\\overrightarrow{a}|=1$,$|\\overrightarrow{a}+2\\overrightarrow{b}|=2$,且$(\\overrightarrow{b}-2\\overrightarrow{a})\\perp\\overrightarrow{b}$,则$|\\overrightarrow{b}|$=`}
-                                            </Markdown>
-                                        ),
-                                    },
-                                    {
-                                        value: 2,
-                                        label: (
-                                            <Markdown
-                                                remarkPlugins={[remarkMath]}
-                                                rehypePlugins={[rehypeKatex]}
-                                            >
-                                                {`记$\\triangle ABC$的内角$A$、$B$、$C$的对边分别为$a$、$b$、$c$，已知$sin A+\\sqrt{3}cos A=2$
+                                defaultValue={questionTypeVal}
+                                buttonStyle="solid"
+                                onChange={onQuestionsChange}
+                            >
+                                {questionTypeList.map(item => {
+                                    return (
+                                        <Radio.Button key={item.key} value={item.key}>
+                                            {item.label}
+                                        </Radio.Button>
+                                    );
+                                })}
+                            </Radio.Group>
+                        </Flex>
+                    </Col>
+
+                    {/* 标签 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div
+                            style={{
+                                color: "blue",
+                                fontSize: "15px",
+                                marginBottom: "10px",
+                            }}
+                        >
+                            标签
+                        </div>
+                        <Checkbox.Group
+                            defaultValue={tagVal}
+                            style={{width: "100%"}}
+                            onChange={onTagsChange}
+                        >
+                            <Row>
+                                {tagList.map(item => {
+                                    return (
+                                        <Col span={6} key={item.key}>
+                                            <Checkbox value={item.key}>{item.label}</Checkbox>
+                                        </Col>
+                                    );
+                                })}
+                            </Row>
+                        </Checkbox.Group>
+                    </Col>
+
+                    {/* 难易程度 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div
+                            style={{
+                                color: "blue",
+                                fontSize: "15px",
+                                marginBottom: "10px",
+                            }}
+                        >
+                            难易程度
+                        </div>
+                        <Rate allowHalf defaultValue={rateVal} onChange={onRateChange}/>
+                    </Col>
+
+                    {/* 变式题 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div
+                            style={{
+                                color: "blue",
+                                fontSize: "15px",
+                                marginBottom: "10px",
+                            }}
+                        >
+                            变式题
+                        </div>
+                        <Search
+                            placeholder="请输入要关联父题题目的关键字"
+                            style={{width: 300}}
+                        />
+                        <Radio.Group
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 8,
+                            }}
+                            onChange={onBianShiChange}
+                            value={bianShiValue}
+                            options={[
+                                {
+                                    value: 1,
+                                    label: (
+                                        <Markdown
+                                            remarkPlugins={[remarkMath]}
+                                            rehypePlugins={[rehypeKatex]}
+                                        >
+                                            {`已知向量$\\overrightarrow{a}$,$\\overrightarrow{b}$满足$|\\overrightarrow{a}|=1$,$|\\overrightarrow{a}+2\\overrightarrow{b}|=2$,且$(\\overrightarrow{b}-2\\overrightarrow{a})\\perp\\overrightarrow{b}$,则$|\\overrightarrow{b}|$=`}
+                                        </Markdown>
+                                    ),
+                                },
+                                {
+                                    value: 2,
+                                    label: (
+                                        <Markdown
+                                            remarkPlugins={[remarkMath]}
+                                            rehypePlugins={[rehypeKatex]}
+                                        >
+                                            {`记$\\triangle ABC$的内角$A$、$B$、$C$的对边分别为$a$、$b$、$c$，已知$sin A+\\sqrt{3}cos A=2$
                   (1)求$A$；
                   (2)若$a=2$，$\\sqrt{2}bsin C=csin 2B$，求$\\triangle ABC$的周长。`}
-                                            </Markdown>
-                                        ),
-                                    },
-                                    {value: 3, label: "下列各组数据是勾股数的是（       ）"},
-                                    {
-                                        value: 4,
-                                        label:
-                                            "在如图所示的平面直角坐标系中，小手盖住的点的坐标可能是（     ）",
-                                    },
-                                ]}
-                            />
-                        </Col>
+                                        </Markdown>
+                                    ),
+                                },
+                                {value: 3, label: "下列各组数据是勾股数的是（       ）"},
+                                {
+                                    value: 4,
+                                    label:
+                                        "在如图所示的平面直角坐标系中，小手盖住的点的坐标可能是（     ）",
+                                },
+                            ]}
+                        />
+                    </Col>
 
-                        {/* 标题 */}
-                        <Col
-                            span={24}
+                    {/* 标题 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div
                             style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
+                                color: "blue",
+                                fontSize: "15px",
+                                marginBottom: "10px",
                             }}
                         >
+                            标题
+                        </div>
+                        <TextArea
+                            autoSize={{minRows: 2, maxRows: 5}}
+                            placeholder="请输入题目标题"
+                            onChange={onTitleChange}
+                            name="title"
+                            value={titleVal}
+                        />
+                    </Col>
+
+                    {/* 补充 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div
+                            style={{
+                                color: "blue",
+                                fontSize: "12px",
+                                marginBottom: "10px",
+                            }}
+                        >
+                            补充
+                        </div>
+                        <TextArea
+                            autoSize={{minRows: 2, maxRows: 5}}
+                            placeholder="请输入题目补充"
+                            onChange={onMentionChange}
+                            name="mention"
+                            value={mentionVal}
+                        />
+                    </Col>
+
+                    {/* 题目配图 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div>
                             <div
                                 style={{
                                     color: "blue",
-                                    fontSize: "15px",
-                                    marginBottom: "10px",
+                                    fontSize: "14px",
+                                    display: "inline-block",
                                 }}
                             >
-                                标题
+                                图片
                             </div>
-                            <TextArea
-                                autoSize={{minRows: 2, maxRows: 5}}
-                                placeholder="请输入题目标题"
-                                onChange={onTitleChange}
-                                name="title"
-                                value={titleVal}
-                            />
-                        </Col>
+                            <div
+                                style={{
+                                    display: "inline-block",
+                                    float: "right",
+                                }}
+                            >
+                                <Flex vertical gap="middle">
+                                    <Radio.Group
+                                        defaultValue={showImageVal}
+                                        buttonStyle="solid"
+                                        onChange={onShowImageChange}
+                                        block
+                                        options={[
+                                            {
+                                                value: "0",
+                                                label: "题目下边",
+                                            },
+                                            {
+                                                value: "1",
+                                                label: "题目右边",
+                                            },
+                                        ]}
+                                        optionType="button"
+                                    />
+                                </Flex>
+                            </div>
+                        </div>
 
-                        {/* 补充 */}
-                        <Col
-                            span={24}
-                            style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
-                            }}
-                        >
+                        <div style={{paddingTop: "10px"}}>
+                            <Row>
+                                <Upload
+                                    accept=".jpg,.jpeg,.png,.gif"
+                                    action={reqUploadUrl}
+                                    listType="picture-card"
+                                    fileList={imageFileList}
+                                    onPreview={handleImagePreview}
+                                    onChange={handleImageChange}
+                                    onRemove={handleImageDelete}
+                                >
+                                    {imageFileList.length >= 5 ? null : uploadButton}
+                                </Upload>
+                                {previewImage && (
+                                    <Image
+                                        styles={{root: {display: "none"}}}
+                                        preview={{
+                                            open: previewImageOpen,
+                                            onOpenChange: (visible) => setPreviewImageOpen(visible),
+                                            afterOpenChange: (visible) =>
+                                                !visible && setPreviewImage(""),
+                                        }}
+                                        src={previewImage}
+                                    />
+                                )}
+                            </Row>
+                        </div>
+                    </Col>
+
+                    {/* 选项 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div>
                             <div
                                 style={{
                                     color: "blue",
+                                    fontSize: "14px",
+                                    display: "inline-block",
+                                }}
+                            >
+                                选项
+                            </div>
+                            <div
+                                style={{
+                                    display: "inline-block",
+                                    float: "right",
+                                    width: "16%",
                                     fontSize: "12px",
-                                    marginBottom: "10px",
+                                    lineHeight: "24px",
+                                    textAlign: "center",
                                 }}
                             >
-                                补充
+                                选项布局
                             </div>
-                            <TextArea
-                                autoSize={{minRows: 2, maxRows: 5}}
-                                placeholder="请输入题目补充"
-                                onChange={onMentionChange}
-                                name="mention"
-                                value={mentionVal}
-                            />
-                        </Col>
+                        </div>
 
-                        {/* 题目配图 */}
-                        <Col
-                            span={24}
-                            style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
-                            }}
-                        >
-                            <div>
-                                <div
-                                    style={{
-                                        color: "blue",
-                                        fontSize: "14px",
-                                        display: "inline-block",
-                                    }}
-                                >
-                                    图片
-                                </div>
-                                <div
-                                    style={{
-                                        display: "inline-block",
-                                        float: "right",
-                                    }}
-                                >
+                        <div style={{paddingTop: "10px"}}>
+                            <Row>
+                                <Col span={20}>
+                                    <Row>
+                                        <Col
+                                            span={24}
+                                            style={{
+                                                padding: "10px",
+                                            }}
+                                        >
+                                            <div style={{color: "blue", fontSize: "15px"}}>A</div>
+                                            <TextArea
+                                                autoSize={{minRows: 2, maxRows: 5}}
+                                                placeholder="A选项内容"
+                                                onChange={onASelectChange}
+                                                name="A"
+                                                value={aVal}
+                                            />
+                                        </Col>
+                                        <Col
+                                            span={24}
+                                            style={{
+                                                padding: "10px",
+                                            }}
+                                        >
+                                            <div style={{color: "blue", fontSize: "15px"}}>B</div>
+                                            <TextArea
+                                                autoSize={{minRows: 2, maxRows: 5}}
+                                                placeholder="B选项内容"
+                                                onChange={onBSelectChange}
+                                                name="B"
+                                                value={bVal}
+                                            />
+                                        </Col>
+                                        <Col
+                                            span={24}
+                                            style={{
+                                                padding: "10px",
+                                            }}
+                                        >
+                                            <div style={{color: "blue", fontSize: "15px"}}>C</div>
+                                            <TextArea
+                                                autoSize={{minRows: 2, maxRows: 5}}
+                                                placeholder="C选项内容"
+                                                onChange={onCSelectChange}
+                                                name="C"
+                                                value={cVal}
+                                            />
+                                        </Col>
+                                        <Col
+                                            span={24}
+                                            style={{
+                                                padding: "10px",
+                                            }}
+                                        >
+                                            <div style={{color: "blue", fontSize: "15px"}}>D</div>
+                                            <TextArea
+                                                autoSize={{minRows: 2, maxRows: 5}}
+                                                placeholder="D选项内容"
+                                                onChange={onDSelectChange}
+                                                name="D"
+                                                value={dVal}
+                                            />
+                                        </Col>
+                                        <Col
+                                            span={24}
+                                            style={{
+                                                padding: "10px",
+                                            }}
+                                        >
+                                            <div style={{color: "blue", fontSize: "15px"}}>E</div>
+                                            <TextArea
+                                                autoSize={{minRows: 2, maxRows: 5}}
+                                                placeholder="E选项内容"
+                                                onChange={onESelectChange}
+                                                name="E"
+                                                value={eVal}
+                                            />
+                                        </Col>
+                                    </Row>
+                                </Col>
+                                <Col span={4}>
                                     <Flex vertical gap="middle">
                                         <Radio.Group
-                                            defaultValue={showImageVal}
+                                            defaultValue={showSelectVal}
                                             buttonStyle="solid"
-                                            onChange={onShowImageChange}
+                                            onChange={onShowSelectChange}
+                                            vertical
                                             block
                                             options={[
                                                 {
-                                                    value: "0",
-                                                    label: "题目下边",
+                                                    value: "1",
+                                                    label: "展示一行",
                                                 },
                                                 {
-                                                    value: "1",
-                                                    label: "题目右边",
+                                                    value: "2",
+                                                    label: "展示一列",
+                                                },
+                                                {
+                                                    value: "3",
+                                                    label: "展示两列",
                                                 },
                                             ]}
                                             optionType="button"
                                         />
                                     </Flex>
-                                </div>
-                            </div>
-
-                            <div style={{paddingTop: "10px"}}>
-                                <Row>
-                                    <Upload
-                                        accept=".jpg,.jpeg,.png,.gif"
-                                        action={reqUploadUrl}
-                                        listType="picture-card"
-                                        fileList={imageFileList}
-                                        onPreview={handleImagePreview}
-                                        onChange={handleImageChange}
-                                        onRemove={handleImageDelete}
-                                    >
-                                        {imageFileList.length >= 5 ? null : uploadButton}
-                                    </Upload>
-                                    {previewImage && (
-                                        <Image
-                                            styles={{root: {display: "none"}}}
-                                            preview={{
-                                                open: previewImageOpen,
-                                                onOpenChange: (visible) => setPreviewImageOpen(visible),
-                                                afterOpenChange: (visible) =>
-                                                    !visible && setPreviewImage(""),
-                                            }}
-                                            src={previewImage}
-                                        />
-                                    )}
-                                </Row>
-                            </div>
-                        </Col>
-
-                        {/* 选项 */}
-                        <Col
-                            span={24}
-                            style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
-                            }}
-                        >
-                            <div>
-                                <div
-                                    style={{
-                                        color: "blue",
-                                        fontSize: "14px",
-                                        display: "inline-block",
-                                    }}
-                                >
-                                    选项
-                                </div>
-                                <div
-                                    style={{
-                                        display: "inline-block",
-                                        float: "right",
-                                        width: "16%",
-                                        fontSize: "12px",
-                                        lineHeight: "24px",
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    选项布局
-                                </div>
-                            </div>
-
-                            <div style={{paddingTop: "10px"}}>
-                                <Row>
-                                    <Col span={20}>
-                                        <Row>
-                                            <Col
-                                                span={24}
-                                                style={{
-                                                    padding: "10px",
-                                                }}
-                                            >
-                                                <div style={{color: "blue", fontSize: "15px"}}>A</div>
-                                                <TextArea
-                                                    autoSize={{minRows: 2, maxRows: 5}}
-                                                    placeholder="A选项内容"
-                                                    onChange={onASelectChange}
-                                                    name="A"
-                                                    value={aVal}
-                                                />
-                                            </Col>
-                                            <Col
-                                                span={24}
-                                                style={{
-                                                    padding: "10px",
-                                                }}
-                                            >
-                                                <div style={{color: "blue", fontSize: "15px"}}>B</div>
-                                                <TextArea
-                                                    autoSize={{minRows: 2, maxRows: 5}}
-                                                    placeholder="B选项内容"
-                                                    onChange={onBSelectChange}
-                                                    name="B"
-                                                    value={bVal}
-                                                />
-                                            </Col>
-                                            <Col
-                                                span={24}
-                                                style={{
-                                                    padding: "10px",
-                                                }}
-                                            >
-                                                <div style={{color: "blue", fontSize: "15px"}}>C</div>
-                                                <TextArea
-                                                    autoSize={{minRows: 2, maxRows: 5}}
-                                                    placeholder="C选项内容"
-                                                    onChange={onCSelectChange}
-                                                    name="C"
-                                                    value={cVal}
-                                                />
-                                            </Col>
-                                            <Col
-                                                span={24}
-                                                style={{
-                                                    padding: "10px",
-                                                }}
-                                            >
-                                                <div style={{color: "blue", fontSize: "15px"}}>D</div>
-                                                <TextArea
-                                                    autoSize={{minRows: 2, maxRows: 5}}
-                                                    placeholder="D选项内容"
-                                                    onChange={onDSelectChange}
-                                                    name="D"
-                                                    value={dVal}
-                                                />
-                                            </Col>
-                                            <Col
-                                                span={24}
-                                                style={{
-                                                    padding: "10px",
-                                                }}
-                                            >
-                                                <div style={{color: "blue", fontSize: "15px"}}>E</div>
-                                                <TextArea
-                                                    autoSize={{minRows: 2, maxRows: 5}}
-                                                    placeholder="E选项内容"
-                                                    onChange={onESelectChange}
-                                                    name="E"
-                                                    value={eVal}
-                                                />
-                                            </Col>
-                                        </Row>
-                                    </Col>
-                                    <Col span={4}>
-                                        <Flex vertical gap="middle">
-                                            <Radio.Group
-                                                defaultValue={showSelectVal}
-                                                buttonStyle="solid"
-                                                onChange={onShowSelectChange}
-                                                vertical
-                                                block
-                                                options={[
-                                                    {
-                                                        value: "1",
-                                                        label: "展示一行",
-                                                    },
-                                                    {
-                                                        value: "2",
-                                                        label: "展示一列",
-                                                    },
-                                                    {
-                                                        value: "3",
-                                                        label: "展示两列",
-                                                    },
-                                                ]}
-                                                optionType="button"
-                                            />
-                                        </Flex>
-                                    </Col>
-                                </Row>
-                            </div>
-                        </Col>
-
-                        {/* 参考答案 */}
-                        <Col
-                            span={24}
-                            style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    color: "blue",
-                                    fontSize: "14px",
-                                    marginBottom: "10px",
-                                }}
-                            >
-                                参考答案
-                            </div>
-                            <TextArea
-                                autoSize={{minRows: 2, maxRows: 5}}
-                                placeholder="参考答案"
-                                onChange={onAnswerChange}
-                                name="answer"
-                                value={answerVal}
-                            />
-                        </Col>
-
-                        {/* 知识点 */}
-                        <Col
-                            span={24}
-                            style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    color: "blue",
-                                    fontSize: "14px",
-                                    marginBottom: "10px",
-                                }}
-                            >
-                                知识点
-                            </div>
-                            <TextArea
-                                autoSize={{minRows: 2, maxRows: 5}}
-                                placeholder="知识点"
-                                onChange={onKnowledgeChange}
-                                name="knowledge"
-                                value={knowledgeVal}
-                            />
-                        </Col>
-
-                        {/* 解题分析 */}
-                        <Col
-                            span={24}
-                            style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    color: "blue",
-                                    fontSize: "14px",
-                                    marginBottom: "10px",
-                                }}
-                            >
-                                解题分析
-                            </div>
-                            <TextArea
-                                autoSize={{minRows: 2, maxRows: 5}}
-                                placeholder="解题分析"
-                                onChange={onAnalyzeChange}
-                                name="analyze"
-                                value={analyzeVal}
-                            />
-                        </Col>
-
-                        {/* 解题过程 */}
-                        <Col
-                            span={24}
-                            style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    color: "blue",
-                                    fontSize: "14px",
-                                    marginBottom: "10px",
-                                }}
-                            >
-                                解题过程
-                            </div>
-                            <TextArea
-                                autoSize={{minRows: 2, maxRows: 5}}
-                                placeholder="解题过程"
-                                onChange={onProcessChange}
-                                name="process"
-                                value={processVal}
-                            />
-                        </Col>
-
-                        {/* 备注 */}
-                        <Col
-                            span={24}
-                            style={{
-                                border: "1px dotted blue",
-                                padding: "10px",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    color: "blue",
-                                    fontSize: "14px",
-                                    marginBottom: "10px",
-                                }}
-                            >
-                                备注
-                            </div>
-                            <TextArea
-                                autoSize={{minRows: 2, maxRows: 5}}
-                                placeholder="备注"
-                                onChange={onRemarkChange}
-                                name="remark"
-                                value={remarkVal}
-                            />
-                        </Col>
-                    </Row>
-                </Splitter.Panel>
-
-                <Splitter.Panel defaultSize="50%">
-                    <Watermark content="预览区域 仅展示效果">
-                        <div className="min-h-[1900px] p-5">
-                            {openPreviewArea ?
-                                <Preview questionInfo={questionInfo}/> : ""}
+                                </Col>
+                            </Row>
                         </div>
-                    </Watermark>
-                </Splitter.Panel>
-            </Splitter>
-        </div>
-    );
+                    </Col>
+
+                    {/* 参考答案 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div
+                            style={{
+                                color: "blue",
+                                fontSize: "14px",
+                                marginBottom: "10px",
+                            }}
+                        >
+                            参考答案
+                        </div>
+                        <TextArea
+                            autoSize={{minRows: 2, maxRows: 5}}
+                            placeholder="参考答案"
+                            onChange={onAnswerChange}
+                            name="answer"
+                            value={answerVal}
+                        />
+                    </Col>
+
+                    {/* 知识点 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div
+                            style={{
+                                color: "blue",
+                                fontSize: "14px",
+                                marginBottom: "10px",
+                            }}
+                        >
+                            知识点
+                        </div>
+                        <TextArea
+                            autoSize={{minRows: 2, maxRows: 5}}
+                            placeholder="知识点"
+                            onChange={onKnowledgeChange}
+                            name="knowledge"
+                            value={knowledgeVal}
+                        />
+                    </Col>
+
+                    {/* 解题分析 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div
+                            style={{
+                                color: "blue",
+                                fontSize: "14px",
+                                marginBottom: "10px",
+                            }}
+                        >
+                            解题分析
+                        </div>
+                        <TextArea
+                            autoSize={{minRows: 2, maxRows: 5}}
+                            placeholder="解题分析"
+                            onChange={onAnalyzeChange}
+                            name="analyze"
+                            value={analyzeVal}
+                        />
+                    </Col>
+
+                    {/* 解题过程 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div
+                            style={{
+                                color: "blue",
+                                fontSize: "14px",
+                                marginBottom: "10px",
+                            }}
+                        >
+                            解题过程
+                        </div>
+                        <TextArea
+                            autoSize={{minRows: 2, maxRows: 5}}
+                            placeholder="解题过程"
+                            onChange={onProcessChange}
+                            name="process"
+                            value={processVal}
+                        />
+                    </Col>
+
+                    {/* 备注 */}
+                    <Col
+                        span={24}
+                        style={{
+                            border: "1px dotted blue",
+                            padding: "10px",
+                        }}
+                    >
+                        <div
+                            style={{
+                                color: "blue",
+                                fontSize: "14px",
+                                marginBottom: "10px",
+                            }}
+                        >
+                            备注
+                        </div>
+                        <TextArea
+                            autoSize={{minRows: 2, maxRows: 5}}
+                            placeholder="备注"
+                            onChange={onRemarkChange}
+                            name="remark"
+                            value={remarkVal}
+                        />
+                    </Col>
+                </Row>
+            </Splitter.Panel>
+
+            <Splitter.Panel defaultSize="50%">
+                <Watermark content="预览区域 仅展示效果">
+                    <div className="min-h-[1900px] p-5">
+                        {openPreviewArea ?
+                            <Preview questionInfo={questionInfo}/> : ""}
+                    </div>
+                </Watermark>
+            </Splitter.Panel>
+        </Splitter>
+    </div>
 }

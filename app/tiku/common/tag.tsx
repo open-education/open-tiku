@@ -1,11 +1,13 @@
-import {Col, Flex, Radio, type RadioChangeEvent, Row, Tag} from "antd";
+import {Alert, Button, Checkbox, Col, Flex, Radio, type RadioChangeEvent, Row, Tag} from "antd";
 import type {QuestionInfo, QuestionType} from "~/type/question";
 import type {TagInfo} from "~/type/tag";
 import {arrayToDict} from "~/util/common";
-import React, {type Dispatch, type SetStateAction} from "react";
+import React, {type Dispatch, type SetStateAction, useState} from "react";
 import {httpClient} from "~/util/http";
 import Info from "~/tiku/info";
+import Edit from "~/tiku/edit";
 
+// 题目列表展示标签样式 题目类型在前 标签依次在后
 export function CommonTag(questionInfo: QuestionInfo, questionTypeList: QuestionType[], tagList: TagInfo[]) {
     const questionTypeDict = arrayToDict(questionTypeList, 'key');
     const tagsDict = arrayToDict(tagList, 'key');
@@ -24,6 +26,7 @@ export function CommonTag(questionInfo: QuestionInfo, questionTypeList: Question
     </Row>
 }
 
+// 题目列表右下快速操作区域
 export function CommonQuickJumpTag(
     questionInfo: QuestionInfo,
     setOpenDrawer: Dispatch<SetStateAction<boolean>>,
@@ -106,8 +109,8 @@ export function CommonQuickJumpTag(
                 break;
             }
             case "edit": {
-                title = "编辑"; // todo
-                return;
+                title = "编辑";
+                break;
             }
             default: {
                 return;
@@ -123,7 +126,11 @@ export function CommonQuickJumpTag(
         }).then(res => {
             setOpenDrawer(true);
             setDrawerTitle(title);
-            setDrawerContent(<Info questionInfo={res}/>);
+            if (value === "edit") {
+                setDrawerContent(<Edit questionInfo={res}/>);
+            } else {
+                setDrawerContent(<Info questionInfo={res}/>);
+            }
         })
     }
 
@@ -140,4 +147,94 @@ export function CommonQuickJumpTag(
             </Flex>
         </Col>
     </Row>
+}
+
+// 题目标签基础样式
+export function EditTag(
+    tagList: TagInfo[] = [],
+    tagListVal: string[],
+    setTagListVal: Dispatch<SetStateAction<string[]>>,
+    setShowTagEdit?: Dispatch<SetStateAction<boolean>>,
+) {
+    if (!tagList.length) {
+        return <Alert
+            title="Warning"
+            description="标签类型为空"
+            type="warning"
+            showIcon
+            closable
+        />
+    }
+
+    // @ts-ignore
+    const onEditTagsChange: GetProp<typeof Checkbox.Group, "onChange"> = (
+        checkedValues: string[]
+    ) => {
+        setTagListVal(checkedValues);
+        if (setShowTagEdit) {
+            setShowTagEdit(true);
+        }
+    };
+
+    return <Checkbox.Group
+        defaultValue={tagListVal}
+        style={{width: "100%"}}
+        onChange={onEditTagsChange}
+    >
+        <Row>
+            {tagList.map(item => {
+                return (
+                    <Col span={6} key={item.key}>
+                        <Checkbox value={item.key}>{item.label}</Checkbox>
+                    </Col>
+                );
+            })}
+        </Row>
+    </Checkbox.Group>
+}
+
+// 添加题目时标签样式
+export function AddTagStyle(
+    tagList: TagInfo[],
+    tagListVal: string[],
+    setTagListVal: Dispatch<SetStateAction<string[]>>,
+    setShowTagEdit?: Dispatch<SetStateAction<boolean>>,
+) {
+    return <Row gutter={[10, 10]}>
+        <Col span={24}>
+            <div
+                className="text-blue-700 text-[15px] mb-[10px] font-bold"
+            >
+                标签
+            </div>
+            {EditTag(tagList, tagListVal, setTagListVal, setShowTagEdit)}
+        </Col>
+    </Row>
+}
+
+// 编辑题目时标签样式
+export function EditTagStyle(
+    tagList: TagInfo[] = [],
+    tagListVal: string[],
+    setTagListVal: Dispatch<SetStateAction<string[]>>,
+) {
+    const [showTagEdit, setShowTagEdit] = useState<boolean>(false);
+
+    const updateQuestionTags = () => {
+        alert("Upload successfully: " + tagListVal.join(","));
+        setShowTagEdit(false);
+    }
+
+    const showTagEditArea = <div className="mt-2.5">
+        <Flex gap="small" wrap justify={"right"}>
+            <Button color="cyan" variant="solid" onClick={updateQuestionTags}>更新</Button>
+        </Flex>
+    </div>;
+
+    return <div className="p-2.5 pt-2.5 hover:border border-red-700 border-dashed">
+        <div>
+            {AddTagStyle(tagList, tagListVal, setTagListVal, setShowTagEdit)}
+        </div>
+        {showTagEdit && showTagEditArea}
+    </div>
 }
