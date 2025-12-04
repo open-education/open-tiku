@@ -8,6 +8,10 @@ import Preview from "~/tiku/preview";
 import {EditQuestionTypeStyle} from "~/tiku/common/question-type";
 import type {QuestionInfo} from "~/type/question";
 import {EditTagStyle} from "~/tiku/common/tag";
+import {EditRateInfoStyle} from "~/tiku/common/rate";
+import {EditTitleInfoStyle} from "~/tiku/common/title";
+import {EditMentionInfoStyle} from "~/tiku/common/mention";
+import {EditSelectStyle} from "~/tiku/common/select";
 
 export default function Edit(props: any) {
     const {
@@ -26,6 +30,18 @@ export default function Edit(props: any) {
 
     // 题目标签
     const [tagListVal, setTagListVal] = useState<string[]>(reqQuestionInfo.tags ?? []);
+
+    const [rateVal, setRateVal] = useState<number>(Number(reqQuestionInfo.rateVal ?? 0));
+
+    const [titleVal, setTitleVal] = useState<string>(reqQuestionInfo.titleVal);
+
+    const [mentionVal, setMentionVal] = useState<string>(reqQuestionInfo.mentionVal ?? "");
+
+    const [aVal, setAVal] = useState<string>(reqQuestionInfo.aVal ?? "");
+    const [bVal, setBVal] = useState<string>(reqQuestionInfo.bVal ?? "");
+    const [cVal, setCVal] = useState<string>(reqQuestionInfo.cVal ?? "");
+    const [dVal, setDVal] = useState<string>(reqQuestionInfo.dVal ?? "");
+    const [eVal, setEVal] = useState<string>(reqQuestionInfo.eVal ?? "");
 
     // 生成预览对象
     const [openPreviewArea, setOpenPreviewArea] = useState(false);
@@ -72,6 +88,20 @@ export default function Edit(props: any) {
 
                 {/* 题目标签 */}
                 {EditTagStyle(tagList, tagListVal, setTagListVal)}
+
+                {/* rate */}
+                {EditRateInfoStyle(rateVal, setRateVal)}
+
+                {/* title */}
+                {EditTitleInfoStyle(titleVal, setTitleVal)}
+
+                {/* mention */}
+                {EditMentionInfoStyle(mentionVal, setMentionVal)}
+
+                {/* image */}
+
+                {/* select */}
+                {EditSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal)}
             </Splitter.Panel>
 
             <Splitter.Panel defaultSize="50%">

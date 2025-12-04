@@ -202,11 +202,7 @@ export function AddTagStyle(
 ) {
     return <Row gutter={[10, 10]}>
         <Col span={24}>
-            <div
-                className="text-blue-700 text-[15px] mb-[10px] font-bold"
-            >
-                标签
-            </div>
+            <div className="text-blue-700 text-[15px] mb-[10px] font-bold">标签</div>
             {EditTag(tagList, tagListVal, setTagListVal, setShowTagEdit)}
         </Col>
     </Row>
@@ -227,7 +223,7 @@ export function EditTagStyle(
 
     const showTagEditArea = <div className="mt-2.5">
         <Flex gap="small" wrap justify={"right"}>
-            <Button color="cyan" variant="solid" onClick={updateQuestionTags}>更新</Button>
+            <Button color="cyan" variant="dashed" onClick={updateQuestionTags}>更新</Button>
         </Flex>
     </div>;
 

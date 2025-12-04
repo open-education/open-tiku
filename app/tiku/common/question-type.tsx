@@ -49,11 +49,7 @@ export function AddQuestionTypeStyle(
 ) {
     return <Row gutter={[10, 10]}>
         <Col span={24}>
-            <div
-                className="text-blue-700 text-[15px] mb-[10px] font-bold"
-            >
-                题型
-            </div>
+            <div className="text-blue-700 text-[15px] mb-[10px] font-bold">题型</div>
             <Flex vertical gap="middle">
                 {EditQuestionType(questionTypeList, questionTypeVal, setQuestionTypeVal, setShowEditQuestionType)}
             </Flex>

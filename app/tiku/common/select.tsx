@@ -1,10 +1,16 @@
 // 选项风格
 import type {QuestionInfo} from "~/type/question";
-import {Col, Row} from "antd";
+import {Col, Flex, Radio, Row} from "antd";
 import {StringValidator} from "~/util/string";
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import React from "react";
+import {AddAInfoStyle, EditAInfoStyle} from "~/tiku/common/a";
+import {AddBInfoStyle, EditBInfoStyle} from "~/tiku/common/b";
+import {AddCInfoStyle, EditCInfoStyle} from "~/tiku/common/c";
+import {AddDInfoStyle, EditDInfoStyle} from "~/tiku/common/d";
+import {AddEInfoStyle, EditEInfoStyle} from "~/tiku/common/e";
 
 export function CommonSelect(questionInfo: QuestionInfo) {
     const showSelectVal = questionInfo.showSelectVal;
@@ -146,4 +152,100 @@ export function CommonSelect(questionInfo: QuestionInfo) {
             </Col>
         </Row>
     }
+}
+
+export function AddSelectStyle(
+    aVal: string,
+    setAVal: React.Dispatch<React.SetStateAction<string>>,
+    bVal: string,
+    setBVal: React.Dispatch<React.SetStateAction<string>>,
+    cVal: string,
+    setCVal: React.Dispatch<React.SetStateAction<string>>,
+    dVal: string,
+    setDVal: React.Dispatch<React.SetStateAction<string>>,
+    eVal: string,
+    setEVal: React.Dispatch<React.SetStateAction<string>>,
+) {
+    return <div>
+        <Row gutter={[10, 10]}>
+            <Col span={24}>
+                <div className="text-blue-700 text-[15px] mb-[10px] font-bold">选项</div>
+                <Flex vertical gap="small" justify={"right"}>
+                    <Radio.Group
+                        defaultValue={"1"}
+                        buttonStyle="solid"
+                        block
+                        options={[
+                            {
+                                value: "1",
+                                label: "展示一行",
+                            },
+                            {
+                                value: "2",
+                                label: "展示一列",
+                            },
+                            {
+                                value: "3",
+                                label: "展示两列",
+                            },
+                        ]}
+                        optionType="button"
+                    />
+                </Flex>
+            </Col>
+        </Row>
+        {AddAInfoStyle(aVal, setAVal)}
+        {AddBInfoStyle(bVal, setBVal)}
+        {AddCInfoStyle(cVal, setCVal)}
+        {AddDInfoStyle(dVal, setDVal)}
+        {AddEInfoStyle(eVal, setEVal)}
+    </div>
+}
+
+export function EditSelectStyle(
+    aVal: string,
+    setAVal: React.Dispatch<React.SetStateAction<string>>,
+    bVal: string,
+    setBVal: React.Dispatch<React.SetStateAction<string>>,
+    cVal: string,
+    setCVal: React.Dispatch<React.SetStateAction<string>>,
+    dVal: string,
+    setDVal: React.Dispatch<React.SetStateAction<string>>,
+    eVal: string,
+    setEVal: React.Dispatch<React.SetStateAction<string>>,
+) {
+    return <div>
+        <Row gutter={[10, 10]}>
+            <Col span={24}>
+                <div className="text-blue-700 text-[15px] mb-[10px] font-bold">选项</div>
+                <Flex vertical gap="small" justify={"right"}>
+                    <Radio.Group
+                        defaultValue={"1"}
+                        buttonStyle="solid"
+                        block
+                        options={[
+                            {
+                                value: "1",
+                                label: "展示一行",
+                            },
+                            {
+                                value: "2",
+                                label: "展示一列",
+                            },
+                            {
+                                value: "3",
+                                label: "展示两列",
+                            },
+                        ]}
+                        optionType="button"
+                    />
+                </Flex>
+            </Col>
+        </Row>
+        {EditAInfoStyle(aVal, setAVal)}
+        {EditBInfoStyle(bVal, setBVal)}
+        {EditCInfoStyle(cVal, setCVal)}
+        {EditDInfoStyle(dVal, setDVal)}
+        {EditEInfoStyle(eVal, setEVal)}
+    </div>
 }

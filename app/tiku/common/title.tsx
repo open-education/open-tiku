@@ -1,11 +1,14 @@
 // 题目和图片风格
 import type {QuestionInfo} from "~/type/question";
 import {StringValidator} from "~/util/string";
-import {Col, Flex, Image, Row} from "antd";
+import {Button, Col, Flex, Image, Input, Row} from "antd";
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
 import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
+import React, {useCallback} from "react";
+
+const {TextArea} = Input;
 
 export function CommonTitle(questionInfo: QuestionInfo) {
     const showImageVal = questionInfo.showImageVal;
@@ -50,4 +53,68 @@ export function CommonTitle(questionInfo: QuestionInfo) {
     } else {
         return <div></div>;
     }
+}
+
+export function TitleInfo(
+    titleVal: string,
+    setTitleVal: React.Dispatch<React.SetStateAction<string>>,
+    setShowEditTitle?: React.Dispatch<React.SetStateAction<boolean>>,
+) {
+
+    const onEditTitleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            setTitleVal(e.target.value);
+            if (setShowEditTitle) {
+                setShowEditTitle(true);
+            }
+        },
+        []
+    );
+
+    return <TextArea
+        autoSize={{minRows: 2, maxRows: 5}}
+        placeholder="请输入题目标题"
+        onChange={onEditTitleChange}
+        name="title"
+        value={titleVal}
+    />
+}
+
+export function AddTitleInfoStyle(
+    titleVal: string,
+    setTitleVal: React.Dispatch<React.SetStateAction<string>>,
+    setShowEditTitle?: React.Dispatch<React.SetStateAction<boolean>>,
+) {
+    return <Row gutter={[10, 10]}>
+        <Col span={24}>
+            <div className="text-blue-700 text-[15px] mb-[10px] font-bold">标题</div>
+            {TitleInfo(titleVal, setTitleVal, setShowEditTitle)}
+        </Col>
+    </Row>
+}
+
+export function EditTitleInfoStyle(
+    titleVal: string,
+    setTitleVal: React.Dispatch<React.SetStateAction<string>>,
+) {
+
+    const [showEditTitle, setShowEditTitle] = React.useState(false);
+
+    const updateRateVal = () => {
+        alert("Upload success: " + titleVal);
+        setShowEditTitle(false);
+    }
+
+    const showEditTitleArea = <div className="mt-2.5">
+        <Flex gap="small" wrap justify={"right"}>
+            <Button color="cyan" variant="dashed" onClick={updateRateVal}>更新</Button>
+        </Flex>
+    </div>
+
+    return <div className="p-2.5 hover:border border-red-700 border-dashed">
+        <div>
+            {AddTitleInfoStyle(titleVal, setTitleVal, setShowEditTitle)}
+        </div>
+        {showEditTitle && showEditTitleArea}
+    </div>
 }
