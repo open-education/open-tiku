@@ -20,7 +20,7 @@ export function AInfo(
 
     return <TextArea
         autoSize={{minRows: 2, maxRows: 5}}
-        placeholder="A选项内容"
+        placeholder="请输入A选项内容, 包括 A"
         onChange={onEditAChange}
         name="A"
         value={aVal}

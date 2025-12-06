@@ -1,6 +1,6 @@
 // 选项风格
 import type {QuestionInfo} from "~/type/question";
-import {Col, Flex, Radio, Row} from "antd";
+import {Col, Flex, Radio, type RadioChangeEvent, Row} from "antd";
 import {StringValidator} from "~/util/string";
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
@@ -154,6 +154,44 @@ export function CommonSelect(questionInfo: QuestionInfo) {
     }
 }
 
+export function SelectTopStyle(
+    showSelectVal: string,
+    setShowSelectVal: React.Dispatch<React.SetStateAction<string>>,
+) {
+    const onEditSelectChange = (e: RadioChangeEvent) => {
+        setShowSelectVal(e.target.value);
+    }
+
+    return <Row gutter={[10, 10]}>
+        <Col span={24}>
+            <div className="text-blue-700 text-[15px] mb-[10px] font-bold">选项</div>
+            <Flex vertical gap="small" justify={"right"}>
+                <Radio.Group
+                    defaultValue={showSelectVal}
+                    buttonStyle="solid"
+                    onChange={onEditSelectChange}
+                    block
+                    options={[
+                        {
+                            value: "1",
+                            label: "展示一行",
+                        },
+                        {
+                            value: "2",
+                            label: "展示一列",
+                        },
+                        {
+                            value: "3",
+                            label: "展示两列",
+                        },
+                    ]}
+                    optionType="button"
+                />
+            </Flex>
+        </Col>
+    </Row>
+}
+
 export function AddSelectStyle(
     aVal: string,
     setAVal: React.Dispatch<React.SetStateAction<string>>,
@@ -165,40 +203,28 @@ export function AddSelectStyle(
     setDVal: React.Dispatch<React.SetStateAction<string>>,
     eVal: string,
     setEVal: React.Dispatch<React.SetStateAction<string>>,
+    showSelectVal: string,
+    setShowSelectVal: React.Dispatch<React.SetStateAction<string>>,
 ) {
     return <div>
-        <Row gutter={[10, 10]}>
-            <Col span={24}>
-                <div className="text-blue-700 text-[15px] mb-[10px] font-bold">选项</div>
-                <Flex vertical gap="small" justify={"right"}>
-                    <Radio.Group
-                        defaultValue={"1"}
-                        buttonStyle="solid"
-                        block
-                        options={[
-                            {
-                                value: "1",
-                                label: "展示一行",
-                            },
-                            {
-                                value: "2",
-                                label: "展示一列",
-                            },
-                            {
-                                value: "3",
-                                label: "展示两列",
-                            },
-                        ]}
-                        optionType="button"
-                    />
-                </Flex>
-            </Col>
-        </Row>
-        {AddAInfoStyle(aVal, setAVal)}
-        {AddBInfoStyle(bVal, setBVal)}
-        {AddCInfoStyle(cVal, setCVal)}
-        {AddDInfoStyle(dVal, setDVal)}
-        {AddEInfoStyle(eVal, setEVal)}
+        <div className="p-2.5">
+            {SelectTopStyle(showSelectVal, setShowSelectVal)}
+        </div>
+        <div className="p-2.5">
+            {AddAInfoStyle(aVal, setAVal)}
+        </div>
+        <div className="p-2.5">
+            {AddBInfoStyle(bVal, setBVal)}
+        </div>
+        <div className="p-2.5">
+            {AddCInfoStyle(cVal, setCVal)}
+        </div>
+        <div className="p-2.5">
+            {AddDInfoStyle(dVal, setDVal)}
+        </div>
+        <div className="p-2.5">
+            {AddEInfoStyle(eVal, setEVal)}
+        </div>
     </div>
 }
 
@@ -213,35 +239,13 @@ export function EditSelectStyle(
     setDVal: React.Dispatch<React.SetStateAction<string>>,
     eVal: string,
     setEVal: React.Dispatch<React.SetStateAction<string>>,
+    showSelectVal: string,
+    setShowSelectVal: React.Dispatch<React.SetStateAction<string>>,
 ) {
     return <div>
-        <Row gutter={[10, 10]}>
-            <Col span={24}>
-                <div className="text-blue-700 text-[15px] mb-[10px] font-bold">选项</div>
-                <Flex vertical gap="small" justify={"right"}>
-                    <Radio.Group
-                        defaultValue={"1"}
-                        buttonStyle="solid"
-                        block
-                        options={[
-                            {
-                                value: "1",
-                                label: "展示一行",
-                            },
-                            {
-                                value: "2",
-                                label: "展示一列",
-                            },
-                            {
-                                value: "3",
-                                label: "展示两列",
-                            },
-                        ]}
-                        optionType="button"
-                    />
-                </Flex>
-            </Col>
-        </Row>
+        <div className="p-2.5">
+            {SelectTopStyle(showSelectVal, setShowSelectVal)}
+        </div>
         {EditAInfoStyle(aVal, setAVal)}
         {EditBInfoStyle(bVal, setBVal)}
         {EditCInfoStyle(cVal, setCVal)}

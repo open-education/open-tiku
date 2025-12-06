@@ -69,8 +69,7 @@ export default function List() {
         })
     }, [textbookKey, catalogKey, refreshListNum, pageNo]);
 
-    const [questionTypeVal, setQuestionTypeVal] = useState("")
-
+    const [questionTypeVal, setQuestionTypeVal] = useState<string>("")
     const onQuestionsChange = ({target: {value}}: RadioChangeEvent) => {
         setQuestionTypeVal(value);
     };
@@ -157,7 +156,8 @@ export default function List() {
         {
             questionListResp.data?.map(questionInfo => {
                 return <div key={questionInfo.id}
-                            className="pt-4 pl-4 pr-4 pb-1 hover:border border-blue-950 border-dashed">
+                            className="pt-4 pl-4 pr-4 pb-1 hover:border border-blue-950 border-dashed"
+                >
                     {/* 标签 */}
                     {CommonTag(questionInfo, questionTypeList, tagList)}
                     {/* 标题 */}

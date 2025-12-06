@@ -72,7 +72,7 @@ export function TitleInfo(
     );
 
     return <TextArea
-        autoSize={{minRows: 2, maxRows: 5}}
+        autoSize={{minRows: 3, maxRows: 7}}
         placeholder="请输入题目标题"
         onChange={onEditTitleChange}
         name="title"

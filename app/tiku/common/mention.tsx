@@ -47,14 +47,14 @@ export function EditMentionInfoStyle(
 
     const [showEditMention, setShowEditMention] = React.useState(false);
 
-    const updateRateVal = () => {
+    const updateMentionVal = () => {
         alert("Upload success: " + mentionVal);
         setShowEditMention(false);
     }
 
     const showEditMentionArea = <div className="mt-2.5">
         <Flex gap="small" wrap justify={"right"}>
-            <Button color="cyan" variant="dashed" onClick={updateRateVal}>更新</Button>
+            <Button color="cyan" variant="dashed" onClick={updateMentionVal}>更新</Button>
         </Flex>
     </div>
 

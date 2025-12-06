@@ -20,7 +20,7 @@ export function EInfo(
 
     return <TextArea
         autoSize={{minRows: 2, maxRows: 5}}
-        placeholder="E选项内容"
+        placeholder="请输入E选项内容, 包括 E"
         onChange={onEditEChange}
         name="E"
         value={eVal}
@@ -34,7 +34,7 @@ export function AddEInfoStyle(
 ) {
     return <Row gutter={[10, 10]}>
         <Col span={24}>
-            <div className="text-blue-700 text-[15px] mb-[10px] font-bold">B</div>
+            <div className="text-blue-700 text-[15px] mb-[10px] font-bold">E</div>
             {EInfo(eVal, setEVal, setShowEditE)}
         </Col>
     </Row>

@@ -20,7 +20,7 @@ export function DInfo(
 
     return <TextArea
         autoSize={{minRows: 2, maxRows: 5}}
-        placeholder="D选项内容"
+        placeholder="请输入D选项内容, 包括 D"
         onChange={onEditDChange}
         name="D"
         value={dVal}
@@ -34,7 +34,7 @@ export function AddDInfoStyle(
 ) {
     return <Row gutter={[10, 10]}>
         <Col span={24}>
-            <div className="text-blue-700 text-[15px] mb-[10px] font-bold">B</div>
+            <div className="text-blue-700 text-[15px] mb-[10px] font-bold">D</div>
             {DInfo(dVal, setDVal, setShowEditD)}
         </Col>
     </Row>

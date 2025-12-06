@@ -20,7 +20,7 @@ export function CInfo(
 
     return <TextArea
         autoSize={{minRows: 2, maxRows: 5}}
-        placeholder="C选项内容"
+        placeholder="请输入C选项内容, 包括 C"
         onChange={onEditCChange}
         name="C"
         value={cVal}
@@ -34,7 +34,7 @@ export function AddCInfoStyle(
 ) {
     return <Row gutter={[10, 10]}>
         <Col span={24}>
-            <div className="text-blue-700 text-[15px] mb-[10px] font-bold">B</div>
+            <div className="text-blue-700 text-[15px] mb-[10px] font-bold">C</div>
             {CInfo(cVal, setCVal, setShowEditC)}
         </Col>
     </Row>
