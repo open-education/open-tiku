@@ -1,12 +1,14 @@
 // 题目和图片风格
 import type {QuestionInfo} from "~/type/question";
 import {StringValidator} from "~/util/string";
-import {Button, Col, Flex, Image, Input, Row} from "antd";
+import {Alert, Button, Col, Flex, Image, Input, Row} from "antd";
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
 import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
 import React, {useCallback} from "react";
+import type {EditTitle} from "~/type/edit";
+import {httpClient} from "~/util/http";
 
 const {TextArea} = Input;
 
@@ -96,13 +98,27 @@ export function AddTitleInfoStyle(
 export function EditTitleInfoStyle(
     titleVal: string,
     setTitleVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo
 ) {
 
     const [showEditTitle, setShowEditTitle] = React.useState(false);
+    const [showEditTitleErr, setShowEditTitleErr] = React.useState<React.ReactNode>("");
 
     const updateRateVal = () => {
-        alert("Upload success: " + titleVal);
-        setShowEditTitle(false);
+        const req: EditTitle = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            title: titleVal,
+        }
+        httpClient.post("/edit/title", req).then(res => {
+            setShowEditTitleErr("");
+            setShowEditTitle(false);
+        }).catch(err => {
+            setShowEditTitleErr(<div>
+                <Alert title={`更新标题出错: ${err.message}`} type={"error"}/>
+            </div>);
+        })
     }
 
     const showEditTitleArea = <div className="mt-2.5">
@@ -115,6 +131,7 @@ export function EditTitleInfoStyle(
         <div>
             {AddTitleInfoStyle(titleVal, setTitleVal, setShowEditTitle)}
         </div>
+        {showEditTitleErr}
         {showEditTitle && showEditTitleArea}
     </div>
 }

@@ -241,15 +241,16 @@ export function EditSelectStyle(
     setEVal: React.Dispatch<React.SetStateAction<string>>,
     showSelectVal: string,
     setShowSelectVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo,
 ) {
     return <div>
         <div className="p-2.5">
             {SelectTopStyle(showSelectVal, setShowSelectVal)}
         </div>
-        {EditAInfoStyle(aVal, setAVal)}
-        {EditBInfoStyle(bVal, setBVal)}
-        {EditCInfoStyle(cVal, setCVal)}
-        {EditDInfoStyle(dVal, setDVal)}
-        {EditEInfoStyle(eVal, setEVal)}
+        {EditAInfoStyle(aVal, setAVal, questionInfo)}
+        {EditBInfoStyle(bVal, setBVal, questionInfo)}
+        {EditCInfoStyle(cVal, setCVal, questionInfo)}
+        {EditDInfoStyle(dVal, setDVal, questionInfo)}
+        {EditEInfoStyle(eVal, setEVal, questionInfo)}
     </div>
 }

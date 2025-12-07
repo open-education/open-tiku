@@ -1,5 +1,8 @@
 import React, {useCallback} from "react";
-import {Button, Col, Flex, Input, Row} from "antd";
+import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import type {EditC} from "~/type/edit";
+import type {QuestionInfo} from "~/type/question";
+import {httpClient} from "~/util/http";
 
 const {TextArea} = Input;
 
@@ -43,13 +46,26 @@ export function AddCInfoStyle(
 export function EditCInfoStyle(
     cVal: string,
     setCVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo
 ) {
-
     const [showEditC, setShowEditC] = React.useState(false);
+    const [showEditCErr, setShowEditCErr] = React.useState<React.ReactNode>("");
 
     const updateCVal = () => {
-        alert("Upload success: " + cVal);
-        setShowEditC(false);
+        const req: EditC = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            c: cVal,
+        }
+        httpClient.post("/edit/c", req).then((res) => {
+            setShowEditCErr("");
+            setShowEditC(false);
+        }).catch((err) => {
+            setShowEditCErr(<div>
+                <Alert title={`更新C选项出错: ${err.message}`} type={"error"}/>
+            </div>);
+        })
     }
 
     const showEditCArea = <div className="mt-2.5">
@@ -62,6 +78,7 @@ export function EditCInfoStyle(
         <div>
             {AddCInfoStyle(cVal, setCVal, setShowEditC)}
         </div>
+        {showEditCErr}
         {showEditC && showEditCArea}
     </div>
 }

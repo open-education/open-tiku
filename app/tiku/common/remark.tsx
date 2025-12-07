@@ -1,5 +1,8 @@
 import React, {useCallback} from "react";
-import {Button, Col, Flex, Input, Row} from "antd";
+import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import type {QuestionInfo} from "~/type/question";
+import type {EditRemark} from "~/type/edit";
+import {httpClient} from "~/util/http";
 
 const {TextArea} = Input;
 
@@ -43,13 +46,26 @@ export function AddRemarkInfoStyle(
 export function EditRemarkInfoStyle(
     remarkVal: string,
     setRemarkVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo,
 ) {
-
     const [showEditRemark, setShowEditRemark] = React.useState(false);
+    const [showEditRemarkErr, setShowEditRemarkErr] = React.useState<React.ReactNode>("");
 
     const updateRemarkVal = () => {
-        alert("Upload success: " + remarkVal);
-        setShowEditRemark(false);
+        const req: EditRemark = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            remark: remarkVal,
+        }
+        httpClient.post("/edit/remark", req).then((res) => {
+            setShowEditRemarkErr("");
+            setShowEditRemark(false);
+        }).catch((err) => {
+            setShowEditRemarkErr(<div>
+                <Alert title={`更新备注出错: ${err.message}`} type="error"/>
+            </div>);
+        })
     }
 
     const showEditRemarkArea = <div className="mt-2.5">
@@ -62,6 +78,7 @@ export function EditRemarkInfoStyle(
         <div>
             {AddRemarkInfoStyle(remarkVal, setRemarkVal, setShowEditRemark)}
         </div>
+        {showEditRemarkErr}
         {showEditRemark && showEditRemarkArea}
     </div>
 }

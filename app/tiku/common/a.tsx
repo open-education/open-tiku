@@ -1,5 +1,8 @@
 import React, {useCallback} from "react";
-import {Button, Col, Flex, Input, Row} from "antd";
+import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import type {EditA} from "~/type/edit";
+import type {QuestionInfo} from "~/type/question";
+import {httpClient} from "~/util/http";
 
 const {TextArea} = Input;
 
@@ -43,13 +46,26 @@ export function AddAInfoStyle(
 export function EditAInfoStyle(
     aVal: string,
     setAVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo,
 ) {
-
     const [showEditA, setShowEditA] = React.useState(false);
+    const [showEditAErr, setShowEditAErr] = React.useState<React.ReactNode>("");
 
     const updateAVal = () => {
-        alert("Upload success: " + aVal);
-        setShowEditA(false);
+        const req: EditA = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            a: aVal,
+        }
+        httpClient.post("/edit/a", req).then(res => {
+            setShowEditAErr("");
+            setShowEditA(false);
+        }).catch(err => {
+            setShowEditAErr(<div>
+                <Alert title={`更新A选项出错: ${err.message}`} type={"error"}/>
+            </div>);
+        })
     }
 
     const showEditAArea = <div className="mt-2.5">
@@ -62,6 +78,7 @@ export function EditAInfoStyle(
         <div>
             {AddAInfoStyle(aVal, setAVal, setShowEditA)}
         </div>
+        {showEditAErr}
         {showEditA && showEditAArea}
     </div>
 }

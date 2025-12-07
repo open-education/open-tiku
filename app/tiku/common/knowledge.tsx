@@ -1,5 +1,8 @@
 import React, {useCallback} from "react";
-import {Button, Col, Flex, Input, Row} from "antd";
+import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import type {QuestionInfo} from "~/type/question";
+import type {EditKnowledge} from "~/type/edit";
+import {httpClient} from "~/util/http";
 
 const {TextArea} = Input;
 
@@ -43,13 +46,26 @@ export function AddKnowledgeInfoStyle(
 export function EditKnowledgeInfoStyle(
     knowledgeVal: string,
     setKnowledgeVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo,
 ) {
-
     const [showEditKnowledge, setShowEditKnowledge] = React.useState(false);
+    const [showEditKnowledgeErr, setShowEditKnowledgeErr] = React.useState<React.ReactNode>("");
 
     const updateKnowledgeVal = () => {
-        alert("Upload success: " + knowledgeVal);
-        setShowEditKnowledge(false);
+        const req: EditKnowledge = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            knowledge: knowledgeVal,
+        }
+        httpClient.post("/edit/knowledge", req).then((res) => {
+            setShowEditKnowledgeErr("");
+            setShowEditKnowledge(false);
+        }).catch((err) => {
+            setShowEditKnowledgeErr(<div>
+                <Alert title={`更新知识点出错: ${err.message}`} type="error"/>
+            </div>);
+        })
     }
 
     const showEditKnowledgeArea = <div className="mt-2.5">
@@ -62,6 +78,7 @@ export function EditKnowledgeInfoStyle(
         <div>
             {AddKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal, setShowEditKnowledge)}
         </div>
+        {showEditKnowledgeErr}
         {showEditKnowledge && showEditKnowledgeArea}
     </div>
 }

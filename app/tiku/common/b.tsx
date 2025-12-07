@@ -1,5 +1,8 @@
 import React, {useCallback} from "react";
-import {Button, Col, Flex, Input, Row} from "antd";
+import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import type {EditB} from "~/type/edit";
+import {httpClient} from "~/util/http";
+import type {QuestionInfo} from "~/type/question";
 
 const {TextArea} = Input;
 
@@ -43,13 +46,27 @@ export function AddBInfoStyle(
 export function EditBInfoStyle(
     bVal: string,
     setBVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo
 ) {
 
     const [showEditB, setShowEditB] = React.useState(false);
+    const [showEditBErr, setShowEditBErr] = React.useState<React.ReactNode>("");
 
     const updateBVal = () => {
-        alert("Upload success: " + bVal);
-        setShowEditB(false);
+        const req: EditB = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            b: bVal,
+        }
+        httpClient.post("/edit/b", req).then(res => {
+            setShowEditBErr("");
+            setShowEditB(false);
+        }).catch(err => {
+            setShowEditBErr(<div>
+                <Alert title={`更新B选项出错: ${err.message}`} type={"error"}/>
+            </div>);
+        })
     }
 
     const showEditBArea = <div className="mt-2.5">
@@ -62,6 +79,7 @@ export function EditBInfoStyle(
         <div>
             {AddBInfoStyle(bVal, setBVal, setShowEditB)}
         </div>
+        {showEditBErr}
         {showEditB && showEditBArea}
     </div>
 }

@@ -1,6 +1,8 @@
-import type {QuestionType} from "~/type/question";
+import type {QuestionInfo, QuestionType} from "~/type/question";
 import React, {useState} from "react";
 import {Alert, Button, Col, Flex, Radio, type RadioChangeEvent, Row} from "antd";
+import {httpClient} from "~/util/http";
+import type {EditQuestionType} from "~/type/edit";
 
 // 题目问题类型基础样式
 export function EditQuestionType(
@@ -62,12 +64,26 @@ export function EditQuestionTypeStyle(
     questionTypeList: QuestionType[] = [],
     questionTypeVal: string,
     setQuestionTypeVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo,
 ) {
+    const [showEditQuestionTypeErr, setShowEditQuestionTypeErr] = useState<React.ReactNode>("");
     const [showEditQuestionType, setShowEditQuestionType] = useState<boolean>(false);
 
     const updateQuestionType = () => {
-        alert("Update question type: " + questionTypeVal);
-        setShowEditQuestionType(false);
+        const req: EditQuestionType = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            questionType: questionTypeVal,
+        };
+        httpClient.post("/edit/question-type", req).then(res => {
+            setShowEditQuestionTypeErr("");
+            setShowEditQuestionType(false);
+        }).catch(err => {
+            setShowEditQuestionTypeErr(<div>
+                <Alert title={`更新问题类型出错: ${err.message}`} type={"error"}/>
+            </div>);
+        })
     }
 
     const showEditQuestionTypeArea = <div className="mt-2.5">
@@ -80,6 +96,7 @@ export function EditQuestionTypeStyle(
         <div>
             {AddQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal, setShowEditQuestionType)}
         </div>
+        {showEditQuestionTypeErr}
         {showEditQuestionType && showEditQuestionTypeArea}
     </div>
 }

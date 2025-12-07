@@ -1,5 +1,8 @@
 import React from "react";
-import {Button, Col, Flex, Rate, Row} from "antd";
+import {Alert, Button, Col, Flex, Rate, Row} from "antd";
+import type {EditRate} from "~/type/edit";
+import type {QuestionInfo} from "~/type/question";
+import {httpClient} from "~/util/http";
 
 export function RateInfo(
     rateVal: number,
@@ -32,13 +35,27 @@ export function AddRateInfoStyle(
 
 export function EditRateInfoStyle(
     rateVal: number,
-    setRateVal: React.Dispatch<React.SetStateAction<number>>
+    setRateVal: React.Dispatch<React.SetStateAction<number>>,
+    questionInfo: QuestionInfo
 ) {
     const [showEditRate, setShowEditRate] = React.useState(false);
+    const [showEditRateErr, setShowEditRateErr] = React.useState<React.ReactNode>("");
 
     const updateRateVal = () => {
-        alert("Upload success: " + rateVal);
-        setShowEditRate(false);
+        const req: EditRate = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            rate: rateVal.toString(),
+        }
+        httpClient.post("/edit/rate", req).then(res => {
+            setShowEditRateErr("")
+            setShowEditRate(false);
+        }).catch(err => {
+            setShowEditRateErr(<div>
+                <Alert title={`更新评分出错: ${err.message}`} type={"error"}/>
+            </div>);
+        })
     }
 
     const showEditRateArea = <div className="mt-2.5">
@@ -51,6 +68,7 @@ export function EditRateInfoStyle(
         <div>
             {AddRateInfoStyle(rateVal, setRateVal, setShowEditRate)}
         </div>
+        {showEditRateErr}
         {showEditRate && showEditRateArea}
     </div>
 }

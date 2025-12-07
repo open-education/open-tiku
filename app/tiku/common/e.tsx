@@ -1,5 +1,8 @@
 import React, {useCallback} from "react";
-import {Button, Col, Flex, Input, Row} from "antd";
+import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import type {EditE} from "~/type/edit";
+import type {QuestionInfo} from "~/type/question";
+import {httpClient} from "~/util/http";
 
 const {TextArea} = Input;
 
@@ -43,13 +46,26 @@ export function AddEInfoStyle(
 export function EditEInfoStyle(
     eVal: string,
     setEVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo
 ) {
-
     const [showEditE, setShowEditE] = React.useState(false);
+    const [showEditEErr, setShowEditEErr] = React.useState<React.ReactNode>("");
 
     const updateEVal = () => {
-        alert("Upload success: " + eVal);
-        setShowEditE(false);
+        const req: EditE = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            e: eVal,
+        }
+        httpClient.post("/edit/e", req).then((res) => {
+            setShowEditEErr("");
+            setShowEditE(false);
+        }).catch((err) => {
+            setShowEditEErr(<div>
+                <Alert title={`更新E选项出错: ${err.message}`} type={"error"}/>
+            </div>);
+        })
     }
 
     const showEditEArea = <div className="mt-2.5">
@@ -62,6 +78,7 @@ export function EditEInfoStyle(
         <div>
             {AddEInfoStyle(eVal, setEVal, setShowEditE)}
         </div>
+        {showEditEErr}
         {showEditE && showEditEArea}
     </div>
 }

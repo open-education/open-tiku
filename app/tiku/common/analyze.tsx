@@ -1,5 +1,8 @@
 import React, {useCallback} from "react";
-import {Button, Col, Flex, Input, Row} from "antd";
+import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import type {EditAnalyze} from "~/type/edit";
+import type {QuestionInfo} from "~/type/question";
+import {httpClient} from "~/util/http";
 
 const {TextArea} = Input;
 
@@ -43,13 +46,26 @@ export function AddAnalyzeInfoStyle(
 export function EditAnalyzeInfoStyle(
     analyzeVal: string,
     setAnalyzeVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo,
 ) {
-
     const [showEditAnalyze, setShowEditAnalyze] = React.useState(false);
+    const [showEditAnalyzeErr, setShowEditAnalyzeErr] = React.useState<React.ReactNode>("");
 
     const updateAnalyzeVal = () => {
-        alert("Upload success: " + analyzeVal);
-        setShowEditAnalyze(false);
+        const req: EditAnalyze = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            analyze: analyzeVal,
+        }
+        httpClient.post("/edit/analyze", req).then((res) => {
+            setShowEditAnalyzeErr("");
+            setShowEditAnalyze(false);
+        }).catch(err => {
+            setShowEditAnalyzeErr(<div>
+                <Alert title={`更新解题分析出错: ${err.message}`} type={"error"}/>
+            </div>);
+        })
     }
 
     const showEditAnalyzeArea = <div className="mt-2.5">
@@ -62,6 +78,7 @@ export function EditAnalyzeInfoStyle(
         <div>
             {AddAnalyzeInfoStyle(analyzeVal, setAnalyzeVal, setShowEditAnalyze)}
         </div>
+        {showEditAnalyzeErr}
         {showEditAnalyze && showEditAnalyzeArea}
     </div>
 }

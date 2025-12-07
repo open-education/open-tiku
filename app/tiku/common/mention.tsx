@@ -1,5 +1,8 @@
 import React, {useCallback} from "react";
-import {Button, Col, Flex, Input, Row} from "antd";
+import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import type {EditMention} from "~/type/edit";
+import type {QuestionInfo} from "~/type/question";
+import {httpClient} from "~/util/http";
 
 const {TextArea} = Input;
 
@@ -43,13 +46,26 @@ export function AddMentionInfoStyle(
 export function EditMentionInfoStyle(
     mentionVal: string,
     setMentionVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo,
 ) {
-
     const [showEditMention, setShowEditMention] = React.useState(false);
+    const [showEditMentionErr, setShowEditMentionErr] = React.useState<React.ReactNode>("");
 
     const updateMentionVal = () => {
-        alert("Upload success: " + mentionVal);
-        setShowEditMention(false);
+        const req: EditMention = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            mention: mentionVal,
+        }
+        httpClient.post("/edit/mention", req).then(res => {
+            setShowEditMentionErr("");
+            setShowEditMention(false);
+        }).catch(err => {
+            setShowEditMentionErr(<div>
+                <Alert title={`更新标记出错: ${err.message}`} type="error"/>
+            </div>);
+        })
     }
 
     const showEditMentionArea = <div className="mt-2.5">
@@ -62,6 +78,7 @@ export function EditMentionInfoStyle(
         <div>
             {AddMentionInfoStyle(mentionVal, setMentionVal, setShowEditMention)}
         </div>
+        {showEditMentionErr}
         {showEditMention && showEditMentionArea}
     </div>
 }

@@ -6,6 +6,7 @@ import React, {type Dispatch, type SetStateAction, useState} from "react";
 import {httpClient} from "~/util/http";
 import Info from "~/tiku/info";
 import Edit from "~/tiku/edit";
+import type {EditQuestionTags} from "~/type/edit";
 
 // 题目列表展示标签样式 题目类型在前 标签依次在后
 export function CommonTag(questionInfo: QuestionInfo, questionTypeList: QuestionType[], tagList: TagInfo[]) {
@@ -213,12 +214,26 @@ export function EditTagStyle(
     tagList: TagInfo[] = [],
     tagListVal: string[],
     setTagListVal: Dispatch<SetStateAction<string[]>>,
+    questionInfo: QuestionInfo
 ) {
     const [showTagEdit, setShowTagEdit] = useState<boolean>(false);
+    const [showTagEditErr, setShowTagEditErr] = useState<React.ReactNode>("");
 
     const updateQuestionTags = () => {
-        alert("Upload successfully: " + tagListVal.join(","));
-        setShowTagEdit(false);
+        const req: EditQuestionTags = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            tags: tagListVal,
+        }
+        httpClient.post("/edit/tags", req).then(res => {
+            setShowTagEditErr("")
+            setShowTagEdit(false);
+        }).catch(err => {
+            setShowTagEditErr(<div>
+                <Alert title={`更新标签出错: ${err.message}`} type={"error"}/>
+            </div>);
+        })
     }
 
     const showTagEditArea = <div className="mt-2.5">
@@ -231,6 +246,7 @@ export function EditTagStyle(
         <div>
             {AddTagStyle(tagList, tagListVal, setTagListVal, setShowTagEdit)}
         </div>
+        {showTagEditErr}
         {showTagEdit && showTagEditArea}
     </div>
 }

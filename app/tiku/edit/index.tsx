@@ -150,14 +150,6 @@ export default function Edit(props: any) {
             <p>3. 图片没有这个效果，上传新图片或者删除旧图片都是立即生效.</p>
         </div>
 
-        <Row gutter={[20, 20]}>
-            <Col span={24}>
-                {/*{uploadQuestionIng}*/}
-                {/*{uploadQuestionErr}*/}
-                {/*{reqQuestionInfoErr}*/}
-            </Col>
-        </Row>
-
         <Row style={{marginTop: "20px"}}>
             <Col>
                 <Flex gap="small" wrap>
@@ -173,40 +165,40 @@ export default function Edit(props: any) {
         >
             <Splitter.Panel defaultSize={"50%"}>
                 {/* 题目类型 */}
-                {EditQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal)}
+                {EditQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal, reqQuestionInfo)}
 
                 {/* 题目标签 */}
-                {EditTagStyle(tagList, tagListVal, setTagListVal)}
+                {EditTagStyle(tagList, tagListVal, setTagListVal, reqQuestionInfo)}
 
                 {/* rate */}
-                {EditRateInfoStyle(rateVal, setRateVal)}
+                {EditRateInfoStyle(rateVal, setRateVal, reqQuestionInfo)}
 
                 {/* title */}
-                {EditTitleInfoStyle(titleVal, setTitleVal)}
+                {EditTitleInfoStyle(titleVal, setTitleVal, reqQuestionInfo)}
 
                 {/* mention */}
-                {EditMentionInfoStyle(mentionVal, setMentionVal)}
+                {EditMentionInfoStyle(mentionVal, setMentionVal, reqQuestionInfo)}
 
                 {/* image */}
                 {UploadImageStyle(textbookKey, catalogKey, imageFileList, setImageFileList, showImageVal, setShowImageVal, reqQuestionInfo.id)}
 
                 {/* select */}
-                {EditSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal)}
+                {EditSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal, reqQuestionInfo)}
 
                 {/* answer */}
-                {EditAnswerInfoStyle(answerVal, setAnswerVal)}
+                {EditAnswerInfoStyle(answerVal, setAnswerVal, reqQuestionInfo)}
 
                 {/* knowledge */}
-                {EditKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal)}
+                {EditKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal, reqQuestionInfo)}
 
                 {/* analyze */}
-                {EditAnalyzeInfoStyle(analyzeVal, setAnalyzeVal)}
+                {EditAnalyzeInfoStyle(analyzeVal, setAnalyzeVal, reqQuestionInfo)}
 
                 {/* process */}
-                {EditProcessInfoStyle(processVal, setProcessVal)}
+                {EditProcessInfoStyle(processVal, setProcessVal, reqQuestionInfo)}
 
                 {/* remark */}
-                {EditRemarkInfoStyle(remarkVal, setRemarkVal)}
+                {EditRemarkInfoStyle(remarkVal, setRemarkVal, reqQuestionInfo)}
             </Splitter.Panel>
 
             <Splitter.Panel defaultSize="50%">

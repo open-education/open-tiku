@@ -1,5 +1,8 @@
 import React, {useCallback} from "react";
-import {Button, Col, Flex, Input, Row} from "antd";
+import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import type {EditAnswer} from "~/type/edit";
+import type {QuestionInfo} from "~/type/question";
+import {httpClient} from "~/util/http";
 
 const {TextArea} = Input;
 
@@ -43,13 +46,26 @@ export function AddAnswerInfoStyle(
 export function EditAnswerInfoStyle(
     answerVal: string,
     setAnswerVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo
 ) {
-
     const [showEditAnswer, setShowEditAnswer] = React.useState(false);
+    const [showEditAnswerErr, setShowEditAnswerErr] = React.useState<React.ReactNode>("");
 
     const updateAnswerVal = () => {
-        alert("Upload success: " + answerVal);
-        setShowEditAnswer(false);
+        const req: EditAnswer = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            answer: answerVal,
+        }
+        httpClient.post("/edit/answer", req).then((res) => {
+            setShowEditAnswerErr("");
+            setShowEditAnswer(false);
+        }).catch(err => {
+            setShowEditAnswerErr(<div>
+                <Alert title={`更新答案出错: ${err.message}`} type={"error"}/>
+            </div>);
+        })
     }
 
     const showEditAnswerArea = <div className="mt-2.5">
@@ -62,6 +78,7 @@ export function EditAnswerInfoStyle(
         <div>
             {AddAnswerInfoStyle(answerVal, setAnswerVal, setShowEditAnswer)}
         </div>
+        {showEditAnswerErr}
         {showEditAnswer && showEditAnswerArea}
     </div>
 }
