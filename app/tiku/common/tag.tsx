@@ -9,7 +9,11 @@ import Edit from "~/tiku/edit";
 import type {EditQuestionTags} from "~/type/edit";
 
 // 题目列表展示标签样式 题目类型在前 标签依次在后
-export function CommonTag(questionInfo: QuestionInfo, questionTypeList: QuestionType[], tagList: TagInfo[]) {
+export function CommonTag(
+    questionInfo: QuestionInfo,
+    questionTypeList: QuestionType[],
+    tagList: TagInfo[]
+) {
     const questionTypeDict = arrayToDict(questionTypeList, 'key');
     const tagsDict = arrayToDict(tagList, 'key');
     return <Row gutter={[10, 10]}>
@@ -70,11 +74,6 @@ export function CommonQuickJumpTag(
             "value": "edit",
             "label": "编辑"
         },
-        {
-            "key": "8",
-            "value": "delete",
-            "label": "删除"
-        }
     ];
     const onClickQuickTool = ({target: {value}}: RadioChangeEvent) => {
         let title = "";

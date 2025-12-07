@@ -1,6 +1,6 @@
 // 选项风格
 import type {QuestionInfo} from "~/type/question";
-import {Col, Flex, Radio, type RadioChangeEvent, Row} from "antd";
+import {Alert, Button, Col, Flex, Radio, type RadioChangeEvent, Row} from "antd";
 import {StringValidator} from "~/util/string";
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
@@ -11,6 +11,8 @@ import {AddBInfoStyle, EditBInfoStyle} from "~/tiku/common/b";
 import {AddCInfoStyle, EditCInfoStyle} from "~/tiku/common/c";
 import {AddDInfoStyle, EditDInfoStyle} from "~/tiku/common/d";
 import {AddEInfoStyle, EditEInfoStyle} from "~/tiku/common/e";
+import type {EditSelect} from "~/type/edit";
+import {httpClient} from "~/util/http";
 
 export function CommonSelect(questionInfo: QuestionInfo) {
     const showSelectVal = questionInfo.showSelectVal;
@@ -154,12 +156,16 @@ export function CommonSelect(questionInfo: QuestionInfo) {
     }
 }
 
-export function SelectTopStyle(
+export function AddSelectTopStyle(
     showSelectVal: string,
     setShowSelectVal: React.Dispatch<React.SetStateAction<string>>,
+    setShowEditSelect?: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
-    const onEditSelectChange = (e: RadioChangeEvent) => {
+    const onAddSelectChange = (e: RadioChangeEvent) => {
         setShowSelectVal(e.target.value);
+        if (setShowEditSelect) {
+            setShowEditSelect(true);
+        }
     }
 
     return <Row gutter={[10, 10]}>
@@ -169,7 +175,7 @@ export function SelectTopStyle(
                 <Radio.Group
                     defaultValue={showSelectVal}
                     buttonStyle="solid"
-                    onChange={onEditSelectChange}
+                    onChange={onAddSelectChange}
                     block
                     options={[
                         {
@@ -192,6 +198,46 @@ export function SelectTopStyle(
     </Row>
 }
 
+export function EditSelectTopStyle(
+    showSelectVal: string,
+    setShowSelectVal: React.Dispatch<React.SetStateAction<string>>,
+    questionInfo: QuestionInfo,
+) {
+    const [showEditSelect, setShowEditSelect] = React.useState(false);
+    const [showEditSelectErr, setShowEditSelectErr] = React.useState<React.ReactNode>("");
+
+    const updateSelectVal = () => {
+        const req: EditSelect = {
+            textbookKey: questionInfo.textbookKey,
+            catalogKey: questionInfo.catalogKey,
+            id: questionInfo.id,
+            select: showSelectVal,
+        }
+        httpClient.post("/edit/select", req).then((res) => {
+            setShowEditSelectErr("");
+            setShowEditSelect(false);
+        }).catch((err) => {
+            setShowEditSelectErr(<div>
+                <Alert title={`更新选项样式出错: ${err.message}`} type={"error"}/>
+            </div>);
+        })
+    }
+
+    const showEditSelectArea = <div className="mt-2.5">
+        <Flex gap="small" wrap justify={"right"}>
+            <Button color="cyan" variant="dashed" onClick={updateSelectVal}>更新</Button>
+        </Flex>
+    </div>
+
+    return <div className="p-2.5 hover:border border-red-700 border-dashed">
+        <div>
+            {AddSelectTopStyle(showSelectVal, setShowSelectVal, setShowEditSelect)}
+        </div>
+        {showEditSelectErr}
+        {showEditSelect && showEditSelectArea}
+    </div>
+}
+
 export function AddSelectStyle(
     aVal: string,
     setAVal: React.Dispatch<React.SetStateAction<string>>,
@@ -208,7 +254,7 @@ export function AddSelectStyle(
 ) {
     return <div>
         <div className="p-2.5">
-            {SelectTopStyle(showSelectVal, setShowSelectVal)}
+            {AddSelectTopStyle(showSelectVal, setShowSelectVal)}
         </div>
         <div className="p-2.5">
             {AddAInfoStyle(aVal, setAVal)}
@@ -244,9 +290,7 @@ export function EditSelectStyle(
     questionInfo: QuestionInfo,
 ) {
     return <div>
-        <div className="p-2.5">
-            {SelectTopStyle(showSelectVal, setShowSelectVal)}
-        </div>
+        {EditSelectTopStyle(showSelectVal, setShowSelectVal, questionInfo)}
         {EditAInfoStyle(aVal, setAVal, questionInfo)}
         {EditBInfoStyle(bVal, setBVal, questionInfo)}
         {EditCInfoStyle(cVal, setCVal, questionInfo)}

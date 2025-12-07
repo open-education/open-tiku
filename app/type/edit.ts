@@ -19,6 +19,13 @@ export interface EditRate {
     rate: string,
 }
 
+export interface EditSelect {
+    textbookKey: string,
+    catalogKey: string,
+    id: string,
+    select: string,
+}
+
 export interface EditTitle {
     textbookKey: string,
     catalogKey: string,
