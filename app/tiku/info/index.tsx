@@ -6,18 +6,28 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 
-import type {QuestionInfo} from "~/type/question";
-import {StringValidator} from "~/util/string";
+import type {QuestionInfo, QuestionType} from "~/type/question";
+import {StringUtil, StringValidator} from "~/util/string";
 import {CommonTag} from "~/tiku/common/tag";
 import {CommonTitle} from "~/tiku/common/title";
 import {CommonSelect} from "~/tiku/common/select";
-import {useOutletContext} from "react-router-dom";
+import {useLocation, useOutletContext} from "react-router-dom";
 import type {TiKuIndexContext} from "~/type/context";
 import {CommonBreadcrumb} from "~/tiku/common/breadcrumb";
 import React from "react";
+import type {Catalog} from "~/type/catalog";
+import type {TagInfo} from "~/type/tag";
+import type {Knowledge} from "~/type/guidance";
 
 export default function Info(props: any) {
-    const {subjectList, catalogList, questionTypeList, tagList} = useOutletContext<TiKuIndexContext>();
+    const {subjectList} = useOutletContext<TiKuIndexContext>();
+    const location = useLocation();
+    const pathname = StringUtil.getLastPart(location.pathname, "/");
+
+    const catalogList: Catalog[] = props.catalogList ?? [];
+    const knowledgeInfoList: Knowledge[] = props.knowledgeInfoList ?? [];
+    const questionTypeList: QuestionType[] = props.questionTypeList ?? [];
+    const tagList: TagInfo[] = props.tagList ?? [];
 
     const questionInfo: QuestionInfo = props.questionInfo;
 
@@ -25,7 +35,7 @@ export default function Info(props: any) {
         <Row gutter={[10, 10]}>
             <Col span={24}>
                 {/* 面包屑快速导航 */}
-                {CommonBreadcrumb(subjectList, catalogList, questionInfo.textbookKey, questionInfo.catalogKey)}
+                {CommonBreadcrumb(subjectList, catalogList, knowledgeInfoList, pathname, questionInfo.catalogKey)}
             </Col>
         </Row>
 

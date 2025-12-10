@@ -28,9 +28,31 @@ export const StringUtil = {
         return str === undefined ? "" : str.split(separator)[0] || '';
     },
 
+    getLastPart: (str: string | undefined, separator: string = '_'): string => {
+        if (str === undefined) return "";
+        const lastIndex = str.lastIndexOf(separator);
+        return lastIndex === -1 ? str : str.slice(lastIndex + 1);
+    },
+
+    removeLastPart: (str: string | undefined, separator: string = '_'): string => {
+        if (str === undefined) return "";
+        const lastUnderscoreIndex = str.lastIndexOf(separator);
+        if (lastUnderscoreIndex === -1) {
+            return '';
+        }
+        return str.substring(0, lastUnderscoreIndex);
+    },
+
     getRandomInt: (min: number = 1, max: number = 500): number => {
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+}
+
+export const StringConst = {
+    chapter: "_chapter",
+    chapterDesc: "教材章节",
+    knowledge: "_knowledge",
+    knowledgeDesc: "知识点类",
 }

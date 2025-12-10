@@ -7,15 +7,14 @@ import rehypeKatex from "rehype-katex";
 
 import {StringValidator} from "~/util/string";
 import type {QuestionInfo} from "~/type/question";
-import {useOutletContext} from "react-router-dom";
-import type {TiKuIndexContext} from "~/type/context";
 import {CommonTag} from "~/tiku/common/tag";
 import {CommonTitle} from "~/tiku/common/title";
 import {CommonSelect} from "~/tiku/common/select";
 
 export default function preview(props: any) {
-    const {questionTypeList, tagList} = useOutletContext<TiKuIndexContext>();
-    const questionInfo: QuestionInfo = props.questionInfo;
+    const questionTypeList = props.questionTypeList ?? [];
+    const tagList = props.tagList ?? [];
+    const questionInfo: QuestionInfo = props.questionInfo ?? {};
 
     return <div>
         {/* 题型和标签 */}

@@ -31,6 +31,7 @@ export interface QuestionInfo {
 export interface QuestionUploadReq {
     textbookKey: string,
     catalogKey: string,
+    sourceId?: string,
     questionType: string,
     tags?: string[],
     rateVal?: string,

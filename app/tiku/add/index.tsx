@@ -2,12 +2,12 @@
 import React, {useState} from "react";
 import {Alert, Button, Col, Flex, Row, Splitter, type UploadFile, Watermark} from "antd";
 
-import Preview from "../preview";
+import Preview from "~/tiku/preview";
 
 import type {QuestionInfo, QuestionUploadResp} from "~/type/question";
 import {CommonBreadcrumb} from "~/tiku/common/breadcrumb";
 import type {TiKuIndexContext} from "~/type/context";
-import {useOutletContext} from "react-router-dom";
+import {useLocation, useOutletContext} from "react-router-dom";
 import {httpClient} from "~/util/http";
 import Info from "~/tiku/info";
 import {StringUtil} from "~/util/string";
@@ -26,49 +26,76 @@ import {AddRemarkInfoStyle} from "~/tiku/common/remark";
 
 export default function Add(props: any) {
     const {
-        textbookKey,
-        catalogKey,
         subjectList,
-        catalogList,
-        questionTypeList,
-        tagList
     } = useOutletContext<TiKuIndexContext>();
 
-    const questionType = questionTypeList[0];
-    const [questionTypeVal, setQuestionTypeVal] = useState(questionType.key);
+    const location = useLocation();
+    const pathname = StringUtil.getLastPart(location.pathname, "/");
 
-    const tag = tagList[0];
-    const [tagVal, setTagVal] = useState([tag.key]);
+    const textbookKey = props.textbookKey ?? "";
+    const catalogKey = props.catalogKey ?? "";
+    const questionTypeList = props.questionTypeList ?? [];
+    const tagList = props.tagList ?? [];
+    const catalogList = props.catalogList ?? [];
+    const knowledgeInfoList = props.knowledgeInfoList ?? [];
 
-    const [rateVal, setRateVal] = useState(0);
+    const questionType = questionTypeList.length > 0 ? questionTypeList[0] : "";
+    const [questionTypeVal, setQuestionTypeVal] = useState<string>(questionType.key);
 
-    const [titleVal, setTitleVal] = useState("");
+    const tag = tagList.length > 0 ? tagList[0] : "";
+    const [tagVal, setTagVal] = useState<string[]>([tag.key]);
 
-    const [mentionVal, setMentionVal] = useState("");
+    const [rateVal, setRateVal] = useState<number>(0);
+
+    const [titleVal, setTitleVal] = useState<string>("");
+
+    const [mentionVal, setMentionVal] = useState<string>("");
 
     const [imageFileList, setImageFileList] = useState<UploadFile[]>([]);
-    const [showImageVal, setShowImageVal] = useState("0");
+    const [showImageVal, setShowImageVal] = useState<string>("0");
 
-    const [aVal, setAVal] = useState("");
-    const [bVal, setBVal] = useState("");
-    const [cVal, setCVal] = useState("");
-    const [dVal, setDVal] = useState("");
-    const [eVal, setEVal] = useState("");
-    const [showSelectVal, setShowSelectVal] = useState("1");
+    const [aVal, setAVal] = useState<string>("");
+    const [bVal, setBVal] = useState<string>("");
+    const [cVal, setCVal] = useState<string>("");
+    const [dVal, setDVal] = useState<string>("");
+    const [eVal, setEVal] = useState<string>("");
+    const [showSelectVal, setShowSelectVal] = useState<string>("1");
 
-    const [answerVal, setAnswerVal] = useState("");
+    const [answerVal, setAnswerVal] = useState<string>("");
 
-    const [knowledgeVal, setKnowledgeVal] = useState("");
+    const [knowledgeVal, setKnowledgeVal] = useState<string>("");
 
-    const [analyzeVal, setAnalyzeVal] = useState("");
+    const [analyzeVal, setAnalyzeVal] = useState<string>("");
 
-    const [processVal, setProcessVal] = useState("");
+    const [processVal, setProcessVal] = useState<string>("");
 
-    const [remarkVal, setRemarkVal] = useState("");
+    const [remarkVal, setRemarkVal] = useState<string>("");
 
     // 生成预览对象
-    const [openPreviewArea, setOpenPreviewArea] = useState(false);
-    let [questionInfo, setQuestionInfo] = useState({});
+    const [openPreviewArea, setOpenPreviewArea] = useState<boolean>(false);
+    let [questionInfo, setQuestionInfo] = useState<QuestionInfo>({
+        aVal: "",
+        analyzeVal: "",
+        answerVal: "",
+        bVal: "",
+        cVal: "",
+        catalogKey: "",
+        dVal: "",
+        eVal: "",
+        id: "",
+        imageNames: [],
+        knowledgeVal: "",
+        mentionVal: "",
+        processVal: "",
+        questionType: "",
+        rateVal: "",
+        remarkVal: "",
+        showImageVal: "",
+        showSelectVal: "",
+        tags: [],
+        textbookKey: "",
+        titleVal: ""
+    });
 
     // 点击生成题目样式预览
     const onToPreview = () => {
@@ -122,6 +149,7 @@ export default function Add(props: any) {
             const uploadReq = {
                 textbookKey,
                 catalogKey,
+                sourceId: props.sourceId ?? "", // 如果是变式题会有来源题目id
                 questionType: questionTypeVal,
                 tags: tagVal,
                 rateVal: rateVal.toString(),
@@ -152,7 +180,13 @@ export default function Add(props: any) {
                     "catalogKey": catalogKey,
                 }).then(readRes => {
                     props.setDrawerTitle("详情");
-                    props.setDrawerContent(<Info questionInfo={readRes}/>);
+                    props.setDrawerContent(<Info
+                        questionInfo={readRes}
+                        questionTypeList={questionTypeList}
+                        tagList={tagList}
+                        catalogList={catalogList}
+                        knowledgeInfoList={knowledgeInfoList}
+                    />);
 
                     props.setRefreshListNum(StringUtil.getRandomInt());
                 }).catch(err => {
@@ -178,7 +212,7 @@ export default function Add(props: any) {
         <Row>
             <Col span={24}>
                 {/* 面包屑快速导航 */}
-                {CommonBreadcrumb(subjectList, catalogList, textbookKey, catalogKey)}
+                {CommonBreadcrumb(subjectList, catalogList, knowledgeInfoList, pathname, catalogKey)}
             </Col>
         </Row>
 
@@ -242,7 +276,10 @@ export default function Add(props: any) {
             <Splitter.Panel defaultSize="50%">
                 <Watermark content="预览区域 仅展示效果">
                     <div className="min-h-[1900px] p-5">
-                        {openPreviewArea ? <Preview questionInfo={questionInfo}/> : ""}
+                        {openPreviewArea ? <Preview
+                            questionInfo={questionInfo}
+                            questionTypeList={questionTypeList}
+                            tagList={tagList}/> : ""}
                     </div>
                 </Watermark>
             </Splitter.Panel>

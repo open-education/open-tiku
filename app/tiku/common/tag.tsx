@@ -7,6 +7,9 @@ import {httpClient} from "~/util/http";
 import Info from "~/tiku/info";
 import Edit from "~/tiku/edit";
 import type {EditQuestionTags} from "~/type/edit";
+import Add from "~/tiku/add";
+import type {Catalog} from "~/type/catalog";
+import type {KnowledgeInfo} from "~/type/knowledge-info";
 
 // 题目列表展示标签样式 题目类型在前 标签依次在后
 export function CommonTag(
@@ -36,7 +39,12 @@ export function CommonQuickJumpTag(
     questionInfo: QuestionInfo,
     setOpenDrawer: Dispatch<SetStateAction<boolean>>,
     setDrawerTitle: Dispatch<SetStateAction<string>>,
-    setDrawerContent: Dispatch<SetStateAction<React.ReactNode>>
+    setDrawerContent: Dispatch<SetStateAction<React.ReactNode>>,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
+    questionTypeList: QuestionType[],
+    tagList: TagInfo[],
+    catalogList: Catalog[],
+    knowledgeInfoList: KnowledgeInfo[],
 ) {
     const quickToolList = [
         {
@@ -73,6 +81,11 @@ export function CommonQuickJumpTag(
             "key": "7",
             "value": "edit",
             "label": "编辑"
+        },
+        {
+            "key": "8",
+            "value": "similar",
+            "label": "添加变式题"
         },
     ];
     const onClickQuickTool = ({target: {value}}: RadioChangeEvent) => {
@@ -112,6 +125,24 @@ export function CommonQuickJumpTag(
                 title = "编辑";
                 break;
             }
+            case "similar": {
+                title = "添加变式题";
+                setOpenDrawer(true);
+                setDrawerTitle(title);
+                setDrawerContent(<Add
+                    setDrawerTitle={setDrawerTitle}
+                    setDrawerContent={setDrawerContent}
+                    setRefreshListNum={setRefreshListNum}
+                    sourceId={questionInfo.id}
+                    questionTypeList={questionTypeList}
+                    tagList={tagList}
+                    textbookKey={questionInfo.textbookKey}
+                    catalogKey={questionInfo.catalogKey}
+                    catalogList={catalogList}
+                    knowledgeInfoList={knowledgeInfoList}
+                />);
+                return;
+            }
             default: {
                 return;
             }
@@ -127,9 +158,22 @@ export function CommonQuickJumpTag(
             setOpenDrawer(true);
             setDrawerTitle(title);
             if (value === "edit") {
-                setDrawerContent(<Edit questionInfo={res}/>);
+                setDrawerContent(<Edit
+                    questionInfo={res}
+                    catalogKey={questionInfo.catalogKey}
+                    questionTypeList={questionTypeList}
+                    tagList={tagList}
+                    catalogList={catalogList}
+                    knowledgeInfoList={knowledgeInfoList}
+                />);
             } else {
-                setDrawerContent(<Info questionInfo={res}/>);
+                setDrawerContent(<Info
+                    questionInfo={res}
+                    questionTypeList={questionTypeList}
+                    tagList={tagList}
+                    catalogList={catalogList}
+                    knowledgeInfoList={knowledgeInfoList}
+                />);
             }
         })
     }

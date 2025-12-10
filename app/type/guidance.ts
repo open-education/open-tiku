@@ -4,23 +4,30 @@ export interface Textbook {
     order: number,
 }
 
+export interface Knowledge {
+    label: string,
+    key: string,
+    order: number,
+}
+
 export interface Stage {
     label: string,
     key: string,
     order: number,
-    children?: Textbook[],
-}
-
-export interface Subject {
-    label: string,
-    key: string,
-    order: number,
-    children?: Stage[],
+    textbookList?: Textbook[],
+    knowledgeList?: Knowledge[],
 }
 
 export interface Publisher {
     label: string,
     key: string,
     order: number,
-    children?: Subject[],
+    children?: Stage[],
+}
+
+export interface Subject {
+    label: string,
+    key: string,
+    order: number,
+    children?: Publisher[],
 }

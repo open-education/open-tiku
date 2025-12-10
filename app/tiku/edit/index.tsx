@@ -1,6 +1,6 @@
 // 题目编辑主页
 import React, {useEffect, useState} from "react";
-import {useOutletContext} from "react-router-dom";
+import {useLocation, useOutletContext} from "react-router-dom";
 import type {TiKuIndexContext} from "~/type/context";
 import {Button, Col, Flex, Row, Splitter, type UploadFile, Watermark} from "antd";
 import {CommonBreadcrumb} from "~/tiku/common/breadcrumb";
@@ -18,18 +18,19 @@ import {EditAnalyzeInfoStyle} from "~/tiku/common/analyze";
 import {EditProcessInfoStyle} from "~/tiku/common/process";
 import {EditRemarkInfoStyle} from "~/tiku/common/remark";
 import {UploadImageStyle} from "~/tiku/common/upload-image";
+import {StringUtil} from "~/util/string";
 
 export default function Edit(props: any) {
-    const {
-        textbookKey,
-        catalogKey,
-        subjectList,
-        catalogList,
-        questionTypeList,
-        tagList
-    } = useOutletContext<TiKuIndexContext>();
+    const {subjectList} = useOutletContext<TiKuIndexContext>();
+
+    const location = useLocation();
+    const pathname = StringUtil.getLastPart(location.pathname, "/");
 
     const reqQuestionInfo: QuestionInfo = props.questionInfo;
+    const questionTypeList = props.questionTypeList ?? [];
+    const tagList = props.tagList ?? [];
+    const catalogList = props.catalogList ?? [];
+    const knowledgeInfoList = props.knowledgeInfoList ?? [];
 
     // 题目类型
     const [questionTypeVal, setQuestionTypeVal] = useState<string>(reqQuestionInfo.questionType);
@@ -50,21 +51,21 @@ export default function Edit(props: any) {
                 name: imageNames[i],
                 status: "done",
                 uid: i.toString(),
-                url: `/api/file/read/${textbookKey}/${catalogKey}/${imageNames[i]}`
+                url: `/api/file/read/${reqQuestionInfo.textbookKey}/${reqQuestionInfo.catalogKey}/${imageNames[i]}`
             });
         }
         return imageFiles;
     }
 
     const [imageFileList, setImageFileList] = useState<UploadFile[]>(getImageFileList(reqQuestionInfo.imageNames ?? []));
-    const [showImageVal, setShowImageVal] = useState(reqQuestionInfo.showImageVal ?? "0");
+    const [showImageVal, setShowImageVal] = useState<string>(reqQuestionInfo.showImageVal ?? "0");
 
     const [aVal, setAVal] = useState<string>(reqQuestionInfo.aVal ?? "");
     const [bVal, setBVal] = useState<string>(reqQuestionInfo.bVal ?? "");
     const [cVal, setCVal] = useState<string>(reqQuestionInfo.cVal ?? "");
     const [dVal, setDVal] = useState<string>(reqQuestionInfo.dVal ?? "");
     const [eVal, setEVal] = useState<string>(reqQuestionInfo.eVal ?? "");
-    const [showSelectVal, setShowSelectVal] = useState(reqQuestionInfo.showSelectVal ?? "1");
+    const [showSelectVal, setShowSelectVal] = useState<string>(reqQuestionInfo.showSelectVal ?? "1");
 
     const [answerVal, setAnswerVal] = useState<string>(reqQuestionInfo.answerVal ?? "");
 
@@ -96,11 +97,35 @@ export default function Edit(props: any) {
         setAnalyzeVal(reqQuestionInfo.analyzeVal ?? "");
         setProcessVal(reqQuestionInfo.processVal ?? "");
         setRemarkVal(reqQuestionInfo.remarkVal ?? "");
+
+        setOpenEditPreviewArea(false);
     }, [reqQuestionInfo]);
 
     // 生成预览对象
-    const [openEditPreviewArea, setOpenEditPreviewArea] = useState(false);
-    let [editPreviewQuestionInfo, setEditPreviewQuestionInfo] = useState({});
+    const [openEditPreviewArea, setOpenEditPreviewArea] = useState<boolean>(false);
+    let [editPreviewQuestionInfo, setEditPreviewQuestionInfo] = useState<QuestionInfo>({
+        aVal: "",
+        analyzeVal: "",
+        answerVal: "",
+        bVal: "",
+        cVal: "",
+        catalogKey: "",
+        dVal: "",
+        eVal: "",
+        id: "",
+        imageNames: [],
+        knowledgeVal: "",
+        mentionVal: "",
+        processVal: "",
+        questionType: "",
+        rateVal: "",
+        remarkVal: "",
+        showImageVal: "",
+        showSelectVal: "",
+        tags: [],
+        textbookKey: "",
+        titleVal: ""
+    });
     // 点击生成题目样式预览
     const onToEditPreview = () => {
         const imageFileNames: string[] = [];
@@ -110,8 +135,8 @@ export default function Edit(props: any) {
 
         let previewQuestionInfo: QuestionInfo = {
             id: "",
-            textbookKey: textbookKey,
-            catalogKey: catalogKey,
+            textbookKey: reqQuestionInfo.textbookKey,
+            catalogKey: reqQuestionInfo.catalogKey,
             questionType: questionTypeVal,
             tags: tagListVal,
             rateVal: rateVal.toString(),
@@ -139,7 +164,7 @@ export default function Edit(props: any) {
         <Row>
             <Col span={24}>
                 {/* 面包屑快速导航 */}
-                {CommonBreadcrumb(subjectList, catalogList, textbookKey, catalogKey)}
+                {CommonBreadcrumb(subjectList, catalogList, knowledgeInfoList, pathname, reqQuestionInfo.catalogKey)}
             </Col>
         </Row>
 
@@ -180,7 +205,7 @@ export default function Edit(props: any) {
                 {EditMentionInfoStyle(mentionVal, setMentionVal, reqQuestionInfo)}
 
                 {/* image */}
-                {UploadImageStyle(textbookKey, catalogKey, imageFileList, setImageFileList, showImageVal, setShowImageVal, reqQuestionInfo.id)}
+                {UploadImageStyle(reqQuestionInfo.textbookKey, reqQuestionInfo.catalogKey, imageFileList, setImageFileList, showImageVal, setShowImageVal, reqQuestionInfo.id)}
 
                 {/* select */}
                 {EditSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal, reqQuestionInfo)}
@@ -204,7 +229,10 @@ export default function Edit(props: any) {
             <Splitter.Panel defaultSize="50%">
                 <Watermark content="预览区域 仅展示效果">
                     <div className="min-h-[1900px] p-5">
-                        {openEditPreviewArea ? <Preview questionInfo={editPreviewQuestionInfo}/> : ""}
+                        {openEditPreviewArea ? <Preview
+                            questionInfo={editPreviewQuestionInfo}
+                            questionTypeList={questionTypeList}
+                            tagList={tagList}/> : ""}
                     </div>
                 </Watermark>
             </Splitter.Panel>

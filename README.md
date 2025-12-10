@@ -2,6 +2,10 @@
 
 ## 项目
 
+项目使用的是 [React Router](https://reactrouter.com/) 框架.
+
+前端 UI 组件库使用的是 [Ant Design](https://ant.design/index-cn/).
+
 ### 安装
 
 安装依赖和配置后端 nginx 代理
