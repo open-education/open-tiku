@@ -1,5 +1,7 @@
 # 开放题库
 
+前端项目代码库.
+
 ## 项目
 
 项目使用的是 [React Router](https://reactrouter.com/) 框架.
@@ -69,6 +71,32 @@ VITE_API_BASE_URL=http://192.168.19.191:9010/api
 
 ### 开发环境
 
+使用 [Express.js](https://expressjs.com/) 来运行服务, 详情查看 [server.js](server.js) 文件内容, 内部区分了开发和生产环境.
+
 ```bash
 npm run dev
 ```
+
+#### 打包
+
+部署需要先使用 [build.sh](build.sh) 脚本来打包, 打包后的目标文件 存储在 target 目录中, 打包完毕后将该压缩包上传至代码仓库 Releases 处管理即可
+
+其中 package.json server.js 两个文件一起进行了打包, deploy.sh 第一次需要手动上传至服务器, 后续有变更需要重新上传
+
+#### 部署
+
+目前需要手动登陆至服务器进行部署, 部署脚本见 [deploy.sh](deploy.sh) 内容说明
+
+```
+sh build.sh
+```
+
+部署命令如:
+
+```
+sh deploy.sh start -v v0.0.1-beta
+```
+
+其中可以指定端口, 通常默认配置的端口号已经进行了 nginx 配置, 如果变更需要调整 nginx 配置内容. 
+
+不指定版本号时认为已经存在目标文件, 否则会从 github 重新下载该版本文件来执行新的部署
