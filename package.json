@@ -5,7 +5,6 @@
   "scripts": {
     "build": "react-router build",
     "dev": "node server.js",
-    "start": "NODE_ENV=production node server.js",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {

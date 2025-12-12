@@ -104,7 +104,7 @@ sh build.sh
 ```
 #!/bin/sh
 
-export NODE_EN=production
+export NODE_ENV=production
 export PORT=8082
 ```
 
