@@ -67,6 +67,14 @@ server {
 VITE_API_BASE_URL=http://192.168.19.191:9010/api
 ```
 
+线上配置是
+
+```
+VITE_API_BASE_URL=/api
+```
+
+具体配置可以查看请求的路径来修正
+
 这里的 /api 对应 nginx 中的转发路由前缀
 
 ### 开发环境
@@ -91,10 +99,19 @@ npm run dev
 sh build.sh
 ```
 
+因为 node 环境变量的原因, 部署时需要提供一个环境变量, 比如当前目录下 .env 文件，内容类似如下
+
+```
+#!/bin/sh
+
+export NODE_EN=production
+export PORT=8082
+```
+
 部署命令如:
 
 ```
-sh deploy.sh start -v v0.0.1-beta
+source .env && sh deploy.sh start -v v0.0.1-beta
 ```
 
 其中可以指定端口, 通常默认配置的端口号已经进行了 nginx 配置, 如果变更需要调整 nginx 配置内容. 

@@ -5,7 +5,6 @@ set -e
 # 配置
 BUILD_DIR="build"
 APP_NAME="open-tiku"
-PORT=8081
 LOG_DIR="log"
 PID_FILE="${APP_NAME}.pid"
 
@@ -21,7 +20,6 @@ show_help() {
     echo ""
     echo "选项:"
     echo "  --version <版本号>  指定部署版本, 版本号为空或者不提供直接操作现有文件, 如需下载文件请提供对应的版本号"
-    echo "  --port <端口>       指定 port 参数 (默认: $PORT)"
     echo "  --help             显示帮助信息"
     echo ""
     echo "示例:"
@@ -216,13 +214,11 @@ start_app() {
     _log_file="$LOG_DIR/${APP_NAME}_$(date '+%Y%m%d_%H%M%S').log"
 
     # 启动, 导出环境变量->server.js
-    export NODE_ENV="production"
-    export PORT="${PORT}"
     echo "启动命令: node server.js, 不使用 npm run start 否则无法管理两个进程id, 直接用 node 启动即可"
     echo "日志文件: $_log_file"
 
     # 使用 nohup 启动
-    nohup "node server.js" > "$_log_file" 2>&1 &
+    nohup node server.js > "$_log_file" 2>&1 &
     _app_pid=$!
 
     # 保存 PID
@@ -284,10 +280,6 @@ while [ $# -gt 0 ]; do
         start|stop|restart|status)
             ACTION="$1"
             shift
-            ;;
-        -p|--port)
-            PORT="$2"
-            shift 2
             ;;
         -v|--version)
             VERSION="$2"
