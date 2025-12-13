@@ -53,31 +53,6 @@ export function CommonQuickJumpTag(
             "label": "详情"
         },
         {
-            "key": "2",
-            "value": "answer",
-            "label": "答案"
-        },
-        {
-            "key": "3",
-            "value": "knowledge",
-            "label": "知识点"
-        },
-        {
-            "key": "4",
-            "value": "analyze",
-            "label": "解题分析"
-        },
-        {
-            "key": "5",
-            "value": "process",
-            "label": "解题过程"
-        },
-        {
-            "key": "6",
-            "value": "remark",
-            "label": "备注"
-        },
-        {
             "key": "7",
             "value": "edit",
             "label": "编辑"
@@ -94,31 +69,6 @@ export function CommonQuickJumpTag(
         switch (value) {
             case "info": {
                 title = "详情";
-                break;
-            }
-            case "answer": {
-                title = "答案";
-                extList.push("answer")
-                break;
-            }
-            case "knowledge": {
-                title = "知识点";
-                extList.push("knowledge")
-                break;
-            }
-            case "analyze": {
-                title = "解题分析";
-                extList.push("analyze")
-                break;
-            }
-            case "process": {
-                title = "解题过程";
-                extList.push("process")
-                break;
-            }
-            case "remark": {
-                title = "备注";
-                extList.push("remark")
                 break;
             }
             case "edit": {

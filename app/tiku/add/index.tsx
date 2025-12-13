@@ -10,7 +10,7 @@ import type {TiKuIndexContext} from "~/type/context";
 import {useLocation, useOutletContext} from "react-router-dom";
 import {httpClient} from "~/util/http";
 import Info from "~/tiku/info";
-import {StringUtil} from "~/util/string";
+import {StringUtil, StringValidator} from "~/util/string";
 import {AddQuestionTypeStyle} from "~/tiku/common/question-type";
 import {AddTagStyle} from "~/tiku/common/tag";
 import {AddRateInfoStyle} from "~/tiku/common/rate";
@@ -138,6 +138,11 @@ export default function Add(props: any) {
 
     // 保存
     const onToUploadQuestion = () => {
+        // 题目不能为空
+        if (!StringValidator.isNonWhitespace(titleVal)) {
+            return false;
+        }
+
         if (confirm("确定要上传题目吗？")) {
             setUploadQuestionIng(<Alert title="题目上传中..." type="info"/>);
 

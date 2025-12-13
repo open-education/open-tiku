@@ -114,7 +114,7 @@ export default function Index(props: any) {
                     zIndex: 10,
                 }}
             >
-                <div style={{color: "white", marginRight: "10px"}}>开放题库</div>
+                <div className="text-white mr-[10px] text-[16px]"><NavLink to="/">开放题库</NavLink></div>
                 <Menu
                     theme="dark"
                     selectedKeys={[selectMenuKey]}

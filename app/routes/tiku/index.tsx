@@ -1,7 +1,7 @@
 import type {Route} from "./+types/index";
 import Index from "~/tiku";
 import {httpClient} from "~/util/http";
-import type {Publisher} from "~/type/guidance";
+import type {Subject} from "~/type/guidance";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -11,7 +11,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function clientLoader({params}: Route.ClientLoaderArgs) {
-    const guidance = await httpClient.get<Publisher[]>("/config/get-guidance");
+    const guidance = await httpClient.get<Subject[]>("/config/get-guidance");
 
     return {guidance: guidance};
 }
