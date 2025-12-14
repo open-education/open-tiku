@@ -1,8 +1,9 @@
-import React, {useCallback} from "react";
+import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
 import type {QuestionInfo} from "~/type/question";
 import type {EditProcess} from "~/type/edit";
 import {httpClient} from "~/util/http";
+import {StringUtil} from "~/util/string";
 
 const {TextArea} = Input;
 
@@ -47,6 +48,7 @@ export function EditProcessInfoStyle(
     processVal: string,
     setProcessVal: React.Dispatch<React.SetStateAction<string>>,
     questionInfo: QuestionInfo,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
     const [showEditProcess, setShowEditProcess] = React.useState(false);
     const [showEditProcessErr, setShowEditProcessErr] = React.useState<React.ReactNode>("");
@@ -61,6 +63,7 @@ export function EditProcessInfoStyle(
         httpClient.post("/edit/process", req).then((res) => {
             setShowEditProcessErr("");
             setShowEditProcess(false);
+            setRefreshListNum(StringUtil.getRandomInt());
         }).catch((err) => {
             setShowEditProcessErr(<div>
                 <Alert title={`更新解题过程出错: ${err.message}`} type="error"/>

@@ -1,11 +1,11 @@
 // 选项风格
 import type {QuestionInfo} from "~/type/question";
 import {Alert, Button, Col, Flex, Radio, type RadioChangeEvent, Row} from "antd";
-import {StringValidator} from "~/util/string";
+import {StringUtil, StringValidator} from "~/util/string";
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import React from "react";
+import React, {type Dispatch, type SetStateAction} from "react";
 import {AddAInfoStyle, EditAInfoStyle} from "~/tiku/common/a";
 import {AddBInfoStyle, EditBInfoStyle} from "~/tiku/common/b";
 import {AddCInfoStyle, EditCInfoStyle} from "~/tiku/common/c";
@@ -202,6 +202,7 @@ export function EditSelectTopStyle(
     showSelectVal: string,
     setShowSelectVal: React.Dispatch<React.SetStateAction<string>>,
     questionInfo: QuestionInfo,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
     const [showEditSelect, setShowEditSelect] = React.useState(false);
     const [showEditSelectErr, setShowEditSelectErr] = React.useState<React.ReactNode>("");
@@ -216,6 +217,7 @@ export function EditSelectTopStyle(
         httpClient.post("/edit/select", req).then((res) => {
             setShowEditSelectErr("");
             setShowEditSelect(false);
+            setRefreshListNum(StringUtil.getRandomInt());
         }).catch((err) => {
             setShowEditSelectErr(<div>
                 <Alert title={`更新选项样式出错: ${err.message}`} type={"error"}/>
@@ -288,13 +290,14 @@ export function EditSelectStyle(
     showSelectVal: string,
     setShowSelectVal: React.Dispatch<React.SetStateAction<string>>,
     questionInfo: QuestionInfo,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
     return <div>
-        {EditSelectTopStyle(showSelectVal, setShowSelectVal, questionInfo)}
-        {EditAInfoStyle(aVal, setAVal, questionInfo)}
-        {EditBInfoStyle(bVal, setBVal, questionInfo)}
-        {EditCInfoStyle(cVal, setCVal, questionInfo)}
-        {EditDInfoStyle(dVal, setDVal, questionInfo)}
-        {EditEInfoStyle(eVal, setEVal, questionInfo)}
+        {EditSelectTopStyle(showSelectVal, setShowSelectVal, questionInfo, setRefreshListNum)}
+        {EditAInfoStyle(aVal, setAVal, questionInfo, setRefreshListNum)}
+        {EditBInfoStyle(bVal, setBVal, questionInfo, setRefreshListNum)}
+        {EditCInfoStyle(cVal, setCVal, questionInfo, setRefreshListNum)}
+        {EditDInfoStyle(dVal, setDVal, questionInfo, setRefreshListNum)}
+        {EditEInfoStyle(eVal, setEVal, questionInfo, setRefreshListNum)}
     </div>
 }

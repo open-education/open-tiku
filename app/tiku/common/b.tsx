@@ -1,8 +1,9 @@
-import React, {useCallback} from "react";
+import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
 import type {EditB} from "~/type/edit";
 import {httpClient} from "~/util/http";
 import type {QuestionInfo} from "~/type/question";
+import {StringUtil} from "~/util/string";
 
 const {TextArea} = Input;
 
@@ -46,7 +47,8 @@ export function AddBInfoStyle(
 export function EditBInfoStyle(
     bVal: string,
     setBVal: React.Dispatch<React.SetStateAction<string>>,
-    questionInfo: QuestionInfo
+    questionInfo: QuestionInfo,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
 
     const [showEditB, setShowEditB] = React.useState(false);
@@ -62,6 +64,7 @@ export function EditBInfoStyle(
         httpClient.post("/edit/b", req).then(res => {
             setShowEditBErr("");
             setShowEditB(false);
+            setRefreshListNum(StringUtil.getRandomInt());
         }).catch(err => {
             setShowEditBErr(<div>
                 <Alert title={`更新B选项出错: ${err.message}`} type={"error"}/>

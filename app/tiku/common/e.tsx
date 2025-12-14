@@ -1,8 +1,9 @@
-import React, {useCallback} from "react";
+import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
 import type {EditE} from "~/type/edit";
 import type {QuestionInfo} from "~/type/question";
 import {httpClient} from "~/util/http";
+import {StringUtil} from "~/util/string";
 
 const {TextArea} = Input;
 
@@ -46,7 +47,8 @@ export function AddEInfoStyle(
 export function EditEInfoStyle(
     eVal: string,
     setEVal: React.Dispatch<React.SetStateAction<string>>,
-    questionInfo: QuestionInfo
+    questionInfo: QuestionInfo,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
     const [showEditE, setShowEditE] = React.useState(false);
     const [showEditEErr, setShowEditEErr] = React.useState<React.ReactNode>("");
@@ -61,6 +63,7 @@ export function EditEInfoStyle(
         httpClient.post("/edit/e", req).then((res) => {
             setShowEditEErr("");
             setShowEditE(false);
+            setRefreshListNum(StringUtil.getRandomInt());
         }).catch((err) => {
             setShowEditEErr(<div>
                 <Alert title={`更新E选项出错: ${err.message}`} type={"error"}/>

@@ -52,8 +52,8 @@ fi
 rm -rf ${TARGET_DIR}
 mkdir ${TARGET_DIR}
 
-echo "创建压缩包, 同时拷贝文件 package.json server.js 一并打包, 部署时需要执行安装依赖..."
-tar -czf "$PACKAGE_NAME" "$BUILD_DIR" package.json server.js
+echo "创建压缩包, 同时拷贝文件 package.json server.js package-lock.json 一并打包, 部署时需要执行安装依赖..."
+tar -czf "$PACKAGE_NAME" "$BUILD_DIR" package.json package-lock.json server.js
 echo "======================"
 echo "压缩包: $PACKAGE_NAME"
 echo "大小: $(du -h "$PACKAGE_NAME" | cut -f1)"

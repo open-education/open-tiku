@@ -1,8 +1,9 @@
 import type {QuestionInfo, QuestionType} from "~/type/question";
-import React, {useState} from "react";
+import React, {type Dispatch, type SetStateAction, useState} from "react";
 import {Alert, Button, Col, Flex, Radio, type RadioChangeEvent, Row} from "antd";
 import {httpClient} from "~/util/http";
 import type {EditQuestionType} from "~/type/edit";
+import {StringUtil} from "~/util/string";
 
 // 题目问题类型基础样式
 export function EditQuestionType(
@@ -65,6 +66,7 @@ export function EditQuestionTypeStyle(
     questionTypeVal: string,
     setQuestionTypeVal: React.Dispatch<React.SetStateAction<string>>,
     questionInfo: QuestionInfo,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
     const [showEditQuestionTypeErr, setShowEditQuestionTypeErr] = useState<React.ReactNode>("");
     const [showEditQuestionType, setShowEditQuestionType] = useState<boolean>(false);
@@ -79,6 +81,7 @@ export function EditQuestionTypeStyle(
         httpClient.post("/edit/question-type", req).then(res => {
             setShowEditQuestionTypeErr("");
             setShowEditQuestionType(false);
+            setRefreshListNum(StringUtil.getRandomInt());
         }).catch(err => {
             setShowEditQuestionTypeErr(<div>
                 <Alert title={`更新问题类型出错: ${err.message}`} type={"error"}/>

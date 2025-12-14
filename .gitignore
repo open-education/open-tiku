@@ -8,12 +8,6 @@ target
 # Node
 /node_modules/
 
-# 暂时不关心版本
-package-lock.json
-
-# 配置个人开发环境, 但是 .env.production 不要修改, 除非你确认要调整服务器的路径
-.env.development
-
 # React Router
 /.react-router/
 /build/

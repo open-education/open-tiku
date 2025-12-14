@@ -1,8 +1,9 @@
-import React, {useCallback} from "react";
+import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
 import type {EditC} from "~/type/edit";
 import type {QuestionInfo} from "~/type/question";
 import {httpClient} from "~/util/http";
+import {StringUtil} from "~/util/string";
 
 const {TextArea} = Input;
 
@@ -46,7 +47,8 @@ export function AddCInfoStyle(
 export function EditCInfoStyle(
     cVal: string,
     setCVal: React.Dispatch<React.SetStateAction<string>>,
-    questionInfo: QuestionInfo
+    questionInfo: QuestionInfo,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
     const [showEditC, setShowEditC] = React.useState(false);
     const [showEditCErr, setShowEditCErr] = React.useState<React.ReactNode>("");
@@ -61,6 +63,7 @@ export function EditCInfoStyle(
         httpClient.post("/edit/c", req).then((res) => {
             setShowEditCErr("");
             setShowEditC(false);
+            setRefreshListNum(StringUtil.getRandomInt());
         }).catch((err) => {
             setShowEditCErr(<div>
                 <Alert title={`更新C选项出错: ${err.message}`} type={"error"}/>

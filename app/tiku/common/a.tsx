@@ -1,8 +1,9 @@
-import React, {useCallback} from "react";
+import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
 import type {EditA} from "~/type/edit";
 import type {QuestionInfo} from "~/type/question";
 import {httpClient} from "~/util/http";
+import {StringUtil} from "~/util/string";
 
 const {TextArea} = Input;
 
@@ -47,6 +48,7 @@ export function EditAInfoStyle(
     aVal: string,
     setAVal: React.Dispatch<React.SetStateAction<string>>,
     questionInfo: QuestionInfo,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
     const [showEditA, setShowEditA] = React.useState(false);
     const [showEditAErr, setShowEditAErr] = React.useState<React.ReactNode>("");
@@ -61,6 +63,7 @@ export function EditAInfoStyle(
         httpClient.post("/edit/a", req).then(res => {
             setShowEditAErr("");
             setShowEditA(false);
+            setRefreshListNum(StringUtil.getRandomInt());
         }).catch(err => {
             setShowEditAErr(<div>
                 <Alert title={`更新A选项出错: ${err.message}`} type={"error"}/>

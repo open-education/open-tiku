@@ -1,8 +1,9 @@
-import React, {useCallback} from "react";
+import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
 import type {QuestionInfo} from "~/type/question";
 import type {EditRemark} from "~/type/edit";
 import {httpClient} from "~/util/http";
+import {StringUtil} from "~/util/string";
 
 const {TextArea} = Input;
 
@@ -47,6 +48,7 @@ export function EditRemarkInfoStyle(
     remarkVal: string,
     setRemarkVal: React.Dispatch<React.SetStateAction<string>>,
     questionInfo: QuestionInfo,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
     const [showEditRemark, setShowEditRemark] = React.useState(false);
     const [showEditRemarkErr, setShowEditRemarkErr] = React.useState<React.ReactNode>("");
@@ -61,6 +63,7 @@ export function EditRemarkInfoStyle(
         httpClient.post("/edit/remark", req).then((res) => {
             setShowEditRemarkErr("");
             setShowEditRemark(false);
+            setRefreshListNum(StringUtil.getRandomInt());
         }).catch((err) => {
             setShowEditRemarkErr(<div>
                 <Alert title={`更新备注出错: ${err.message}`} type="error"/>

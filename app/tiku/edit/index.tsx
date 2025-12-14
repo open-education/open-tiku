@@ -1,5 +1,5 @@
 // 题目编辑主页
-import React, {useEffect, useState} from "react";
+import React, {type Dispatch, type SetStateAction, useEffect, useState} from "react";
 import {useLocation, useOutletContext} from "react-router-dom";
 import type {TiKuIndexContext} from "~/type/context";
 import {Button, Col, Flex, Row, Splitter, type UploadFile, Watermark} from "antd";
@@ -22,6 +22,8 @@ import {StringUtil} from "~/util/string";
 
 export default function Edit(props: any) {
     const {subjectList} = useOutletContext<TiKuIndexContext>();
+
+    const setRefreshListNum: Dispatch<SetStateAction<number>> = props.setRefreshListNum;
 
     const location = useLocation();
     const pathname = StringUtil.getLastPart(location.pathname, "/");
@@ -190,40 +192,40 @@ export default function Edit(props: any) {
         >
             <Splitter.Panel defaultSize={"50%"}>
                 {/* 题目类型 */}
-                {EditQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal, reqQuestionInfo)}
+                {EditQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal, reqQuestionInfo, setRefreshListNum)}
 
                 {/* 题目标签 */}
-                {EditTagStyle(tagList, tagListVal, setTagListVal, reqQuestionInfo)}
+                {EditTagStyle(tagList, tagListVal, setTagListVal, reqQuestionInfo, setRefreshListNum)}
 
                 {/* rate */}
-                {EditRateInfoStyle(rateVal, setRateVal, reqQuestionInfo)}
+                {EditRateInfoStyle(rateVal, setRateVal, reqQuestionInfo, setRefreshListNum)}
 
                 {/* title */}
-                {EditTitleInfoStyle(titleVal, setTitleVal, reqQuestionInfo)}
+                {EditTitleInfoStyle(titleVal, setTitleVal, reqQuestionInfo, setRefreshListNum)}
 
                 {/* mention */}
-                {EditMentionInfoStyle(mentionVal, setMentionVal, reqQuestionInfo)}
+                {EditMentionInfoStyle(mentionVal, setMentionVal, reqQuestionInfo, setRefreshListNum)}
 
                 {/* image */}
                 {UploadImageStyle(reqQuestionInfo.textbookKey, reqQuestionInfo.catalogKey, imageFileList, setImageFileList, showImageVal, setShowImageVal, reqQuestionInfo.id)}
 
                 {/* select */}
-                {EditSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal, reqQuestionInfo)}
+                {EditSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal, reqQuestionInfo, setRefreshListNum)}
 
                 {/* answer */}
-                {EditAnswerInfoStyle(answerVal, setAnswerVal, reqQuestionInfo)}
+                {EditAnswerInfoStyle(answerVal, setAnswerVal, reqQuestionInfo, setRefreshListNum)}
 
                 {/* knowledge */}
-                {EditKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal, reqQuestionInfo)}
+                {EditKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal, reqQuestionInfo, setRefreshListNum)}
 
                 {/* analyze */}
-                {EditAnalyzeInfoStyle(analyzeVal, setAnalyzeVal, reqQuestionInfo)}
+                {EditAnalyzeInfoStyle(analyzeVal, setAnalyzeVal, reqQuestionInfo, setRefreshListNum)}
 
                 {/* process */}
-                {EditProcessInfoStyle(processVal, setProcessVal, reqQuestionInfo)}
+                {EditProcessInfoStyle(processVal, setProcessVal, reqQuestionInfo, setRefreshListNum)}
 
                 {/* remark */}
-                {EditRemarkInfoStyle(remarkVal, setRemarkVal, reqQuestionInfo)}
+                {EditRemarkInfoStyle(remarkVal, setRemarkVal, reqQuestionInfo, setRefreshListNum)}
             </Splitter.Panel>
 
             <Splitter.Panel defaultSize="50%">

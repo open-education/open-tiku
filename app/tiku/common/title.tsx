@@ -1,12 +1,12 @@
 // 题目和图片风格
 import type {QuestionInfo} from "~/type/question";
-import {StringValidator} from "~/util/string";
+import {StringUtil, StringValidator} from "~/util/string";
 import {Alert, Button, Col, Flex, Image, Input, Row} from "antd";
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
 import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
-import React, {useCallback} from "react";
+import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import type {EditTitle} from "~/type/edit";
 import {httpClient} from "~/util/http";
 
@@ -98,7 +98,8 @@ export function AddTitleInfoStyle(
 export function EditTitleInfoStyle(
     titleVal: string,
     setTitleVal: React.Dispatch<React.SetStateAction<string>>,
-    questionInfo: QuestionInfo
+    questionInfo: QuestionInfo,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
 
     const [showEditTitle, setShowEditTitle] = React.useState(false);
@@ -114,6 +115,7 @@ export function EditTitleInfoStyle(
         httpClient.post("/edit/title", req).then(res => {
             setShowEditTitleErr("");
             setShowEditTitle(false);
+            setRefreshListNum(StringUtil.getRandomInt());
         }).catch(err => {
             setShowEditTitleErr(<div>
                 <Alert title={`更新标题出错: ${err.message}`} type={"error"}/>

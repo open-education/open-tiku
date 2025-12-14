@@ -1,8 +1,9 @@
-import React from "react";
+import React, {type Dispatch, type SetStateAction} from "react";
 import {Alert, Button, Col, Flex, Rate, Row} from "antd";
 import type {EditRate} from "~/type/edit";
 import type {QuestionInfo} from "~/type/question";
 import {httpClient} from "~/util/http";
+import {StringUtil} from "~/util/string";
 
 export function RateInfo(
     rateVal: number,
@@ -36,7 +37,8 @@ export function AddRateInfoStyle(
 export function EditRateInfoStyle(
     rateVal: number,
     setRateVal: React.Dispatch<React.SetStateAction<number>>,
-    questionInfo: QuestionInfo
+    questionInfo: QuestionInfo,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
     const [showEditRate, setShowEditRate] = React.useState(false);
     const [showEditRateErr, setShowEditRateErr] = React.useState<React.ReactNode>("");
@@ -51,6 +53,7 @@ export function EditRateInfoStyle(
         httpClient.post("/edit/rate", req).then(res => {
             setShowEditRateErr("")
             setShowEditRate(false);
+            setRefreshListNum(StringUtil.getRandomInt());
         }).catch(err => {
             setShowEditRateErr(<div>
                 <Alert title={`更新评分出错: ${err.message}`} type={"error"}/>

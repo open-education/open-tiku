@@ -3,6 +3,8 @@ import express from "express";
 
 const app = express();
 
+console.log("process.env.NODE_ENV: ", process.env.NODE_ENV)
+
 if (process.env.NODE_ENV === "production") {
     console.log("start NODE_ENV=production");
 
@@ -31,7 +33,7 @@ const host = process.env.HOST || '0.0.0.0';
 
 const server = app.listen(port, host, () => {
     console.log(`
-Server running in ${process.env.NODE_ENV || 'production'} mode
+Server running in ${process.env.NODE_ENV} mode
 Listening on https://${host}:${port}
 Process ID: ${process.pid}
   `);

@@ -1,8 +1,9 @@
-import React, {useCallback} from "react";
+import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
 import type {EditMention} from "~/type/edit";
 import type {QuestionInfo} from "~/type/question";
 import {httpClient} from "~/util/http";
+import {StringUtil} from "~/util/string";
 
 const {TextArea} = Input;
 
@@ -47,6 +48,7 @@ export function EditMentionInfoStyle(
     mentionVal: string,
     setMentionVal: React.Dispatch<React.SetStateAction<string>>,
     questionInfo: QuestionInfo,
+    setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
     const [showEditMention, setShowEditMention] = React.useState(false);
     const [showEditMentionErr, setShowEditMentionErr] = React.useState<React.ReactNode>("");
@@ -61,6 +63,7 @@ export function EditMentionInfoStyle(
         httpClient.post("/edit/mention", req).then(res => {
             setShowEditMentionErr("");
             setShowEditMention(false);
+            setRefreshListNum(StringUtil.getRandomInt());
         }).catch(err => {
             setShowEditMentionErr(<div>
                 <Alert title={`更新标记出错: ${err.message}`} type="error"/>

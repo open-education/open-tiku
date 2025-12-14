@@ -33,7 +33,7 @@ npm i
 ```
 server {
     # 监听端口
-    listen 9010;
+    listen 80;
     server_name localhost;
     
     # 字符集
@@ -42,13 +42,13 @@ server {
     # 前端静态文件服务 (React/Vue)
     location / {
         # 代理到前端开发服务器
-        proxy_pass http://localhost:5173;
+        proxy_pass http://127.0.0.1:5173;
     }
 
     # API 代理到后端服务
     location /api/ {
         # 代理到后端服务器
-	    proxy_pass http://localhost:8080/;
+	    proxy_pass http://127.0.0.1:8082/;
     }
 
     # 错误页面
@@ -59,12 +59,14 @@ server {
 }
 ```
 
+vite 的代理如果能配置浏览器和前端的服务端正确解析也可以不用依赖 nginx 来转发
+
 ##### 3 后端接口配置
 
 目前后端接口配置在 .env.development 文件中，形如:
 
 ```
-VITE_API_BASE_URL=http://192.168.19.191:9010/api
+VITE_API_BASE_URL=http://127.0.0.1/api
 ```
 
 线上配置是
