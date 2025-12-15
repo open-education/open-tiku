@@ -10,10 +10,11 @@ import {
     type UploadFile,
     type UploadProps
 } from "antd";
-import React, {useState} from "react";
+import React, {type Dispatch, type SetStateAction, useState} from "react";
 import {httpClient} from "~/util/http";
 import {PlusOutlined} from "@ant-design/icons";
 import type {DeleteImageReq} from "~/type/image";
+import {StringUtil} from "~/util/string";
 
 export function UploadImageStyle(
     textbookKey: string,
@@ -22,7 +23,8 @@ export function UploadImageStyle(
     setImageFileList: React.Dispatch<React.SetStateAction<UploadFile[]>>,
     showImageVal: string,
     setShowImageVal: React.Dispatch<React.SetStateAction<string>>,
-    id?: string
+    id?: string,
+    setRefreshListNum?: Dispatch<SetStateAction<number>>,
 ) {
     type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -85,6 +87,9 @@ export function UploadImageStyle(
             }
 
             httpClient.post<boolean>(`/file/delete`, reqDel).then(res => {
+                if (id && id.length > 0 && setRefreshListNum) {
+                    setRefreshListNum(StringUtil.getRandomInt());
+                }
                 return true;
             }).catch(err => {
                 return false;

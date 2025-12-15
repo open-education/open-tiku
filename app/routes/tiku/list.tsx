@@ -6,6 +6,9 @@ import type {QuestionType} from "~/type/question";
 import type {TagInfo} from "~/type/tag";
 import type {Knowledge} from "~/type/guidance";
 import type {Catalog} from "~/type/catalog";
+import {Spin} from "antd";
+import {LoadingOutlined} from "@ant-design/icons";
+import React from "react";
 
 export async function clientLoader({params}: Route.ClientLoaderArgs) {
     const key = params.key ?? "";
@@ -37,6 +40,11 @@ export async function clientLoader({params}: Route.ClientLoaderArgs) {
         catalogList: catalogList,
         knowledgeInfoList: knowledgeInfoList
     };
+}
+
+// HydrateFallback is rendered while the client loader is running
+export function HydrateFallback() {
+    return <Spin indicator={<LoadingOutlined spin/>}/>
 }
 
 export default function Home({loaderData}: Route.ComponentProps) {

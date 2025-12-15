@@ -1,10 +1,11 @@
-import {Layout, Menu, type MenuProps, theme} from "antd";
+import {Layout, Menu, type MenuProps, Spin, theme} from "antd";
 import type {QuestionType} from "~/type/question";
 import type {TagInfo} from "~/type/tag";
 import type {Catalog} from "~/type/catalog";
 import type {KnowledgeInfo} from "~/type/knowledge-info";
 import {ListInfo} from "~/tiku/list/list";
-import React from "react";
+import React, {useEffect, useState} from "react";
+import {LoadingOutlined} from "@ant-design/icons";
 
 const {Content, Sider} = Layout;
 
@@ -38,23 +39,67 @@ export default function Index(props: any) {
         setLeftMenuItemSelectKeyPath(e.keyPath);
     }
 
-    return <div>
-        {/* 中间内容体 */}
-        <Layout>
-            {/* 左边侧边栏目录 */}
-            <Sider width={400} style={{background: "blue"}}>
+    const useIsMobile = (breakpoint = 768) => {
+        // 默认值（SSR 时使用）
+        const [isMobile, setIsMobile] = useState(false);
+        const [isSSR, setIsSSR] = useState(true);
+
+        useEffect(() => {
+            setIsSSR(false);
+            const checkMobile = () => {
+                setIsMobile(window.innerWidth < breakpoint);
+            };
+
+            checkMobile();
+            window.addEventListener('resize', checkMobile);
+
+            return () => window.removeEventListener('resize', checkMobile);
+        }, [breakpoint]);
+
+        return {isMobile, isSSR};
+    };
+
+    const showLeftOrTopMenu = () => {
+        const {isMobile, isSSR} = useIsMobile();
+        if (isSSR) {
+            return <Spin indicator={<LoadingOutlined spin/>}/>
+        }
+
+        if (isMobile) {
+            return <Layout style={{padding: "0 12px 12px"}}>
                 <Menu
                     mode="inline"
                     defaultSelectedKeys={[leftMenuItemSelectKey]}
                     defaultOpenKeys={[]}
-                    style={{height: "100%", borderInlineEnd: 0}}
+                    style={{borderInlineEnd: 0}}
                     onClick={onLeftMenuClick}
                     items={getLeftMenuItem()}
                 />
-            </Sider>
+            </Layout>
+        }
+        return <Sider
+            theme={"light"}
+            width={"21%"}
+        >
+            <Menu
+                mode="inline"
+                defaultSelectedKeys={[leftMenuItemSelectKey]}
+                defaultOpenKeys={[]}
+                style={{borderInlineEnd: 0}}
+                onClick={onLeftMenuClick}
+                items={getLeftMenuItem()}
+            />
+        </Sider>
+    }
+
+    return <div>
+        {/* 中间内容体 */}
+        <Layout>
+            {/* 显示左侧或者顶部二级菜单, PC端显示左侧菜单, 其它端直接顶部显示即可 */}
+            {showLeftOrTopMenu()}
 
             {/* 右边主体内容部分 */}
-            <Layout style={{padding: "0 24px 24px", height: "100%"}}>
+            <Layout style={{padding: "0 12px 12px", minHeight: "100vh"}}>
                 {/* 导航对应的实际内容 */}
                 <Content
                     style={{

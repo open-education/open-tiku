@@ -207,7 +207,7 @@ export default function Edit(props: any) {
                 {EditMentionInfoStyle(mentionVal, setMentionVal, reqQuestionInfo, setRefreshListNum)}
 
                 {/* image */}
-                {UploadImageStyle(reqQuestionInfo.textbookKey, reqQuestionInfo.catalogKey, imageFileList, setImageFileList, showImageVal, setShowImageVal, reqQuestionInfo.id)}
+                {UploadImageStyle(reqQuestionInfo.textbookKey, reqQuestionInfo.catalogKey, imageFileList, setImageFileList, showImageVal, setShowImageVal, reqQuestionInfo.id, setRefreshListNum)}
 
                 {/* select */}
                 {EditSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal, reqQuestionInfo, setRefreshListNum)}
