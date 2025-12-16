@@ -39,7 +39,8 @@ export function ListInfo(props: any) {
     }
     return ["", ""];
   }
-  const [textbookKey, catalogKey] = getTextbookKeyAndCatalogKey();
+  const [initTextbookKey, _] = getTextbookKeyAndCatalogKey();
+  const [textbookKey, setTextbookKey] = React.useState<string>(initTextbookKey);
 
   const catalogDict: HierarchicalDict<Catalog> = props.catalogDict ?? new HierarchicalDict<Catalog>([]);
   const knowledgeInfoDict: HierarchicalDict<KnowledgeInfo> = props.knowledgeInfoDict ?? new HierarchicalDict<KnowledgeInfo>([]);
@@ -65,7 +66,10 @@ export function ListInfo(props: any) {
   });
 
   useEffect(() => {
-    if (catalogKey.length == 0 || textbookKey.length == 0) {
+    const [initTextbookKey, catalogKey] = getTextbookKeyAndCatalogKey();
+    setTextbookKey(initTextbookKey);
+
+    if (catalogKey.length == 0 || initTextbookKey.length == 0) {
       return;
     }
 
