@@ -23,271 +23,275 @@ import {AddKnowledgeInfoStyle} from "~/tiku/common/knowledge";
 import {AddAnalyzeInfoStyle} from "~/tiku/common/analyze";
 import {AddProcessInfoStyle} from "~/tiku/common/process";
 import {AddRemarkInfoStyle} from "~/tiku/common/remark";
+import {HierarchicalDict} from "~/util/hierarchical-dict";
+import type {Catalog} from "~/type/catalog";
+import type {KnowledgeInfo} from "~/type/knowledge-info";
 
 export default function Add(props: any) {
-    const {
-        subjectList,
-    } = useOutletContext<TiKuIndexContext>();
+  const {
+    subjectDict,
+  } = useOutletContext<TiKuIndexContext>();
 
-    const location = useLocation();
-    const pathname = StringUtil.getLastPart(location.pathname, "/");
+  const location = useLocation();
+  const pathname = StringUtil.getLastPart(location.pathname, "/");
 
-    const textbookKey = props.textbookKey ?? "";
-    const catalogKey = props.catalogKey ?? "";
-    const questionTypeList = props.questionTypeList ?? [];
-    const tagList = props.tagList ?? [];
-    const catalogList = props.catalogList ?? [];
-    const knowledgeInfoList = props.knowledgeInfoList ?? [];
+  const textbookKey = props.textbookKey ?? "";
+  const catalogKey = props.catalogKey ?? "";
+  const catalogKeyPath = props.catalogKeyPath ?? [];
+  const questionTypeList = props.questionTypeList ?? [];
+  const tagList = props.tagList ?? [];
+  const catalogDict: HierarchicalDict<Catalog> = props.catalogDict ?? new HierarchicalDict<Catalog>([]);
+  const knowledgeInfoDict: HierarchicalDict<KnowledgeInfo> = props.knowledgeInfoDict ?? new HierarchicalDict<KnowledgeInfo>([]);
 
-    const questionType = questionTypeList.length > 0 ? questionTypeList[0] : "";
-    const [questionTypeVal, setQuestionTypeVal] = useState<string>(questionType.key);
+  const questionType = questionTypeList.length > 0 ? questionTypeList[0] : "";
+  const [questionTypeVal, setQuestionTypeVal] = useState<string>(questionType.key);
 
-    const tag = tagList.length > 0 ? tagList[0] : "";
-    const [tagVal, setTagVal] = useState<string[]>([tag.key]);
+  const tag = tagList.length > 0 ? tagList[0] : "";
+  const [tagVal, setTagVal] = useState<string[]>([tag.key]);
 
-    const [rateVal, setRateVal] = useState<number>(0);
+  const [rateVal, setRateVal] = useState<number>(0);
 
-    const [titleVal, setTitleVal] = useState<string>("");
+  const [titleVal, setTitleVal] = useState<string>("");
 
-    const [mentionVal, setMentionVal] = useState<string>("");
+  const [mentionVal, setMentionVal] = useState<string>("");
 
-    const [imageFileList, setImageFileList] = useState<UploadFile[]>([]);
-    const [showImageVal, setShowImageVal] = useState<string>("0");
+  const [imageFileList, setImageFileList] = useState<UploadFile[]>([]);
+  const [showImageVal, setShowImageVal] = useState<string>("0");
 
-    const [aVal, setAVal] = useState<string>("");
-    const [bVal, setBVal] = useState<string>("");
-    const [cVal, setCVal] = useState<string>("");
-    const [dVal, setDVal] = useState<string>("");
-    const [eVal, setEVal] = useState<string>("");
-    const [showSelectVal, setShowSelectVal] = useState<string>("1");
+  const [aVal, setAVal] = useState<string>("");
+  const [bVal, setBVal] = useState<string>("");
+  const [cVal, setCVal] = useState<string>("");
+  const [dVal, setDVal] = useState<string>("");
+  const [eVal, setEVal] = useState<string>("");
+  const [showSelectVal, setShowSelectVal] = useState<string>("1");
 
-    const [answerVal, setAnswerVal] = useState<string>("");
+  const [answerVal, setAnswerVal] = useState<string>("");
 
-    const [knowledgeVal, setKnowledgeVal] = useState<string>("");
+  const [knowledgeVal, setKnowledgeVal] = useState<string>("");
 
-    const [analyzeVal, setAnalyzeVal] = useState<string>("");
+  const [analyzeVal, setAnalyzeVal] = useState<string>("");
 
-    const [processVal, setProcessVal] = useState<string>("");
+  const [processVal, setProcessVal] = useState<string>("");
 
-    const [remarkVal, setRemarkVal] = useState<string>("");
+  const [remarkVal, setRemarkVal] = useState<string>("");
 
-    // 生成预览对象
-    const [openPreviewArea, setOpenPreviewArea] = useState<boolean>(false);
-    let [questionInfo, setQuestionInfo] = useState<QuestionInfo>({
-        aVal: "",
-        analyzeVal: "",
-        answerVal: "",
-        bVal: "",
-        cVal: "",
-        catalogKey: "",
-        dVal: "",
-        eVal: "",
-        id: "",
-        imageNames: [],
-        knowledgeVal: "",
-        mentionVal: "",
-        processVal: "",
-        questionType: "",
-        rateVal: "",
-        remarkVal: "",
-        showImageVal: "",
-        showSelectVal: "",
-        tags: [],
-        textbookKey: "",
-        titleVal: ""
+  // 生成预览对象
+  const [openPreviewArea, setOpenPreviewArea] = useState<boolean>(false);
+  let [questionInfo, setQuestionInfo] = useState<QuestionInfo>({
+    aVal: "",
+    analyzeVal: "",
+    answerVal: "",
+    bVal: "",
+    cVal: "",
+    catalogKey: "",
+    dVal: "",
+    eVal: "",
+    id: "",
+    imageNames: [],
+    knowledgeVal: "",
+    mentionVal: "",
+    processVal: "",
+    questionType: "",
+    rateVal: "",
+    remarkVal: "",
+    showImageVal: "",
+    showSelectVal: "",
+    tags: [],
+    textbookKey: "",
+    titleVal: ""
+  });
+
+  // 点击生成题目样式预览
+  const onToPreview = () => {
+    const imageFileNames: string[] = [];
+    imageFileList.forEach((image) => {
+      imageFileNames.push(image.name);
     });
 
-    // 点击生成题目样式预览
-    const onToPreview = () => {
-        const imageFileNames: string[] = [];
-        imageFileList.forEach((image) => {
-            imageFileNames.push(image.name);
-        });
+    let previewQuestionInfo: QuestionInfo = {
+      id: "",
+      textbookKey: textbookKey,
+      catalogKey: catalogKey,
+      questionType: questionTypeVal,
+      tags: tagVal,
+      rateVal: rateVal.toString(),
+      titleVal: titleVal,
+      mentionVal: mentionVal,
+      imageNames: imageFileNames,
+      showImageVal: showImageVal,
+      aVal: aVal,
+      bVal: bVal,
+      cVal: cVal,
+      dVal: dVal,
+      eVal: eVal,
+      showSelectVal: showSelectVal,
+      answerVal: answerVal,
+      knowledgeVal: knowledgeVal,
+      analyzeVal: analyzeVal,
+      processVal: processVal,
+      remarkVal: remarkVal,
+    }
+    setOpenPreviewArea(true);
+    setQuestionInfo(previewQuestionInfo);
+  };
 
-        let previewQuestionInfo: QuestionInfo = {
-            id: "",
-            textbookKey: textbookKey,
-            catalogKey: catalogKey,
-            questionType: questionTypeVal,
-            tags: tagVal,
-            rateVal: rateVal.toString(),
-            titleVal: titleVal,
-            mentionVal: mentionVal,
-            imageNames: imageFileNames,
-            showImageVal: showImageVal,
-            aVal: aVal,
-            bVal: bVal,
-            cVal: cVal,
-            dVal: dVal,
-            eVal: eVal,
-            showSelectVal: showSelectVal,
-            answerVal: answerVal,
-            knowledgeVal: knowledgeVal,
-            analyzeVal: analyzeVal,
-            processVal: processVal,
-            remarkVal: remarkVal,
-        }
-        setOpenPreviewArea(true);
-        setQuestionInfo(previewQuestionInfo);
-    };
+  // Notice
+  const [uploadQuestionIng, setUploadQuestionIng] = useState<React.ReactNode>("");
+  const [uploadQuestionErr, setUploadQuestionErr] = useState<React.ReactNode>("");
+  const [reqQuestionInfoErr, setReqQuestionInfoErr] = useState<React.ReactNode>("");
 
-    // Notice
-    const [uploadQuestionIng, setUploadQuestionIng] = useState<React.ReactNode>("");
-    const [uploadQuestionErr, setUploadQuestionErr] = useState<React.ReactNode>("");
-    const [reqQuestionInfoErr, setReqQuestionInfoErr] = useState<React.ReactNode>("");
+  // 保存
+  const onToUploadQuestion = () => {
+    // 题目不能为空
+    if (!StringValidator.isNonWhitespace(titleVal)) {
+      return false;
+    }
 
-    // 保存
-    const onToUploadQuestion = () => {
-        // 题目不能为空
-        if (!StringValidator.isNonWhitespace(titleVal)) {
-            return false;
-        }
+    if (confirm("确定要上传题目吗？")) {
+      setUploadQuestionIng(<Alert title="题目上传中..." type="info"/>);
 
-        if (confirm("确定要上传题目吗？")) {
-            setUploadQuestionIng(<Alert title="题目上传中..." type="info"/>);
+      const imageFileNames: string[] = [];
+      imageFileList.forEach((image) => {
+        imageFileNames.push(image.name);
+      });
 
-            const imageFileNames: string[] = [];
-            imageFileList.forEach((image) => {
-                imageFileNames.push(image.name);
-            });
+      const uploadReq = {
+        textbookKey,
+        catalogKey,
+        sourceId: props.sourceId ?? "", // 如果是变式题会有来源题目id
+        questionType: questionTypeVal,
+        tags: tagVal,
+        rateVal: rateVal.toString(),
+        titleVal,
+        imageNames: imageFileNames,
+        mentionVal,
+        showImageVal,
+        aVal,
+        bVal,
+        cVal,
+        dVal,
+        eVal,
+        showSelectVal,
+        answerVal,
+        knowledgeVal,
+        analyzeVal,
+        processVal,
+        remarkVal,
+      }
 
-            const uploadReq = {
-                textbookKey,
-                catalogKey,
-                sourceId: props.sourceId ?? "", // 如果是变式题会有来源题目id
-                questionType: questionTypeVal,
-                tags: tagVal,
-                rateVal: rateVal.toString(),
-                titleVal,
-                imageNames: imageFileNames,
-                mentionVal,
-                showImageVal,
-                aVal,
-                bVal,
-                cVal,
-                dVal,
-                eVal,
-                showSelectVal,
-                answerVal,
-                knowledgeVal,
-                analyzeVal,
-                processVal,
-                remarkVal,
-            }
+      httpClient.post<QuestionUploadResp>("/question/upload", uploadReq).then(uploadRes => {
+        setUploadQuestionIng("");
 
-            httpClient.post<QuestionUploadResp>("/question/upload", uploadReq).then(uploadRes => {
-                setUploadQuestionIng("");
+        // 获取题目全部信息
+        httpClient.post<QuestionInfo>(`/question/info`, {
+          "id": uploadRes.id,
+          "textbookKey": textbookKey,
+          "catalogKey": catalogKey,
+        }).then(readRes => {
+          props.setDrawerTitle("详情");
+          props.setDrawerContent(<Info
+            questionInfo={readRes}
+            questionTypeList={questionTypeList}
+            tagList={tagList}
+            catalogDict={catalogDict}
+            knowledgeInfoDict={knowledgeInfoDict}
+          />);
 
-                // 获取题目全部信息
-                httpClient.post<QuestionInfo>(`/question/info`, {
-                    "id": uploadRes.id,
-                    "textbookKey": textbookKey,
-                    "catalogKey": catalogKey,
-                }).then(readRes => {
-                    props.setDrawerTitle("详情");
-                    props.setDrawerContent(<Info
-                        questionInfo={readRes}
-                        questionTypeList={questionTypeList}
-                        tagList={tagList}
-                        catalogList={catalogList}
-                        knowledgeInfoList={knowledgeInfoList}
-                    />);
+          props.setRefreshListNum(StringUtil.getRandomInt());
+        }).catch(err => {
+          setReqQuestionInfoErr(<Alert
+            title="Error"
+            description={`读取题目详情出错: ${err.message}`}
+            type="error"
+            showIcon
+          />)
+        })
+      }).catch(err => {
+        setUploadQuestionErr(<Alert
+          title="Error"
+          description={`上传题目出错: ${err.message}`}
+          type="error"
+          showIcon
+        />);
+      });
+    }
+  };
 
-                    props.setRefreshListNum(StringUtil.getRandomInt());
-                }).catch(err => {
-                    setReqQuestionInfoErr(<Alert
-                        title="Error"
-                        description={`读取题目详情出错: ${err.message}`}
-                        type="error"
-                        showIcon
-                    />)
-                })
-            }).catch(err => {
-                setUploadQuestionErr(<Alert
-                    title="Error"
-                    description={`上传题目出错: ${err.message}`}
-                    type="error"
-                    showIcon
-                />);
-            });
-        }
-    };
+  return <div>
+    <Row>
+      <Col span={24}>
+        {/* 面包屑快速导航 */}
+        {CommonBreadcrumb(subjectDict, catalogDict, knowledgeInfoDict, pathname, catalogKey, catalogKeyPath)}
+      </Col>
+    </Row>
 
-    return <div>
-        <Row>
-            <Col span={24}>
-                {/* 面包屑快速导航 */}
-                {CommonBreadcrumb(subjectList, catalogList, knowledgeInfoList, pathname, catalogKey)}
-            </Col>
-        </Row>
+    <Row gutter={[20, 20]}>
+      <Col span={24}>
+        {uploadQuestionIng}
+        {uploadQuestionErr}
+        {reqQuestionInfoErr}
+      </Col>
+    </Row>
 
-        <Row gutter={[20, 20]}>
-            <Col span={24}>
-                {uploadQuestionIng}
-                {uploadQuestionErr}
-                {reqQuestionInfoErr}
-            </Col>
-        </Row>
+    <Row style={{marginTop: "20px"}}>
+      <Col>
+        <Flex gap="small" wrap>
+          <Button type="dashed" onClick={onToPreview}>
+            预览
+          </Button>
+          <Button type="primary" onClick={onToUploadQuestion}>
+            保存
+          </Button>
+        </Flex>
+      </Col>
+    </Row>
 
-        <Row style={{marginTop: "20px"}}>
-            <Col>
-                <Flex gap="small" wrap>
-                    <Button type="dashed" onClick={onToPreview}>
-                        预览
-                    </Button>
-                    <Button type="primary" onClick={onToUploadQuestion}>
-                        保存
-                    </Button>
-                </Flex>
-            </Col>
-        </Row>
+    <Splitter style={{boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)", marginTop: "10px"}}>
+      <Splitter.Panel defaultSize={"50%"}>
+        <div className="p-2.5">
+          {AddQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal)}
+        </div>
+        <div className="p-2.5">
+          {AddTagStyle(tagList, tagVal, setTagVal)}
+        </div>
+        <div className="p-2.5">
+          {AddRateInfoStyle(rateVal, setRateVal)}
+        </div>
+        <div className="p-2.5">
+          {AddTitleInfoStyle(titleVal, setTitleVal)}
+        </div>
+        <div className="p-2.5">
+          {AddMentionInfoStyle(mentionVal, setMentionVal)}
+        </div>
+        {UploadImageStyle(textbookKey, catalogKey, imageFileList, setImageFileList, showImageVal, setShowImageVal)}
+        {AddSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal)}
+        <div className="p-2.5">
+          {AddAnswerInfoStyle(answerVal, setAnswerVal)}
+        </div>
+        <div className="p-2.5">
+          {AddKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal)}
+        </div>
+        <div className="p-2.5">
+          {AddAnalyzeInfoStyle(analyzeVal, setAnalyzeVal)}
+        </div>
+        <div className="p-2.5">
+          {AddProcessInfoStyle(processVal, setProcessVal)}
+        </div>
+        <div className="p-2.5">
+          {AddRemarkInfoStyle(remarkVal, setRemarkVal)}
+        </div>
+      </Splitter.Panel>
 
-        <Splitter style={{boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)", marginTop: "10px"}}>
-            <Splitter.Panel defaultSize={"50%"}>
-                <div className="p-2.5">
-                    {AddQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal)}
-                </div>
-                <div className="p-2.5">
-                    {AddTagStyle(tagList, tagVal, setTagVal)}
-                </div>
-                <div className="p-2.5">
-                    {AddRateInfoStyle(rateVal, setRateVal)}
-                </div>
-                <div className="p-2.5">
-                    {AddTitleInfoStyle(titleVal, setTitleVal)}
-                </div>
-                <div className="p-2.5">
-                    {AddMentionInfoStyle(mentionVal, setMentionVal)}
-                </div>
-                {UploadImageStyle(textbookKey, catalogKey, imageFileList, setImageFileList, showImageVal, setShowImageVal)}
-                {AddSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal)}
-                <div className="p-2.5">
-                    {AddAnswerInfoStyle(answerVal, setAnswerVal)}
-                </div>
-                <div className="p-2.5">
-                    {AddKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal)}
-                </div>
-                <div className="p-2.5">
-                    {AddAnalyzeInfoStyle(analyzeVal, setAnalyzeVal)}
-                </div>
-                <div className="p-2.5">
-                    {AddProcessInfoStyle(processVal, setProcessVal)}
-                </div>
-                <div className="p-2.5">
-                    {AddRemarkInfoStyle(remarkVal, setRemarkVal)}
-                </div>
-            </Splitter.Panel>
-
-            <Splitter.Panel defaultSize="50%">
-                <Watermark content="预览区域 仅展示效果">
-                    <div className="min-h-[1900px] p-5">
-                        {openPreviewArea ? <Preview
-                            questionInfo={questionInfo}
-                            questionTypeList={questionTypeList}
-                            tagList={tagList}/> : ""}
-                    </div>
-                </Watermark>
-            </Splitter.Panel>
-        </Splitter>
-    </div>
+      <Splitter.Panel defaultSize="50%">
+        <Watermark content="预览区域 仅展示效果">
+          <div className="min-h-[1900px] p-5">
+            {openPreviewArea ? <Preview
+              questionInfo={questionInfo}
+              questionTypeList={questionTypeList}
+              tagList={tagList}/> : ""}
+          </div>
+        </Watermark>
+      </Splitter.Panel>
+    </Splitter>
+  </div>
 }

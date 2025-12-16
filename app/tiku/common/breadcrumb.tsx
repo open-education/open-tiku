@@ -1,165 +1,128 @@
 import {Breadcrumb} from "antd";
 import React from "react";
-import type {Subject} from "~/type/guidance";
 import type {Catalog} from "~/type/catalog";
 import {StringConst, StringUtil, StringValidator} from "~/util/string";
 import type {BreadcrumbItemType} from "antd/lib/breadcrumb/Breadcrumb";
 import type {KnowledgeInfo} from "~/type/knowledge-info";
+import type {SubjectDict} from "~/util/subject-dict";
+import type {HierarchicalDict} from "~/util/hierarchical-dict";
 
-// todo 后面转为字典或者缓存后在优化
 // math_pep_junior_71_chapter 1_1_2
 export function CommonBreadcrumb(
-    subjectList: Subject[],
-    catalogList: Catalog[],
-    knowledgeInfoList: KnowledgeInfo[],
-    pathname: string,
-    leftMenuSelectKey: string,
+  subjectDict: SubjectDict,
+  catalogDict: HierarchicalDict<Catalog>,
+  knowledgeInfoDict: HierarchicalDict<KnowledgeInfo>,
+  pathname: string,
+  leftMenuSelectKey: string,
+  leftMenuSelectKeyPath: string[]
 ) {
-    let breadcrumbList: BreadcrumbItemType[] = []
+  let breadcrumbList: BreadcrumbItemType[] = []
 
-    // subjectList
-    for (let i = 0; i < subjectList.length; i++) {
-        const subject = subjectList[i];
-        if (StringValidator.startsWith(pathname, subject.key)) {
-            breadcrumbList.push({
-                title: subject.label
-            })
-            const publisherChildren = subject.children ?? [];
-            if (publisherChildren.length === 0) {
-                break;
-            }
-            for (let j = 0; j < publisherChildren.length; j++) {
-                const publisher = publisherChildren[j];
-                if (StringValidator.startsWith(pathname, publisher.key)) {
-                    breadcrumbList.push({
-                        title: publisher.label,
-                    })
-                    const stageChildren = publisher.children ?? [];
-                    if (stageChildren.length == 0) {
-                        break;
-                    }
-                    for (let k = 0; k < stageChildren.length; k++) {
-                        const stage = stageChildren[k];
-                        if (StringValidator.startsWith(pathname, stage.key)) {
-                            breadcrumbList.push({
-                                title: stage.label,
-                            })
-                            if (StringValidator.endsWith(pathname, StringConst.chapter)) {
-                                const textbooks = stage.textbookList ?? [];
-                                breadcrumbList.push({
-                                    title: StringConst.chapterDesc
-                                });
-                                for (let g = 0; g < textbooks.length; g++) {
-                                    const textbook = textbooks[g];
-                                    if (StringValidator.startsWith(pathname, textbook.key)) {
-                                        breadcrumbList.push({
-                                            title: textbook.label,
-                                        })
-                                        break;
-                                    }
-                                }
-                            } else if (StringValidator.endsWith(pathname, StringConst.knowledge)) {
-                                const knowledgeInfoList = stage.knowledgeList ?? [];
-                                for (let h = 0; h < knowledgeInfoList.length; h++) {
-                                    const knowledge = knowledgeInfoList[h];
-                                    breadcrumbList.push({
-                                        title: StringConst.knowledgeDesc
-                                    });
-                                    if (StringValidator.startsWith(pathname, knowledge.key)) {
-                                        breadcrumbList.push({
-                                            title: knowledge.label,
-                                        })
-                                        break;
-                                    }
-                                }
-                            }
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-            break;
-        }
+  // subjectDict
+  const prefixKey = StringValidator.endsWith(pathname, StringConst.chapter)
+    ? StringUtil.getFirstPart(pathname, StringConst.chapter)
+    : StringUtil.getFirstPart(pathname, StringConst.knowledge);
+  const [math, pep, junior, grade] = prefixKey.split('_');
+  const [subjectKey = "", publisherKey = "", stageKey = "", textbookOrKnowledgeKey = ""] = [
+    math,
+    `${math}_${pep}`,
+    `${math}_${pep}_${junior}`,
+    `${math}_${pep}_${junior}_${grade}`
+  ];
+
+  const subjectInfo = subjectDict.getSubject(subjectKey);
+  if (subjectInfo) {
+    breadcrumbList.push({
+      title: subjectInfo.label,
+    })
+  }
+  const publisherInfo = subjectDict.getPublisher(subjectKey, publisherKey);
+  if (publisherInfo) {
+    breadcrumbList.push({
+      title: publisherInfo.label,
+    })
+  }
+  const stageInfo = subjectDict.getStage(subjectKey, publisherKey, stageKey);
+  if (stageInfo) {
+    breadcrumbList.push({
+      title: stageInfo.label,
+    })
+  }
+  if (StringValidator.endsWith(pathname, StringConst.chapter)) {
+    breadcrumbList.push({
+      title: StringConst.chapterDesc,
+    });
+
+    const textbookInfo = subjectDict.getTextbook(subjectKey, publisherKey, stageKey, textbookOrKnowledgeKey);
+    if (textbookInfo) {
+      breadcrumbList.push({
+        title: textbookInfo.label,
+      })
     }
+  } else {
+    breadcrumbList.push({
+      title: StringConst.knowledgeDesc,
+    });
 
-    // catalogList
-    if (StringValidator.endsWith(pathname, StringConst.chapter) && catalogList.length > 0) {
-        for (let i = 0; i < catalogList.length; i++) {
-            const first = catalogList[i];
-            if (StringValidator.startsWith(leftMenuSelectKey, first.key)) {
-                breadcrumbList.push({
-                    title: first.label
-                });
-                const secondList = first.children ?? [];
-                if (secondList.length == 0) {
-                    break;
-                }
-                for (let j = 0; j < secondList.length; j++) {
-                    const second = secondList[j];
-                    if (StringValidator.startsWith(leftMenuSelectKey, second.key)) {
-                        breadcrumbList.push({
-                            title: second.label,
-                        })
-                        const thirdList = second.children ?? [];
-                        if (thirdList.length == 0) {
-                            break;
-                        }
-                        for (let j = 0; j < thirdList.length; j++) {
-                            const third = thirdList[j];
-                            if (StringValidator.startsWith(leftMenuSelectKey, third.key)) {
-                                breadcrumbList.push({
-                                    title: third.label,
-                                })
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-                break;
-            }
-        }
+    const knowledgeInfo = subjectDict.getKnowledge(subjectKey, publisherKey, stageKey, textbookOrKnowledgeKey);
+    if (knowledgeInfo) {
+      breadcrumbList.push({
+        title: knowledgeInfo.label,
+      })
     }
+  }
 
-    // knowledge
-    if (StringValidator.endsWith(pathname, StringConst.knowledge) && knowledgeInfoList.length > 0) {
-        for (let i = 0; i < knowledgeInfoList.length; i++) {
-            const first = knowledgeInfoList[i];
-            if (StringValidator.startsWith(leftMenuSelectKey, StringUtil.getLastPart(first.key))) {
-                breadcrumbList.push({
-                    title: first.label
-                });
-                const secondList = first.children ?? [];
-                if (secondList.length == 0) {
-                    break;
-                }
-                for (let j = 0; j < secondList.length; j++) {
-                    const second = secondList[j];
-                    if (StringValidator.startsWith(leftMenuSelectKey, second.key)) {
-                        breadcrumbList.push({
-                            title: second.label,
-                        })
-                        const thirdList = second.children ?? [];
-                        if (thirdList.length == 0) {
-                            break;
-                        }
-                        for (let j = 0; j < thirdList.length; j++) {
-                            const third = thirdList[j];
-                            if (StringValidator.startsWith(leftMenuSelectKey, third.key)) {
-                                breadcrumbList.push({
-                                    title: third.label,
-                                })
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-                break;
-            }
-        }
+  if (StringValidator.endsWith(pathname, StringConst.chapter)) {
+    const [first = "", second = "", third = ""] = leftMenuSelectKey.split('_');
+    const [firstKey, secondKey, thirdKey] = [
+      first,
+      `${first}_${second}`,
+      `${first}_${second}_${third}`
+    ];
+    fillCatalogOrKnowledgeInfo(breadcrumbList, catalogDict, firstKey, secondKey, thirdKey);
+  } else if (StringValidator.endsWith(pathname, StringConst.knowledge)) {
+    let firstKey = "", secondKey = "", thirdKey = "";
+    if (leftMenuSelectKeyPath.length == 3) {
+      firstKey = leftMenuSelectKeyPath[2];
+      secondKey = leftMenuSelectKeyPath[1];
+      thirdKey = leftMenuSelectKeyPath[0];
+    } else if (leftMenuSelectKeyPath.length == 2) {
+      firstKey = leftMenuSelectKeyPath[1];
+      secondKey = leftMenuSelectKeyPath[0];
+    } else if (leftMenuSelectKeyPath.length == 1) {
+      firstKey = leftMenuSelectKeyPath[0];
     }
-
+    fillCatalogOrKnowledgeInfo(breadcrumbList, knowledgeInfoDict, firstKey, secondKey, thirdKey);
+  } else {
     return <Breadcrumb items={breadcrumbList}/>
+  }
+
+  return <Breadcrumb items={breadcrumbList}/>
+}
+
+function fillCatalogOrKnowledgeInfo(
+  breadcrumbList: BreadcrumbItemType[],
+  commonDict: any,
+  firstKey: string,
+  secondKey: string,
+  thirdKey: string,
+) {
+  const firstInfo = commonDict.getFirst(firstKey);
+  if (firstInfo) {
+    breadcrumbList.push({
+      title: firstInfo.label,
+    });
+  }
+  const secondInfo = commonDict.getSecond(firstKey, secondKey);
+  if (secondInfo) {
+    breadcrumbList.push({
+      title: secondInfo.label,
+    });
+  }
+  const thirdInfo = commonDict.getThird(firstKey, secondKey, thirdKey);
+  if (thirdInfo) {
+    breadcrumbList.push({
+      title: thirdInfo.label,
+    });
+  }
 }

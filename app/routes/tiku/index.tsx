@@ -5,25 +5,29 @@ import type {Subject} from "~/type/guidance";
 import {LoadingOutlined} from "@ant-design/icons";
 import {Spin} from "antd";
 import React from "react";
+import {SubjectDict} from "~/util/subject-dict";
 
 export function meta({}: Route.MetaArgs) {
-    return [
-        {title: "开放题库"},
-        {name: "description", content: "教材章节, 知识点题库"},
-    ];
+  return [
+    {title: "开放题库"},
+    {name: "description", content: "教材章节, 知识点题库"},
+  ];
 }
 
 export async function clientLoader({params}: Route.ClientLoaderArgs) {
-    const guidance = await httpClient.get<Subject[]>("/config/get-guidance");
+  const guidance = await httpClient.get<Subject[]>("/config/get-guidance");
 
-    return {guidance: guidance};
+  // to Dict
+  const subjectDict = new SubjectDict(guidance);
+
+  return {guidance: guidance, subjectDict: subjectDict};
 }
 
 // HydrateFallback is rendered while the client loader is running
 export function HydrateFallback() {
-    return <Spin indicator={<LoadingOutlined spin/>}/>
+  return <Spin indicator={<LoadingOutlined spin/>}/>
 }
 
 export default function Home({loaderData}: Route.ComponentProps) {
-    return <Index guidance={loaderData.guidance}/>
+  return <Index guidance={loaderData.guidance} subjectDict={loaderData.subjectDict}/>
 }

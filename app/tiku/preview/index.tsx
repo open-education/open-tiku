@@ -12,143 +12,143 @@ import {CommonTitle} from "~/tiku/common/title";
 import {CommonSelect} from "~/tiku/common/select";
 
 export default function preview(props: any) {
-    const questionTypeList = props.questionTypeList ?? [];
-    const tagList = props.tagList ?? [];
-    const questionInfo: QuestionInfo = props.questionInfo ?? {};
+  const questionTypeList = props.questionTypeList ?? [];
+  const tagList = props.tagList ?? [];
+  const questionInfo: QuestionInfo = props.questionInfo ?? {};
 
-    return <div>
-        {/* 题型和标签 */}
-        {CommonTag(questionInfo, questionTypeList, tagList)}
+  return <div>
+    {/* 题型和标签 */}
+    {CommonTag(questionInfo, questionTypeList, tagList)}
 
-        <Divider
-            size="small"
-            variant="dashed"
-            style={{borderColor: "#7cb305"}}
-            dashed
-        />
+    <Divider
+      size="small"
+      variant="dashed"
+      style={{borderColor: "#7cb305"}}
+      dashed
+    />
 
-        {/* 题目标注和图片位置 */}
-        {CommonTitle(questionInfo)}
+    {/* 题目标注和图片位置 */}
+    {CommonTitle(questionInfo)}
 
-        {/* 选项 */}
-        {CommonSelect(questionInfo)}
+    {/* 选项 */}
+    {CommonSelect(questionInfo)}
 
-        <Divider
-            size="small"
-            variant="dashed"
-            titlePlacement="start"
-            style={{borderColor: "#7cb305"}}
-            dashed
-        >
-            参考答案
-        </Divider>
+    <Divider
+      size="small"
+      variant="dashed"
+      titlePlacement="start"
+      style={{borderColor: "#7cb305"}}
+      dashed
+    >
+      参考答案
+    </Divider>
 
-        {/* 参考答案 */}
-        <Row gutter={[10, 10]}>
-            <Col span={24}>
-                {
-                    StringValidator.isNonEmpty(questionInfo.answerVal) &&
-                    <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-                        {questionInfo.answerVal}
-                    </Markdown>
-                }
-            </Col>
-        </Row>
+    {/* 参考答案 */}
+    <Row gutter={[10, 10]}>
+      <Col span={24}>
+        {
+          StringValidator.isNonEmpty(questionInfo.answerVal) &&
+          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            {questionInfo.answerVal}
+          </Markdown>
+        }
+      </Col>
+    </Row>
 
-        <Divider
-            size="small"
-            variant="dashed"
-            titlePlacement="start"
-            style={{borderColor: "#7cb305"}}
-            dashed
-        >
-            知识点
-        </Divider>
+    <Divider
+      size="small"
+      variant="dashed"
+      titlePlacement="start"
+      style={{borderColor: "#7cb305"}}
+      dashed
+    >
+      知识点
+    </Divider>
 
-        {/* 知识点 */}
-        <Row gutter={[10, 10]}>
-            <Col span={24}>
-                {
-                    StringValidator.isNonEmpty(questionInfo.knowledgeVal) &&
-                    <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-                        {questionInfo.knowledgeVal}
-                    </Markdown>
-                }
-            </Col>
-        </Row>
+    {/* 知识点 */}
+    <Row gutter={[10, 10]}>
+      <Col span={24}>
+        {
+          StringValidator.isNonEmpty(questionInfo.knowledgeVal) &&
+          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            {questionInfo.knowledgeVal}
+          </Markdown>
+        }
+      </Col>
+    </Row>
 
-        <Divider
-            size="small"
-            variant="dashed"
-            titlePlacement="start"
-            style={{borderColor: "#7cb305"}}
-            dashed
-        >
-            解题分析
-        </Divider>
+    <Divider
+      size="small"
+      variant="dashed"
+      titlePlacement="start"
+      style={{borderColor: "#7cb305"}}
+      dashed
+    >
+      解题分析
+    </Divider>
 
-        {/* 解题分析 */}
-        <Row gutter={[10, 10]}>
-            <Col span={24}>
-                {
-                    StringValidator.isNonEmpty(questionInfo.analyzeVal) &&
-                    <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-                        {questionInfo.analyzeVal}
-                    </Markdown>
-                }
-            </Col>
-        </Row>
+    {/* 解题分析 */}
+    <Row gutter={[10, 10]}>
+      <Col span={24}>
+        {
+          StringValidator.isNonEmpty(questionInfo.analyzeVal) &&
+          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            {questionInfo.analyzeVal}
+          </Markdown>
+        }
+      </Col>
+    </Row>
 
-        <Divider
-            size="small"
-            variant="dashed"
-            titlePlacement="start"
-            style={{borderColor: "#7cb305"}}
-            dashed
-        >
-            解题过程
-        </Divider>
+    <Divider
+      size="small"
+      variant="dashed"
+      titlePlacement="start"
+      style={{borderColor: "#7cb305"}}
+      dashed
+    >
+      解题过程
+    </Divider>
 
-        {/* 解题过程 */}
-        <Row gutter={[10, 10]}>
-            <Col span={24}>
-                {
-                    StringValidator.isNonEmpty(questionInfo.processVal) &&
-                    <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-                        {questionInfo.processVal}
-                    </Markdown>
-                }
-            </Col>
-        </Row>
+    {/* 解题过程 */}
+    <Row gutter={[10, 10]}>
+      <Col span={24}>
+        {
+          StringValidator.isNonEmpty(questionInfo.processVal) &&
+          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            {questionInfo.processVal}
+          </Markdown>
+        }
+      </Col>
+    </Row>
 
-        <Divider
-            size="small"
-            variant="dashed"
-            titlePlacement="start"
-            style={{borderColor: "#7cb305"}}
-            dashed
-        >
-            备注
-        </Divider>
+    <Divider
+      size="small"
+      variant="dashed"
+      titlePlacement="start"
+      style={{borderColor: "#7cb305"}}
+      dashed
+    >
+      备注
+    </Divider>
 
-        {/* 备注 */}
-        <Row gutter={[10, 10]}>
-            <Col span={24}>
-                {
-                    StringValidator.isNonEmpty(questionInfo.remarkVal) &&
-                    <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-                        {questionInfo.remarkVal}
-                    </Markdown>
-                }
-            </Col>
-        </Row>
+    {/* 备注 */}
+    <Row gutter={[10, 10]}>
+      <Col span={24}>
+        {
+          StringValidator.isNonEmpty(questionInfo.remarkVal) &&
+          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            {questionInfo.remarkVal}
+          </Markdown>
+        }
+      </Col>
+    </Row>
 
-        <Divider
-            size="small"
-            variant="dashed"
-            titlePlacement="start"
-            style={{borderColor: "#7cb305"}}
-            dashed
-        />
-    </div>
+    <Divider
+      size="small"
+      variant="dashed"
+      titlePlacement="start"
+      style={{borderColor: "#7cb305"}}
+      dashed
+    />
+  </div>
 }

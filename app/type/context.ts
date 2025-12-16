@@ -1,5 +1,5 @@
-import type {Subject} from "~/type/guidance";
+import type {SubjectDict} from "~/util/subject-dict";
 
 export interface TiKuIndexContext {
-    subjectList: Subject[];
+  subjectDict: SubjectDict,
 }
