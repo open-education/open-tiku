@@ -61,6 +61,6 @@ export const StringConst = {
   knowledgeCatalogKeySep: "#",
 
   // 题目列表题型选择 全部 标识
-  listSelectAll: "listSelectAll",
+  listSelectAll: 0,
   listSelectAllDesc: "全部",
 }

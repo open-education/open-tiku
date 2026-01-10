@@ -1,15 +1,16 @@
-import type {QuestionInfo, QuestionType} from "~/type/question";
+import type {QuestionBaseInfo, QuestionBaseInfoResp, QuestionInfo_del, QuestionInfoResp} from "~/type/question";
 import React, {type Dispatch, type SetStateAction, useState} from "react";
 import {Alert, Button, Col, Flex, Radio, type RadioChangeEvent, Row} from "antd";
 import {httpClient} from "~/util/http";
 import type {EditQuestionType} from "~/type/edit";
 import {StringUtil} from "~/util/string";
+import type {TextbookOtherDict} from "~/type/textbook";
 
 // 题目问题类型基础样式
 export function EditQuestionType(
-  questionTypeList: QuestionType[] = [],
-  questionTypeVal: string,
-  setQuestionTypeVal: React.Dispatch<React.SetStateAction<string>>,
+  questionTypeList: TextbookOtherDict[] = [],
+  questionTypeVal: number,
+  setQuestionTypeVal: React.Dispatch<React.SetStateAction<number>>,
   setShowEditQuestionType?: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
   if (!questionTypeList.length) {
@@ -22,7 +23,7 @@ export function EditQuestionType(
     />
   }
   const onEditQuestionsChange = ({target: {value}}: RadioChangeEvent) => {
-    setQuestionTypeVal(value);
+    setQuestionTypeVal(Number(value));
     if (setShowEditQuestionType) {
       setShowEditQuestionType(true);
     }
@@ -35,8 +36,8 @@ export function EditQuestionType(
   >
     {questionTypeList.map(item => {
       return (
-        <Radio.Button key={item.key} value={item.key}>
-          {item.label}
+        <Radio.Button key={item.id} value={item.id}>
+          {item.itemValue}
         </Radio.Button>
       );
     })}
@@ -45,14 +46,14 @@ export function EditQuestionType(
 
 // 添加题目时题目类型样式
 export function AddQuestionTypeStyle(
-  questionTypeList: QuestionType[] = [],
-  questionTypeVal: string,
-  setQuestionTypeVal: React.Dispatch<React.SetStateAction<string>>,
+  questionTypeList: TextbookOtherDict[] = [],
+  questionTypeVal: number,
+  setQuestionTypeVal: React.Dispatch<React.SetStateAction<number>>,
   setShowEditQuestionType?: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
   return <Row gutter={[10, 10]}>
     <Col span={24}>
-      <div className="text-blue-700 text-[15px] mb-[10px] font-bold">题型</div>
+      <div className="text-blue-700 text-[15px] mb-2.5 font-bold">题型</div>
       <Flex vertical gap="middle">
         {EditQuestionType(questionTypeList, questionTypeVal, setQuestionTypeVal, setShowEditQuestionType)}
       </Flex>
@@ -62,31 +63,31 @@ export function AddQuestionTypeStyle(
 
 // 编辑题目时题目类型样式
 export function EditQuestionTypeStyle(
-  questionTypeList: QuestionType[] = [],
-  questionTypeVal: string,
-  setQuestionTypeVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionInfo,
+  questionTypeList: TextbookOtherDict[] = [],
+  questionTypeVal: number,
+  setQuestionTypeVal: React.Dispatch<React.SetStateAction<number>>,
+  questionInfo: QuestionBaseInfoResp,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showEditQuestionTypeErr, setShowEditQuestionTypeErr] = useState<React.ReactNode>("");
   const [showEditQuestionType, setShowEditQuestionType] = useState<boolean>(false);
 
   const updateQuestionType = () => {
-    const req: EditQuestionType = {
-      textbookKey: questionInfo.textbookKey,
-      catalogKey: questionInfo.catalogKey,
-      id: questionInfo.id,
-      questionType: questionTypeVal,
-    };
-    httpClient.post("/edit/question-type", req).then(res => {
-      setShowEditQuestionTypeErr("");
-      setShowEditQuestionType(false);
-      setRefreshListNum(StringUtil.getRandomInt());
-    }).catch(err => {
-      setShowEditQuestionTypeErr(<div>
-        <Alert title={`更新问题类型出错: ${err.message}`} type={"error"}/>
-      </div>);
-    })
+    // const req: EditQuestionType = {
+    //   textbookKey: questionInfo.textbookKey,
+    //   catalogKey: questionInfo.catalogKey,
+    //   id: questionInfo.id,
+    //   questionType: questionTypeVal.toString(),
+    // };
+    // httpClient.post("/edit/question-type", req).then(res => {
+    //   setShowEditQuestionTypeErr("");
+    //   setShowEditQuestionType(false);
+    //   setRefreshListNum(StringUtil.getRandomInt());
+    // }).catch(err => {
+    //   setShowEditQuestionTypeErr(<div>
+    //     <Alert title={`更新问题类型出错: ${err.message}`} type={"error"}/>
+    //   </div>);
+    // })
   }
 
   const showEditQuestionTypeArea = <div className="mt-2.5">

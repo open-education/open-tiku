@@ -17,13 +17,10 @@ import type {DeleteImageReq} from "~/type/image";
 import {StringUtil} from "~/util/string";
 
 export function UploadImageStyle(
-  textbookKey: string,
-  catalogKey: string,
+  questionCateId: number,
   imageFileList: UploadFile[],
   setImageFileList: React.Dispatch<React.SetStateAction<UploadFile[]>>,
-  showImageVal: string,
-  setShowImageVal: React.Dispatch<React.SetStateAction<string>>,
-  id?: string,
+  id?: number,
   setRefreshListNum?: Dispatch<SetStateAction<number>>,
 ) {
   type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
@@ -37,8 +34,8 @@ export function UploadImageStyle(
     });
 
   // 题目图片
-  let reqUploadUrl = `/api/file/upload?textbookKey=${textbookKey}&catalogKey=${catalogKey}`;
-  if (id && id.length > 0) {
+  let reqUploadUrl = `/api/file/upload?textbookKey=&catalogKey=${questionCateId}`;
+  if (id && id > 0) {
     reqUploadUrl += `&id=${id}`;
   }
 
@@ -78,16 +75,16 @@ export function UploadImageStyle(
   const handleImageDelete: UploadProps["onRemove"] = (info) => {
     if (confirm("确认删除吗?")) {
       let reqDel: DeleteImageReq = {
-        textbookKey: textbookKey,
-        catalogKey: catalogKey,
+        textbookKey: "",
+        catalogKey: "",
         filename: info.name,
       }
-      if (id && id.length > 0) {
-        reqDel.id = id;
+      if (id && id > 0) {
+        reqDel.id = id.toString();
       }
 
       httpClient.post<boolean>(`/file/delete`, reqDel).then(res => {
-        if (id && id.length > 0 && setRefreshListNum) {
+        if (id && id > 0 && setRefreshListNum) {
           setRefreshListNum(StringUtil.getRandomInt());
         }
         return true;
@@ -104,34 +101,12 @@ export function UploadImageStyle(
       <div style={{marginTop: 8}}>Upload</div>
     </button>
   );
-  const onShowImageChange = (e: RadioChangeEvent) => {
-    setShowImageVal(e.target.value);
-  };
 
   return <div>
     <div className="p-2.5">
       <Row gutter={[10, 10]}>
         <Col span={24}>
-          <div className="text-blue-700 text-[15px] mb-[10px] font-bold">图片</div>
-          <Flex vertical gap="small" justify={"right"}>
-            <Radio.Group
-              defaultValue={showImageVal}
-              buttonStyle="solid"
-              onChange={onShowImageChange}
-              block
-              options={[
-                {
-                  value: "0",
-                  label: "题目下边",
-                },
-                {
-                  value: "1",
-                  label: "题目右边",
-                },
-              ]}
-              optionType="button"
-            />
-          </Flex>
+          <div className="text-blue-700 text-[15px] mb-2.5 font-bold">图片</div>
         </Col>
       </Row>
     </div>

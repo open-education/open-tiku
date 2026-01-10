@@ -6,7 +6,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 
-import type {QuestionInfo, QuestionType} from "~/type/question";
+import type {QuestionInfoResp} from "~/type/question";
 import {StringUtil, StringValidator} from "~/util/string";
 import {CommonTag} from "~/tiku/common/tag";
 import {CommonTitle} from "~/tiku/common/title";
@@ -15,34 +15,29 @@ import {useLocation, useOutletContext} from "react-router-dom";
 import type {TiKuIndexContext} from "~/type/context";
 import {CommonBreadcrumb} from "~/tiku/common/breadcrumb";
 import React from "react";
-import type {Catalog} from "~/type/catalog";
-import type {TagInfo} from "~/type/tag";
-import {HierarchicalDict} from "~/util/hierarchical-dict";
-import type {KnowledgeInfo} from "~/type/knowledge-info";
+import type {Textbook, TextbookOtherDict} from "~/type/textbook";
 
+// 题目详情
 export default function Info(props: any) {
-  const {subjectDict} = useOutletContext<TiKuIndexContext>();
+  const {pathMap} = useOutletContext<TiKuIndexContext>();
   const location = useLocation();
   const pathname = StringUtil.getLastPart(location.pathname, "/");
 
-  const catalogDict: HierarchicalDict<Catalog> = props.catalogDict ?? new HierarchicalDict<Catalog>([]);
-  const knowledgeInfoDict: HierarchicalDict<KnowledgeInfo> = props.knowledgeInfoDict ?? new HierarchicalDict<KnowledgeInfo>([]);
-  const catalogKeyPath = props.catalogKeyPath ?? [];
-  const questionTypeList: QuestionType[] = props.questionTypeList ?? [];
-  const tagList: TagInfo[] = props.tagList ?? [];
-
-  const questionInfo: QuestionInfo = props.questionInfo;
+  const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
+  const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
+  const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? [];
+  const questionInfo: QuestionInfoResp = props.questionInfo;
 
   return <div>
     <Row gutter={[10, 10]}>
       <Col span={24}>
         {/* 面包屑快速导航 */}
-        {CommonBreadcrumb(subjectDict, catalogDict, knowledgeInfoDict, pathname, questionInfo.catalogKey, catalogKeyPath)}
+        {CommonBreadcrumb(pathMap, pathname, childPathMap, questionInfo.baseInfo.questionCateId)}
       </Col>
     </Row>
 
     {/* 题型和标签 */}
-    {CommonTag(questionInfo, questionTypeList, tagList)}
+    {CommonTag(questionInfo.baseInfo, questionTypeList, questionTagList)}
 
     <Divider
       size="small"
@@ -52,10 +47,10 @@ export default function Info(props: any) {
     />
 
     {/* 题目标注和图片位置 */}
-    {CommonTitle(questionInfo)}
+    {CommonTitle(questionInfo.baseInfo)}
 
     {/* 选项 */}
-    {CommonSelect(questionInfo)}
+    {CommonSelect(questionInfo.baseInfo)}
 
     <Divider
       size="small"
@@ -71,9 +66,9 @@ export default function Info(props: any) {
     <Row>
       <Col span={24}>
         {
-          StringValidator.isNonEmpty(questionInfo.answerVal) &&
+          StringValidator.isNonEmpty(questionInfo.extraInfo.answer) &&
           <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.answerVal}
+            {questionInfo.extraInfo.answer}
           </Markdown>
         }
       </Col>
@@ -93,9 +88,9 @@ export default function Info(props: any) {
     <Row>
       <Col span={24}>
         {
-          StringValidator.isNonEmpty(questionInfo.knowledgeVal) &&
+          StringValidator.isNonEmpty(questionInfo.extraInfo.knowledge) &&
           <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.knowledgeVal}
+            {questionInfo.extraInfo.knowledge}
           </Markdown>
         }
       </Col>
@@ -115,9 +110,9 @@ export default function Info(props: any) {
     <Row>
       <Col span={24}>
         {
-          StringValidator.isNonEmpty(questionInfo.analyzeVal) &&
+          StringValidator.isNonEmpty(questionInfo.extraInfo.analysis?.content) &&
           <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.analyzeVal}
+            {questionInfo.extraInfo.analysis?.content}
           </Markdown>
         }
       </Col>
@@ -137,9 +132,9 @@ export default function Info(props: any) {
     <Row>
       <Col span={24}>
         {
-          StringValidator.isNonEmpty(questionInfo.processVal) &&
+          StringValidator.isNonEmpty(questionInfo.extraInfo.process?.content) &&
           <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.processVal}
+            {questionInfo.extraInfo.process?.content}
           </Markdown>
         }
       </Col>
@@ -159,9 +154,9 @@ export default function Info(props: any) {
     <Row>
       <Col span={24}>
         {
-          StringValidator.isNonEmpty(questionInfo.remarkVal) &&
+          StringValidator.isNonEmpty(questionInfo.extraInfo.remark) &&
           <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.remarkVal}
+            {questionInfo.extraInfo.remark}
           </Markdown>
         }
       </Col>

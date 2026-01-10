@@ -2,7 +2,7 @@ import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
 import type {EditB} from "~/type/edit";
 import {httpClient} from "~/util/http";
-import type {QuestionInfo} from "~/type/question";
+import type {QuestionBaseInfoResp, QuestionInfo_del} from "~/type/question";
 import {StringUtil} from "~/util/string";
 
 const {TextArea} = Input;
@@ -24,7 +24,7 @@ export function BInfo(
 
   return <TextArea
     autoSize={{minRows: 2, maxRows: 5}}
-    placeholder="请输入B选项内容, 包括 B"
+    placeholder="请输入B选项内容"
     onChange={onEditBChange}
     name="B"
     value={bVal}
@@ -47,7 +47,7 @@ export function AddBInfoStyle(
 export function EditBInfoStyle(
   bVal: string,
   setBVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionInfo,
+  questionInfo: QuestionBaseInfoResp,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
 
@@ -55,21 +55,21 @@ export function EditBInfoStyle(
   const [showEditBErr, setShowEditBErr] = React.useState<React.ReactNode>("");
 
   const updateBVal = () => {
-    const req: EditB = {
-      textbookKey: questionInfo.textbookKey,
-      catalogKey: questionInfo.catalogKey,
-      id: questionInfo.id,
-      b: bVal,
-    }
-    httpClient.post("/edit/b", req).then(res => {
-      setShowEditBErr("");
-      setShowEditB(false);
-      setRefreshListNum(StringUtil.getRandomInt());
-    }).catch(err => {
-      setShowEditBErr(<div>
-        <Alert title={`更新B选项出错: ${err.message}`} type={"error"}/>
-      </div>);
-    })
+    // const req: EditB = {
+    //   textbookKey: questionInfo.textbookKey,
+    //   catalogKey: questionInfo.catalogKey,
+    //   id: questionInfo.id,
+    //   b: bVal,
+    // }
+    // httpClient.post("/edit/b", req).then(res => {
+    //   setShowEditBErr("");
+    //   setShowEditB(false);
+    //   setRefreshListNum(StringUtil.getRandomInt());
+    // }).catch(err => {
+    //   setShowEditBErr(<div>
+    //     <Alert title={`更新B选项出错: ${err.message}`} type={"error"}/>
+    //   </div>);
+    // })
   }
 
   const showEditBArea = <div className="mt-2.5">

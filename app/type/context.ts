@@ -1,5 +1,5 @@
-import type {SubjectDict} from "~/util/subject-dict";
+import type {Textbook} from "~/type/textbook";
 
 export interface TiKuIndexContext {
-  subjectDict: SubjectDict,
+  pathMap: Map<number, Textbook[]>,
 }

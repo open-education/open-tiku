@@ -6,7 +6,7 @@ import {Button, Col, Flex, Row, Splitter, type UploadFile, Watermark} from "antd
 import {CommonBreadcrumb} from "~/tiku/common/breadcrumb";
 import Preview from "~/tiku/preview";
 import {EditQuestionTypeStyle} from "~/tiku/common/question-type";
-import type {QuestionInfo} from "~/type/question";
+import type {Content, QuestionBaseInfo, QuestionInfoResp, QuestionOption} from "~/type/question";
 import {EditTagStyle} from "~/tiku/common/tag";
 import {EditRateInfoStyle} from "~/tiku/common/rate";
 import {EditTitleInfoStyle} from "~/tiku/common/title";
@@ -18,37 +18,34 @@ import {EditAnalyzeInfoStyle} from "~/tiku/common/analyze";
 import {EditProcessInfoStyle} from "~/tiku/common/process";
 import {EditRemarkInfoStyle} from "~/tiku/common/remark";
 import {UploadImageStyle} from "~/tiku/common/upload-image";
-import {StringUtil} from "~/util/string";
-import {HierarchicalDict} from "~/util/hierarchical-dict";
-import type {Catalog} from "~/type/catalog";
-import type {KnowledgeInfo} from "~/type/knowledge-info";
+import {StringUtil, StringValidator} from "~/util/string";
+import type {Textbook, TextbookOtherDict} from "~/type/textbook";
 
+// 编辑组件
 export default function Edit(props: any) {
-  const {subjectDict} = useOutletContext<TiKuIndexContext>();
+  const {pathMap} = useOutletContext<TiKuIndexContext>();
 
   const setRefreshListNum: Dispatch<SetStateAction<number>> = props.setRefreshListNum;
 
   const location = useLocation();
   const pathname = StringUtil.getLastPart(location.pathname, "/");
 
-  const reqQuestionInfo: QuestionInfo = props.questionInfo;
-  const questionTypeList = props.questionTypeList ?? [];
-  const tagList = props.tagList ?? [];
-  const catalogDict: HierarchicalDict<Catalog> = props.catalogDict ?? new HierarchicalDict<Catalog>([]);
-  const knowledgeInfoDict = props.knowledgeInfoDict ?? new HierarchicalDict<KnowledgeInfo>([]);
-  const catalogKeyPath = props.catalogKeyPath ?? [];
+  const reqQuestionInfo: QuestionInfoResp = props.questionInfo;
+  const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
+  const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
+  const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? [];
 
   // 题目类型
-  const [questionTypeVal, setQuestionTypeVal] = useState<string>(reqQuestionInfo.questionType);
+  const [questionTypeVal, setQuestionTypeVal] = useState<number>(reqQuestionInfo.baseInfo.questionTypeId);
 
   // 题目标签
-  const [tagListVal, setTagListVal] = useState<string[]>(reqQuestionInfo.tags ?? []);
+  const [tagListVal, setTagListVal] = useState<number[]>(reqQuestionInfo.baseInfo.questionTagIds ?? []);
 
-  const [rateVal, setRateVal] = useState<number>(Number(reqQuestionInfo.rateVal ?? 0));
+  const [rateVal, setRateVal] = useState<number>(Number(reqQuestionInfo.baseInfo.difficultyLevel ?? 0));
 
-  const [titleVal, setTitleVal] = useState<string>(reqQuestionInfo.titleVal);
+  const [titleVal, setTitleVal] = useState<string>(reqQuestionInfo.baseInfo.title);
 
-  const [mentionVal, setMentionVal] = useState<string>(reqQuestionInfo.mentionVal ?? "");
+  const [mentionVal, setMentionVal] = useState<string>(reqQuestionInfo.baseInfo.comment ?? "");
 
   const getImageFileList = (imageNames: string[]): UploadFile[] => {
     let imageFiles: UploadFile[] = [];
@@ -57,96 +54,151 @@ export default function Edit(props: any) {
         name: imageNames[i],
         status: "done",
         uid: i.toString(),
-        url: `/api/file/read/${reqQuestionInfo.textbookKey}/${reqQuestionInfo.catalogKey}/${imageNames[i]}`
+        url: `/api/file/read/${imageNames[i]}`
       });
     }
     return imageFiles;
   }
 
-  const [imageFileList, setImageFileList] = useState<UploadFile[]>(getImageFileList(reqQuestionInfo.imageNames ?? []));
-  const [showImageVal, setShowImageVal] = useState<string>(reqQuestionInfo.showImageVal ?? "0");
+  const [imageFileList, setImageFileList] = useState<UploadFile[]>(getImageFileList(reqQuestionInfo.baseInfo.images ?? []));
 
-  const [aVal, setAVal] = useState<string>(reqQuestionInfo.aVal ?? "");
-  const [bVal, setBVal] = useState<string>(reqQuestionInfo.bVal ?? "");
-  const [cVal, setCVal] = useState<string>(reqQuestionInfo.cVal ?? "");
-  const [dVal, setDVal] = useState<string>(reqQuestionInfo.dVal ?? "");
-  const [eVal, setEVal] = useState<string>(reqQuestionInfo.eVal ?? "");
-  const [showSelectVal, setShowSelectVal] = useState<string>(reqQuestionInfo.showSelectVal ?? "1");
+  // 选项数据
+  const options: QuestionOption[] = reqQuestionInfo.baseInfo.options ?? [];
+  // 定义一个默认对象，防止访问内部属性时报错
+  const defaultOpt = {label: '', content: '', images: [], order: 0};
+  const [
+    opt0 = defaultOpt,
+    opt1 = defaultOpt,
+    opt2 = defaultOpt,
+    opt3 = defaultOpt,
+    opt4 = defaultOpt,
+  ] = options;
+  const [aVal, setAVal] = useState<string>(opt0.content ?? "");
+  const [bVal, setBVal] = useState<string>(opt1.content ?? "");
+  const [cVal, setCVal] = useState<string>(opt2.content ?? "");
+  const [dVal, setDVal] = useState<string>(opt3.content ?? "");
+  const [eVal, setEVal] = useState<string>(opt4.content ?? "");
+  const [showSelectVal, setShowSelectVal] = useState<number>(reqQuestionInfo.baseInfo.optionsLayout ?? 1);
 
-  const [answerVal, setAnswerVal] = useState<string>(reqQuestionInfo.answerVal ?? "");
+  const [answerVal, setAnswerVal] = useState<string>(reqQuestionInfo.extraInfo.answer ?? "");
 
-  const [knowledgeVal, setKnowledgeVal] = useState<string>(reqQuestionInfo.knowledgeVal ?? "");
+  const [knowledgeVal, setKnowledgeVal] = useState<string>(reqQuestionInfo.extraInfo.knowledge ?? "");
 
-  const [analyzeVal, setAnalyzeVal] = useState<string>(reqQuestionInfo.analyzeVal ?? "");
+  const [analyzeVal, setAnalyzeVal] = useState<string>(reqQuestionInfo.extraInfo.analysis?.content ?? "");
 
-  const [processVal, setProcessVal] = useState<string>(reqQuestionInfo.processVal ?? "");
+  const [processVal, setProcessVal] = useState<string>(reqQuestionInfo.extraInfo.process?.content ?? "");
 
-  const [remarkVal, setRemarkVal] = useState<string>(reqQuestionInfo.remarkVal ?? "");
+  const [remarkVal, setRemarkVal] = useState<string>(reqQuestionInfo.extraInfo.remark ?? "");
 
   // 生成预览对象
   const [openEditPreviewArea, setOpenEditPreviewArea] = useState<boolean>(false);
-  let [editPreviewQuestionInfo, setEditPreviewQuestionInfo] = useState<QuestionInfo>({
-    aVal: "",
-    analyzeVal: "",
-    answerVal: "",
-    bVal: "",
-    cVal: "",
-    catalogKey: "",
-    dVal: "",
-    eVal: "",
-    id: "",
-    imageNames: [],
-    knowledgeVal: "",
-    mentionVal: "",
-    processVal: "",
-    questionType: "",
-    rateVal: "",
-    remarkVal: "",
-    showImageVal: "",
-    showSelectVal: "",
-    tags: [],
-    textbookKey: "",
-    titleVal: ""
+  let [editPreviewQuestionInfo, setEditPreviewQuestionInfo] = useState<QuestionBaseInfo>({
+    analysis: undefined,
+    answer: "",
+    authorId: 0,
+    comment: "",
+    contentPlain: "",
+    difficultyLevel: 0,
+    id: 0,
+    images: [],
+    knowledge: "",
+    options: [],
+    optionsLayout: 0,
+    process: undefined,
+    questionCateId: 0,
+    questionTagIds: [],
+    questionTypeId: 0,
+    remark: "",
+    title: ""
   });
-  // 点击生成题目样式预览
-  const onToEditPreview = () => {
+
+  // 首页页面的值用于展示和提交
+  const getCurrentQuestionBaseInfo = (): QuestionBaseInfo => {
     const imageFileNames: string[] = [];
     imageFileList.forEach((image) => {
       imageFileNames.push(image.name);
     });
 
-    let previewQuestionInfo: QuestionInfo = {
-      id: "",
-      textbookKey: reqQuestionInfo.textbookKey,
-      catalogKey: reqQuestionInfo.catalogKey,
-      questionType: questionTypeVal,
-      tags: tagListVal,
-      rateVal: rateVal.toString(),
-      titleVal: titleVal,
-      mentionVal: mentionVal,
-      imageNames: imageFileNames,
-      showImageVal: showImageVal,
-      aVal: aVal,
-      bVal: bVal,
-      cVal: cVal,
-      dVal: dVal,
-      eVal: eVal,
-      showSelectVal: showSelectVal,
-      answerVal: answerVal,
-      knowledgeVal: knowledgeVal,
-      analyzeVal: analyzeVal,
-      processVal: processVal,
-      remarkVal: remarkVal,
+    const analysis: Content = {
+      content: analyzeVal,
+      images: []
     }
+
+    const process: Content = {
+      content: processVal,
+      images: [],
+    }
+
+    // 将选项依次加入选项组中
+    const options: QuestionOption[] = [];
+    if (StringValidator.isNonEmpty(aVal)) {
+      options.push({
+        label: "A",
+        content: aVal,
+        order: 1
+      });
+    }
+    if (StringValidator.isNonEmpty(bVal)) {
+      options.push({
+        label: "B",
+        content: bVal,
+        order: 2
+      });
+    }
+    if (StringValidator.isNonEmpty(cVal)) {
+      options.push({
+        label: "C",
+        content: cVal,
+        order: 3
+      });
+    }
+    if (StringValidator.isNonEmpty(dVal)) {
+      options.push({
+        label: "D",
+        content: dVal,
+        order: 4
+      });
+    }
+    if (StringValidator.isNonEmpty(eVal)) {
+      options.push({
+        label: "E",
+        content: eVal,
+        order: 5
+      });
+    }
+
+    return {
+      analysis: analysis,
+      answer: answerVal,
+      authorId: 0,
+      comment: mentionVal,
+      contentPlain: "",
+      difficultyLevel: rateVal,
+      id: 0,
+      images: imageFileNames,
+      knowledge: knowledgeVal,
+      options: options,
+      optionsLayout: showSelectVal,
+      process: process,
+      questionCateId: reqQuestionInfo.baseInfo.questionCateId,
+      questionTagIds: tagListVal,
+      questionTypeId: questionTypeVal,
+      remark: remarkVal,
+      title: titleVal
+    }
+  }
+
+  // 点击生成题目样式预览
+  const onToEditPreview = () => {
     setOpenEditPreviewArea(true);
-    setEditPreviewQuestionInfo(previewQuestionInfo);
+    setEditPreviewQuestionInfo(getCurrentQuestionBaseInfo());
   };
 
   return <div>
     <Row>
       <Col span={24}>
         {/* 面包屑快速导航 */}
-        {CommonBreadcrumb(subjectDict, catalogDict, knowledgeInfoDict, pathname, reqQuestionInfo.catalogKey, catalogKeyPath)}
+        {CommonBreadcrumb(pathMap, pathname, childPathMap, reqQuestionInfo.baseInfo.questionCateId)}
       </Col>
     </Row>
 
@@ -172,40 +224,40 @@ export default function Edit(props: any) {
     >
       <Splitter.Panel defaultSize={"50%"}>
         {/* 题目类型 */}
-        {EditQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal, reqQuestionInfo, setRefreshListNum)}
+        {EditQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
 
         {/* 题目标签 */}
-        {EditTagStyle(tagList, tagListVal, setTagListVal, reqQuestionInfo, setRefreshListNum)}
+        {EditTagStyle(questionTagList, tagListVal, setTagListVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
 
         {/* rate */}
-        {EditRateInfoStyle(rateVal, setRateVal, reqQuestionInfo, setRefreshListNum)}
+        {EditRateInfoStyle(rateVal, setRateVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
 
         {/* title */}
-        {EditTitleInfoStyle(titleVal, setTitleVal, reqQuestionInfo, setRefreshListNum)}
+        {EditTitleInfoStyle(titleVal, setTitleVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
 
         {/* mention */}
-        {EditMentionInfoStyle(mentionVal, setMentionVal, reqQuestionInfo, setRefreshListNum)}
+        {EditMentionInfoStyle(mentionVal, setMentionVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
 
         {/* image */}
-        {UploadImageStyle(reqQuestionInfo.textbookKey, reqQuestionInfo.catalogKey, imageFileList, setImageFileList, showImageVal, setShowImageVal, reqQuestionInfo.id, setRefreshListNum)}
+        {UploadImageStyle(reqQuestionInfo.baseInfo.questionCateId, imageFileList, setImageFileList, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
 
         {/* select */}
-        {EditSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal, reqQuestionInfo, setRefreshListNum)}
+        {EditSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
 
         {/* answer */}
-        {EditAnswerInfoStyle(answerVal, setAnswerVal, reqQuestionInfo, setRefreshListNum)}
+        {EditAnswerInfoStyle(answerVal, setAnswerVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
 
         {/* knowledge */}
-        {EditKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal, reqQuestionInfo, setRefreshListNum)}
+        {EditKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
 
         {/* analyze */}
-        {EditAnalyzeInfoStyle(analyzeVal, setAnalyzeVal, reqQuestionInfo, setRefreshListNum)}
+        {EditAnalyzeInfoStyle(analyzeVal, setAnalyzeVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
 
         {/* process */}
-        {EditProcessInfoStyle(processVal, setProcessVal, reqQuestionInfo, setRefreshListNum)}
+        {EditProcessInfoStyle(processVal, setProcessVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
 
         {/* remark */}
-        {EditRemarkInfoStyle(remarkVal, setRemarkVal, reqQuestionInfo, setRefreshListNum)}
+        {EditRemarkInfoStyle(remarkVal, setRemarkVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
       </Splitter.Panel>
 
       <Splitter.Panel defaultSize="50%">
@@ -214,7 +266,8 @@ export default function Edit(props: any) {
             {openEditPreviewArea ? <Preview
               questionInfo={editPreviewQuestionInfo}
               questionTypeList={questionTypeList}
-              tagList={tagList}/> : ""}
+              questionTagList={questionTagList}
+            /> : ""}
           </div>
         </Watermark>
       </Splitter.Panel>

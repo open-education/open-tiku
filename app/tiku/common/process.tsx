@@ -1,6 +1,6 @@
 import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
-import type {QuestionInfo} from "~/type/question";
+import type {QuestionBaseInfoResp, QuestionInfo_del} from "~/type/question";
 import type {EditProcess} from "~/type/edit";
 import {httpClient} from "~/util/http";
 import {StringUtil} from "~/util/string";
@@ -47,28 +47,28 @@ export function AddProcessInfoStyle(
 export function EditProcessInfoStyle(
   processVal: string,
   setProcessVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionInfo,
+  questionInfo: QuestionBaseInfoResp,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showEditProcess, setShowEditProcess] = React.useState(false);
   const [showEditProcessErr, setShowEditProcessErr] = React.useState<React.ReactNode>("");
 
   const updateProcessVal = () => {
-    const req: EditProcess = {
-      textbookKey: questionInfo.textbookKey,
-      catalogKey: questionInfo.catalogKey,
-      id: questionInfo.id,
-      process: processVal,
-    }
-    httpClient.post("/edit/process", req).then((res) => {
-      setShowEditProcessErr("");
-      setShowEditProcess(false);
-      setRefreshListNum(StringUtil.getRandomInt());
-    }).catch((err) => {
-      setShowEditProcessErr(<div>
-        <Alert title={`更新解题过程出错: ${err.message}`} type="error"/>
-      </div>);
-    })
+    // const req: EditProcess = {
+    //   textbookKey: questionInfo.textbookKey,
+    //   catalogKey: questionInfo.catalogKey,
+    //   id: questionInfo.id,
+    //   process: processVal,
+    // }
+    // httpClient.post("/edit/process", req).then((res) => {
+    //   setShowEditProcessErr("");
+    //   setShowEditProcess(false);
+    //   setRefreshListNum(StringUtil.getRandomInt());
+    // }).catch((err) => {
+    //   setShowEditProcessErr(<div>
+    //     <Alert title={`更新解题过程出错: ${err.message}`} type="error"/>
+    //   </div>);
+    // })
   }
 
   const showEditProcessArea = <div className="mt-2.5">

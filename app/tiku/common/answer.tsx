@@ -1,7 +1,7 @@
 import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
 import type {EditAnswer} from "~/type/edit";
-import type {QuestionInfo} from "~/type/question";
+import type {QuestionBaseInfoResp, QuestionExtraInfoResp, QuestionInfo_del} from "~/type/question";
 import {httpClient} from "~/util/http";
 import {StringUtil} from "~/util/string";
 
@@ -47,28 +47,28 @@ export function AddAnswerInfoStyle(
 export function EditAnswerInfoStyle(
   answerVal: string,
   setAnswerVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionInfo,
+  questionInfo: QuestionBaseInfoResp,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showEditAnswer, setShowEditAnswer] = React.useState(false);
   const [showEditAnswerErr, setShowEditAnswerErr] = React.useState<React.ReactNode>("");
 
   const updateAnswerVal = () => {
-    const req: EditAnswer = {
-      textbookKey: questionInfo.textbookKey,
-      catalogKey: questionInfo.catalogKey,
-      id: questionInfo.id,
-      answer: answerVal,
-    }
-    httpClient.post("/edit/answer", req).then((res) => {
-      setShowEditAnswerErr("");
-      setShowEditAnswer(false);
-      setRefreshListNum(StringUtil.getRandomInt());
-    }).catch(err => {
-      setShowEditAnswerErr(<div>
-        <Alert title={`更新答案出错: ${err.message}`} type={"error"}/>
-      </div>);
-    })
+    // const req: EditAnswer = {
+    //   textbookKey: questionInfo.textbookKey,
+    //   catalogKey: questionInfo.catalogKey,
+    //   id: questionInfo.id,
+    //   answer: answerVal,
+    // }
+    // httpClient.post("/edit/answer", req).then((res) => {
+    //   setShowEditAnswerErr("");
+    //   setShowEditAnswer(false);
+    //   setRefreshListNum(StringUtil.getRandomInt());
+    // }).catch(err => {
+    //   setShowEditAnswerErr(<div>
+    //     <Alert title={`更新答案出错: ${err.message}`} type={"error"}/>
+    //   </div>);
+    // })
   }
 
   const showEditAnswerArea = <div className="mt-2.5">

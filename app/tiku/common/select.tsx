@@ -1,5 +1,5 @@
 // 选项风格
-import type {QuestionInfo} from "~/type/question";
+import type {QuestionBaseInfoResp, QuestionInfo_del, QuestionOption} from "~/type/question";
 import {Alert, Button, Col, Flex, Radio, type RadioChangeEvent, Row} from "antd";
 import {StringUtil, StringValidator} from "~/util/string";
 import Markdown from "react-markdown";
@@ -14,142 +14,90 @@ import {AddEInfoStyle, EditEInfoStyle} from "~/tiku/common/e";
 import type {EditSelect} from "~/type/edit";
 import {httpClient} from "~/util/http";
 
-export function CommonSelect(questionInfo: QuestionInfo) {
-  const showSelectVal = questionInfo.showSelectVal;
-  if (showSelectVal === "1") {
+// 选择题样式
+export function CommonSelect(questionInfo: QuestionBaseInfoResp) {
+  const showSelectVal: number = questionInfo.optionsLayout ?? 0;
+
+  if (showSelectVal === 0) {
     return <Row gutter={[10, 10]}>
-      <Col span={6}>
-        {
-          StringValidator.isNonEmpty(questionInfo.aVal) && <Markdown
-            remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-          >
-            {questionInfo.aVal}
-          </Markdown>
-        }
-      </Col>
-      <Col span={6}>
-        {
-          StringValidator.isNonEmpty(questionInfo.bVal) && <Markdown
-            remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-          >
-            {questionInfo.bVal}
-          </Markdown>
-        }
-      </Col>
-      <Col span={6}>
-        {
-          StringValidator.isNonEmpty(questionInfo.cVal) && <Markdown
-            remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-          >
-            {questionInfo.cVal}
-          </Markdown>
-        }
-      </Col>
-      <Col span={6}>
-        {
-          StringValidator.isNonEmpty(questionInfo.dVal) && <Markdown
-            remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-          >
-            {questionInfo.dVal}
-          </Markdown>
-        }
-      </Col>
+      {
+        questionInfo.options?.map(item => {
+          return <Col span={6} key={item.label}>
+            {
+              StringValidator.isNonEmpty(item.label) && <Markdown
+                remarkPlugins={[remarkMath]}
+                rehypePlugins={[rehypeKatex]}
+              >
+                {`${item.label} - ${item.content}`}
+              </Markdown>
+            }
+          </Col>
+        })
+      }
     </Row>
-  } else if (showSelectVal === "2") {
+  } else if (showSelectVal === 1) {
     return <Row gutter={[10, 10]}>
-      <Col span={24}>
-        {
-          StringValidator.isNonEmpty(questionInfo.aVal) && <Markdown
-            remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-          >
-            {questionInfo.aVal}
-          </Markdown>
-        }
-      </Col>
-      <Col span={24}>
-        {
-          StringValidator.isNonEmpty(questionInfo.bVal) && <Markdown
-            remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-          >
-            {questionInfo.bVal}
-          </Markdown>
-        }
-      </Col>
-      <Col span={24}>
-        {
-          StringValidator.isNonEmpty(questionInfo.cVal) && <Markdown
-            remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-          >
-            {questionInfo.cVal}
-          </Markdown>
-        }
-      </Col>
-      <Col span={24}>
-        {
-          StringValidator.isNonEmpty(questionInfo.dVal) && <Markdown
-            remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-          >
-            {questionInfo.dVal}
-          </Markdown>
-        }
-      </Col>
+      {
+        questionInfo.options?.map(item => {
+          return <Col span={24} key={item.label}>
+            {
+              StringValidator.isNonEmpty(item.label) && <Markdown
+                remarkPlugins={[remarkMath]}
+                rehypePlugins={[rehypeKatex]}
+              >
+                {`${item.label}: ${item.content}`}
+              </Markdown>
+            }
+          </Col>
+        })
+      }
     </Row>
   } else {
+    // 将数组分成两部分, 5各选项的如果后续需要再调整样式, 5个选项一般选择一列的样式应该是最好的
+    const options: QuestionOption[] = questionInfo.options ?? [];
+    if (options.length === 0) {
+      return "";
+    }
+
+    const mid = Math.floor(options.length / 2);
+    const firstHalf = options.slice(0, mid);
+    const secondHalf = options.slice(mid);
+
     return <Row gutter={[10, 10]}>
       <Col span={24}>
         <Row gutter={[10, 10]}>
-          <Col span={12}>
-            {
-              StringValidator.isNonEmpty(questionInfo.aVal) && <Markdown
-                remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex]}
-              >
-                {questionInfo.aVal}
-              </Markdown>
-            }
-          </Col>
-          <Col span={12}>
-            {
-              StringValidator.isNonEmpty(questionInfo.bVal) && <Markdown
-                remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex]}
-              >
-                {questionInfo.bVal}
-              </Markdown>
-            }
-          </Col>
+          {
+            firstHalf.map(item => {
+              return <Col span={12} key={item.label}>
+                {
+                  StringValidator.isNonEmpty(item.label) && <Markdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                  >
+                    {`${item.label}: ${item.content}`}
+                  </Markdown>
+                }
+              </Col>
+            })
+          }
         </Row>
       </Col>
       <Col span={24}>
         <Row gutter={[10, 10]}>
-          <Col span={12}>
-            {
-              StringValidator.isNonEmpty(questionInfo.cVal) && <Markdown
-                remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex]}
-              >
-                {questionInfo.cVal}
-              </Markdown>
-            }
-          </Col>
-          <Col span={12}>
-            {
-              StringValidator.isNonEmpty(questionInfo.dVal) && <Markdown
-                remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex]}
-              >
-                {questionInfo.dVal}
-              </Markdown>
-            }
-          </Col>
+          {
+            secondHalf.map(item => {
+              return <Col span={12} key={item.label}>
+                {
+                  StringValidator.isNonEmpty(item.label) && <Markdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                  >
+                    {`${item.label}: ${item.content}`}
+                  </Markdown>
+                }
+              </Col>
+            })
+          }
         </Row>
       </Col>
     </Row>
@@ -157,12 +105,12 @@ export function CommonSelect(questionInfo: QuestionInfo) {
 }
 
 export function AddSelectTopStyle(
-  showSelectVal: string,
-  setShowSelectVal: React.Dispatch<React.SetStateAction<string>>,
+  showSelectVal: number,
+  setShowSelectVal: React.Dispatch<React.SetStateAction<number>>,
   setShowEditSelect?: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
   const onAddSelectChange = (e: RadioChangeEvent) => {
-    setShowSelectVal(e.target.value);
+    setShowSelectVal(Number(e.target.value));
     if (setShowEditSelect) {
       setShowEditSelect(true);
     }
@@ -170,24 +118,24 @@ export function AddSelectTopStyle(
 
   return <Row gutter={[10, 10]}>
     <Col span={24}>
-      <div className="text-blue-700 text-[15px] mb-[10px] font-bold">选项</div>
+      <div className="text-blue-700 text-[15px] mb-2.5 font-bold">选项</div>
       <Flex vertical gap="small" justify={"right"}>
         <Radio.Group
-          defaultValue={showSelectVal}
+          value={showSelectVal}
           buttonStyle="solid"
           onChange={onAddSelectChange}
           block
           options={[
             {
-              value: "1",
+              value: 1,
               label: "展示一行",
             },
             {
-              value: "2",
+              value: 2,
               label: "展示一列",
             },
             {
-              value: "3",
+              value: 3,
               label: "展示两列",
             },
           ]}
@@ -199,30 +147,30 @@ export function AddSelectTopStyle(
 }
 
 export function EditSelectTopStyle(
-  showSelectVal: string,
-  setShowSelectVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionInfo,
+  showSelectVal: number,
+  setShowSelectVal: React.Dispatch<React.SetStateAction<number>>,
+  questionInfo: QuestionBaseInfoResp,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showEditSelect, setShowEditSelect] = React.useState(false);
   const [showEditSelectErr, setShowEditSelectErr] = React.useState<React.ReactNode>("");
 
   const updateSelectVal = () => {
-    const req: EditSelect = {
-      textbookKey: questionInfo.textbookKey,
-      catalogKey: questionInfo.catalogKey,
-      id: questionInfo.id,
-      select: showSelectVal,
-    }
-    httpClient.post("/edit/select", req).then((res) => {
-      setShowEditSelectErr("");
-      setShowEditSelect(false);
-      setRefreshListNum(StringUtil.getRandomInt());
-    }).catch((err) => {
-      setShowEditSelectErr(<div>
-        <Alert title={`更新选项样式出错: ${err.message}`} type={"error"}/>
-      </div>);
-    })
+    // const req: EditSelect = {
+    //   textbookKey: questionInfo.textbookKey,
+    //   catalogKey: questionInfo.catalogKey,
+    //   id: questionInfo.id,
+    //   select: "",
+    // }
+    // httpClient.post("/edit/select", req).then((res) => {
+    //   setShowEditSelectErr("");
+    //   setShowEditSelect(false);
+    //   setRefreshListNum(StringUtil.getRandomInt());
+    // }).catch((err) => {
+    //   setShowEditSelectErr(<div>
+    //     <Alert title={`更新选项样式出错: ${err.message}`} type={"error"}/>
+    //   </div>);
+    // })
   }
 
   const showEditSelectArea = <div className="mt-2.5">
@@ -251,8 +199,8 @@ export function AddSelectStyle(
   setDVal: React.Dispatch<React.SetStateAction<string>>,
   eVal: string,
   setEVal: React.Dispatch<React.SetStateAction<string>>,
-  showSelectVal: string,
-  setShowSelectVal: React.Dispatch<React.SetStateAction<string>>,
+  showSelectVal: number,
+  setShowSelectVal: React.Dispatch<React.SetStateAction<number>>,
 ) {
   return <div>
     <div className="p-2.5">
@@ -287,9 +235,9 @@ export function EditSelectStyle(
   setDVal: React.Dispatch<React.SetStateAction<string>>,
   eVal: string,
   setEVal: React.Dispatch<React.SetStateAction<string>>,
-  showSelectVal: string,
-  setShowSelectVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionInfo,
+  showSelectVal: number,
+  setShowSelectVal: React.Dispatch<React.SetStateAction<number>>,
+  questionInfo: QuestionBaseInfoResp,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   return <div>

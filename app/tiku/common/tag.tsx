@@ -1,6 +1,5 @@
-import {Alert, Button, Checkbox, Col, Flex, Row, Tag} from "antd";
-import type {QuestionInfo, QuestionType} from "~/type/question";
-import type {TagInfo} from "~/type/tag";
+import {Alert, Button, Checkbox, Col, Flex, type GetProp, Row, Tag} from "antd";
+import type {QuestionBaseInfoResp, QuestionInfo_del, QuestionInfoResp} from "~/type/question";
 import {arrayToDict} from "~/util/common";
 import React, {type Dispatch, type SetStateAction, useState} from "react";
 import {httpClient} from "~/util/http";
@@ -8,27 +7,25 @@ import Info from "~/tiku/info";
 import Edit from "~/tiku/edit";
 import type {EditQuestionTags} from "~/type/edit";
 import Add from "~/tiku/add";
-import type {Catalog} from "~/type/catalog";
-import type {KnowledgeInfo} from "~/type/knowledge-info";
 import {StringUtil} from "~/util/string";
-import type {HierarchicalDict} from "~/util/hierarchical-dict";
+import type {Textbook, TextbookOtherDict} from "~/type/textbook";
 
 // 题目列表展示标签样式 题目类型在前 标签依次在后
 export function CommonTag(
-  questionInfo: QuestionInfo,
-  questionTypeList: QuestionType[],
-  tagList: TagInfo[]
+  questionInfo: QuestionBaseInfoResp,
+  questionTypeList: TextbookOtherDict[],
+  questionTagList: TextbookOtherDict[]
 ) {
-  const questionTypeDict = arrayToDict(questionTypeList, 'key');
-  const tagsDict = arrayToDict(tagList, 'key');
+  const questionTypeDict = arrayToDict(questionTypeList, 'id');
+  const tagsDict = arrayToDict(questionTagList, 'id');
   return <Row gutter={[10, 10]}>
     <Col span={24}>
       <Flex gap="small" wrap>
         <Tag color="geekblue"
-             key={questionInfo.questionType}>{questionTypeDict[questionInfo.questionType].label}</Tag>
+             key={questionInfo.questionTypeId}>{questionTypeDict[questionInfo.questionTypeId].itemValue}</Tag>
         {
-          questionInfo.tags?.map(tagKey => {
-            return <Tag color="green" key={tagKey}>{tagsDict[tagKey].label}</Tag>
+          questionInfo.questionTagIds?.map(tagKey => {
+            return <Tag color="green" key={tagKey}>{tagsDict[tagKey].itemValue}</Tag>
           })
         }
       </Flex>
@@ -38,16 +35,14 @@ export function CommonTag(
 
 // 题目列表右下快速操作区域
 export function CommonQuickJumpTag(
-  questionInfo: QuestionInfo,
+  questionInfo: QuestionBaseInfoResp,
   setOpenDrawer: Dispatch<SetStateAction<boolean>>,
   setDrawerTitle: Dispatch<SetStateAction<string>>,
   setDrawerContent: Dispatch<SetStateAction<React.ReactNode>>,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
-  questionTypeList: QuestionType[],
-  tagList: TagInfo[],
-  catalogDict: HierarchicalDict<Catalog>,
-  knowledgeInfoDict: HierarchicalDict<KnowledgeInfo>,
-  leftMenuItemSelectKeyPath: string[],
+  questionTypeList: TextbookOtherDict[],
+  questionTagList: TextbookOtherDict[],
+  childPathMap: Map<number, Textbook[]>
 ) {
   const quickToolList = [
     {
@@ -68,7 +63,6 @@ export function CommonQuickJumpTag(
   ];
   const onClickQuickTool = (value: string) => {
     let title = "";
-    let extList: string[] = [];
     switch (value) {
       case "info": {
         title = "详情";
@@ -88,12 +82,9 @@ export function CommonQuickJumpTag(
           setRefreshListNum={setRefreshListNum}
           sourceId={questionInfo.id}
           questionTypeList={questionTypeList}
-          tagList={tagList}
-          textbookKey={questionInfo.textbookKey}
-          catalogKey={questionInfo.catalogKey}
-          catalogKeyPath={leftMenuItemSelectKeyPath}
-          catalogDict={catalogDict}
-          knowledgeInfoDict={knowledgeInfoDict}
+          questionTagList={questionTagList}
+          childPathMap={childPathMap}
+          questionCateId={questionInfo.questionCateId}
         />);
         return;
       }
@@ -103,12 +94,7 @@ export function CommonQuickJumpTag(
     }
 
     // 获取题目全部信息
-    httpClient.post<QuestionInfo>(`/question/info`, {
-      "id": questionInfo.id,
-      "textbookKey": questionInfo.textbookKey,
-      "catalogKey": questionInfo.catalogKey,
-      "ext": extList.length == 0 ? null : extList,
-    }).then(res => {
+    httpClient.get<QuestionInfoResp>(`/question/info/${questionInfo.id}`).then(res => {
       setOpenDrawer(true);
       setDrawerTitle(title);
       if (value === "edit") {
@@ -116,22 +102,18 @@ export function CommonQuickJumpTag(
         setDrawerContent(<Edit
           key={questionInfo.id}
           questionInfo={res}
-          catalogKey={questionInfo.catalogKey}
-          catalogKeyPath={leftMenuItemSelectKeyPath}
+          questionCateId={questionInfo.questionCateId}
           questionTypeList={questionTypeList}
-          tagList={tagList}
-          catalogDict={catalogDict}
-          knowledgeInfoDict={knowledgeInfoDict}
+          questionTagList={questionTagList}
           setRefreshListNum={setRefreshListNum}
+          childPathMap={childPathMap}
         />);
       } else {
         setDrawerContent(<Info
           questionInfo={res}
           questionTypeList={questionTypeList}
-          tagList={tagList}
-          catalogDict={catalogDict}
-          knowledgeInfoDict={knowledgeInfoDict}
-          catalogKeyPath={leftMenuItemSelectKeyPath}
+          questionTagList={questionTagList}
+          childPathMap={childPathMap}
         />);
       }
     })
@@ -159,12 +141,12 @@ export function CommonQuickJumpTag(
 
 // 题目标签基础样式
 export function EditTag(
-  tagList: TagInfo[] = [],
-  tagListVal: string[],
-  setTagListVal: Dispatch<SetStateAction<string[]>>,
+  questionTagList: TextbookOtherDict[] = [],
+  tagListVal: number[],
+  setTagListVal: Dispatch<SetStateAction<number[]>>,
   setShowTagEdit?: Dispatch<SetStateAction<boolean>>,
 ) {
-  if (!tagList.length) {
+  if (!questionTagList.length) {
     return <Alert
       title="Warning"
       description="标签类型为空"
@@ -174,11 +156,11 @@ export function EditTag(
     />
   }
 
-  // @ts-ignore
+  // 选中标签
   const onEditTagsChange: GetProp<typeof Checkbox.Group, "onChange"> = (
-    checkedValues: string[]
+    checkedValues: unknown[]
   ) => {
-    setTagListVal(checkedValues);
+    setTagListVal(checkedValues.map(Number).filter(val => !isNaN(val)));
     if (setShowTagEdit) {
       setShowTagEdit(true);
     }
@@ -190,10 +172,10 @@ export function EditTag(
     onChange={onEditTagsChange}
   >
     <Row>
-      {tagList.map(item => {
+      {questionTagList.map(item => {
         return (
-          <Col span={6} key={item.key}>
-            <Checkbox value={item.key}>{item.label}</Checkbox>
+          <Col span={6} key={item.id}>
+            <Checkbox value={item.id}>{item.itemValue}</Checkbox>
           </Col>
         );
       })}
@@ -203,46 +185,46 @@ export function EditTag(
 
 // 添加题目时标签样式
 export function AddTagStyle(
-  tagList: TagInfo[],
-  tagListVal: string[],
-  setTagListVal: Dispatch<SetStateAction<string[]>>,
+  questionTagList: TextbookOtherDict[],
+  tagListVal: number[],
+  setTagListVal: Dispatch<SetStateAction<number[]>>,
   setShowTagEdit?: Dispatch<SetStateAction<boolean>>,
 ) {
   return <Row gutter={[10, 10]}>
     <Col span={24}>
-      <div className="text-blue-700 text-[15px] mb-[10px] font-bold">标签</div>
-      {EditTag(tagList, tagListVal, setTagListVal, setShowTagEdit)}
+      <div className="text-blue-700 text-[15px] mb-2.5 font-bold">标签</div>
+      {EditTag(questionTagList, tagListVal, setTagListVal, setShowTagEdit)}
     </Col>
   </Row>
 }
 
 // 编辑题目时标签样式
 export function EditTagStyle(
-  tagList: TagInfo[] = [],
-  tagListVal: string[],
-  setTagListVal: Dispatch<SetStateAction<string[]>>,
-  questionInfo: QuestionInfo,
+  questionTagList: TextbookOtherDict[] = [],
+  tagListVal: number[],
+  setTagListVal: Dispatch<SetStateAction<number[]>>,
+  questionInfo: QuestionBaseInfoResp,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showTagEdit, setShowTagEdit] = useState<boolean>(false);
   const [showTagEditErr, setShowTagEditErr] = useState<React.ReactNode>("");
 
   const updateQuestionTags = () => {
-    const req: EditQuestionTags = {
-      textbookKey: questionInfo.textbookKey,
-      catalogKey: questionInfo.catalogKey,
-      id: questionInfo.id,
-      tags: tagListVal,
-    }
-    httpClient.post("/edit/tags", req).then(res => {
-      setShowTagEditErr("")
-      setShowTagEdit(false);
-      setRefreshListNum(StringUtil.getRandomInt());
-    }).catch(err => {
-      setShowTagEditErr(<div>
-        <Alert title={`更新标签出错: ${err.message}`} type={"error"}/>
-      </div>);
-    })
+    // const req: EditQuestionTags = {
+    //   textbookKey: questionInfo.textbookKey,
+    //   catalogKey: questionInfo.catalogKey,
+    //   id: questionInfo.id,
+    //   tags: [],
+    // }
+    // httpClient.post("/edit/tags", req).then(res => {
+    //   setShowTagEditErr("")
+    //   setShowTagEdit(false);
+    //   setRefreshListNum(StringUtil.getRandomInt());
+    // }).catch(err => {
+    //   setShowTagEditErr(<div>
+    //     <Alert title={`更新标签出错: ${err.message}`} type={"error"}/>
+    //   </div>);
+    // })
   }
 
   const showTagEditArea = <div className="mt-2.5">
@@ -253,7 +235,7 @@ export function EditTagStyle(
 
   return <div className="p-2.5 pt-2.5 hover:border border-red-700 border-dashed">
     <div>
-      {AddTagStyle(tagList, tagListVal, setTagListVal, setShowTagEdit)}
+      {AddTagStyle(questionTagList, tagListVal, setTagListVal, setShowTagEdit)}
     </div>
     {showTagEditErr}
     {showTagEdit && showTagEditArea}

@@ -6,19 +6,20 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 
 import {StringValidator} from "~/util/string";
-import type {QuestionInfo} from "~/type/question";
+import type {QuestionBaseInfo} from "~/type/question";
 import {CommonTag} from "~/tiku/common/tag";
 import {CommonTitle} from "~/tiku/common/title";
 import {CommonSelect} from "~/tiku/common/select";
+import type {TextbookOtherDict} from "~/type/textbook";
 
 export default function preview(props: any) {
-  const questionTypeList = props.questionTypeList ?? [];
-  const tagList = props.tagList ?? [];
-  const questionInfo: QuestionInfo = props.questionInfo ?? {};
+  const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
+  const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
+  const questionInfo: QuestionBaseInfo = props.questionInfo ?? {};
 
   return <div>
     {/* 题型和标签 */}
-    {CommonTag(questionInfo, questionTypeList, tagList)}
+    {CommonTag(questionInfo, questionTypeList, questionTagList)}
 
     <Divider
       size="small"
@@ -47,9 +48,9 @@ export default function preview(props: any) {
     <Row gutter={[10, 10]}>
       <Col span={24}>
         {
-          StringValidator.isNonEmpty(questionInfo.answerVal) &&
+          StringValidator.isNonEmpty(questionInfo.answer) &&
           <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.answerVal}
+            {questionInfo.answer}
           </Markdown>
         }
       </Col>
@@ -69,9 +70,9 @@ export default function preview(props: any) {
     <Row gutter={[10, 10]}>
       <Col span={24}>
         {
-          StringValidator.isNonEmpty(questionInfo.knowledgeVal) &&
+          StringValidator.isNonEmpty(questionInfo.knowledge) &&
           <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.knowledgeVal}
+            {questionInfo.knowledge}
           </Markdown>
         }
       </Col>
@@ -91,9 +92,9 @@ export default function preview(props: any) {
     <Row gutter={[10, 10]}>
       <Col span={24}>
         {
-          StringValidator.isNonEmpty(questionInfo.analyzeVal) &&
+          StringValidator.isNonEmpty(questionInfo.analysis?.content) &&
           <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.analyzeVal}
+            {questionInfo.analysis?.content}
           </Markdown>
         }
       </Col>
@@ -113,9 +114,9 @@ export default function preview(props: any) {
     <Row gutter={[10, 10]}>
       <Col span={24}>
         {
-          StringValidator.isNonEmpty(questionInfo.processVal) &&
+          StringValidator.isNonEmpty(questionInfo.process?.content) &&
           <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.processVal}
+            {questionInfo.process?.content}
           </Markdown>
         }
       </Col>
@@ -135,9 +136,9 @@ export default function preview(props: any) {
     <Row gutter={[10, 10]}>
       <Col span={24}>
         {
-          StringValidator.isNonEmpty(questionInfo.remarkVal) &&
+          StringValidator.isNonEmpty(questionInfo.remark) &&
           <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.remarkVal}
+            {questionInfo.remark}
           </Markdown>
         }
       </Col>

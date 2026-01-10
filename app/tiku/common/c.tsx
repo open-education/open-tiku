@@ -1,7 +1,7 @@
 import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
 import type {EditC} from "~/type/edit";
-import type {QuestionInfo} from "~/type/question";
+import type {QuestionBaseInfoResp, QuestionInfo_del} from "~/type/question";
 import {httpClient} from "~/util/http";
 import {StringUtil} from "~/util/string";
 
@@ -24,7 +24,7 @@ export function CInfo(
 
   return <TextArea
     autoSize={{minRows: 2, maxRows: 5}}
-    placeholder="请输入C选项内容, 包括 C"
+    placeholder="请输入C选项内容"
     onChange={onEditCChange}
     name="C"
     value={cVal}
@@ -47,28 +47,28 @@ export function AddCInfoStyle(
 export function EditCInfoStyle(
   cVal: string,
   setCVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionInfo,
+  questionInfo: QuestionBaseInfoResp,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showEditC, setShowEditC] = React.useState(false);
   const [showEditCErr, setShowEditCErr] = React.useState<React.ReactNode>("");
 
   const updateCVal = () => {
-    const req: EditC = {
-      textbookKey: questionInfo.textbookKey,
-      catalogKey: questionInfo.catalogKey,
-      id: questionInfo.id,
-      c: cVal,
-    }
-    httpClient.post("/edit/c", req).then((res) => {
-      setShowEditCErr("");
-      setShowEditC(false);
-      setRefreshListNum(StringUtil.getRandomInt());
-    }).catch((err) => {
-      setShowEditCErr(<div>
-        <Alert title={`更新C选项出错: ${err.message}`} type={"error"}/>
-      </div>);
-    })
+    // const req: EditC = {
+    //   textbookKey: questionInfo.textbookKey,
+    //   catalogKey: questionInfo.catalogKey,
+    //   id: questionInfo.id,
+    //   c: cVal,
+    // }
+    // httpClient.post("/edit/c", req).then((res) => {
+    //   setShowEditCErr("");
+    //   setShowEditC(false);
+    //   setRefreshListNum(StringUtil.getRandomInt());
+    // }).catch((err) => {
+    //   setShowEditCErr(<div>
+    //     <Alert title={`更新C选项出错: ${err.message}`} type={"error"}/>
+    //   </div>);
+    // })
   }
 
   const showEditCArea = <div className="mt-2.5">

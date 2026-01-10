@@ -1,7 +1,7 @@
 import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
 import type {EditA} from "~/type/edit";
-import type {QuestionInfo} from "~/type/question";
+import type {QuestionBaseInfoResp, QuestionInfo_del} from "~/type/question";
 import {httpClient} from "~/util/http";
 import {StringUtil} from "~/util/string";
 
@@ -24,7 +24,7 @@ export function AInfo(
 
   return <TextArea
     autoSize={{minRows: 2, maxRows: 5}}
-    placeholder="请输入A选项内容, 包括 A"
+    placeholder="请输入A选项内容"
     onChange={onEditAChange}
     name="A"
     value={aVal}
@@ -47,28 +47,28 @@ export function AddAInfoStyle(
 export function EditAInfoStyle(
   aVal: string,
   setAVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionInfo,
+  questionInfo: QuestionBaseInfoResp,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showEditA, setShowEditA] = React.useState(false);
   const [showEditAErr, setShowEditAErr] = React.useState<React.ReactNode>("");
 
   const updateAVal = () => {
-    const req: EditA = {
-      textbookKey: questionInfo.textbookKey,
-      catalogKey: questionInfo.catalogKey,
-      id: questionInfo.id,
-      a: aVal,
-    }
-    httpClient.post("/edit/a", req).then(res => {
-      setShowEditAErr("");
-      setShowEditA(false);
-      setRefreshListNum(StringUtil.getRandomInt());
-    }).catch(err => {
-      setShowEditAErr(<div>
-        <Alert title={`更新A选项出错: ${err.message}`} type={"error"}/>
-      </div>);
-    })
+    // const req: EditA = {
+    //   textbookKey: questionInfo.textbookKey,
+    //   catalogKey: questionInfo.catalogKey,
+    //   id: questionInfo.id,
+    //   a: aVal,
+    // }
+    // httpClient.post("/edit/a", req).then(res => {
+    //   setShowEditAErr("");
+    //   setShowEditA(false);
+    //   setRefreshListNum(StringUtil.getRandomInt());
+    // }).catch(err => {
+    //   setShowEditAErr(<div>
+    //     <Alert title={`更新A选项出错: ${err.message}`} type={"error"}/>
+    //   </div>);
+    // })
   }
 
   const showEditAArea = <div className="mt-2.5">

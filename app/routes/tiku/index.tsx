@@ -1,11 +1,11 @@
 import type {Route} from "./+types/index";
 import Index from "~/tiku";
 import {httpClient} from "~/util/http";
-import type {Subject} from "~/type/guidance";
 import {LoadingOutlined} from "@ant-design/icons";
 import {Spin} from "antd";
 import React from "react";
-import {SubjectDict} from "~/util/subject-dict";
+import type {Textbook} from "~/type/textbook";
+import {createTextbookPathDict} from "~/util/textbook-dict";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -15,12 +15,13 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function clientLoader({params}: Route.ClientLoaderArgs) {
-  const guidance = await httpClient.get<Subject[]>("/config/get-guidance");
+  // 5级教材字典列表
+  const textbooks = await httpClient.get<Textbook[]>("/textbook/list/5/all");
 
-  // to Dict
-  const subjectDict = new SubjectDict(guidance);
+  // 将教材字典转化为 Map 格式, 存储 id 对应的所有层, 重复存储便于后续面包屑等使用
+  const pathMap: Map<number, Textbook[]> = createTextbookPathDict(textbooks);
 
-  return {guidance: guidance, subjectDict: subjectDict};
+  return {textbooks, pathMap};
 }
 
 // HydrateFallback is rendered while the client loader is running
@@ -29,5 +30,5 @@ export function HydrateFallback() {
 }
 
 export default function Home({loaderData}: Route.ComponentProps) {
-  return <Index guidance={loaderData.guidance} subjectDict={loaderData.subjectDict}/>
+  return <Index textbooks={loaderData.textbooks} pathMap={loaderData.pathMap}/>
 }

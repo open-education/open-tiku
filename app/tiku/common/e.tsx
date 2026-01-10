@@ -1,9 +1,6 @@
 import React, {type Dispatch, type SetStateAction, useCallback} from "react";
-import {Alert, Button, Col, Flex, Input, Row} from "antd";
-import type {EditE} from "~/type/edit";
-import type {QuestionInfo} from "~/type/question";
-import {httpClient} from "~/util/http";
-import {StringUtil} from "~/util/string";
+import {Button, Col, Flex, Input, Row} from "antd";
+import type {QuestionBaseInfoResp} from "~/type/question";
 
 const {TextArea} = Input;
 
@@ -24,7 +21,7 @@ export function EInfo(
 
   return <TextArea
     autoSize={{minRows: 2, maxRows: 5}}
-    placeholder="请输入E选项内容, 包括 E"
+    placeholder="请输入E选项内容"
     onChange={onEditEChange}
     name="E"
     value={eVal}
@@ -47,28 +44,28 @@ export function AddEInfoStyle(
 export function EditEInfoStyle(
   eVal: string,
   setEVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionInfo,
+  questionInfo: QuestionBaseInfoResp,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showEditE, setShowEditE] = React.useState(false);
   const [showEditEErr, setShowEditEErr] = React.useState<React.ReactNode>("");
 
   const updateEVal = () => {
-    const req: EditE = {
-      textbookKey: questionInfo.textbookKey,
-      catalogKey: questionInfo.catalogKey,
-      id: questionInfo.id,
-      e: eVal,
-    }
-    httpClient.post("/edit/e", req).then((res) => {
-      setShowEditEErr("");
-      setShowEditE(false);
-      setRefreshListNum(StringUtil.getRandomInt());
-    }).catch((err) => {
-      setShowEditEErr(<div>
-        <Alert title={`更新E选项出错: ${err.message}`} type={"error"}/>
-      </div>);
-    })
+    // const req: EditE = {
+    //   textbookKey: questionInfo.textbookKey,
+    //   catalogKey: questionInfo.catalogKey,
+    //   id: questionInfo.id,
+    //   e: eVal,
+    // }
+    // httpClient.post("/edit/e", req).then((res) => {
+    //   setShowEditEErr("");
+    //   setShowEditE(false);
+    //   setRefreshListNum(StringUtil.getRandomInt());
+    // }).catch((err) => {
+    //   setShowEditEErr(<div>
+    //     <Alert title={`更新E选项出错: ${err.message}`} type={"error"}/>
+    //   </div>);
+    // })
   }
 
   const showEditEArea = <div className="mt-2.5">
