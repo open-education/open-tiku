@@ -51,15 +51,6 @@ export const StringUtil = {
 }
 
 export const StringConst = {
-  // 教材章节和知识点 textbookKey 拼接后缀
-  chapter: "_chapter",
-  chapterDesc: "教材章节",
-  knowledge: "_knowledge",
-  knowledgeDesc: "知识点类",
-
-  // 知识点 catalogKey 拼接符号 #
-  knowledgeCatalogKeySep: "#",
-
   // 题目列表题型选择 全部 标识
   listSelectAll: 0,
   listSelectAllDesc: "全部",

@@ -1,5 +1,5 @@
 // 题目和图片风格
-import type {QuestionBaseInfoResp, QuestionInfo_del} from "~/type/question";
+import type {QuestionBaseInfoResp} from "~/type/question";
 import {StringUtil, StringValidator} from "~/util/string";
 import {Alert, Button, Col, Flex, Image, Input, Row} from "antd";
 import Markdown from "react-markdown";
@@ -93,7 +93,7 @@ export function AddTitleInfoStyle(
 export function EditTitleInfoStyle(
   titleVal: string,
   setTitleVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionBaseInfoResp,
+  id: number,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
 
@@ -101,21 +101,19 @@ export function EditTitleInfoStyle(
   const [showEditTitleErr, setShowEditTitleErr] = React.useState<React.ReactNode>("");
 
   const updateRateVal = () => {
-    // const req: EditTitle = {
-    //   textbookKey: questionInfo.textbookKey,
-    //   catalogKey: questionInfo.catalogKey,
-    //   id: questionInfo.id,
-    //   title: titleVal,
-    // }
-    // httpClient.post("/edit/title", req).then(res => {
-    //   setShowEditTitleErr("");
-    //   setShowEditTitle(false);
-    //   setRefreshListNum(StringUtil.getRandomInt());
-    // }).catch(err => {
-    //   setShowEditTitleErr(<div>
-    //     <Alert title={`更新标题出错: ${err.message}`} type={"error"}/>
-    //   </div>);
-    // })
+    const req: EditTitle = {
+      id,
+      title: titleVal,
+    }
+    httpClient.post("/edit/title", req).then(res => {
+      setShowEditTitleErr("");
+      setShowEditTitle(false);
+      setRefreshListNum(StringUtil.getRandomInt());
+    }).catch(err => {
+      setShowEditTitleErr(<div>
+        <Alert title={`更新标题出错: ${err.message}`} type={"error"}/>
+      </div>);
+    })
   }
 
   const showEditTitleArea = <div className="mt-2.5">

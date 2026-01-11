@@ -1,15 +1,4 @@
-import {
-  Col,
-  Flex,
-  type GetProp,
-  Image,
-  Radio,
-  type RadioChangeEvent,
-  Row,
-  Upload,
-  type UploadFile,
-  type UploadProps
-} from "antd";
+import {Col, type GetProp, Image, Row, Upload, type UploadFile, type UploadProps} from "antd";
 import React, {type Dispatch, type SetStateAction, useState} from "react";
 import {httpClient} from "~/util/http";
 import {PlusOutlined} from "@ant-design/icons";
@@ -17,7 +6,6 @@ import type {DeleteImageReq} from "~/type/image";
 import {StringUtil} from "~/util/string";
 
 export function UploadImageStyle(
-  questionCateId: number,
   imageFileList: UploadFile[],
   setImageFileList: React.Dispatch<React.SetStateAction<UploadFile[]>>,
   id?: number,
@@ -34,9 +22,9 @@ export function UploadImageStyle(
     });
 
   // 题目图片
-  let reqUploadUrl = `/api/file/upload?textbookKey=&catalogKey=${questionCateId}`;
+  let uploadUrl = "/api/file/upload";
   if (id && id > 0) {
-    reqUploadUrl += `&id=${id}`;
+    uploadUrl += "?id=" + id;
   }
 
   const [previewImageOpen, setPreviewImageOpen] = useState(false);
@@ -72,27 +60,28 @@ export function UploadImageStyle(
     setImageFileList(newFileList);
   };
 
+  // 删除图片
   const handleImageDelete: UploadProps["onRemove"] = (info) => {
     if (confirm("确认删除吗?")) {
       let reqDel: DeleteImageReq = {
-        textbookKey: "",
-        catalogKey: "",
         filename: info.name,
       }
       if (id && id > 0) {
-        reqDel.id = id.toString();
+        reqDel.id = id;
       }
 
+      // 异步删除无法等待前端
       httpClient.post<boolean>(`/file/delete`, reqDel).then(res => {
         if (id && id > 0 && setRefreshListNum) {
           setRefreshListNum(StringUtil.getRandomInt());
         }
-        return true;
       }).catch(err => {
-        return false;
+        console.log(err);
       })
     }
-    return false;
+
+    // 正常都能删除成功
+    return true;
   };
 
   const uploadButton = (
@@ -114,7 +103,7 @@ export function UploadImageStyle(
     <div style={{padding: "10px"}}>
       <Upload
         accept=".jpg,.jpeg,.png,.gif"
-        action={reqUploadUrl}
+        action={uploadUrl}
         listType="picture-card"
         fileList={imageFileList}
         onPreview={handleImagePreview}

@@ -1,6 +1,8 @@
 import React, {type Dispatch, type SetStateAction, useCallback} from "react";
-import {Button, Col, Flex, Input, Row} from "antd";
-import type {QuestionBaseInfoResp} from "~/type/question";
+import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import type {EditKnowledge} from "~/type/edit";
+import {httpClient} from "~/util/http";
+import {StringUtil} from "~/util/string";
 
 const {TextArea} = Input;
 
@@ -35,7 +37,7 @@ export function AddKnowledgeInfoStyle(
 ) {
   return <Row gutter={[10, 10]}>
     <Col span={24}>
-      <div className="text-blue-700 text-[15px] mb-[10px] font-bold">知识点</div>
+      <div className="text-blue-700 text-[15px] mb-2.5 font-bold">知识点</div>
       {KnowledgeInfo(knowledgeVal, setKnowledgeVal, setShowEditKnowledge)}
     </Col>
   </Row>
@@ -44,28 +46,26 @@ export function AddKnowledgeInfoStyle(
 export function EditKnowledgeInfoStyle(
   knowledgeVal: string,
   setKnowledgeVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionBaseInfoResp,
+  id: number,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showEditKnowledge, setShowEditKnowledge] = React.useState(false);
   const [showEditKnowledgeErr, setShowEditKnowledgeErr] = React.useState<React.ReactNode>("");
 
   const updateKnowledgeVal = () => {
-    // const req: EditKnowledge = {
-    //   textbookKey: questionInfo.textbookKey,
-    //   catalogKey: questionInfo.catalogKey,
-    //   id: questionInfo.id,
-    //   knowledge: knowledgeVal,
-    // }
-    // httpClient.post("/edit/knowledge", req).then((res) => {
-    //   setShowEditKnowledgeErr("");
-    //   setShowEditKnowledge(false);
-    //   setRefreshListNum(StringUtil.getRandomInt());
-    // }).catch((err) => {
-    //   setShowEditKnowledgeErr(<div>
-    //     <Alert title={`更新知识点出错: ${err.message}`} type="error"/>
-    //   </div>);
-    // })
+    const req: EditKnowledge = {
+      id,
+      knowledge: knowledgeVal,
+    }
+    httpClient.post("/edit/knowledge", req).then((res) => {
+      setShowEditKnowledgeErr("");
+      setShowEditKnowledge(false);
+      setRefreshListNum(StringUtil.getRandomInt());
+    }).catch((err) => {
+      setShowEditKnowledgeErr(<div>
+        <Alert title={`更新知识点出错: ${err.message}`} type="error"/>
+      </div>);
+    })
   }
 
   const showEditKnowledgeArea = <div className="mt-2.5">

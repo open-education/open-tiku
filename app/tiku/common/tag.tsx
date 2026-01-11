@@ -1,5 +1,5 @@
 import {Alert, Button, Checkbox, Col, Flex, type GetProp, Row, Tag} from "antd";
-import type {QuestionBaseInfoResp, QuestionInfo_del, QuestionInfoResp} from "~/type/question";
+import type {QuestionBaseInfoResp, QuestionInfoResp} from "~/type/question";
 import {arrayToDict} from "~/util/common";
 import React, {type Dispatch, type SetStateAction, useState} from "react";
 import {httpClient} from "~/util/http";
@@ -203,28 +203,26 @@ export function EditTagStyle(
   questionTagList: TextbookOtherDict[] = [],
   tagListVal: number[],
   setTagListVal: Dispatch<SetStateAction<number[]>>,
-  questionInfo: QuestionBaseInfoResp,
+  id: number,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showTagEdit, setShowTagEdit] = useState<boolean>(false);
   const [showTagEditErr, setShowTagEditErr] = useState<React.ReactNode>("");
 
   const updateQuestionTags = () => {
-    // const req: EditQuestionTags = {
-    //   textbookKey: questionInfo.textbookKey,
-    //   catalogKey: questionInfo.catalogKey,
-    //   id: questionInfo.id,
-    //   tags: [],
-    // }
-    // httpClient.post("/edit/tags", req).then(res => {
-    //   setShowTagEditErr("")
-    //   setShowTagEdit(false);
-    //   setRefreshListNum(StringUtil.getRandomInt());
-    // }).catch(err => {
-    //   setShowTagEditErr(<div>
-    //     <Alert title={`更新标签出错: ${err.message}`} type={"error"}/>
-    //   </div>);
-    // })
+    const req: EditQuestionTags = {
+      id,
+      tags: tagListVal,
+    }
+    httpClient.post("/edit/tags", req).then(res => {
+      setShowTagEditErr("")
+      setShowTagEdit(false);
+      setRefreshListNum(StringUtil.getRandomInt());
+    }).catch(err => {
+      setShowTagEditErr(<div>
+        <Alert title={`更新标签出错: ${err.message}`} type={"error"}/>
+      </div>);
+    })
   }
 
   const showTagEditArea = <div className="mt-2.5">

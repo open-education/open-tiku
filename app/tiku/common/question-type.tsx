@@ -1,4 +1,3 @@
-import type {QuestionBaseInfo, QuestionBaseInfoResp, QuestionInfo_del, QuestionInfoResp} from "~/type/question";
 import React, {type Dispatch, type SetStateAction, useState} from "react";
 import {Alert, Button, Col, Flex, Radio, type RadioChangeEvent, Row} from "antd";
 import {httpClient} from "~/util/http";
@@ -66,28 +65,26 @@ export function EditQuestionTypeStyle(
   questionTypeList: TextbookOtherDict[] = [],
   questionTypeVal: number,
   setQuestionTypeVal: React.Dispatch<React.SetStateAction<number>>,
-  questionInfo: QuestionBaseInfoResp,
+  id: number,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showEditQuestionTypeErr, setShowEditQuestionTypeErr] = useState<React.ReactNode>("");
   const [showEditQuestionType, setShowEditQuestionType] = useState<boolean>(false);
 
   const updateQuestionType = () => {
-    // const req: EditQuestionType = {
-    //   textbookKey: questionInfo.textbookKey,
-    //   catalogKey: questionInfo.catalogKey,
-    //   id: questionInfo.id,
-    //   questionType: questionTypeVal.toString(),
-    // };
-    // httpClient.post("/edit/question-type", req).then(res => {
-    //   setShowEditQuestionTypeErr("");
-    //   setShowEditQuestionType(false);
-    //   setRefreshListNum(StringUtil.getRandomInt());
-    // }).catch(err => {
-    //   setShowEditQuestionTypeErr(<div>
-    //     <Alert title={`更新问题类型出错: ${err.message}`} type={"error"}/>
-    //   </div>);
-    // })
+    const req: EditQuestionType = {
+      id,
+      questionType: questionTypeVal,
+    };
+    httpClient.post("/edit/question-type", req).then(res => {
+      setShowEditQuestionTypeErr("");
+      setShowEditQuestionType(false);
+      setRefreshListNum(StringUtil.getRandomInt());
+    }).catch(err => {
+      setShowEditQuestionTypeErr(<div>
+        <Alert title={`更新问题类型出错: ${err.message}`} type={"error"}/>
+      </div>);
+    })
   }
 
   const showEditQuestionTypeArea = <div className="mt-2.5">

@@ -37,6 +37,9 @@ export default function Add(props: any) {
   const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? [];
   const questionCateId: number = Number(props.questionCateId ?? 0);
 
+  // 添加变式题时有上一层级标识
+  const sourceId: number = Number(props.sourceId ?? 0);
+
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(questionTypeList.length > 0 ? questionTypeList[0].id : 0);
 
   const [tagVal, setTagVal] = useState<number[]>([]);
@@ -54,7 +57,7 @@ export default function Add(props: any) {
   const [cVal, setCVal] = useState<string>("");
   const [dVal, setDVal] = useState<string>("");
   const [eVal, setEVal] = useState<string>("");
-  const [showSelectVal, setShowSelectVal] = useState<number>(0);
+  const [showSelectVal, setShowSelectVal] = useState<number>(1);
 
   const [answerVal, setAnswerVal] = useState<string>("");
 
@@ -157,6 +160,7 @@ export default function Add(props: any) {
       optionsLayout: showSelectVal,
       process: process,
       questionCateId: questionCateId,
+      sourceId: sourceId,
       questionTagIds: tagVal,
       questionTypeId: questionTypeVal,
       remark: remarkVal,
@@ -192,6 +196,9 @@ export default function Add(props: any) {
         questionTypeId: currentInfo.questionTypeId,
         title: currentInfo.title,
         difficultyLevel: currentInfo.difficultyLevel,
+      }
+      if (currentInfo.sourceId && currentInfo.sourceId > 0) {
+        uploadReq.sourceId = currentInfo.sourceId;
       }
       if (currentInfo.questionTagIds && currentInfo.questionTagIds.length > 0) {
         uploadReq.questionTagIds = currentInfo.questionTagIds;
@@ -297,7 +304,7 @@ export default function Add(props: any) {
         <div className="p-2.5">
           {AddMentionInfoStyle(mentionVal, setMentionVal)}
         </div>
-        {UploadImageStyle(questionCateId, imageFileList, setImageFileList)}
+        {UploadImageStyle(imageFileList, setImageFileList)}
         {AddSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal)}
         <div className="p-2.5">
           {AddAnswerInfoStyle(answerVal, setAnswerVal)}

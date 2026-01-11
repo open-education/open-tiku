@@ -1,6 +1,5 @@
 import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
-import type {QuestionBaseInfoResp, QuestionInfo_del} from "~/type/question";
 import type {EditRemark} from "~/type/edit";
 import {httpClient} from "~/util/http";
 import {StringUtil} from "~/util/string";
@@ -38,7 +37,7 @@ export function AddRemarkInfoStyle(
 ) {
   return <Row gutter={[10, 10]}>
     <Col span={24}>
-      <div className="text-blue-700 text-[15px] mb-[10px] font-bold">备注</div>
+      <div className="text-blue-700 text-[15px] mb-2.5 font-bold">备注</div>
       {RemarkInfo(remarkVal, setRemarkVal, setShowEditRemark)}
     </Col>
   </Row>
@@ -47,28 +46,26 @@ export function AddRemarkInfoStyle(
 export function EditRemarkInfoStyle(
   remarkVal: string,
   setRemarkVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionBaseInfoResp,
+  id: number,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showEditRemark, setShowEditRemark] = React.useState(false);
   const [showEditRemarkErr, setShowEditRemarkErr] = React.useState<React.ReactNode>("");
 
   const updateRemarkVal = () => {
-    // const req: EditRemark = {
-    //   textbookKey: questionInfo.textbookKey,
-    //   catalogKey: questionInfo.catalogKey,
-    //   id: questionInfo.id,
-    //   remark: remarkVal,
-    // }
-    // httpClient.post("/edit/remark", req).then((res) => {
-    //   setShowEditRemarkErr("");
-    //   setShowEditRemark(false);
-    //   setRefreshListNum(StringUtil.getRandomInt());
-    // }).catch((err) => {
-    //   setShowEditRemarkErr(<div>
-    //     <Alert title={`更新备注出错: ${err.message}`} type="error"/>
-    //   </div>);
-    // })
+    const req: EditRemark = {
+      id,
+      remark: remarkVal,
+    }
+    httpClient.post("/edit/remark", req).then((res) => {
+      setShowEditRemarkErr("");
+      setShowEditRemark(false);
+      setRefreshListNum(StringUtil.getRandomInt());
+    }).catch((err) => {
+      setShowEditRemarkErr(<div>
+        <Alert title={`更新备注出错: ${err.message}`} type="error"/>
+      </div>);
+    })
   }
 
   const showEditRemarkArea = <div className="mt-2.5">

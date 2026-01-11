@@ -16,6 +16,7 @@ export interface Content {
 export interface QuestionBaseInfo {
   id: number;
   questionCateId: number;
+  sourceId?: number;
   questionTypeId: number;
   questionTagIds?: number[];
   authorId?: number;
@@ -35,6 +36,7 @@ export interface QuestionBaseInfo {
 
 // 创建题目请求
 export interface CreateQuestionReq {
+  sourceId?: number;
   questionCateId: number;
   questionTypeId: number;
   questionTagIds?: number[];
@@ -96,62 +98,4 @@ export interface QuestionListResp {
   pageSize: number
   total: number
   list: QuestionBaseInfoResp[]
-}
-
-export interface QuestionType {
-  label: string
-  key: string
-  order: number
-}
-
-export interface QuestionInfo_del {
-  id: string,
-  textbookKey: string,
-  catalogKey: string,
-  questionType: string,
-  tags?: string[],
-  rateVal?: string,
-  titleVal: string,
-  mentionVal?: string,
-  imageNames?: string[],
-  showImageVal?: string,
-  aVal?: string,
-  bVal?: string,
-  cVal?: string,
-  dVal?: string,
-  eVal?: string,
-  showSelectVal?: string,
-  answerVal?: string,
-  knowledgeVal?: string,
-  analyzeVal?: string,
-  processVal?: string,
-  remarkVal?: string,
-}
-
-export interface QuestionUploadReq {
-  textbookKey: string,
-  catalogKey: string,
-  sourceId?: string,
-  questionType: string,
-  tags?: string[],
-  rateVal?: string,
-  titleVal: string,
-  mentionVal?: string,
-  imageNames?: string[],
-  showImageVal?: string,
-  aVal?: string,
-  bVal?: string,
-  cVal?: string,
-  dVal?: string,
-  eVal?: string,
-  showSelectVal?: string,
-  answerVal?: string,
-  knowledgeVal?: string,
-  analyzeVal?: string,
-  processVal?: string,
-  remarkVal?: string,
-}
-
-export interface QuestionUploadResp {
-  id: string,
 }

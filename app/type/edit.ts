@@ -1,111 +1,61 @@
+import type {Content, QuestionOption} from "~/type/question";
+
 export interface EditQuestionType {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
-  questionType: string,
+  id: number,
+  questionType: number,
 }
 
 export interface EditQuestionTags {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
-  tags: string[],
+  id: number,
+  tags: number[],
 }
 
 export interface EditRate {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
-  rate: string,
+  id: number,
+  difficultyLevel: number,
 }
 
 export interface EditSelect {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
-  select: string,
+  id: number,
+  layout: number,
 }
 
 export interface EditTitle {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
+  id: number,
   title: string,
 }
 
 export interface EditMention {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
+  id: number,
   mention: string,
 }
 
-export interface EditA {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
-  a: string,
-}
-
-export interface EditB {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
-  b: string,
-}
-
-export interface EditC {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
-  c: string,
-}
-
-export interface EditD {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
-  d: string,
-}
-
-export interface EditE {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
-  e: string,
+export interface EditOption {
+  id: number,
+  option: QuestionOption,
 }
 
 export interface EditAnswer {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
+  id: number,
   answer: string,
 }
 
 export interface EditKnowledge {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
+  id: number,
   knowledge: string,
 }
 
 export interface EditAnalyze {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
-  analyze: string,
+  id: number,
+  analyze: Content,
 }
 
 export interface EditProcess {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
-  process: string,
+  id: number,
+  process: Content,
 }
 
 export interface EditRemark {
-  textbookKey: string,
-  catalogKey: string,
-  id: string,
+  id: number,
   remark: string,
 }

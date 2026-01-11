@@ -224,40 +224,40 @@ export default function Edit(props: any) {
     >
       <Splitter.Panel defaultSize={"50%"}>
         {/* 题目类型 */}
-        {EditQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
+        {EditQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
 
         {/* 题目标签 */}
-        {EditTagStyle(questionTagList, tagListVal, setTagListVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
+        {EditTagStyle(questionTagList, tagListVal, setTagListVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
 
         {/* rate */}
-        {EditRateInfoStyle(rateVal, setRateVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
+        {EditRateInfoStyle(rateVal, setRateVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
 
         {/* title */}
-        {EditTitleInfoStyle(titleVal, setTitleVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
+        {EditTitleInfoStyle(titleVal, setTitleVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
 
         {/* mention */}
-        {EditMentionInfoStyle(mentionVal, setMentionVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
+        {EditMentionInfoStyle(mentionVal, setMentionVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
 
         {/* image */}
-        {UploadImageStyle(reqQuestionInfo.baseInfo.questionCateId, imageFileList, setImageFileList, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {UploadImageStyle(imageFileList, setImageFileList, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
 
         {/* select */}
-        {EditSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
+        {EditSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
 
         {/* answer */}
-        {EditAnswerInfoStyle(answerVal, setAnswerVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
+        {EditAnswerInfoStyle(answerVal, setAnswerVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
 
         {/* knowledge */}
-        {EditKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
+        {EditKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
 
         {/* analyze */}
-        {EditAnalyzeInfoStyle(analyzeVal, setAnalyzeVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
+        {EditAnalyzeInfoStyle(analyzeVal, setAnalyzeVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
 
         {/* process */}
-        {EditProcessInfoStyle(processVal, setProcessVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
+        {EditProcessInfoStyle(processVal, setProcessVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
 
         {/* remark */}
-        {EditRemarkInfoStyle(remarkVal, setRemarkVal, reqQuestionInfo.baseInfo, setRefreshListNum)}
+        {EditRemarkInfoStyle(remarkVal, setRemarkVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
       </Splitter.Panel>
 
       <Splitter.Panel defaultSize="50%">

@@ -1,7 +1,6 @@
 import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
 import type {EditMention} from "~/type/edit";
-import type {QuestionBaseInfoResp, QuestionInfo_del} from "~/type/question";
 import {httpClient} from "~/util/http";
 import {StringUtil} from "~/util/string";
 
@@ -47,28 +46,26 @@ export function AddMentionInfoStyle(
 export function EditMentionInfoStyle(
   mentionVal: string,
   setMentionVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionBaseInfoResp,
+  id: number,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showEditMention, setShowEditMention] = React.useState(false);
   const [showEditMentionErr, setShowEditMentionErr] = React.useState<React.ReactNode>("");
 
   const updateMentionVal = () => {
-    // const req: EditMention = {
-    //   textbookKey: questionInfo.textbookKey,
-    //   catalogKey: questionInfo.catalogKey,
-    //   id: questionInfo.id,
-    //   mention: mentionVal,
-    // }
-    // httpClient.post("/edit/mention", req).then(res => {
-    //   setShowEditMentionErr("");
-    //   setShowEditMention(false);
-    //   setRefreshListNum(StringUtil.getRandomInt());
-    // }).catch(err => {
-    //   setShowEditMentionErr(<div>
-    //     <Alert title={`更新标记出错: ${err.message}`} type="error"/>
-    //   </div>);
-    // })
+    const req: EditMention = {
+      id,
+      mention: mentionVal,
+    }
+    httpClient.post("/edit/mention", req).then(res => {
+      setShowEditMentionErr("");
+      setShowEditMention(false);
+      setRefreshListNum(StringUtil.getRandomInt());
+    }).catch(err => {
+      setShowEditMentionErr(<div>
+        <Alert title={`更新标记出错: ${err.message}`} type="error"/>
+      </div>);
+    })
   }
 
   const showEditMentionArea = <div className="mt-2.5">

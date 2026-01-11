@@ -1,7 +1,6 @@
 import React, {type Dispatch, type SetStateAction, useCallback} from "react";
 import {Alert, Button, Col, Flex, Input, Row} from "antd";
-import type {EditD} from "~/type/edit";
-import type {QuestionBaseInfoResp, QuestionInfo_del} from "~/type/question";
+import type {EditOption} from "~/type/edit";
 import {httpClient} from "~/util/http";
 import {StringUtil} from "~/util/string";
 
@@ -47,28 +46,30 @@ export function AddDInfoStyle(
 export function EditDInfoStyle(
   dVal: string,
   setDVal: React.Dispatch<React.SetStateAction<string>>,
-  questionInfo: QuestionBaseInfoResp,
+  id: number,
   setRefreshListNum: Dispatch<SetStateAction<number>>,
 ) {
   const [showEditD, setShowEditD] = React.useState(false);
   const [showEditDErr, setShowEditDErr] = React.useState<React.ReactNode>("");
 
   const updateDVal = () => {
-    // const req: EditD = {
-    //   textbookKey: questionInfo.textbookKey,
-    //   catalogKey: questionInfo.catalogKey,
-    //   id: questionInfo.id,
-    //   d: dVal,
-    // }
-    // httpClient.post("/edit/d", req).then((res) => {
-    //   setShowEditDErr("");
-    //   setShowEditD(false);
-    //   setRefreshListNum(StringUtil.getRandomInt());
-    // }).catch(err => {
-    //   setShowEditDErr(<div>
-    //     <Alert title={`更新D选项出错: ${err.message}`} type={"error"}/>
-    //   </div>);
-    // })
+    const req: EditOption = {
+      id,
+      option: {
+        label: "D",
+        content: dVal,
+        order: 4
+      },
+    }
+    httpClient.post("/edit/options", req).then((res) => {
+      setShowEditDErr("");
+      setShowEditD(false);
+      setRefreshListNum(StringUtil.getRandomInt());
+    }).catch(err => {
+      setShowEditDErr(<div>
+        <Alert title={`更新D选项出错: ${err.message}`} type={"error"}/>
+      </div>);
+    })
   }
 
   const showEditDArea = <div className="mt-2.5">

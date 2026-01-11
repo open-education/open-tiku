@@ -1,6 +1,4 @@
 export interface DeleteImageReq {
-  textbookKey: string,
-  catalogKey: string,
-  id?: string,
+  id?: number,
   filename: string
 }
