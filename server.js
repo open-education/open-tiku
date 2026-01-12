@@ -9,7 +9,7 @@ if (process.env.NODE_ENV === "production") {
   console.log("start NODE_ENV=production");
   
   // 静态文件 - 长缓存
-  app.use('/assets', express.static('./build/client/assets', {
+  app.use('/frontend/assets', express.static('./build/client/assets', {
     maxAge: '1y', immutable: true,
   }));
   
