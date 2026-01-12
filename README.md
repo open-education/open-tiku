@@ -69,11 +69,11 @@ server {
 ```
 注意以下5点, 如果自己的配置不一样请对应调整
 
-#### 1. `proxy_pass http://127.0.0.1:5174;`
+###### 1. `proxy_pass http://127.0.0.1:5174;`
 
 这个配置后面没有 `/`, 转发后要保留 `/backend` 一样的路径, 不然浏览器区分不了资源, ip和端口使用自己电脑的即可
 
-#### 2. [vite.config.ts](vite.config.ts) 文件中的这个属性要配置跟 nginx 对应
+###### 2. [vite.config.ts](vite.config.ts) 文件中的这个属性要配置跟 nginx 对应
 
 ```
 export default defineConfig({
@@ -82,7 +82,7 @@ export default defineConfig({
 });
 ``` 
 
-#### 3. [react-router.config.ts](react-router.config.ts) 也要对应配置
+###### 3. [react-router.config.ts](react-router.config.ts) 也要对应配置
 
 ```
 export default {
@@ -91,9 +91,9 @@ export default {
 } satisfies Config;
 ```
 
-#### 4. 前端访问 `http://127.0.0.1/backend/`
+###### 4. 前端访问 `http://127.0.0.1/backend/`
 
-#### 5. [server.js](server.js) 文件中类似下面的访问
+###### 5. [server.js](server.js) 文件中类似下面的访问
 
 ```
   // 静态文件 - 长缓存
