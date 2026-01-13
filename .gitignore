@@ -1,0 +1,13 @@
+# IDE
+.idea
+target
+
+# System
+.DS_Store
+
+# Node
+/node_modules/
+
+# React Router
+/.react-router/
+/build/
