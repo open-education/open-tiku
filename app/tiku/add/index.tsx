@@ -325,7 +325,7 @@ export default function Add(props: any) {
 
       <Splitter.Panel defaultSize="50%">
         <Watermark content="预览区域 仅展示效果">
-          <div className="min-h-[1900px] p-5">
+          <div className="min-h-475 p-5">
             {openPreviewArea ? <Preview
               questionInfo={questionInfo}
               questionTypeList={questionTypeList}
