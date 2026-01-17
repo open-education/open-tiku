@@ -179,10 +179,17 @@ export function ListInfo(props: any) {
         >
           {/* 标签 */}
           {CommonTag(questionInfo, questionTypeList, questionTagList)}
+
           {/* 标题 */}
-          {CommonTitle(questionInfo)}
+          <div className="mt-2.5">
+            {CommonTitle(questionInfo)}
+          </div>
+
           {/* 选项内容 */}
-          {CommonSelect(questionInfo)}
+          <div className="mt-2.5">
+            {CommonSelect(questionInfo)}
+          </div>
+
           {/* 题目其它标签, 比如查看答案, 关联题目等 */}
           <div
             className="absolute bottom-3 right-4 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2"
