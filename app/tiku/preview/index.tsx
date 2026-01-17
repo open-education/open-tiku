@@ -1,5 +1,5 @@
 // 预览
-import {Col, Divider, Row} from "antd";
+import {Col, Divider, Flex, Image, Row} from "antd";
 
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
@@ -11,6 +11,7 @@ import {CommonTag} from "~/tiku/common/tag";
 import {CommonTitle} from "~/tiku/common/title";
 import {CommonSelect} from "~/tiku/common/select";
 import type {TextbookOtherDict} from "~/type/textbook";
+import React from "react";
 
 export default function preview(props: any) {
   const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
@@ -49,9 +50,9 @@ export default function preview(props: any) {
       <Col span={24}>
         {
           StringValidator.isNonEmpty(questionInfo.answer) &&
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.answer}
-          </Markdown>
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+              {questionInfo.answer}
+            </Markdown>
         }
       </Col>
     </Row>
@@ -71,9 +72,9 @@ export default function preview(props: any) {
       <Col span={24}>
         {
           StringValidator.isNonEmpty(questionInfo.knowledge) &&
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.knowledge}
-          </Markdown>
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+              {questionInfo.knowledge}
+            </Markdown>
         }
       </Col>
     </Row>
@@ -93,10 +94,20 @@ export default function preview(props: any) {
       <Col span={24}>
         {
           StringValidator.isNonEmpty(questionInfo.analysis?.content) &&
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.analysis?.content}
-          </Markdown>
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+              {questionInfo.analysis?.content}
+            </Markdown>
         }
+      </Col>
+      {/* 如果有图片 */}
+      <Col span={24}>
+        <Flex gap="small" wrap>
+          {questionInfo.analysis?.images?.map(imageName => {
+            return (
+              <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`}/>
+            );
+          })}
+        </Flex>
       </Col>
     </Row>
 
@@ -115,10 +126,20 @@ export default function preview(props: any) {
       <Col span={24}>
         {
           StringValidator.isNonEmpty(questionInfo.process?.content) &&
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.process?.content}
-          </Markdown>
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+              {questionInfo.process?.content}
+            </Markdown>
         }
+      </Col>
+      {/* 如果有图片 */}
+      <Col span={24}>
+        <Flex gap="small" wrap>
+          {questionInfo.process?.images?.map(imageName => {
+            return (
+              <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`}/>
+            );
+          })}
+        </Flex>
       </Col>
     </Row>
 
@@ -137,9 +158,9 @@ export default function preview(props: any) {
       <Col span={24}>
         {
           StringValidator.isNonEmpty(questionInfo.remark) &&
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.remark}
-          </Markdown>
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+              {questionInfo.remark}
+            </Markdown>
         }
       </Col>
     </Row>

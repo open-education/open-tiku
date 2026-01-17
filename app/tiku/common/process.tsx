@@ -1,68 +1,60 @@
-import React, {type Dispatch, type SetStateAction, useCallback} from "react";
-import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import React from "react";
+import {Alert, Button, Col, Flex, Row, type UploadFile} from "antd";
 import type {EditProcess} from "~/type/edit";
 import {httpClient} from "~/util/http";
 import {StringUtil} from "~/util/string";
+import {SimpleTextArea} from "~/tiku/common/text-area";
+import {AddUploadImageStyle} from "~/tiku/common/upload-image";
 
-const {TextArea} = Input;
-
-export function ProcessInfo(
-  processVal: string,
-  setProcessVal: React.Dispatch<React.SetStateAction<string>>,
-  setShowEditProcess?: React.Dispatch<React.SetStateAction<boolean>>,
-) {
-  const onEditProcessChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setProcessVal(e.target.value);
-      if (setShowEditProcess) {
-        setShowEditProcess(true);
-      }
-    },
-    []
-  );
-
-  return <TextArea
-    autoSize={{minRows: 3, maxRows: 7}}
-    placeholder="请输入解题过程"
-    onChange={onEditProcessChange}
-    name="process"
-    value={processVal}
-  />
+interface AddProcessProps {
+  val: string;
+  setVal(value: string): void;
+  onStartEdit?: (value: boolean) => void;
 }
 
-export function AddProcessInfoStyle(
-  processVal: string,
-  setProcessVal: React.Dispatch<React.SetStateAction<string>>,
-  setShowEditProcess?: React.Dispatch<React.SetStateAction<boolean>>,
-) {
+// 添加解题过程样式
+export function AddProcessInfoStyle(props: AddProcessProps) {
   return <Row gutter={[10, 10]}>
     <Col span={24}>
       <div className="text-blue-700 text-[15px] mb-2.5 font-bold">解题过程</div>
-      {ProcessInfo(processVal, setProcessVal, setShowEditProcess)}
+      {<SimpleTextArea
+        name="process"
+        value={props.val}
+        onChange={props.setVal}
+        placeholder="请输入解题过程"
+        autoSize={{minRows: 3, maxRows: 7}}
+        onStartEdit={props.onStartEdit}
+      />}
     </Col>
   </Row>
 }
 
-export function EditProcessInfoStyle(
-  processVal: string,
-  setProcessVal: React.Dispatch<React.SetStateAction<string>>,
-  id: number,
-  setRefreshListNum: Dispatch<SetStateAction<number>>,
-) {
+interface EditProcessProps {
+  val: string;
+  setVal: (val: string) => void;
+  images: UploadFile[];
+  setImages: (images: UploadFile[]) => void;
+  id: number;
+  setRefreshListNum: (value: number) => void;
+}
+
+// 编辑解题过程样式
+export function EditProcessInfoStyle(props: EditProcessProps) {
   const [showEditProcess, setShowEditProcess] = React.useState(false);
   const [showEditProcessErr, setShowEditProcessErr] = React.useState<React.ReactNode>("");
 
   const updateProcessVal = () => {
     const req: EditProcess = {
-      id,
+      id: props.id,
       process: {
-        content: processVal,
+        content: props.val,
+        images: props.images?.map(image => image.name)
       },
     }
     httpClient.post("/edit/process", req).then((res) => {
       setShowEditProcessErr("");
       setShowEditProcess(false);
-      setRefreshListNum(StringUtil.getRandomInt());
+      props.setRefreshListNum(StringUtil.getRandomInt());
     }).catch((err) => {
       setShowEditProcessErr(<div>
         <Alert title={`更新解题过程出错: ${err.message}`} type="error"/>
@@ -78,7 +70,17 @@ export function EditProcessInfoStyle(
 
   return <div className="p-2.5 hover:border border-red-700 border-dashed">
     <div>
-      {AddProcessInfoStyle(processVal, setProcessVal, setShowEditProcess)}
+      {<AddProcessInfoStyle
+        val={props.val}
+        setVal={props.setVal}
+        onStartEdit={setShowEditProcess}
+      />}
+      {<AddUploadImageStyle
+        images={props.images}
+        setImages={props.setImages}
+        showTitle={false}
+        onStartEdit={setShowEditProcess}
+      />}
     </div>
     {showEditProcessErr}
     {showEditProcess && showEditProcessArea}

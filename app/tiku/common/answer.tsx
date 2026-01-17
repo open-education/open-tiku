@@ -1,66 +1,54 @@
-import React, {type Dispatch, type SetStateAction, useCallback} from "react";
-import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import React from "react";
+import {Alert, Button, Col, Flex, Row} from "antd";
 import type {EditAnswer} from "~/type/edit";
 import {httpClient} from "~/util/http";
 import {StringUtil} from "~/util/string";
+import {SimpleTextArea} from "~/tiku/common/text-area";
 
-const {TextArea} = Input;
-
-export function AnswerInfo(
-  answerVal: string,
-  setAnswerVal: React.Dispatch<React.SetStateAction<string>>,
-  setShowEditAnswer?: React.Dispatch<React.SetStateAction<boolean>>,
-) {
-  const onEditAnswerChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setAnswerVal(e.target.value);
-      if (setShowEditAnswer) {
-        setShowEditAnswer(true);
-      }
-    },
-    []
-  );
-
-  return <TextArea
-    autoSize={{minRows: 3, maxRows: 7}}
-    placeholder="请输入参考答案"
-    onChange={onEditAnswerChange}
-    name="answer"
-    value={answerVal}
-  />
+interface AddAnswerProps {
+  val: string;
+  setVal: (value: string) => void;
+  onStartEdit?: (value: boolean) => void;
 }
 
-export function AddAnswerInfoStyle(
-  answerVal: string,
-  setAnswerVal: React.Dispatch<React.SetStateAction<string>>,
-  setShowEditAnswer?: React.Dispatch<React.SetStateAction<boolean>>,
-) {
+// 添加参考答案样式
+export function AddAnswerInfoStyle(props: AddAnswerProps) {
   return <Row gutter={[10, 10]}>
     <Col span={24}>
       <div className="text-blue-700 text-[15px] mb-2.5 font-bold">参考答案</div>
-      {AnswerInfo(answerVal, setAnswerVal, setShowEditAnswer)}
+      {<SimpleTextArea
+        name="answer"
+        value={props.val}
+        onChange={props.setVal}
+        placeholder="请输入参考答案"
+        autoSize={{minRows: 3, maxRows: 7}}
+        onStartEdit={props.onStartEdit}
+      />}
     </Col>
   </Row>
 }
 
-export function EditAnswerInfoStyle(
-  answerVal: string,
-  setAnswerVal: React.Dispatch<React.SetStateAction<string>>,
-  id: number,
-  setRefreshListNum: Dispatch<SetStateAction<number>>,
-) {
+interface EditAnswerProps {
+  val: string;
+  setVal: (value: string) => void;
+  id: number;
+  setRefreshListNum: (value: number) => void;
+}
+
+// 编辑参考答案样式
+export function EditAnswerInfoStyle(props: EditAnswerProps) {
   const [showEditAnswer, setShowEditAnswer] = React.useState(false);
   const [showEditAnswerErr, setShowEditAnswerErr] = React.useState<React.ReactNode>("");
 
   const updateAnswerVal = () => {
     const req: EditAnswer = {
-      id,
-      answer: answerVal,
+      id: props.id,
+      answer: props.val,
     }
     httpClient.post("/edit/answer", req).then((res) => {
       setShowEditAnswerErr("");
       setShowEditAnswer(false);
-      setRefreshListNum(StringUtil.getRandomInt());
+      props.setRefreshListNum(StringUtil.getRandomInt());
     }).catch(err => {
       setShowEditAnswerErr(<div>
         <Alert title={`更新答案出错: ${err.message}`} type={"error"}/>
@@ -76,7 +64,7 @@ export function EditAnswerInfoStyle(
 
   return <div className="p-2.5 hover:border border-red-700 border-dashed">
     <div>
-      {AddAnswerInfoStyle(answerVal, setAnswerVal, setShowEditAnswer)}
+      {<AddAnswerInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditAnswer}/>}
     </div>
     {showEditAnswerErr}
     {showEditAnswer && showEditAnswerArea}

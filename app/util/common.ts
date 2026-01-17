@@ -1,3 +1,4 @@
+// 一维数组转字典
 export function arrayToDict<T, K extends keyof T>(
   array: T[],
   key: K

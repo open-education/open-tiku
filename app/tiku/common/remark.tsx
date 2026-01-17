@@ -1,66 +1,54 @@
-import React, {type Dispatch, type SetStateAction, useCallback} from "react";
-import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import React from "react";
+import {Alert, Button, Col, Flex, Row} from "antd";
 import type {EditRemark} from "~/type/edit";
 import {httpClient} from "~/util/http";
 import {StringUtil} from "~/util/string";
+import {SimpleTextArea} from "~/tiku/common/text-area";
 
-const {TextArea} = Input;
-
-export function RemarkInfo(
-  remarkVal: string,
-  setRemarkVal: React.Dispatch<React.SetStateAction<string>>,
-  setShowEditRemark?: React.Dispatch<React.SetStateAction<boolean>>,
-) {
-  const onEditRemarkChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setRemarkVal(e.target.value);
-      if (setShowEditRemark) {
-        setShowEditRemark(true);
-      }
-    },
-    []
-  );
-
-  return <TextArea
-    autoSize={{minRows: 3, maxRows: 7}}
-    placeholder="请输入备注"
-    onChange={onEditRemarkChange}
-    name="remark"
-    value={remarkVal}
-  />
+interface AddRemarkProps {
+  val: string;
+  setVal: (value: string) => void;
+  onStartEdit?: (value: boolean) => void;
 }
 
-export function AddRemarkInfoStyle(
-  remarkVal: string,
-  setRemarkVal: React.Dispatch<React.SetStateAction<string>>,
-  setShowEditRemark?: React.Dispatch<React.SetStateAction<boolean>>,
-) {
+// 添加备注样式
+export function AddRemarkInfoStyle(props: AddRemarkProps) {
   return <Row gutter={[10, 10]}>
     <Col span={24}>
       <div className="text-blue-700 text-[15px] mb-2.5 font-bold">备注</div>
-      {RemarkInfo(remarkVal, setRemarkVal, setShowEditRemark)}
+      {<SimpleTextArea
+        name="remark"
+        value={props.val}
+        onChange={props.setVal}
+        placeholder="请输入备注"
+        autoSize={{minRows: 3, maxRows: 7}}
+        onStartEdit={props.onStartEdit}
+      />}
     </Col>
   </Row>
 }
 
-export function EditRemarkInfoStyle(
-  remarkVal: string,
-  setRemarkVal: React.Dispatch<React.SetStateAction<string>>,
-  id: number,
-  setRefreshListNum: Dispatch<SetStateAction<number>>,
-) {
+interface EditRemarkProps {
+  val: string;
+  setVal: (value: string) => void;
+  id: number;
+  setRefreshListNum: (value: number) => void;
+}
+
+// 编辑备注样式
+export function EditRemarkInfoStyle(props: EditRemarkProps) {
   const [showEditRemark, setShowEditRemark] = React.useState(false);
   const [showEditRemarkErr, setShowEditRemarkErr] = React.useState<React.ReactNode>("");
 
   const updateRemarkVal = () => {
     const req: EditRemark = {
-      id,
-      remark: remarkVal,
+      id: props.id,
+      remark: props.val,
     }
     httpClient.post("/edit/remark", req).then((res) => {
       setShowEditRemarkErr("");
       setShowEditRemark(false);
-      setRefreshListNum(StringUtil.getRandomInt());
+      props.setRefreshListNum(StringUtil.getRandomInt());
     }).catch((err) => {
       setShowEditRemarkErr(<div>
         <Alert title={`更新备注出错: ${err.message}`} type="error"/>
@@ -76,7 +64,11 @@ export function EditRemarkInfoStyle(
 
   return <div className="p-2.5 hover:border border-red-700 border-dashed">
     <div>
-      {AddRemarkInfoStyle(remarkVal, setRemarkVal, setShowEditRemark)}
+      {<AddRemarkInfoStyle
+        val={props.val}
+        setVal={props.setVal}
+        onStartEdit={setShowEditRemark}
+      />}
     </div>
     {showEditRemarkErr}
     {showEditRemark && showEditRemarkArea}

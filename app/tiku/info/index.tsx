@@ -1,5 +1,5 @@
 // 题目详情页面
-import {Col, Divider, Row} from "antd";
+import {Col, Divider, Flex, Image, Row} from "antd";
 
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
@@ -67,9 +67,9 @@ export default function Info(props: any) {
       <Col span={24}>
         {
           StringValidator.isNonEmpty(questionInfo.extraInfo.answer) &&
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.extraInfo.answer}
-          </Markdown>
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+              {questionInfo.extraInfo.answer}
+            </Markdown>
         }
       </Col>
     </Row>
@@ -89,9 +89,9 @@ export default function Info(props: any) {
       <Col span={24}>
         {
           StringValidator.isNonEmpty(questionInfo.extraInfo.knowledge) &&
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.extraInfo.knowledge}
-          </Markdown>
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+              {questionInfo.extraInfo.knowledge}
+            </Markdown>
         }
       </Col>
     </Row>
@@ -111,10 +111,20 @@ export default function Info(props: any) {
       <Col span={24}>
         {
           StringValidator.isNonEmpty(questionInfo.extraInfo.analysis?.content) &&
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.extraInfo.analysis?.content}
-          </Markdown>
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+              {questionInfo.extraInfo.analysis?.content}
+            </Markdown>
         }
+      </Col>
+      {/* 如果有图片 */}
+      <Col span={24}>
+        <Flex gap="small" wrap>
+          {questionInfo.extraInfo.analysis?.images?.map(imageName => {
+            return (
+              <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`}/>
+            );
+          })}
+        </Flex>
       </Col>
     </Row>
 
@@ -133,10 +143,20 @@ export default function Info(props: any) {
       <Col span={24}>
         {
           StringValidator.isNonEmpty(questionInfo.extraInfo.process?.content) &&
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.extraInfo.process?.content}
-          </Markdown>
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+              {questionInfo.extraInfo.process?.content}
+            </Markdown>
         }
+      </Col>
+      {/* 如果有图片 */}
+      <Col span={24}>
+        <Flex gap="small" wrap>
+          {questionInfo.extraInfo.process?.images?.map(imageName => {
+            return (
+              <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`}/>
+            );
+          })}
+        </Flex>
       </Col>
     </Row>
 
@@ -155,9 +175,9 @@ export default function Info(props: any) {
       <Col span={24}>
         {
           StringValidator.isNonEmpty(questionInfo.extraInfo.remark) &&
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.extraInfo.remark}
-          </Markdown>
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+              {questionInfo.extraInfo.remark}
+            </Markdown>
         }
       </Col>
     </Row>

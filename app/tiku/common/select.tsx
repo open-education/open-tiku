@@ -5,12 +5,7 @@ import {StringUtil, StringValidator} from "~/util/string";
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import React, {type Dispatch, type SetStateAction} from "react";
-import {AddAInfoStyle, EditAInfoStyle} from "~/tiku/common/a";
-import {AddBInfoStyle, EditBInfoStyle} from "~/tiku/common/b";
-import {AddCInfoStyle, EditCInfoStyle} from "~/tiku/common/c";
-import {AddDInfoStyle, EditDInfoStyle} from "~/tiku/common/d";
-import {AddEInfoStyle, EditEInfoStyle} from "~/tiku/common/e";
+import React from "react";
 import type {EditSelect} from "~/type/edit";
 import {httpClient} from "~/util/http";
 
@@ -25,11 +20,11 @@ export function CommonSelect(questionInfo: QuestionBaseInfoResp) {
           return <Col span={6} key={item.label}>
             {
               StringValidator.isNonEmpty(item.label) && <Markdown
-                remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex]}
-              >
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                >
                 {`${item.label}. ${item.content}`}
-              </Markdown>
+                </Markdown>
             }
           </Col>
         })
@@ -42,11 +37,11 @@ export function CommonSelect(questionInfo: QuestionBaseInfoResp) {
           return <Col span={24} key={item.label}>
             {
               StringValidator.isNonEmpty(item.label) && <Markdown
-                remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex]}
-              >
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                >
                 {`${item.label}. ${item.content}`}
-              </Markdown>
+                </Markdown>
             }
           </Col>
         })
@@ -71,11 +66,11 @@ export function CommonSelect(questionInfo: QuestionBaseInfoResp) {
               return <Col span={12} key={item.label}>
                 {
                   StringValidator.isNonEmpty(item.label) && <Markdown
-                    remarkPlugins={[remarkMath]}
-                    rehypePlugins={[rehypeKatex]}
-                  >
+                        remarkPlugins={[remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
+                    >
                     {`${item.label}. ${item.content}`}
-                  </Markdown>
+                    </Markdown>
                 }
               </Col>
             })
@@ -89,11 +84,11 @@ export function CommonSelect(questionInfo: QuestionBaseInfoResp) {
               return <Col span={12} key={item.label}>
                 {
                   StringValidator.isNonEmpty(item.label) && <Markdown
-                    remarkPlugins={[remarkMath]}
-                    rehypePlugins={[rehypeKatex]}
-                  >
+                        remarkPlugins={[remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
+                    >
                     {`${item.label}. ${item.content}`}
-                  </Markdown>
+                    </Markdown>
                 }
               </Col>
             })
@@ -104,16 +99,17 @@ export function CommonSelect(questionInfo: QuestionBaseInfoResp) {
   }
 }
 
-export function AddSelectTopStyle(
-  showSelectVal: number,
-  setShowSelectVal: React.Dispatch<React.SetStateAction<number>>,
-  setShowEditSelect?: React.Dispatch<React.SetStateAction<boolean>>,
-) {
+interface AddSelectOptionLayoutProps {
+  val: number;
+  setVal: (value: number) => void;
+  onStartEdit?: (value: boolean) => void;
+}
+
+// 选择选项样式
+export function AddSelectOptionLayout(props: AddSelectOptionLayoutProps) {
   const onAddSelectChange = (e: RadioChangeEvent) => {
-    setShowSelectVal(Number(e.target.value));
-    if (setShowEditSelect) {
-      setShowEditSelect(true);
-    }
+    props.setVal(Number(e.target.value));
+    props.onStartEdit?.(true);
   }
 
   return <Row gutter={[10, 10]}>
@@ -121,7 +117,7 @@ export function AddSelectTopStyle(
       <div className="text-blue-700 text-[15px] mb-2.5 font-bold">选项</div>
       <Flex vertical gap="small" justify={"right"}>
         <Radio.Group
-          value={showSelectVal}
+          value={props.val}
           buttonStyle="solid"
           onChange={onAddSelectChange}
           block
@@ -146,24 +142,27 @@ export function AddSelectTopStyle(
   </Row>
 }
 
-export function EditSelectTopStyle(
-  showSelectVal: number,
-  setShowSelectVal: React.Dispatch<React.SetStateAction<number>>,
-  id: number,
-  setRefreshListNum: Dispatch<SetStateAction<number>>,
-) {
+interface EditSelectOptionLayoutProps {
+  val: number;
+  setVal: (value: number) => void;
+  id: number;
+  setRefreshListNum: (value: number) => void;
+}
+
+// 编辑选项样式
+export function EditSelectOptionLayout(props: EditSelectOptionLayoutProps) {
   const [showEditSelect, setShowEditSelect] = React.useState(false);
   const [showEditSelectErr, setShowEditSelectErr] = React.useState<React.ReactNode>("");
 
   const updateSelectVal = () => {
     const req: EditSelect = {
-      id,
-      layout: showSelectVal,
+      id: props.id,
+      layout: props.val,
     }
     httpClient.post("/edit/options-layout", req).then((res) => {
       setShowEditSelectErr("");
       setShowEditSelect(false);
-      setRefreshListNum(StringUtil.getRandomInt());
+      props.setRefreshListNum(StringUtil.getRandomInt());
     }).catch((err) => {
       setShowEditSelectErr(<div>
         <Alert title={`更新选项样式出错: ${err.message}`} type={"error"}/>
@@ -179,71 +178,13 @@ export function EditSelectTopStyle(
 
   return <div className="p-2.5 hover:border border-red-700 border-dashed">
     <div>
-      {AddSelectTopStyle(showSelectVal, setShowSelectVal, setShowEditSelect)}
+      {<AddSelectOptionLayout
+        val={props.val}
+        setVal={props.setVal}
+        onStartEdit={setShowEditSelect}
+      />}
     </div>
     {showEditSelectErr}
     {showEditSelect && showEditSelectArea}
-  </div>
-}
-
-export function AddSelectStyle(
-  aVal: string,
-  setAVal: React.Dispatch<React.SetStateAction<string>>,
-  bVal: string,
-  setBVal: React.Dispatch<React.SetStateAction<string>>,
-  cVal: string,
-  setCVal: React.Dispatch<React.SetStateAction<string>>,
-  dVal: string,
-  setDVal: React.Dispatch<React.SetStateAction<string>>,
-  eVal: string,
-  setEVal: React.Dispatch<React.SetStateAction<string>>,
-  showSelectVal: number,
-  setShowSelectVal: React.Dispatch<React.SetStateAction<number>>,
-) {
-  return <div>
-    <div className="p-2.5">
-      {AddSelectTopStyle(showSelectVal, setShowSelectVal)}
-    </div>
-    <div className="p-2.5">
-      {AddAInfoStyle(aVal, setAVal)}
-    </div>
-    <div className="p-2.5">
-      {AddBInfoStyle(bVal, setBVal)}
-    </div>
-    <div className="p-2.5">
-      {AddCInfoStyle(cVal, setCVal)}
-    </div>
-    <div className="p-2.5">
-      {AddDInfoStyle(dVal, setDVal)}
-    </div>
-    <div className="p-2.5">
-      {AddEInfoStyle(eVal, setEVal)}
-    </div>
-  </div>
-}
-
-export function EditSelectStyle(
-  aVal: string,
-  setAVal: React.Dispatch<React.SetStateAction<string>>,
-  bVal: string,
-  setBVal: React.Dispatch<React.SetStateAction<string>>,
-  cVal: string,
-  setCVal: React.Dispatch<React.SetStateAction<string>>,
-  dVal: string,
-  setDVal: React.Dispatch<React.SetStateAction<string>>,
-  eVal: string,
-  setEVal: React.Dispatch<React.SetStateAction<string>>,
-  showSelectVal: number,
-  setShowSelectVal: React.Dispatch<React.SetStateAction<number>>,
-  id: number,
-  setRefreshListNum: Dispatch<SetStateAction<number>>,
-) {
-  return <div>
-    {EditSelectTopStyle(showSelectVal, setShowSelectVal, id, setRefreshListNum)}
-    {EditAInfoStyle(aVal, setAVal, id, setRefreshListNum)}
-    {EditBInfoStyle(bVal, setBVal, id, setRefreshListNum)}
-    {EditCInfoStyle(cVal, setCVal, id, setRefreshListNum)}
-    {EditDInfoStyle(dVal, setDVal, id, setRefreshListNum)}
-    {EditEInfoStyle(eVal, setEVal, id, setRefreshListNum)}
   </div>
 }

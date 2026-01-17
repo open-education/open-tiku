@@ -139,14 +139,16 @@ export function CommonQuickJumpTag(
   </Row>
 }
 
+interface TagProps {
+  tagList: TextbookOtherDict[];
+  tags: number[];
+  setTags: (value: number[]) => void;
+  onStartEdit?: (value: boolean) => void;
+}
+
 // 题目标签基础样式
-export function EditTag(
-  questionTagList: TextbookOtherDict[] = [],
-  tagListVal: number[],
-  setTagListVal: Dispatch<SetStateAction<number[]>>,
-  setShowTagEdit?: Dispatch<SetStateAction<boolean>>,
-) {
-  if (!questionTagList.length) {
+export function EditTag(props: TagProps) {
+  if (!props.tagList.length) {
     return <Alert
       title="Warning"
       description="标签类型为空"
@@ -160,19 +162,17 @@ export function EditTag(
   const onEditTagsChange: GetProp<typeof Checkbox.Group, "onChange"> = (
     checkedValues: unknown[]
   ) => {
-    setTagListVal(checkedValues.map(Number).filter(val => !isNaN(val)));
-    if (setShowTagEdit) {
-      setShowTagEdit(true);
-    }
+    props.setTags(checkedValues.map(Number).filter(val => !isNaN(val)));
+    props.onStartEdit?.(true);
   };
 
   return <Checkbox.Group
-    defaultValue={tagListVal}
+    defaultValue={props.tags}
     style={{width: "100%"}}
     onChange={onEditTagsChange}
   >
     <Row>
-      {questionTagList.map(item => {
+      {props.tagList.map(item => {
         return (
           <Col span={6} key={item.id}>
             <Checkbox value={item.id}>{item.itemValue}</Checkbox>
@@ -183,41 +183,45 @@ export function EditTag(
   </Checkbox.Group>
 }
 
+interface AddTagProps {
+  tagList: TextbookOtherDict[];
+  tags: number[];
+  setTags: (value: number[]) => void;
+  onStartEdit?: (value: boolean) => void;
+}
+
 // 添加题目时标签样式
-export function AddTagStyle(
-  questionTagList: TextbookOtherDict[],
-  tagListVal: number[],
-  setTagListVal: Dispatch<SetStateAction<number[]>>,
-  setShowTagEdit?: Dispatch<SetStateAction<boolean>>,
-) {
+export function AddTagStyle(props: AddTagProps) {
   return <Row gutter={[10, 10]}>
     <Col span={24}>
       <div className="text-blue-700 text-[15px] mb-2.5 font-bold">标签</div>
-      {EditTag(questionTagList, tagListVal, setTagListVal, setShowTagEdit)}
+      {<EditTag tagList={props.tagList} tags={props.tags} setTags={props.setTags} onStartEdit={props.onStartEdit}/>}
     </Col>
   </Row>
 }
 
+interface EditTagProps {
+  tagList: TextbookOtherDict[];
+  tags: number[];
+  setTags: (value: number[]) => void;
+  id: number;
+  setRefreshListNum: (value: number) => void;
+}
+
 // 编辑题目时标签样式
-export function EditTagStyle(
-  questionTagList: TextbookOtherDict[] = [],
-  tagListVal: number[],
-  setTagListVal: Dispatch<SetStateAction<number[]>>,
-  id: number,
-  setRefreshListNum: Dispatch<SetStateAction<number>>,
-) {
+export function EditTagStyle(props: EditTagProps) {
   const [showTagEdit, setShowTagEdit] = useState<boolean>(false);
   const [showTagEditErr, setShowTagEditErr] = useState<React.ReactNode>("");
 
   const updateQuestionTags = () => {
     const req: EditQuestionTags = {
-      id,
-      tags: tagListVal,
+      id: props.id,
+      tags: props.tags,
     }
     httpClient.post("/edit/tags", req).then(res => {
       setShowTagEditErr("")
       setShowTagEdit(false);
-      setRefreshListNum(StringUtil.getRandomInt());
+      props.setRefreshListNum(StringUtil.getRandomInt());
     }).catch(err => {
       setShowTagEditErr(<div>
         <Alert title={`更新标签出错: ${err.message}`} type={"error"}/>
@@ -233,7 +237,7 @@ export function EditTagStyle(
 
   return <div className="p-2.5 pt-2.5 hover:border border-red-700 border-dashed">
     <div>
-      {AddTagStyle(questionTagList, tagListVal, setTagListVal, setShowTagEdit)}
+      {<AddTagStyle tagList={props.tagList} tags={props.tags} setTags={props.setTags} onStartEdit={setShowTagEdit}/>}
     </div>
     {showTagEditErr}
     {showTagEdit && showTagEditArea}

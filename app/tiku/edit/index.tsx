@@ -6,27 +6,27 @@ import {Button, Col, Flex, Row, Splitter, type UploadFile, Watermark} from "antd
 import {CommonBreadcrumb} from "~/tiku/common/breadcrumb";
 import Preview from "~/tiku/preview";
 import {EditQuestionTypeStyle} from "~/tiku/common/question-type";
-import type {Content, QuestionBaseInfo, QuestionInfoResp, QuestionOption} from "~/type/question";
+import type {QuestionBaseInfo, QuestionInfoResp, QuestionOption} from "~/type/question";
 import {EditTagStyle} from "~/tiku/common/tag";
 import {EditRateInfoStyle} from "~/tiku/common/rate";
 import {EditTitleInfoStyle} from "~/tiku/common/title";
 import {EditMentionInfoStyle} from "~/tiku/common/mention";
-import {EditSelectStyle} from "~/tiku/common/select";
 import {EditAnswerInfoStyle} from "~/tiku/common/answer";
 import {EditKnowledgeInfoStyle} from "~/tiku/common/knowledge";
 import {EditAnalyzeInfoStyle} from "~/tiku/common/analyze";
 import {EditProcessInfoStyle} from "~/tiku/common/process";
 import {EditRemarkInfoStyle} from "~/tiku/common/remark";
-import {UploadImageStyle} from "~/tiku/common/upload-image";
+import {EditUploadImageStyle} from "~/tiku/common/upload-image";
 import {StringUtil, StringValidator} from "~/util/string";
 import type {Textbook, TextbookOtherDict} from "~/type/textbook";
+import {EditOptions} from "~/tiku/common/options";
+import {EditSelectOptionLayout} from "~/tiku/common/select";
 
 // 编辑组件
 export default function Edit(props: any) {
   const {pathMap} = useOutletContext<TiKuIndexContext>();
 
   const setRefreshListNum: Dispatch<SetStateAction<number>> = props.setRefreshListNum;
-
   const location = useLocation();
   const pathname = StringUtil.getLastPart(location.pathname, "/");
 
@@ -37,30 +37,23 @@ export default function Edit(props: any) {
 
   // 题目类型
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(reqQuestionInfo.baseInfo.questionTypeId);
-
   // 题目标签
   const [tagListVal, setTagListVal] = useState<number[]>(reqQuestionInfo.baseInfo.questionTagIds ?? []);
-
   const [rateVal, setRateVal] = useState<number>(Number(reqQuestionInfo.baseInfo.difficultyLevel ?? 0));
-
   const [titleVal, setTitleVal] = useState<string>(reqQuestionInfo.baseInfo.title);
-
   const [mentionVal, setMentionVal] = useState<string>(reqQuestionInfo.baseInfo.comment ?? "");
 
   const getImageFileList = (imageNames: string[]): UploadFile[] => {
-    let imageFiles: UploadFile[] = [];
-    for (let i = 0; i < imageNames.length; i++) {
-      imageFiles.push({
-        name: imageNames[i],
-        status: "done",
-        uid: i.toString(),
-        url: `/api/file/read/${imageNames[i]}`
-      });
-    }
-    return imageFiles;
+    return imageNames?.map((name, i) => ({
+      name,
+      status: "done",
+      uid: i.toString(),
+      url: `/api/file/read/${name}`
+    }));
   }
-
   const [imageFileList, setImageFileList] = useState<UploadFile[]>(getImageFileList(reqQuestionInfo.baseInfo.images ?? []));
+
+  const [showSelectVal, setShowSelectVal] = useState<number>(reqQuestionInfo.baseInfo.optionsLayout ?? 1);
 
   // 选项数据
   const options: QuestionOption[] = reqQuestionInfo.baseInfo.options ?? [];
@@ -74,24 +67,27 @@ export default function Edit(props: any) {
     opt4 = defaultOpt,
   ] = options;
   const [aVal, setAVal] = useState<string>(opt0.content ?? "");
+  const [aImageFileList, setAImageFileList] = useState<UploadFile[]>(getImageFileList(opt0.images ?? []));
   const [bVal, setBVal] = useState<string>(opt1.content ?? "");
+  const [bImageFileList, setBImageFileList] = useState<UploadFile[]>(getImageFileList(opt1.images ?? []));
   const [cVal, setCVal] = useState<string>(opt2.content ?? "");
+  const [cImageFileList, setCImageFileList] = useState<UploadFile[]>(getImageFileList(opt2.images ?? []));
   const [dVal, setDVal] = useState<string>(opt3.content ?? "");
+  const [dImageFileList, setDImageFileList] = useState<UploadFile[]>(getImageFileList(opt3.images ?? []));
   const [eVal, setEVal] = useState<string>(opt4.content ?? "");
-  const [showSelectVal, setShowSelectVal] = useState<number>(reqQuestionInfo.baseInfo.optionsLayout ?? 1);
+  const [eImageFileList, setEImageFileList] = useState<UploadFile[]>(getImageFileList(opt4.images ?? []));
 
   const [answerVal, setAnswerVal] = useState<string>(reqQuestionInfo.extraInfo.answer ?? "");
-
   const [knowledgeVal, setKnowledgeVal] = useState<string>(reqQuestionInfo.extraInfo.knowledge ?? "");
-
   const [analyzeVal, setAnalyzeVal] = useState<string>(reqQuestionInfo.extraInfo.analysis?.content ?? "");
-
+  const [analyzeImageFileList, setAnalyzeImageFileList] = useState<UploadFile[]>(getImageFileList(reqQuestionInfo.extraInfo.analysis?.images ?? []));
   const [processVal, setProcessVal] = useState<string>(reqQuestionInfo.extraInfo.process?.content ?? "");
-
+  const [processImageFileList, setProcessImageFileList] = useState<UploadFile[]>(getImageFileList(reqQuestionInfo.extraInfo.process?.images ?? []));
   const [remarkVal, setRemarkVal] = useState<string>(reqQuestionInfo.extraInfo.remark ?? "");
 
   // 生成预览对象
   const [openEditPreviewArea, setOpenEditPreviewArea] = useState<boolean>(false);
+
   let [editPreviewQuestionInfo, setEditPreviewQuestionInfo] = useState<QuestionBaseInfo>({
     analysis: undefined,
     answer: "",
@@ -114,72 +110,68 @@ export default function Edit(props: any) {
 
   // 首页页面的值用于展示和提交
   const getCurrentQuestionBaseInfo = (): QuestionBaseInfo => {
-    const imageFileNames: string[] = [];
-    imageFileList.forEach((image) => {
-      imageFileNames.push(image.name);
-    });
-
-    const analysis: Content = {
-      content: analyzeVal,
-      images: []
-    }
-
-    const process: Content = {
-      content: processVal,
-      images: [],
-    }
-
     // 将选项依次加入选项组中
     const options: QuestionOption[] = [];
-    if (StringValidator.isNonEmpty(aVal)) {
+    if (StringValidator.isNonEmpty(aVal) || aImageFileList.length > 0) {
       options.push({
         label: "A",
         content: aVal,
+        images: aImageFileList.map(image => image.name),
         order: 1
       });
     }
-    if (StringValidator.isNonEmpty(bVal)) {
+    if (StringValidator.isNonEmpty(bVal) || bImageFileList.length > 0) {
       options.push({
         label: "B",
         content: bVal,
+        images: bImageFileList.map(image => image.name),
         order: 2
       });
     }
-    if (StringValidator.isNonEmpty(cVal)) {
+    if (StringValidator.isNonEmpty(cVal) || cImageFileList.length > 0) {
       options.push({
         label: "C",
         content: cVal,
+        images: cImageFileList.map(image => image.name),
         order: 3
       });
     }
-    if (StringValidator.isNonEmpty(dVal)) {
+    if (StringValidator.isNonEmpty(dVal) || dImageFileList.length > 0) {
       options.push({
         label: "D",
         content: dVal,
+        images: dImageFileList.map(image => image.name),
         order: 4
       });
     }
-    if (StringValidator.isNonEmpty(eVal)) {
+    if (StringValidator.isNonEmpty(eVal) || eImageFileList.length > 0) {
       options.push({
         label: "E",
         content: eVal,
+        images: eImageFileList.map(image => image.name),
         order: 5
       });
     }
 
     return {
-      analysis: analysis,
+      analysis: {
+        content: analyzeVal,
+        images: analyzeImageFileList.map(image => image.name),
+      },
       answer: answerVal,
       authorId: 0,
       comment: mentionVal,
       contentPlain: "",
       difficultyLevel: rateVal,
       id: 0,
-      images: imageFileNames,
+      images: imageFileList.map(image => image.name),
       knowledge: knowledgeVal,
       options: options,
       optionsLayout: showSelectVal,
-      process: process,
+      process: {
+        content: processVal,
+        images: processImageFileList.map(image => image.name),
+      },
       questionCateId: reqQuestionInfo.baseInfo.questionCateId,
       questionTagIds: tagListVal,
       questionTypeId: questionTypeVal,
@@ -206,7 +198,6 @@ export default function Edit(props: any) {
       <p>编辑方式： </p>
       <p>1. 鼠标移动到区块上会浮动出虚线边框表示该块内容的范围，直接调整要变更的内容后单击更新即可;</p>
       <p>2. 如果变更了内容但是又不想更新, 不点击 更新 按钮即可, 但是预览还是你当前选择的效果，不会主动保存;</p>
-      <p>3. 图片没有这个效果，上传新图片或者删除旧图片都是立即生效.</p>
     </div>
 
     <Row style={{marginTop: "20px"}}>
@@ -224,45 +215,137 @@ export default function Edit(props: any) {
     >
       <Splitter.Panel defaultSize={"50%"}>
         {/* 题目类型 */}
-        {EditQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {<EditQuestionTypeStyle
+          typeList={questionTypeList}
+          typeVal={questionTypeVal}
+          setTypeVal={setQuestionTypeVal}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
 
         {/* 题目标签 */}
-        {EditTagStyle(questionTagList, tagListVal, setTagListVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {<EditTagStyle
+          tagList={questionTagList}
+          tags={tagListVal}
+          setTags={setTagListVal}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
 
         {/* rate */}
-        {EditRateInfoStyle(rateVal, setRateVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {<EditRateInfoStyle
+          val={rateVal}
+          setVal={setRateVal}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
 
         {/* title */}
-        {EditTitleInfoStyle(titleVal, setTitleVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {<EditTitleInfoStyle
+          val={titleVal}
+          setVal={setTitleVal}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
 
         {/* mention */}
-        {EditMentionInfoStyle(mentionVal, setMentionVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {<EditMentionInfoStyle
+          val={mentionVal}
+          setVal={setMentionVal}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
 
         {/* image */}
-        {UploadImageStyle(imageFileList, setImageFileList, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {<EditUploadImageStyle
+          images={imageFileList}
+          setImages={setImageFileList}
+          showTitle={true}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
+
+        {<EditSelectOptionLayout
+          val={showSelectVal}
+          setVal={setShowSelectVal}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
 
         {/* select */}
-        {EditSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {<EditOptions
+          aVal={aVal}
+          setAVal={setAVal}
+          aImages={aImageFileList}
+          setAImages={setAImageFileList}
+          bVal={bVal}
+          setBVal={setBVal}
+          bImages={bImageFileList}
+          setBImages={setBImageFileList}
+          cVal={cVal}
+          setCVal={setCVal}
+          cImages={cImageFileList}
+          setCImages={setCImageFileList}
+          dVal={dVal}
+          setDVal={setDVal}
+          dImages={dImageFileList}
+          setDImages={setDImageFileList}
+          eVal={eVal}
+          setEVal={setEVal}
+          eImages={eImageFileList}
+          setEImages={setEImageFileList}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
 
         {/* answer */}
-        {EditAnswerInfoStyle(answerVal, setAnswerVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {<EditAnswerInfoStyle
+          val={answerVal}
+          setVal={setAnswerVal}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
 
         {/* knowledge */}
-        {EditKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {<EditKnowledgeInfoStyle
+          val={knowledgeVal}
+          setVal={setKnowledgeVal}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
 
         {/* analyze */}
-        {EditAnalyzeInfoStyle(analyzeVal, setAnalyzeVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {<EditAnalyzeInfoStyle
+          val={analyzeVal}
+          setVal={setAnalyzeVal}
+          images={analyzeImageFileList}
+          setImages={setAnalyzeImageFileList}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
 
         {/* process */}
-        {EditProcessInfoStyle(processVal, setProcessVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {<EditProcessInfoStyle
+          val={processVal}
+          setVal={setProcessVal}
+          images={processImageFileList}
+          setImages={setProcessImageFileList}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
 
         {/* remark */}
-        {EditRemarkInfoStyle(remarkVal, setRemarkVal, reqQuestionInfo.baseInfo.id, setRefreshListNum)}
+        {<EditRemarkInfoStyle
+          val={remarkVal}
+          setVal={setRemarkVal}
+          id={reqQuestionInfo.baseInfo.id}
+          setRefreshListNum={setRefreshListNum}
+        />}
       </Splitter.Panel>
 
       <Splitter.Panel defaultSize="50%">
         <Watermark content="预览区域 仅展示效果">
-          <div className="min-h-[1900px] p-5">
+          <div className="min-h-475 p-5">
             {openEditPreviewArea ? <Preview
               questionInfo={editPreviewQuestionInfo}
               questionTypeList={questionTypeList}

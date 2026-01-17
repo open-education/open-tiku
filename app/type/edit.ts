@@ -30,9 +30,14 @@ export interface EditMention {
   mention: string,
 }
 
-export interface EditOption {
+export interface EditImage {
   id: number,
-  option: QuestionOption,
+  images: string[],
+}
+
+export interface EditOptions {
+  id: number,
+  options: QuestionOption[],
 }
 
 export interface EditAnswer {

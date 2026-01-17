@@ -1,68 +1,60 @@
-import React, {type Dispatch, type SetStateAction, useCallback} from "react";
-import {Alert, Button, Col, Flex, Input, Row} from "antd";
+import React from "react";
+import {Alert, Button, Col, Flex, Row, type UploadFile} from "antd";
 import type {EditAnalyze} from "~/type/edit";
 import {httpClient} from "~/util/http";
 import {StringUtil} from "~/util/string";
+import {SimpleTextArea} from "~/tiku/common/text-area";
+import {AddUploadImageStyle} from "~/tiku/common/upload-image";
 
-const {TextArea} = Input;
-
-export function AnalyzeInfo(
-  analyzeVal: string,
-  setAnalyzeVal: React.Dispatch<React.SetStateAction<string>>,
-  setShowEditAnalyze?: React.Dispatch<React.SetStateAction<boolean>>,
-) {
-  const onEditAnalyzeChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setAnalyzeVal(e.target.value);
-      if (setShowEditAnalyze) {
-        setShowEditAnalyze(true);
-      }
-    },
-    []
-  );
-
-  return <TextArea
-    autoSize={{minRows: 3, maxRows: 7}}
-    placeholder="请输入解题分析"
-    onChange={onEditAnalyzeChange}
-    name="analyze"
-    value={analyzeVal}
-  />
+interface AddAnalyzeProps {
+  val: string;
+  setVal(val: string): void;
+  onStartEdit?: (value: boolean) => void;
 }
 
-export function AddAnalyzeInfoStyle(
-  analyzeVal: string,
-  setAnalyzeVal: React.Dispatch<React.SetStateAction<string>>,
-  setShowEditAnalyze?: React.Dispatch<React.SetStateAction<boolean>>,
-) {
+// 添加解题分析样式
+export function AddAnalyzeInfoStyle(props: AddAnalyzeProps) {
   return <Row gutter={[10, 10]}>
     <Col span={24}>
       <div className="text-blue-700 text-[15px] mb-2.5 font-bold">解题分析</div>
-      {AnalyzeInfo(analyzeVal, setAnalyzeVal, setShowEditAnalyze)}
+      {<SimpleTextArea
+        name="analyze"
+        value={props.val}
+        onChange={props.setVal}
+        autoSize={{minRows: 3, maxRows: 7}}
+        placeholder="请输入解题分析"
+        onStartEdit={props.onStartEdit}
+      />}
     </Col>
   </Row>
 }
 
-export function EditAnalyzeInfoStyle(
-  analyzeVal: string,
-  setAnalyzeVal: React.Dispatch<React.SetStateAction<string>>,
-  id: number,
-  setRefreshListNum: Dispatch<SetStateAction<number>>,
-) {
+interface EditAnalyzeProps {
+  val: string;
+  setVal(val: string): void;
+  images: UploadFile[];
+  setImages(images: UploadFile[]): void;
+  id: number;
+  setRefreshListNum: (value: number) => void;
+}
+
+// 编辑解题分析样式
+export function EditAnalyzeInfoStyle(props: EditAnalyzeProps) {
   const [showEditAnalyze, setShowEditAnalyze] = React.useState(false);
   const [showEditAnalyzeErr, setShowEditAnalyzeErr] = React.useState<React.ReactNode>("");
 
   const updateAnalyzeVal = () => {
     const req: EditAnalyze = {
-      id,
+      id: props.id,
       analyze: {
-        content: analyzeVal
+        content: props.val,
+        images: props.images?.map(image => image.name)
       },
     }
     httpClient.post("/edit/analyze", req).then((res) => {
       setShowEditAnalyzeErr("");
       setShowEditAnalyze(false);
-      setRefreshListNum(StringUtil.getRandomInt());
+      props.setRefreshListNum(StringUtil.getRandomInt());
     }).catch(err => {
       setShowEditAnalyzeErr(<div>
         <Alert title={`更新解题分析出错: ${err.message}`} type={"error"}/>
@@ -78,7 +70,17 @@ export function EditAnalyzeInfoStyle(
 
   return <div className="p-2.5 hover:border border-red-700 border-dashed">
     <div>
-      {AddAnalyzeInfoStyle(analyzeVal, setAnalyzeVal, setShowEditAnalyze)}
+      {<AddAnalyzeInfoStyle
+        val={props.val}
+        setVal={props.setVal}
+        onStartEdit={setShowEditAnalyze}
+      />}
+      {<AddUploadImageStyle
+        images={props.images}
+        setImages={props.setImages}
+        showTitle={false}
+        onStartEdit={setShowEditAnalyze}
+      />}
     </div>
     {showEditAnalyzeErr}
     {showEditAnalyze && showEditAnalyzeArea}

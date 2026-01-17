@@ -1,10 +1,8 @@
 // 题目添加主页
 import React, {useState} from "react";
-import {Alert, Button, Col, Flex, Row, Splitter, type UploadFile, Watermark} from "antd";
-
+import {Alert, Button, Col, Divider, Flex, Row, Splitter, type UploadFile, Watermark} from "antd";
 import Preview from "~/tiku/preview";
-
-import type {Content, CreateQuestionReq, QuestionBaseInfo, QuestionInfoResp, QuestionOption} from "~/type/question";
+import type {CreateQuestionReq, QuestionBaseInfo, QuestionInfoResp, QuestionOption} from "~/type/question";
 import {CommonBreadcrumb} from "~/tiku/common/breadcrumb";
 import type {TiKuIndexContext} from "~/type/context";
 import {useLocation, useOutletContext} from "react-router-dom";
@@ -15,8 +13,8 @@ import {AddTagStyle} from "~/tiku/common/tag";
 import {AddRateInfoStyle} from "~/tiku/common/rate";
 import {AddTitleInfoStyle} from "~/tiku/common/title";
 import {AddMentionInfoStyle} from "~/tiku/common/mention";
-import {UploadImageStyle} from "~/tiku/common/upload-image";
-import {AddSelectStyle} from "~/tiku/common/select";
+import {AddUploadImageStyle} from "~/tiku/common/upload-image";
+import {AddSelectOptionLayout} from "~/tiku/common/select";
 import {AddAnswerInfoStyle} from "~/tiku/common/answer";
 import {AddKnowledgeInfoStyle} from "~/tiku/common/knowledge";
 import {AddAnalyzeInfoStyle} from "~/tiku/common/analyze";
@@ -24,6 +22,7 @@ import {AddProcessInfoStyle} from "~/tiku/common/process";
 import {AddRemarkInfoStyle} from "~/tiku/common/remark";
 import type {Textbook, TextbookOtherDict} from "~/type/textbook";
 import Info from "~/tiku/info";
+import {AddOptions} from "~/tiku/common/options";
 
 // 添加题目
 export default function Add(props: any) {
@@ -39,38 +38,34 @@ export default function Add(props: any) {
 
   // 添加变式题时有上一层级标识
   const sourceId: number = Number(props.sourceId ?? 0);
-
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(questionTypeList.length > 0 ? questionTypeList[0].id : 0);
-
   const [tagVal, setTagVal] = useState<number[]>([]);
-
   const [rateVal, setRateVal] = useState<number>(1);
-
   const [titleVal, setTitleVal] = useState<string>("");
-
   const [mentionVal, setMentionVal] = useState<string>("");
-
   const [imageFileList, setImageFileList] = useState<UploadFile[]>([]);
-
-  const [aVal, setAVal] = useState<string>("");
-  const [bVal, setBVal] = useState<string>("");
-  const [cVal, setCVal] = useState<string>("");
-  const [dVal, setDVal] = useState<string>("");
-  const [eVal, setEVal] = useState<string>("");
   const [showSelectVal, setShowSelectVal] = useState<number>(1);
-
+  const [aVal, setAVal] = useState<string>("");
+  const [aImageFileList, setAImageFileList] = useState<UploadFile[]>([]);
+  const [bVal, setBVal] = useState<string>("");
+  const [bImageFileList, setBImageFileList] = useState<UploadFile[]>([]);
+  const [cVal, setCVal] = useState<string>("");
+  const [cImageFileList, setCImageFileList] = useState<UploadFile[]>([]);
+  const [dVal, setDVal] = useState<string>("");
+  const [dImageFileList, setDImageFileList] = useState<UploadFile[]>([]);
+  const [eVal, setEVal] = useState<string>("");
+  const [eImageFileList, setEImageFileList] = useState<UploadFile[]>([]);
   const [answerVal, setAnswerVal] = useState<string>("");
-
   const [knowledgeVal, setKnowledgeVal] = useState<string>("");
-
   const [analyzeVal, setAnalyzeVal] = useState<string>("");
-
+  const [analyzeImageFileList, setAnalyzeImageFileList] = useState<UploadFile[]>([]);
   const [processVal, setProcessVal] = useState<string>("");
-
+  const [processImageFileList, setProcessImageFileList] = useState<UploadFile[]>([]);
   const [remarkVal, setRemarkVal] = useState<string>("");
 
   // 生成预览对象
   const [openPreviewArea, setOpenPreviewArea] = useState<boolean>(false);
+
   let [questionInfo, setQuestionInfo] = useState<QuestionBaseInfo>({
     analysis: undefined,
     answer: "",
@@ -93,72 +88,68 @@ export default function Add(props: any) {
 
   // 首页页面的值用于展示和提交
   const getCurrentQuestionBaseInfo = (): QuestionBaseInfo => {
-    const imageFileNames: string[] = [];
-    imageFileList.forEach((image) => {
-      imageFileNames.push(image.name);
-    });
-
-    const analysis: Content = {
-      content: analyzeVal,
-      images: []
-    }
-
-    const process: Content = {
-      content: processVal,
-      images: [],
-    }
-
     // 将选项依次加入选项组中
     const options: QuestionOption[] = [];
-    if (StringValidator.isNonEmpty(aVal)) {
+    if (StringValidator.isNonEmpty(aVal) || aImageFileList.length > 0) {
       options.push({
         label: "A",
         content: aVal,
+        images: aImageFileList.map(image => image.name),
         order: 1
       });
     }
-    if (StringValidator.isNonEmpty(bVal)) {
+    if (StringValidator.isNonEmpty(bVal) || bImageFileList.length > 0) {
       options.push({
         label: "B",
         content: bVal,
+        images: bImageFileList.map(image => image.name),
         order: 2
       });
     }
-    if (StringValidator.isNonEmpty(cVal)) {
+    if (StringValidator.isNonEmpty(cVal) || cImageFileList.length > 0) {
       options.push({
         label: "C",
         content: cVal,
+        images: cImageFileList.map(image => image.name),
         order: 3
       });
     }
-    if (StringValidator.isNonEmpty(dVal)) {
+    if (StringValidator.isNonEmpty(dVal) || dImageFileList.length > 0) {
       options.push({
         label: "D",
         content: dVal,
+        images: dImageFileList.map(image => image.name),
         order: 4
       });
     }
-    if (StringValidator.isNonEmpty(eVal)) {
+    if (StringValidator.isNonEmpty(eVal) || eImageFileList.length > 0) {
       options.push({
         label: "E",
         content: eVal,
+        images: eImageFileList.map(image => image.name),
         order: 5
       });
     }
 
     return {
-      analysis: analysis,
+      analysis: {
+        content: analyzeVal,
+        images: analyzeImageFileList.map(image => image.name),
+      },
       answer: answerVal,
       authorId: 0,
       comment: mentionVal,
       contentPlain: "",
       difficultyLevel: rateVal,
       id: 0,
-      images: imageFileNames,
+      images: imageFileList.map(image => image.name),
       knowledge: knowledgeVal,
       options: options,
       optionsLayout: showSelectVal,
-      process: process,
+      process: {
+        content: processVal,
+        images: processImageFileList.map(image => image.name),
+      },
       questionCateId: questionCateId,
       sourceId: sourceId,
       questionTagIds: tagVal,
@@ -185,12 +176,9 @@ export default function Add(props: any) {
     if (!StringValidator.isNonWhitespace(titleVal)) {
       return false;
     }
-
     if (confirm("确定要上传题目吗？")) {
       setUploadQuestionIng(<Alert title="题目上传中..." type="info"/>);
-
       const currentInfo = getCurrentQuestionBaseInfo();
-
       const uploadReq: CreateQuestionReq = {
         questionCateId: questionCateId,
         questionTypeId: currentInfo.questionTypeId,
@@ -218,16 +206,17 @@ export default function Add(props: any) {
       if (StringValidator.isNonEmpty(currentInfo.knowledge)) {
         uploadReq.knowledge = currentInfo.knowledge;
       }
-      if (currentInfo.analysis && currentInfo.analysis?.content) {
+      if (currentInfo.analysis) {
         uploadReq.analysis = currentInfo.analysis;
+      }
+      if (currentInfo.process) {
+        uploadReq.process = currentInfo.process;
       }
       if (StringValidator.isNonEmpty(currentInfo.remark)) {
         uploadReq.remark = currentInfo.remark;
       }
-
       httpClient.post<number>("/question/add", uploadReq).then(addId => {
         setUploadQuestionIng("");
-
         // 获取题目全部信息
         httpClient.get<QuestionInfoResp>(`/question/info/${addId}`).then(res => {
           props.setDrawerTitle("详情");
@@ -237,7 +226,6 @@ export default function Add(props: any) {
             questionTagList={questionTagList}
             childPathMap={childPathMap}
           />);
-
           props.setRefreshListNum(StringUtil.getRandomInt());
         }).catch(err => {
           setReqQuestionInfoErr(<Alert
@@ -290,36 +278,166 @@ export default function Add(props: any) {
     <Splitter style={{boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)", marginTop: "10px"}}>
       <Splitter.Panel defaultSize={"50%"}>
         <div className="p-2.5">
-          {AddQuestionTypeStyle(questionTypeList, questionTypeVal, setQuestionTypeVal)}
+          {<AddQuestionTypeStyle
+            typeList={questionTypeList}
+            typeVal={questionTypeVal}
+            setTypeVal={setQuestionTypeVal}
+          />}
         </div>
+
+        <Divider
+          size="small"
+          variant="dashed"
+          style={{borderColor: "#7cb305"}}
+          dashed
+        />
+
         <div className="p-2.5">
-          {AddTagStyle(questionTagList, tagVal, setTagVal)}
+          {<AddTagStyle tagList={questionTagList} tags={tagVal} setTags={setTagVal}/>}
         </div>
+
+        <Divider
+          size="small"
+          variant="dashed"
+          style={{borderColor: "#7cb305"}}
+          dashed
+        />
+
         <div className="p-2.5">
-          {AddRateInfoStyle(rateVal, setRateVal)}
+          {<AddRateInfoStyle val={rateVal} setVal={setRateVal}/>}
         </div>
+
+        <Divider
+          size="small"
+          variant="dashed"
+          style={{borderColor: "#7cb305"}}
+          dashed
+        />
+
         <div className="p-2.5">
-          {AddTitleInfoStyle(titleVal, setTitleVal)}
+          {<AddTitleInfoStyle val={titleVal} setVal={setTitleVal}/>}
         </div>
+
+        <Divider
+          size="small"
+          variant="dashed"
+          style={{borderColor: "#7cb305"}}
+          dashed
+        />
+
         <div className="p-2.5">
-          {AddMentionInfoStyle(mentionVal, setMentionVal)}
+          {<AddMentionInfoStyle val={mentionVal} setVal={setMentionVal}/>}
         </div>
-        {UploadImageStyle(imageFileList, setImageFileList)}
-        {AddSelectStyle(aVal, setAVal, bVal, setBVal, cVal, setCVal, dVal, setDVal, eVal, setEVal, showSelectVal, setShowSelectVal)}
+
+        <Divider
+          size="small"
+          variant="dashed"
+          style={{borderColor: "#7cb305"}}
+          dashed
+        />
+
         <div className="p-2.5">
-          {AddAnswerInfoStyle(answerVal, setAnswerVal)}
+          {<AddUploadImageStyle images={imageFileList} setImages={setImageFileList} showTitle={true}/>}
         </div>
+
+        <Divider
+          size="small"
+          variant="dashed"
+          style={{borderColor: "#7cb305"}}
+          dashed
+        />
+
         <div className="p-2.5">
-          {AddKnowledgeInfoStyle(knowledgeVal, setKnowledgeVal)}
+          {<AddSelectOptionLayout val={showSelectVal} setVal={setShowSelectVal}/>}
         </div>
+
+        <Divider
+          size="small"
+          variant="dashed"
+          style={{borderColor: "#7cb305"}}
+          dashed
+        />
+
         <div className="p-2.5">
-          {AddAnalyzeInfoStyle(analyzeVal, setAnalyzeVal)}
+          {<AddOptions
+            aVal={aVal}
+            setAVal={setAVal}
+            aImages={aImageFileList}
+            setAImages={setAImageFileList}
+            bVal={bVal}
+            setBVal={setBVal}
+            bImages={bImageFileList}
+            setBImages={setBImageFileList}
+            cVal={cVal}
+            setCVal={setCVal}
+            cImages={cImageFileList}
+            setCImages={setCImageFileList}
+            dVal={dVal}
+            setDVal={setDVal}
+            dImages={dImageFileList}
+            setDImages={setDImageFileList}
+            eVal={eVal}
+            setEVal={setEVal}
+            eImages={eImageFileList}
+            setEImages={setEImageFileList}
+          />}
         </div>
+
+        <Divider
+          size="small"
+          variant="dashed"
+          style={{borderColor: "#7cb305"}}
+          dashed
+        />
+
         <div className="p-2.5">
-          {AddProcessInfoStyle(processVal, setProcessVal)}
+          {<AddAnswerInfoStyle val={answerVal} setVal={setAnswerVal}/>}
         </div>
+
+        <Divider
+          size="small"
+          variant="dashed"
+          style={{borderColor: "#7cb305"}}
+          dashed
+        />
+
         <div className="p-2.5">
-          {AddRemarkInfoStyle(remarkVal, setRemarkVal)}
+          {<AddKnowledgeInfoStyle val={knowledgeVal} setVal={setKnowledgeVal}/>}
+        </div>
+
+        <Divider
+          size="small"
+          variant="dashed"
+          style={{borderColor: "#7cb305"}}
+          dashed
+        />
+
+        <div className="p-2.5">
+          {<AddAnalyzeInfoStyle val={analyzeVal} setVal={setAnalyzeVal}/>}
+          {<AddUploadImageStyle images={analyzeImageFileList} setImages={setAnalyzeImageFileList} showTitle={false}/>}
+        </div>
+
+        <Divider
+          size="small"
+          variant="dashed"
+          style={{borderColor: "#7cb305"}}
+          dashed
+        />
+
+        <div className="p-2.5">
+          {<AddProcessInfoStyle val={processVal} setVal={setProcessVal}/>}
+          {<AddUploadImageStyle images={processImageFileList} setImages={setProcessImageFileList} showTitle={false}/>}
+        </div>
+
+        <Divider
+          size="small"
+          variant="dashed"
+          style={{borderColor: "#7cb305"}}
+          dashed
+        />
+
+        <div className="p-2.5">
+          {<AddRemarkInfoStyle val={remarkVal} setVal={setRemarkVal}/>}
         </div>
       </Splitter.Panel>
 

@@ -1,56 +1,61 @@
-import React, {type Dispatch, type SetStateAction} from "react";
+import React from "react";
 import {Alert, Button, Col, Flex, Rate, Row} from "antd";
 import type {EditRate} from "~/type/edit";
 import {httpClient} from "~/util/http";
 import {StringUtil} from "~/util/string";
 
-export function RateInfo(
-  rateVal: number,
-  setRateVal: React.Dispatch<React.SetStateAction<number>>,
-  setShowEditRate ?: React.Dispatch<React.SetStateAction<boolean>>,
-) {
-
-  const onEditRateChange = (val: number) => {
-    setRateVal(val);
-    if (setShowEditRate) {
-      setShowEditRate(true);
-    }
-  };
-
-  return <Rate allowHalf defaultValue={rateVal} onChange={onEditRateChange}/>
+interface RateProps {
+  val: number;
+  setVal: (value: number) => void;
+  onStartEdit?: (value: boolean) => void;
 }
 
-export function AddRateInfoStyle(
-  rateVal: number,
-  setRateVal: React.Dispatch<React.SetStateAction<number>>,
-  setShowEditRate ?: React.Dispatch<React.SetStateAction<boolean>>,
-) {
+export function RateInfo(props: RateProps) {
+  const onEditRateChange = (val: number) => {
+    props.setVal(val);
+    props.onStartEdit?.(true);
+  };
+
+  return <Rate allowHalf defaultValue={props.val} onChange={onEditRateChange}/>
+}
+
+interface AddRateProps {
+  val: number;
+  setVal: (val: number) => void;
+  onStartEdit?: (value: boolean) => void;
+}
+
+// 添加题目难度样式
+export function AddRateInfoStyle(props: AddRateProps) {
   return <Row gutter={[10, 10]}>
     <Col span={24}>
-      <div className="text-blue-700 text-[15px] mb-[10px] font-bold">难易程度</div>
-      {RateInfo(rateVal, setRateVal, setShowEditRate)}
+      <div className="text-blue-700 text-[15px] mb-2.5 font-bold">难易程度</div>
+      {<RateInfo val={props.val} setVal={props.setVal} onStartEdit={props.onStartEdit}/>}
     </Col>
   </Row>
 }
 
-export function EditRateInfoStyle(
-  rateVal: number,
-  setRateVal: React.Dispatch<React.SetStateAction<number>>,
-  id: number,
-  setRefreshListNum: Dispatch<SetStateAction<number>>,
-) {
+interface EditRateProps {
+  val: number;
+  setVal: (val: number) => void;
+  id: number;
+  setRefreshListNum: (value: number) => void;
+}
+
+// 编辑题目难度样式
+export function EditRateInfoStyle(props: EditRateProps) {
   const [showEditRate, setShowEditRate] = React.useState(false);
   const [showEditRateErr, setShowEditRateErr] = React.useState<React.ReactNode>("");
 
   const updateRateVal = () => {
     const req: EditRate = {
-      id,
-      difficultyLevel: rateVal,
+      id: props.id,
+      difficultyLevel: props.val,
     }
     httpClient.post("/edit/rate", req).then(res => {
       setShowEditRateErr("")
       setShowEditRate(false);
-      setRefreshListNum(StringUtil.getRandomInt());
+      props.setRefreshListNum(StringUtil.getRandomInt());
     }).catch(err => {
       setShowEditRateErr(<div>
         <Alert title={`更新评分出错: ${err.message}`} type={"error"}/>
@@ -66,7 +71,7 @@ export function EditRateInfoStyle(
 
   return <div className="p-2.5 hover:border border-red-700 border-dashed">
     <div>
-      {AddRateInfoStyle(rateVal, setRateVal, setShowEditRate)}
+      {<AddRateInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditRate}/>}
     </div>
     {showEditRateErr}
     {showEditRate && showEditRateArea}
