@@ -1,8 +1,8 @@
 import React from "react";
-import {Alert, Button, Col, Flex, Rate, Row} from "antd";
-import type {EditRate} from "~/type/edit";
-import {httpClient} from "~/util/http";
-import {StringUtil} from "~/util/string";
+import { Alert, Button, Col, Flex, Rate, Row } from "antd";
+import type { EditRate } from "~/type/edit";
+import { httpClient } from "~/util/http";
+import { StringUtil } from "~/util/string";
 
 interface RateProps {
   val: number;
@@ -16,7 +16,7 @@ export function RateInfo(props: RateProps) {
     props.onStartEdit?.(true);
   };
 
-  return <Rate allowHalf defaultValue={props.val} onChange={onEditRateChange}/>
+  return <Rate allowHalf defaultValue={props.val} style={{ color: 'green' }} onChange={onEditRateChange} />
 }
 
 interface AddRateProps {
@@ -30,7 +30,7 @@ export function AddRateInfoStyle(props: AddRateProps) {
   return <Row gutter={[10, 10]}>
     <Col span={24}>
       <div className="text-blue-700 text-[15px] mb-2.5 font-bold">难易程度</div>
-      {<RateInfo val={props.val} setVal={props.setVal} onStartEdit={props.onStartEdit}/>}
+      {<RateInfo val={props.val} setVal={props.setVal} onStartEdit={props.onStartEdit} />}
     </Col>
   </Row>
 }
@@ -58,7 +58,7 @@ export function EditRateInfoStyle(props: EditRateProps) {
       props.setRefreshListNum(StringUtil.getRandomInt());
     }).catch(err => {
       setShowEditRateErr(<div>
-        <Alert title={`更新评分出错: ${err.message}`} type={"error"}/>
+        <Alert title={`更新评分出错: ${err.message}`} type={"error"} />
       </div>);
     })
   }
@@ -71,7 +71,7 @@ export function EditRateInfoStyle(props: EditRateProps) {
 
   return <div className="p-2.5 hover:border border-red-700 border-dashed">
     <div>
-      {<AddRateInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditRate}/>}
+      {<AddRateInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditRate} />}
     </div>
     {showEditRateErr}
     {showEditRate && showEditRateArea}

@@ -1,14 +1,15 @@
-import {Alert, Button, Checkbox, Col, Flex, type GetProp, Row, Tag} from "antd";
-import type {QuestionBaseInfoResp, QuestionInfoResp} from "~/type/question";
-import {arrayToDict} from "~/util/common";
-import React, {type Dispatch, type SetStateAction, useState} from "react";
-import {httpClient} from "~/util/http";
+import { Alert, Button, Checkbox, Col, Flex, type GetProp, Row, Tag } from "antd";
+import type { QuestionBaseInfoResp, QuestionInfoResp } from "~/type/question";
+import { arrayToDict } from "~/util/common";
+import React, { type Dispatch, type SetStateAction, useState } from "react";
+import { httpClient } from "~/util/http";
 import Info from "~/tiku/info";
 import Edit from "~/tiku/edit";
-import type {EditQuestionTags} from "~/type/edit";
+import type { EditQuestionTags } from "~/type/edit";
 import Add from "~/tiku/add";
-import {StringUtil} from "~/util/string";
-import type {Textbook, TextbookOtherDict} from "~/type/textbook";
+import { StringUtil } from "~/util/string";
+import type { Textbook, TextbookOtherDict } from "~/type/textbook";
+import { StarFilled } from "@ant-design/icons";
 
 // 题目列表展示标签样式 题目类型在前 标签依次在后
 export function CommonTag(
@@ -22,12 +23,13 @@ export function CommonTag(
     <Col span={24}>
       <Flex gap="small" wrap>
         <Tag color="geekblue"
-             key={questionInfo.questionTypeId}>{questionTypeDict[questionInfo.questionTypeId].itemValue}</Tag>
+          key={questionInfo.questionTypeId}>{questionTypeDict[questionInfo.questionTypeId].itemValue}</Tag>
         {
           questionInfo.questionTagIds?.map(tagKey => {
             return <Tag color="green" key={tagKey}>{tagsDict[tagKey].itemValue}</Tag>
           })
         }
+        <Tag color="red">{questionInfo.difficultyLevel} <StarFilled style={{ color: "green" }} /></Tag>
       </Flex>
     </Col>
   </Row>
@@ -168,7 +170,7 @@ export function EditTag(props: TagProps) {
 
   return <Checkbox.Group
     defaultValue={props.tags}
-    style={{width: "100%"}}
+    style={{ width: "100%" }}
     onChange={onEditTagsChange}
   >
     <Row>
@@ -195,7 +197,7 @@ export function AddTagStyle(props: AddTagProps) {
   return <Row gutter={[10, 10]}>
     <Col span={24}>
       <div className="text-blue-700 text-[15px] mb-2.5 font-bold">标签</div>
-      {<EditTag tagList={props.tagList} tags={props.tags} setTags={props.setTags} onStartEdit={props.onStartEdit}/>}
+      {<EditTag tagList={props.tagList} tags={props.tags} setTags={props.setTags} onStartEdit={props.onStartEdit} />}
     </Col>
   </Row>
 }
@@ -224,7 +226,7 @@ export function EditTagStyle(props: EditTagProps) {
       props.setRefreshListNum(StringUtil.getRandomInt());
     }).catch(err => {
       setShowTagEditErr(<div>
-        <Alert title={`更新标签出错: ${err.message}`} type={"error"}/>
+        <Alert title={`更新标签出错: ${err.message}`} type={"error"} />
       </div>);
     })
   }
@@ -237,7 +239,7 @@ export function EditTagStyle(props: EditTagProps) {
 
   return <div className="p-2.5 pt-2.5 hover:border border-red-700 border-dashed">
     <div>
-      {<AddTagStyle tagList={props.tagList} tags={props.tags} setTags={props.setTags} onStartEdit={setShowTagEdit}/>}
+      {<AddTagStyle tagList={props.tagList} tags={props.tags} setTags={props.setTags} onStartEdit={setShowTagEdit} />}
     </div>
     {showTagEditErr}
     {showTagEdit && showTagEditArea}
