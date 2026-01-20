@@ -1,51 +1,55 @@
 // 题目和图片风格
-import type {QuestionBaseInfoResp} from "~/type/question";
-import {StringUtil, StringValidator} from "~/util/string";
-import {Alert, Button, Col, Flex, Image, Row} from "antd";
+import type { QuestionBaseInfoResp } from "~/type/question";
+import { StringUtil, StringValidator } from "~/util/string";
+import { Alert, Button, Col, Flex, Image, Row } from "antd";
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
 import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
 import React from "react";
-import type {EditTitle} from "~/type/edit";
-import {httpClient} from "~/util/http";
-import {SimpleTextArea} from "~/tiku/common/text-area";
+import type { EditTitle } from "~/type/edit";
+import { httpClient } from "~/util/http";
+import { SimpleTextArea } from "~/tiku/common/text-area";
 
 // 标题样式
 export function CommonTitle(questionInfo: QuestionBaseInfoResp) {
-  return <Row gutter={[10, 10]}>
-    <Col span={24}>
-      {
-        StringValidator.isNonEmpty(questionInfo.title) && <Markdown
-              remarkPlugins={[remarkMath, remarkGfm]}
-              rehypePlugins={[rehypeKatex]}
+  return (
+    <Row gutter={[10, 10]}>
+      <Col span={24}>
+        {StringValidator.isNonEmpty(questionInfo.title) && (
+          <Markdown
+            remarkPlugins={[remarkMath, remarkGfm]}
+            rehypePlugins={[rehypeKatex]}
           >
-          {questionInfo.title}
+            {questionInfo.title}
           </Markdown>
-      }
-    </Col>
-    {/* 标注 */}
-    <Col span={24} className="text-[10px] italic text-blue-950">
-      {
-        StringValidator.isNonEmpty(questionInfo.comment) && <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-          >
-          {questionInfo.comment}
+        )}
+      </Col>
+      {/* 标注 */}
+      <Col span={24} className="text-[10px] italic text-blue-950">
+        {StringValidator.isNonEmpty(questionInfo.comment) && (
+          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            {questionInfo.comment}
           </Markdown>
-      }
-    </Col>
-    {/* 如果有图片 */}
-    <Col span={24}>
-      <Flex gap="small" wrap>
-        {questionInfo.images?.map(imageName => {
-          return (
-            <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`}/>
-          );
-        })}
-      </Flex>
-    </Col>
-  </Row>
+        )}
+      </Col>
+      {/* 如果有图片 */}
+      <Col span={24}>
+        <Flex gap="small" wrap>
+          {questionInfo.images?.map((imageName) => {
+            return (
+              <Image
+                height={200}
+                key={imageName}
+                alt="basic"
+                src={`/api/file/read/${imageName}`}
+              />
+            );
+          })}
+        </Flex>
+      </Col>
+    </Row>
+  );
 }
 
 interface AddTitleProps {
@@ -56,19 +60,23 @@ interface AddTitleProps {
 
 // 添加标题样式
 export function AddTitleInfoStyle(props: AddTitleProps) {
-  return <Row gutter={[10, 10]}>
-    <Col span={24}>
-      <div className="text-blue-700 text-[15px] mb-2.5 font-bold">标题</div>
-      {<SimpleTextArea
-        name="title"
-        value={props.val}
-        onChange={props.setVal}
-        placeholder="请输入题目标题"
-        autoSize={{minRows: 3, maxRows: 7}}
-        onStartEdit={props.onStartEdit}
-      />}
-    </Col>
-  </Row>
+  return (
+    <Row gutter={[10, 10]}>
+      <Col span={24}>
+        <div className="text-blue-700 text-[15px] mb-2.5 font-bold">标题</div>
+        {
+          <SimpleTextArea
+            name="title"
+            value={props.val}
+            onChange={props.setVal}
+            placeholder="请输入题目标题"
+            autoSize={{ minRows: 3, maxRows: 7 }}
+            onStartEdit={props.onStartEdit}
+          />
+        }
+      </Col>
+    </Row>
+  );
 }
 
 interface EditTitleProps {
@@ -81,35 +89,53 @@ interface EditTitleProps {
 // 编辑标题样式
 export function EditTitleInfoStyle(props: EditTitleProps) {
   const [showEditTitle, setShowEditTitle] = React.useState(false);
-  const [showEditTitleErr, setShowEditTitleErr] = React.useState<React.ReactNode>("");
+  const [showEditTitleErr, setShowEditTitleErr] =
+    React.useState<React.ReactNode>("");
 
   const updateRateVal = () => {
     const req: EditTitle = {
       id: props.id,
       title: props.val,
-    }
-    httpClient.post("/edit/title", req).then(res => {
-      setShowEditTitleErr("");
-      setShowEditTitle(false);
-      props.setRefreshListNum(StringUtil.getRandomInt());
-    }).catch(err => {
-      setShowEditTitleErr(<div>
-        <Alert title={`更新标题出错: ${err.message}`} type={"error"}/>
-      </div>);
-    })
-  }
+    };
+    httpClient
+      .post("/edit/title", req)
+      .then((res) => {
+        setShowEditTitleErr("");
+        setShowEditTitle(false);
+        props.setRefreshListNum(StringUtil.getRandomInt());
+      })
+      .catch((err) => {
+        setShowEditTitleErr(
+          <div>
+            <Alert title={`更新标题出错: ${err.message}`} type={"error"} />
+          </div>,
+        );
+      });
+  };
 
-  const showEditTitleArea = <div className="mt-2.5">
-    <Flex gap="small" wrap justify={"right"}>
-      <Button color="cyan" variant="dashed" onClick={updateRateVal}>更新</Button>
-    </Flex>
-  </div>
-
-  return <div className="p-2.5 hover:border border-red-700 border-dashed">
-    <div>
-      {<AddTitleInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditTitle}/>}
+  const showEditTitleArea = (
+    <div className="mt-2.5">
+      <Flex gap="small" wrap justify={"right"}>
+        <Button color="cyan" variant="dashed" onClick={updateRateVal}>
+          更新
+        </Button>
+      </Flex>
     </div>
-    {showEditTitleErr}
-    {showEditTitle && showEditTitleArea}
-  </div>
+  );
+
+  return (
+    <div className="p-2.5 hover:border border-red-700 border-dashed">
+      <div>
+        {
+          <AddTitleInfoStyle
+            val={props.val}
+            setVal={props.setVal}
+            onStartEdit={setShowEditTitle}
+          />
+        }
+      </div>
+      {showEditTitleErr}
+      {showEditTitle && showEditTitleArea}
+    </div>
+  );
 }

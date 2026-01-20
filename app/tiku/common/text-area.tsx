@@ -1,7 +1,7 @@
 import React from "react";
-import {Input} from "antd";
+import { Input } from "antd";
 
-const {TextArea} = Input;
+const { TextArea } = Input;
 
 // 定义 Props 接口
 interface SimpleTextAreaProps {
@@ -14,16 +14,14 @@ interface SimpleTextAreaProps {
 }
 
 // 基本输入框样式
-export function SimpleTextArea(
-  {
-    name,
-    value,
-    onChange,
-    placeholder,
-    autoSize = {minRows: 2, maxRows: 5},
-    onStartEdit,
-  }: SimpleTextAreaProps
-) {
+export function SimpleTextArea({
+  name,
+  value,
+  onChange,
+  placeholder,
+  autoSize = { minRows: 2, maxRows: 5 },
+  onStartEdit,
+}: SimpleTextAreaProps) {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value);
     onStartEdit?.(true);
