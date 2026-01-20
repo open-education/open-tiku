@@ -16,4 +16,5 @@ export interface TextbookOtherDict {
   typeCode: string;
   itemValue: string;
   sortOrder: number;
+  isSelect: boolean;
 }

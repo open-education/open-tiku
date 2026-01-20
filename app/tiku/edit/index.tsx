@@ -1,5 +1,10 @@
 // 题目编辑主页
-import React, { type Dispatch, type SetStateAction, useState } from "react";
+import React, {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { useLocation, useOutletContext } from "react-router-dom";
 import type { TiKuIndexContext } from "~/type/context";
 import {
@@ -33,6 +38,7 @@ import { StringUtil, StringValidator } from "~/util/string";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import { EditOptions } from "~/tiku/common/options";
 import { EditSelectOptionLayout } from "~/tiku/common/select";
+import { arrayToDict } from "~/util/common";
 
 // 编辑组件
 export default function Edit(props: any) {
@@ -52,6 +58,19 @@ export default function Edit(props: any) {
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(
     reqQuestionInfo.baseInfo.questionTypeId,
   );
+
+  // 是否显示选择题选项
+  const [showOptions, setShowOptions] = useState<boolean>(
+    questionTypeList.length > 0
+      ? questionTypeList[reqQuestionInfo.baseInfo.questionTypeId].isSelect
+      : false,
+  );
+  // 监听题型类型是否为选择题
+  const questionTypeDict = arrayToDict(questionTypeList, "id");
+  useEffect(() => {
+    setShowOptions(questionTypeDict[questionTypeVal].isSelect);
+  }, [questionTypeVal]);
+
   // 题目标签
   const [tagListVal, setTagListVal] = useState<number[]>(
     reqQuestionInfo.baseInfo.questionTagIds ?? [],
@@ -342,42 +361,48 @@ export default function Edit(props: any) {
             />
           }
 
-          {
-            <EditSelectOptionLayout
-              val={showSelectVal}
-              setVal={setShowSelectVal}
-              id={reqQuestionInfo.baseInfo.id}
-              setRefreshListNum={setRefreshListNum}
-            />
-          }
+          {/* 题型为选择题类型时才有选项列表 */}
+          {showOptions && (
+            <div>
+              {/* options layout */}
+              {
+                <EditSelectOptionLayout
+                  val={showSelectVal}
+                  setVal={setShowSelectVal}
+                  id={reqQuestionInfo.baseInfo.id}
+                  setRefreshListNum={setRefreshListNum}
+                />
+              }
 
-          {/* select */}
-          {
-            <EditOptions
-              aVal={aVal}
-              setAVal={setAVal}
-              aImages={aImageFileList}
-              setAImages={setAImageFileList}
-              bVal={bVal}
-              setBVal={setBVal}
-              bImages={bImageFileList}
-              setBImages={setBImageFileList}
-              cVal={cVal}
-              setCVal={setCVal}
-              cImages={cImageFileList}
-              setCImages={setCImageFileList}
-              dVal={dVal}
-              setDVal={setDVal}
-              dImages={dImageFileList}
-              setDImages={setDImageFileList}
-              eVal={eVal}
-              setEVal={setEVal}
-              eImages={eImageFileList}
-              setEImages={setEImageFileList}
-              id={reqQuestionInfo.baseInfo.id}
-              setRefreshListNum={setRefreshListNum}
-            />
-          }
+              {/* select */}
+              {
+                <EditOptions
+                  aVal={aVal}
+                  setAVal={setAVal}
+                  aImages={aImageFileList}
+                  setAImages={setAImageFileList}
+                  bVal={bVal}
+                  setBVal={setBVal}
+                  bImages={bImageFileList}
+                  setBImages={setBImageFileList}
+                  cVal={cVal}
+                  setCVal={setCVal}
+                  cImages={cImageFileList}
+                  setCImages={setCImageFileList}
+                  dVal={dVal}
+                  setDVal={setDVal}
+                  dImages={dImageFileList}
+                  setDImages={setDImageFileList}
+                  eVal={eVal}
+                  setEVal={setEVal}
+                  eImages={eImageFileList}
+                  setEImages={setEImageFileList}
+                  id={reqQuestionInfo.baseInfo.id}
+                  setRefreshListNum={setRefreshListNum}
+                />
+              }
+            </div>
+          )}
 
           {/* answer */}
           {

@@ -1,5 +1,5 @@
 // 题目添加主页
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Button,
@@ -38,6 +38,7 @@ import { AddRemarkInfoStyle } from "~/tiku/common/remark";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import Info from "~/tiku/info";
 import { AddOptions } from "~/tiku/common/options";
+import { arrayToDict } from "~/util/common";
 
 // 添加题目
 export default function Add(props: any) {
@@ -56,6 +57,17 @@ export default function Add(props: any) {
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(
     questionTypeList.length > 0 ? questionTypeList[0].id : 0,
   );
+
+  // 是否显示选择题选项
+  const [showOptions, setShowOptions] = useState<boolean>(
+    questionTypeList.length > 0 ? questionTypeList[0].isSelect : false,
+  );
+  // 监听题型类型是否为选择题
+  const questionTypeDict = arrayToDict(questionTypeList, "id");
+  useEffect(() => {
+    setShowOptions(questionTypeDict[questionTypeVal].isSelect);
+  }, [questionTypeVal]);
+
   const [tagVal, setTagVal] = useState<number[]>([]);
   const [rateVal, setRateVal] = useState<number>(1);
   const [titleVal, setTitleVal] = useState<string>("");
@@ -400,55 +412,60 @@ export default function Add(props: any) {
             dashed
           />
 
-          <div className="p-2.5">
-            {
-              <AddSelectOptionLayout
-                val={showSelectVal}
-                setVal={setShowSelectVal}
+          {/* 选择题才需要显示选项信息 */}
+          {showOptions && (
+            <div>
+              <div className="p-2.5">
+                {
+                  <AddSelectOptionLayout
+                    val={showSelectVal}
+                    setVal={setShowSelectVal}
+                  />
+                }
+              </div>
+
+              <Divider
+                size="small"
+                variant="dashed"
+                style={{ borderColor: "#7cb305" }}
+                dashed
               />
-            }
-          </div>
 
-          <Divider
-            size="small"
-            variant="dashed"
-            style={{ borderColor: "#7cb305" }}
-            dashed
-          />
+              <div className="p-2.5">
+                {
+                  <AddOptions
+                    aVal={aVal}
+                    setAVal={setAVal}
+                    aImages={aImageFileList}
+                    setAImages={setAImageFileList}
+                    bVal={bVal}
+                    setBVal={setBVal}
+                    bImages={bImageFileList}
+                    setBImages={setBImageFileList}
+                    cVal={cVal}
+                    setCVal={setCVal}
+                    cImages={cImageFileList}
+                    setCImages={setCImageFileList}
+                    dVal={dVal}
+                    setDVal={setDVal}
+                    dImages={dImageFileList}
+                    setDImages={setDImageFileList}
+                    eVal={eVal}
+                    setEVal={setEVal}
+                    eImages={eImageFileList}
+                    setEImages={setEImageFileList}
+                  />
+                }
+              </div>
 
-          <div className="p-2.5">
-            {
-              <AddOptions
-                aVal={aVal}
-                setAVal={setAVal}
-                aImages={aImageFileList}
-                setAImages={setAImageFileList}
-                bVal={bVal}
-                setBVal={setBVal}
-                bImages={bImageFileList}
-                setBImages={setBImageFileList}
-                cVal={cVal}
-                setCVal={setCVal}
-                cImages={cImageFileList}
-                setCImages={setCImageFileList}
-                dVal={dVal}
-                setDVal={setDVal}
-                dImages={dImageFileList}
-                setDImages={setDImageFileList}
-                eVal={eVal}
-                setEVal={setEVal}
-                eImages={eImageFileList}
-                setEImages={setEImageFileList}
+              <Divider
+                size="small"
+                variant="dashed"
+                style={{ borderColor: "#7cb305" }}
+                dashed
               />
-            }
-          </div>
-
-          <Divider
-            size="small"
-            variant="dashed"
-            style={{ borderColor: "#7cb305" }}
-            dashed
-          />
+            </div>
+          )}
 
           <div className="p-2.5">
             {<AddAnswerInfoStyle val={answerVal} setVal={setAnswerVal} />}
