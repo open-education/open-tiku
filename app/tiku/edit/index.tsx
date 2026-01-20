@@ -59,16 +59,15 @@ export default function Edit(props: any) {
     reqQuestionInfo.baseInfo.questionTypeId,
   );
 
-  // 是否显示选择题选项
-  const [showOptions, setShowOptions] = useState<boolean>(
-    questionTypeList.length > 0
-      ? questionTypeList[reqQuestionInfo.baseInfo.questionTypeId].isSelect
-      : false,
-  );
   // 监听题型类型是否为选择题
   const questionTypeDict = arrayToDict(questionTypeList, "id");
+  // 是否显示选择题选项
+  const [showOptions, setShowOptions] = useState<boolean>(
+    questionTypeDict[reqQuestionInfo.baseInfo.questionTypeId]?.isSelect ??
+      false,
+  );
   useEffect(() => {
-    setShowOptions(questionTypeDict[questionTypeVal].isSelect);
+    setShowOptions(questionTypeDict[questionTypeVal]?.isSelect ?? false);
   }, [questionTypeVal]);
 
   // 题目标签
@@ -184,45 +183,47 @@ export default function Edit(props: any) {
   const getCurrentQuestionBaseInfo = (): QuestionBaseInfo => {
     // 将选项依次加入选项组中
     const options: QuestionOption[] = [];
-    if (StringValidator.isNonEmpty(aVal) || aImageFileList.length > 0) {
-      options.push({
-        label: "A",
-        content: aVal,
-        images: aImageFileList.map((image) => image.name),
-        order: 1,
-      });
-    }
-    if (StringValidator.isNonEmpty(bVal) || bImageFileList.length > 0) {
-      options.push({
-        label: "B",
-        content: bVal,
-        images: bImageFileList.map((image) => image.name),
-        order: 2,
-      });
-    }
-    if (StringValidator.isNonEmpty(cVal) || cImageFileList.length > 0) {
-      options.push({
-        label: "C",
-        content: cVal,
-        images: cImageFileList.map((image) => image.name),
-        order: 3,
-      });
-    }
-    if (StringValidator.isNonEmpty(dVal) || dImageFileList.length > 0) {
-      options.push({
-        label: "D",
-        content: dVal,
-        images: dImageFileList.map((image) => image.name),
-        order: 4,
-      });
-    }
-    if (StringValidator.isNonEmpty(eVal) || eImageFileList.length > 0) {
-      options.push({
-        label: "E",
-        content: eVal,
-        images: eImageFileList.map((image) => image.name),
-        order: 5,
-      });
+    if (showOptions) {
+      if (StringValidator.isNonEmpty(aVal) || aImageFileList.length > 0) {
+        options.push({
+          label: "A",
+          content: aVal,
+          images: aImageFileList.map((image) => image.name),
+          order: 1,
+        });
+      }
+      if (StringValidator.isNonEmpty(bVal) || bImageFileList.length > 0) {
+        options.push({
+          label: "B",
+          content: bVal,
+          images: bImageFileList.map((image) => image.name),
+          order: 2,
+        });
+      }
+      if (StringValidator.isNonEmpty(cVal) || cImageFileList.length > 0) {
+        options.push({
+          label: "C",
+          content: cVal,
+          images: cImageFileList.map((image) => image.name),
+          order: 3,
+        });
+      }
+      if (StringValidator.isNonEmpty(dVal) || dImageFileList.length > 0) {
+        options.push({
+          label: "D",
+          content: dVal,
+          images: dImageFileList.map((image) => image.name),
+          order: 4,
+        });
+      }
+      if (StringValidator.isNonEmpty(eVal) || eImageFileList.length > 0) {
+        options.push({
+          label: "E",
+          content: eVal,
+          images: eImageFileList.map((image) => image.name),
+          order: 5,
+        });
+      }
     }
 
     return {
@@ -281,6 +282,11 @@ export default function Edit(props: any) {
         <p>
           2. 如果变更了内容但是又不想更新, 不点击 更新 按钮即可,
           但是预览还是你当前选择的效果，不会主动保存;
+        </p>
+        <p>
+          3.
+          题型类型编辑从选择题变为非选择题时不会自动清除原有的选项内容(除非后面是强需求才会支持清空),
+          如果要编辑需要先手动清空选项后再调整题型;
         </p>
       </div>
 

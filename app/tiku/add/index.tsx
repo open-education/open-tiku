@@ -65,7 +65,7 @@ export default function Add(props: any) {
   // 监听题型类型是否为选择题
   const questionTypeDict = arrayToDict(questionTypeList, "id");
   useEffect(() => {
-    setShowOptions(questionTypeDict[questionTypeVal].isSelect);
+    setShowOptions(questionTypeDict[questionTypeVal]?.isSelect ?? false);
   }, [questionTypeVal]);
 
   const [tagVal, setTagVal] = useState<number[]>([]);
@@ -123,45 +123,48 @@ export default function Add(props: any) {
   const getCurrentQuestionBaseInfo = (): QuestionBaseInfo => {
     // 将选项依次加入选项组中
     const options: QuestionOption[] = [];
-    if (StringValidator.isNonEmpty(aVal) || aImageFileList.length > 0) {
-      options.push({
-        label: "A",
-        content: aVal,
-        images: aImageFileList.map((image) => image.name),
-        order: 1,
-      });
-    }
-    if (StringValidator.isNonEmpty(bVal) || bImageFileList.length > 0) {
-      options.push({
-        label: "B",
-        content: bVal,
-        images: bImageFileList.map((image) => image.name),
-        order: 2,
-      });
-    }
-    if (StringValidator.isNonEmpty(cVal) || cImageFileList.length > 0) {
-      options.push({
-        label: "C",
-        content: cVal,
-        images: cImageFileList.map((image) => image.name),
-        order: 3,
-      });
-    }
-    if (StringValidator.isNonEmpty(dVal) || dImageFileList.length > 0) {
-      options.push({
-        label: "D",
-        content: dVal,
-        images: dImageFileList.map((image) => image.name),
-        order: 4,
-      });
-    }
-    if (StringValidator.isNonEmpty(eVal) || eImageFileList.length > 0) {
-      options.push({
-        label: "E",
-        content: eVal,
-        images: eImageFileList.map((image) => image.name),
-        order: 5,
-      });
+    // 只有选择题需要, 其它题型存储默认值也可以
+    if (showOptions) {
+      if (StringValidator.isNonEmpty(aVal) || aImageFileList.length > 0) {
+        options.push({
+          label: "A",
+          content: aVal,
+          images: aImageFileList.map((image) => image.name),
+          order: 1,
+        });
+      }
+      if (StringValidator.isNonEmpty(bVal) || bImageFileList.length > 0) {
+        options.push({
+          label: "B",
+          content: bVal,
+          images: bImageFileList.map((image) => image.name),
+          order: 2,
+        });
+      }
+      if (StringValidator.isNonEmpty(cVal) || cImageFileList.length > 0) {
+        options.push({
+          label: "C",
+          content: cVal,
+          images: cImageFileList.map((image) => image.name),
+          order: 3,
+        });
+      }
+      if (StringValidator.isNonEmpty(dVal) || dImageFileList.length > 0) {
+        options.push({
+          label: "D",
+          content: dVal,
+          images: dImageFileList.map((image) => image.name),
+          order: 4,
+        });
+      }
+      if (StringValidator.isNonEmpty(eVal) || eImageFileList.length > 0) {
+        options.push({
+          label: "E",
+          content: eVal,
+          images: eImageFileList.map((image) => image.name),
+          order: 5,
+        });
+      }
     }
 
     return {
