@@ -168,7 +168,7 @@ export default function Index(props: any) {
   };
 
   return (
-    <div className="p-2.5">
+    <div className="p-2.5 min-h-screen">
       {/* 试卷标题 */}
       <div>
         <h3 className="text-center text-[18px] font-bold">{testList.title}</h3>

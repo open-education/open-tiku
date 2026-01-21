@@ -181,15 +181,7 @@ export function ListInfo(props: any) {
 
         <Col span={24}>
           <Flex gap="small" wrap>
-            <div
-              style={{
-                display: "inline-block",
-                lineHeight: "35px",
-                marginRight: "10px",
-              }}
-            >
-              快速入口:{" "}
-            </div>
+            <div className="inline-block leading-8.75 mr-2.5">快速入口:</div>
             <Button color="primary" variant="dashed" onClick={showAddDrawer}>
               添加题目
             </Button>

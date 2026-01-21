@@ -18,3 +18,11 @@ export interface TextbookOtherDict {
   sortOrder: number;
   isSelect: boolean;
 }
+
+// 选择父级菜单时下拉列表数据结构
+export interface TextbookOption {
+  label: string;
+  value: string;
+  raw: Textbook;
+  children?: TextbookOption[];
+}
