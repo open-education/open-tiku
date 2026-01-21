@@ -1,56 +1,10 @@
 // 题目和图片风格
-import type { QuestionBaseInfoResp } from "~/type/question";
-import { StringUtil, StringValidator } from "~/util/string";
+import { StringUtil } from "~/util/string";
 import { Alert, Button, Col, Flex, Image, Row } from "antd";
-import Markdown from "react-markdown";
-import remarkMath from "remark-math";
-import remarkGfm from "remark-gfm";
-import rehypeKatex from "rehype-katex";
 import React from "react";
 import type { EditTitle } from "~/type/edit";
 import { httpClient } from "~/util/http";
 import { SimpleTextArea } from "~/tiku/common/text-area";
-
-// 标题样式
-export function CommonTitle(questionInfo: QuestionBaseInfoResp) {
-  return (
-    <Row gutter={[10, 10]}>
-      <Col span={24}>
-        {StringValidator.isNonEmpty(questionInfo.title) && (
-          <Markdown
-            remarkPlugins={[remarkMath, remarkGfm]}
-            rehypePlugins={[rehypeKatex]}
-          >
-            {questionInfo.title}
-          </Markdown>
-        )}
-      </Col>
-      {/* 标注 */}
-      <Col span={24} className="text-[10px] italic text-blue-950">
-        {StringValidator.isNonEmpty(questionInfo.comment) && (
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {questionInfo.comment}
-          </Markdown>
-        )}
-      </Col>
-      {/* 如果有图片 */}
-      <Col span={24}>
-        <Flex gap="small" wrap>
-          {questionInfo.images?.map((imageName) => {
-            return (
-              <Image
-                height={200}
-                key={imageName}
-                alt="basic"
-                src={`/api/file/read/${imageName}`}
-              />
-            );
-          })}
-        </Flex>
-      </Col>
-    </Row>
-  );
-}
 
 interface AddTitleProps {
   val: string;

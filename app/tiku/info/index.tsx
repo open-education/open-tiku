@@ -9,8 +9,8 @@ import "katex/dist/katex.min.css";
 import type { QuestionInfoResp } from "~/type/question";
 import { StringUtil, StringValidator } from "~/util/string";
 import { CommonTag } from "~/tiku/common/tag";
-import { CommonTitle } from "~/tiku/common/title";
-import { CommonSelect } from "~/tiku/common/select";
+import { CommonTitle } from "~/common/title";
+import { CommonSelect } from "~/common/select";
 import { useLocation, useOutletContext } from "react-router-dom";
 import type { TiKuIndexContext } from "~/type/context";
 import { CommonBreadcrumb } from "~/tiku/common/breadcrumb";
@@ -52,10 +52,22 @@ export default function Info(props: any) {
       />
 
       {/* 题目标注和图片位置 */}
-      {CommonTitle(questionInfo.baseInfo)}
+      {
+        <CommonTitle
+          title={questionInfo.baseInfo.title}
+          comment={questionInfo.baseInfo.comment}
+          images={questionInfo.baseInfo.images}
+        />
+      }
 
       {/* 选项 */}
-      {CommonSelect(questionInfo.baseInfo)}
+      {questionInfo.baseInfo.options &&
+        questionInfo.baseInfo.options.length > 0 && (
+          <CommonSelect
+            optionsLayout={questionInfo.baseInfo.optionsLayout ?? 1}
+            options={questionInfo.baseInfo.options}
+          />
+        )}
 
       <Divider
         size="small"

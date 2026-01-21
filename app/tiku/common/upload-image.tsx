@@ -182,7 +182,7 @@ export function EditUploadImageStyle(props: EditUploadImageProps) {
           <AddUploadImageStyle
             images={props.images}
             setImages={props.setImages}
-            showTitle={false}
+            showTitle={props.showTitle}
             onStartEdit={setShowEditImage}
           />
         }

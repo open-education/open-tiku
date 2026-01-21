@@ -17,8 +17,8 @@ import { CommonBreadcrumb } from "~/tiku/common/breadcrumb";
 import { useLocation, useOutletContext } from "react-router-dom";
 import type { TiKuIndexContext } from "~/type/context";
 import { StringConst, StringUtil } from "~/util/string";
-import { CommonTitle } from "~/tiku/common/title";
-import { CommonSelect } from "~/tiku/common/select";
+import { CommonTitle } from "~/common/title";
+import { CommonSelect } from "~/common/select";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
 import { CommonQuickJumpTag, CommonTag } from "~/tiku/common/tag";
@@ -212,10 +212,25 @@ export function ListInfo(props: any) {
             {CommonTag(questionInfo, questionTypeList, questionTagList)}
 
             {/* 标题 */}
-            <div className="mt-2.5">{CommonTitle(questionInfo)}</div>
+            <div className="mt-2.5">
+              {
+                <CommonTitle
+                  title={questionInfo.title}
+                  comment={questionInfo.comment}
+                  images={questionInfo.images}
+                />
+              }
+            </div>
 
             {/* 选项内容 */}
-            <div className="mt-2.5">{CommonSelect(questionInfo)}</div>
+            <div className="mt-2.5">
+              {questionInfo.options && questionInfo.options.length > 0 && (
+                <CommonSelect
+                  optionsLayout={questionInfo.optionsLayout ?? 1}
+                  options={questionInfo.options}
+                />
+              )}
+            </div>
 
             {/* 题目其它标签, 比如查看答案, 关联题目等 */}
             <div className="absolute bottom-3 right-4 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">

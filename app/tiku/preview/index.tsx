@@ -8,8 +8,8 @@ import rehypeKatex from "rehype-katex";
 import { StringValidator } from "~/util/string";
 import type { QuestionBaseInfo } from "~/type/question";
 import { CommonTag } from "~/tiku/common/tag";
-import { CommonTitle } from "~/tiku/common/title";
-import { CommonSelect } from "~/tiku/common/select";
+import { CommonTitle } from "~/common/title";
+import { CommonSelect } from "~/common/select";
 import type { TextbookOtherDict } from "~/type/textbook";
 
 export default function preview(props: any) {
@@ -29,11 +29,21 @@ export default function preview(props: any) {
         dashed
       />
 
-      {/* 题目标注和图片位置 */}
-      {CommonTitle(questionInfo)}
+      {
+        <CommonTitle
+          title={questionInfo.title}
+          comment={questionInfo.comment}
+          images={questionInfo.images}
+        />
+      }
 
       {/* 选项 */}
-      {CommonSelect(questionInfo)}
+      {questionInfo.options && questionInfo.options.length > 0 && (
+        <CommonSelect
+          optionsLayout={questionInfo.optionsLayout ?? 1}
+          options={questionInfo.options}
+        />
+      )}
 
       <Divider
         size="small"
