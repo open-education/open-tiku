@@ -22,25 +22,10 @@ function OptionForA(props: OptionProps) {
     <Row gutter={[10, 10]}>
       <Col span={24}>
         <div className="text-blue-700 text-[15px] mb-2.5 font-bold">A</div>
-        {
-          <SimpleTextArea
-            name="A"
-            value={props.val}
-            onChange={props.setVal}
-            placeholder="请输入A选项内容"
-            onStartEdit={props.onStartEdit}
-          />
-        }
+        {<SimpleTextArea name="A" value={props.val} onChange={props.setVal} placeholder="请输入A选项内容" onStartEdit={props.onStartEdit} />}
       </Col>
       <Col span={24}>
-        {
-          <AddUploadImageStyle
-            images={props.images}
-            setImages={props.setImages}
-            showTitle={false}
-            onStartEdit={props.onStartEdit}
-          />
-        }
+        {<AddUploadImageStyle images={props.images} setImages={props.setImages} showTitle={false} onStartEdit={props.onStartEdit} />}
       </Col>
     </Row>
   );
@@ -51,28 +36,11 @@ function OptionForB(props: OptionProps) {
   return (
     <Row gutter={[10, 10]}>
       <Col span={24}>
-        <div className="text-blue-700 text-[15px] mb-2.5 mt-2.5 font-bold">
-          B
-        </div>
-        {
-          <SimpleTextArea
-            name="B"
-            value={props.val}
-            onChange={props.setVal}
-            placeholder="请输入B选项内容"
-            onStartEdit={props.onStartEdit}
-          />
-        }
+        <div className="text-blue-700 text-[15px] mb-2.5 mt-2.5 font-bold">B</div>
+        {<SimpleTextArea name="B" value={props.val} onChange={props.setVal} placeholder="请输入B选项内容" onStartEdit={props.onStartEdit} />}
       </Col>
       <Col span={24}>
-        {
-          <AddUploadImageStyle
-            images={props.images}
-            setImages={props.setImages}
-            showTitle={false}
-            onStartEdit={props.onStartEdit}
-          />
-        }
+        {<AddUploadImageStyle images={props.images} setImages={props.setImages} showTitle={false} onStartEdit={props.onStartEdit} />}
       </Col>
     </Row>
   );
@@ -83,28 +51,11 @@ function OptionForC(props: OptionProps) {
   return (
     <Row gutter={[10, 10]}>
       <Col span={24}>
-        <div className="text-blue-700 text-[15px] mb-2.5 mt-2.5 font-bold">
-          C
-        </div>
-        {
-          <SimpleTextArea
-            name="C"
-            value={props.val}
-            onChange={props.setVal}
-            placeholder="请输入C选项内容"
-            onStartEdit={props.onStartEdit}
-          />
-        }
+        <div className="text-blue-700 text-[15px] mb-2.5 mt-2.5 font-bold">C</div>
+        {<SimpleTextArea name="C" value={props.val} onChange={props.setVal} placeholder="请输入C选项内容" onStartEdit={props.onStartEdit} />}
       </Col>
       <Col span={24}>
-        {
-          <AddUploadImageStyle
-            images={props.images}
-            setImages={props.setImages}
-            showTitle={false}
-            onStartEdit={props.onStartEdit}
-          />
-        }
+        {<AddUploadImageStyle images={props.images} setImages={props.setImages} showTitle={false} onStartEdit={props.onStartEdit} />}
       </Col>
     </Row>
   );
@@ -115,28 +66,11 @@ function OptionForD(props: OptionProps) {
   return (
     <Row gutter={[10, 10]}>
       <Col span={24}>
-        <div className="text-blue-700 text-[15px] mb-2.5 mt-2.5 font-bold">
-          D
-        </div>
-        {
-          <SimpleTextArea
-            name="D"
-            value={props.val}
-            onChange={props.setVal}
-            placeholder="请输入D选项内容"
-            onStartEdit={props.onStartEdit}
-          />
-        }
+        <div className="text-blue-700 text-[15px] mb-2.5 mt-2.5 font-bold">D</div>
+        {<SimpleTextArea name="D" value={props.val} onChange={props.setVal} placeholder="请输入D选项内容" onStartEdit={props.onStartEdit} />}
       </Col>
       <Col span={24}>
-        {
-          <AddUploadImageStyle
-            images={props.images}
-            setImages={props.setImages}
-            showTitle={false}
-            onStartEdit={props.onStartEdit}
-          />
-        }
+        {<AddUploadImageStyle images={props.images} setImages={props.setImages} showTitle={false} onStartEdit={props.onStartEdit} />}
       </Col>
     </Row>
   );
@@ -147,28 +81,11 @@ function OptionForE(props: OptionProps) {
   return (
     <Row gutter={[10, 10]}>
       <Col span={24}>
-        <div className="text-blue-700 text-[15px] mb-2.5 mt-2.5 font-bold">
-          E
-        </div>
-        {
-          <SimpleTextArea
-            name="E"
-            value={props.val}
-            onChange={props.setVal}
-            placeholder="请输入E选项内容"
-            onStartEdit={props.onStartEdit}
-          />
-        }
+        <div className="text-blue-700 text-[15px] mb-2.5 mt-2.5 font-bold">E</div>
+        {<SimpleTextArea name="E" value={props.val} onChange={props.setVal} placeholder="请输入E选项内容" onStartEdit={props.onStartEdit} />}
       </Col>
       <Col span={24}>
-        {
-          <AddUploadImageStyle
-            images={props.images}
-            setImages={props.setImages}
-            showTitle={false}
-            onStartEdit={props.onStartEdit}
-          />
-        }
+        {<AddUploadImageStyle images={props.images} setImages={props.setImages} showTitle={false} onStartEdit={props.onStartEdit} />}
       </Col>
     </Row>
   );
@@ -202,51 +119,11 @@ interface AddOptionProps {
 export function AddOptions(props: AddOptionProps) {
   return (
     <div>
-      {
-        <OptionForA
-          val={props.aVal}
-          setVal={props.setAVal}
-          images={props.aImages}
-          setImages={props.setAImages}
-          onStartEdit={props.onStartEdit}
-        />
-      }
-      {
-        <OptionForB
-          val={props.bVal}
-          setVal={props.setBVal}
-          images={props.bImages}
-          setImages={props.setBImages}
-          onStartEdit={props.onStartEdit}
-        />
-      }
-      {
-        <OptionForC
-          val={props.cVal}
-          setVal={props.setCVal}
-          images={props.cImages}
-          setImages={props.setCImages}
-          onStartEdit={props.onStartEdit}
-        />
-      }
-      {
-        <OptionForD
-          val={props.dVal}
-          setVal={props.setDVal}
-          images={props.dImages}
-          setImages={props.setDImages}
-          onStartEdit={props.onStartEdit}
-        />
-      }
-      {
-        <OptionForE
-          val={props.eVal}
-          setVal={props.setEVal}
-          images={props.eImages}
-          setImages={props.setEImages}
-          onStartEdit={props.onStartEdit}
-        />
-      }
+      {<OptionForA val={props.aVal} setVal={props.setAVal} images={props.aImages} setImages={props.setAImages} onStartEdit={props.onStartEdit} />}
+      {<OptionForB val={props.bVal} setVal={props.setBVal} images={props.bImages} setImages={props.setBImages} onStartEdit={props.onStartEdit} />}
+      {<OptionForC val={props.cVal} setVal={props.setCVal} images={props.cImages} setImages={props.setCImages} onStartEdit={props.onStartEdit} />}
+      {<OptionForD val={props.dVal} setVal={props.setDVal} images={props.dImages} setImages={props.setDImages} onStartEdit={props.onStartEdit} />}
+      {<OptionForE val={props.eVal} setVal={props.setEVal} images={props.eImages} setImages={props.setEImages} onStartEdit={props.onStartEdit} />}
     </div>
   );
 }
@@ -279,8 +156,7 @@ interface EditOptionProps {
 // 编辑选项样式
 export function EditOptions(props: EditOptionProps) {
   const [showEditOptions, setShowEditOptions] = React.useState(false);
-  const [showEditOptionsErr, setShowEditOptionsErr] =
-    React.useState<React.ReactNode>("");
+  const [showEditOptionsErr, setShowEditOptionsErr] = React.useState<React.ReactNode>("");
 
   const updateOptions = () => {
     // 将选项依次加入选项组中

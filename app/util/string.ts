@@ -6,20 +6,16 @@ export const StringValidator = {
   isNonEmpty: (str: any) => typeof str === "string" && str.length > 0,
 
   // 检查是否为非空白字符串
-  isNonWhitespace: (str: any) =>
-    typeof str === "string" && str.trim().length > 0,
+  isNonWhitespace: (str: any) => typeof str === "string" && str.trim().length > 0,
 
   // 检查是否包含特定内容
-  contains: (str: any, search: any) =>
-    StringValidator.isNonEmpty(str) && str.includes(search),
+  contains: (str: any, search: any) => StringValidator.isNonEmpty(str) && str.includes(search),
 
   // 检查是否以特定内容开头
-  startsWith: (str: any, prefix: any) =>
-    StringValidator.isNonEmpty(str) && str.startsWith(prefix),
+  startsWith: (str: any, prefix: any) => StringValidator.isNonEmpty(str) && str.startsWith(prefix),
 
   // 检查是否以特定内容结尾
-  endsWith: (str: any, suffix: any) =>
-    StringValidator.isNonEmpty(str) && str.endsWith(suffix),
+  endsWith: (str: any, suffix: any) => StringValidator.isNonEmpty(str) && str.endsWith(suffix),
 
   // 检查长度范围
   isLengthBetween: (str: any, min: any, max: any) => {
@@ -40,10 +36,7 @@ export const StringUtil = {
     return lastIndex === -1 ? str : str.slice(lastIndex + 1);
   },
 
-  removeLastPart: (
-    str: string | undefined,
-    separator: string = "_",
-  ): string => {
+  removeLastPart: (str: string | undefined, separator: string = "_"): string => {
     if (str === undefined) return "";
     const lastUnderscoreIndex = str.lastIndexOf(separator);
     if (lastUnderscoreIndex === -1) {

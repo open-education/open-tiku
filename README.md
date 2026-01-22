@@ -67,6 +67,7 @@ server {
     }
 }
 ```
+
 注意以下5点, 如果自己的配置不一样请对应调整
 
 ###### 1. `proxy_pass http://127.0.0.1:5173;`
@@ -80,7 +81,7 @@ export default defineConfig({
   base: "/frontend/", // 这个 base 要对应
   ...
 });
-``` 
+```
 
 ###### 3. [react-router.config.ts](react-router.config.ts) 也要对应配置
 
@@ -132,6 +133,18 @@ VITE_API_BASE_URL=/api
 npm run dev
 ```
 
+### 格式化
+
+[VS Code](https://code.visualstudio.com/), 其它 IDE 注意不要引起代码大的格式化变动即可
+
+[Prettier](https://prettier.io/) 代码格式化插件
+
+Editor: Format On Save 格式化时机, 保存时格式化即可
+
+Workbench › Tree: Indent 目录缩进默认8太窄, 加宽更容易区分
+
+Prettier: Print Width 用户空间设置 150 个字符宽度, 现在显示器都比较宽 默认的 80 个字符宽度代码反而到处折行
+
 #### 打包
 
 部署需要先使用 [build.sh](build.sh) 脚本来打包, 打包后的目标文件 存储在 target 目录中, 打包完毕后将该压缩包上传至代码仓库 Releases 处管理即可
@@ -161,6 +174,6 @@ export PORT=8082
 source .env && sh deploy.sh start -v v0.0.1-beta
 ```
 
-其中可以指定端口, 通常默认配置的端口号已经进行了 nginx 配置, 如果变更需要调整 nginx 配置内容. 
+其中可以指定端口, 通常默认配置的端口号已经进行了 nginx 配置, 如果变更需要调整 nginx 配置内容.
 
 不指定版本号时认为已经存在目标文件, 否则会从 github 重新下载该版本文件来执行新的部署

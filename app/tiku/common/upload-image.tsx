@@ -1,14 +1,4 @@
-import {
-  Alert,
-  Button,
-  Col,
-  Flex,
-  Image,
-  Row,
-  Upload,
-  type UploadFile,
-  type UploadProps,
-} from "antd";
+import { Alert, Button, Col, Flex, Image, Row, Upload, type UploadFile, type UploadProps } from "antd";
 import React, { useState } from "react";
 import { httpClient } from "~/util/http";
 import { PlusOutlined } from "@ant-design/icons";
@@ -40,11 +30,7 @@ export function AddUploadImageStyle(props: UploadImageProps) {
       // 文件上传成功后会在 file 对象上追加 reponse 记录服务端的返回值
       if (file.status == "done") {
         // 本身有的文件不会有 response 字段
-        if (
-          file.response &&
-          file.response.data &&
-          file.response.data.length > 0
-        ) {
+        if (file.response && file.response.data && file.response.data.length > 0) {
           let res = file.response.data[0];
           file.url = res.url;
           file.name = res.name;
@@ -94,9 +80,7 @@ export function AddUploadImageStyle(props: UploadImageProps) {
         <div>
           <Row gutter={[10, 10]}>
             <Col span={24}>
-              <div className="text-blue-700 text-[15px] mb-2.5 font-bold">
-                图片
-              </div>
+              <div className="text-blue-700 text-[15px] mb-2.5 font-bold">图片</div>
             </Col>
           </Row>
         </div>
@@ -141,8 +125,7 @@ interface EditUploadImageProps {
 // 编辑图片样式
 export function EditUploadImageStyle(props: EditUploadImageProps) {
   const [showEditImage, setShowEditImage] = React.useState(false);
-  const [showEditImageErr, setShowEditImageErr] =
-    React.useState<React.ReactNode>("");
+  const [showEditImageErr, setShowEditImageErr] = React.useState<React.ReactNode>("");
 
   const updateImageVal = () => {
     const req: EditImage = {
@@ -178,14 +161,7 @@ export function EditUploadImageStyle(props: EditUploadImageProps) {
   return (
     <div className="p-2.5 hover:border border-red-700 border-dashed">
       <div>
-        {
-          <AddUploadImageStyle
-            images={props.images}
-            setImages={props.setImages}
-            showTitle={props.showTitle}
-            onStartEdit={setShowEditImage}
-          />
-        }
+        {<AddUploadImageStyle images={props.images} setImages={props.setImages} showTitle={props.showTitle} onStartEdit={setShowEditImage} />}
       </div>
       {showEditImageErr}
       {showEditImage && showEditImageArea}

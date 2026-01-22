@@ -1,13 +1,4 @@
-import {
-  Alert,
-  Button,
-  Checkbox,
-  Col,
-  Flex,
-  type GetProp,
-  Row,
-  Tag,
-} from "antd";
+import { Alert, Button, Checkbox, Col, Flex, type GetProp, Row, Tag } from "antd";
 import type { QuestionBaseInfoResp, QuestionInfoResp } from "~/type/question";
 import { arrayToDict } from "~/util/common";
 import React, { type Dispatch, type SetStateAction, useState } from "react";
@@ -21,11 +12,7 @@ import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import { StarFilled } from "@ant-design/icons";
 
 // 题目列表展示标签样式 题目类型在前 标签依次在后
-export function CommonTag(
-  questionInfo: QuestionBaseInfoResp,
-  questionTypeList: TextbookOtherDict[],
-  questionTagList: TextbookOtherDict[],
-) {
+export function CommonTag(questionInfo: QuestionBaseInfoResp, questionTypeList: TextbookOtherDict[], questionTagList: TextbookOtherDict[]) {
   const questionTypeDict = arrayToDict(questionTypeList, "id");
   const tagsDict = arrayToDict(questionTagList, "id");
   return (
@@ -43,8 +30,7 @@ export function CommonTag(
             );
           })}
           <Tag color="red">
-            {questionInfo.difficultyLevel}{" "}
-            <StarFilled style={{ color: "green" }} />
+            {questionInfo.difficultyLevel} <StarFilled style={{ color: "green" }} />
           </Tag>
         </Flex>
       </Col>
@@ -115,35 +101,28 @@ export function CommonQuickJumpTag(
     }
 
     // 获取题目全部信息
-    httpClient
-      .get<QuestionInfoResp>(`/question/info/${questionInfo.id}`)
-      .then((res) => {
-        setOpenDrawer(true);
-        setDrawerTitle(title);
-        if (value === "edit") {
-          // 列表公用一个 Edit 组件, 每个题信息本身不一致, 就是需要重新渲染页面, 故使用 key 属性强制渲染每次组件
-          setDrawerContent(
-            <Edit
-              key={questionInfo.id}
-              questionInfo={res}
-              questionCateId={questionInfo.questionCateId}
-              questionTypeList={questionTypeList}
-              questionTagList={questionTagList}
-              setRefreshListNum={setRefreshListNum}
-              childPathMap={childPathMap}
-            />,
-          );
-        } else {
-          setDrawerContent(
-            <Info
-              questionInfo={res}
-              questionTypeList={questionTypeList}
-              questionTagList={questionTagList}
-              childPathMap={childPathMap}
-            />,
-          );
-        }
-      });
+    httpClient.get<QuestionInfoResp>(`/question/info/${questionInfo.id}`).then((res) => {
+      setOpenDrawer(true);
+      setDrawerTitle(title);
+      if (value === "edit") {
+        // 列表公用一个 Edit 组件, 每个题信息本身不一致, 就是需要重新渲染页面, 故使用 key 属性强制渲染每次组件
+        setDrawerContent(
+          <Edit
+            key={questionInfo.id}
+            questionInfo={res}
+            questionCateId={questionInfo.questionCateId}
+            questionTypeList={questionTypeList}
+            questionTagList={questionTagList}
+            setRefreshListNum={setRefreshListNum}
+            childPathMap={childPathMap}
+          />,
+        );
+      } else {
+        setDrawerContent(
+          <Info questionInfo={res} questionTypeList={questionTypeList} questionTagList={questionTagList} childPathMap={childPathMap} />,
+        );
+      }
+    });
   };
 
   return (
@@ -152,13 +131,7 @@ export function CommonQuickJumpTag(
         <Flex gap="small" wrap justify={"right"}>
           {quickToolList.map((item) => {
             return (
-              <Button
-                color="primary"
-                variant="link"
-                value={item.value}
-                key={item.key}
-                onClick={() => onClickQuickTool(item.value)}
-              >
+              <Button color="primary" variant="link" value={item.value} key={item.key} onClick={() => onClickQuickTool(item.value)}>
                 {item.label}
               </Button>
             );
@@ -179,31 +152,17 @@ interface TagProps {
 // 题目标签基础样式
 export function EditTag(props: TagProps) {
   if (!props.tagList.length) {
-    return (
-      <Alert
-        title="Warning"
-        description="标签类型为空"
-        type="warning"
-        showIcon
-        closable
-      />
-    );
+    return <Alert title="Warning" description="标签类型为空" type="warning" showIcon closable />;
   }
 
   // 选中标签
-  const onEditTagsChange: GetProp<typeof Checkbox.Group, "onChange"> = (
-    checkedValues: unknown[],
-  ) => {
-    props.setTags(checkedValues.map(Number).filter((val) => !isNaN(val)));
+  const onEditTagsChange: GetProp<typeof Checkbox.Group, "onChange"> = (checkedValues: unknown[]) => {
+    props.setTags(checkedValues as number[]);
     props.onStartEdit?.(true);
   };
 
   return (
-    <Checkbox.Group
-      defaultValue={props.tags}
-      style={{ width: "100%" }}
-      onChange={onEditTagsChange}
-    >
+    <Checkbox.Group defaultValue={props.tags} style={{ width: "100%" }} onChange={onEditTagsChange}>
       <Row>
         {props.tagList.map((item) => {
           return (
@@ -230,14 +189,7 @@ export function AddTagStyle(props: AddTagProps) {
     <Row gutter={[10, 10]}>
       <Col span={24}>
         <div className="text-blue-700 text-[15px] mb-2.5 font-bold">标签</div>
-        {
-          <EditTag
-            tagList={props.tagList}
-            tags={props.tags}
-            setTags={props.setTags}
-            onStartEdit={props.onStartEdit}
-          />
-        }
+        {<EditTag tagList={props.tagList} tags={props.tags} setTags={props.setTags} onStartEdit={props.onStartEdit} />}
       </Col>
     </Row>
   );
@@ -289,16 +241,7 @@ export function EditTagStyle(props: EditTagProps) {
 
   return (
     <div className="p-2.5 pt-2.5 hover:border border-red-700 border-dashed">
-      <div>
-        {
-          <AddTagStyle
-            tagList={props.tagList}
-            tags={props.tags}
-            setTags={props.setTags}
-            onStartEdit={setShowTagEdit}
-          />
-        }
-      </div>
+      <div>{<AddTagStyle tagList={props.tagList} tags={props.tags} setTags={props.setTags} onStartEdit={setShowTagEdit} />}</div>
       {showTagEditErr}
       {showTagEdit && showTagEditArea}
     </div>

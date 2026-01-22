@@ -3,11 +3,7 @@ import Add from "~/test/add/index";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 import { httpClient } from "~/util/http";
-import type {
-  Textbook,
-  TextbookOption,
-  TextbookOtherDict,
-} from "~/type/textbook";
+import type { Textbook, TextbookOption, TextbookOtherDict } from "~/type/textbook";
 import { ArrayUtil } from "~/util/object";
 import { createTextbookPathDict } from "~/util/textbook-dict";
 
@@ -21,9 +17,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const pathMap: Map<number, Textbook[]> = createTextbookPathDict(textbooks);
 
   // 第6-8层级的菜单
-  const childTextbooks = await httpClient.get<Textbook[]>(
-    `/textbook/list/${reqId}/children`,
-  );
+  const childTextbooks = await httpClient.get<Textbook[]>(`/textbook/list/${reqId}/children`);
 
   // 获取题型类型和标签
   let questionTypeList: TextbookOtherDict[] = [];
@@ -34,17 +28,12 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   if (nodes.length >= 3) {
     // 目前题型和标签类型挂载在第三层上
     const typeId: number = nodes[2].id;
-    questionTypeList = await httpClient.get<TextbookOtherDict[]>(
-      `/other/dict/list/${typeId}/question_type`,
-    );
-    questionTagList = await httpClient.get<TextbookOtherDict[]>(
-      `/other/dict/list/${typeId}/question_tag`,
-    );
+    questionTypeList = await httpClient.get<TextbookOtherDict[]>(`/other/dict/list/${typeId}/question_type`);
+    questionTagList = await httpClient.get<TextbookOtherDict[]>(`/other/dict/list/${typeId}/question_tag`);
   }
 
   // 级联菜单选择用
-  const textbookOptions: TextbookOption[] =
-    ArrayUtil.mapTextbookToOption(childTextbooks);
+  const textbookOptions: TextbookOption[] = ArrayUtil.mapTextbookToOption(childTextbooks);
 
   return { textbookOptions, questionTypeList, questionTagList };
 }
@@ -56,10 +45,6 @@ export function HydrateFallback() {
 
 export default function Home({ loaderData }: Route.ComponentProps) {
   return (
-    <Add
-      textbookOptions={loaderData.textbookOptions}
-      questionTypeList={loaderData.questionTypeList}
-      questionTagList={loaderData.questionTagList}
-    />
+    <Add textbookOptions={loaderData.textbookOptions} questionTypeList={loaderData.questionTypeList} questionTagList={loaderData.questionTagList} />
   );
 }

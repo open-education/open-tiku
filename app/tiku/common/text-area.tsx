@@ -14,26 +14,11 @@ interface SimpleTextAreaProps {
 }
 
 // 基本输入框样式
-export function SimpleTextArea({
-  name,
-  value,
-  onChange,
-  placeholder,
-  autoSize = { minRows: 2, maxRows: 5 },
-  onStartEdit,
-}: SimpleTextAreaProps) {
+export function SimpleTextArea({ name, value, onChange, placeholder, autoSize = { minRows: 2, maxRows: 5 }, onStartEdit }: SimpleTextAreaProps) {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value);
     onStartEdit?.(true);
   };
 
-  return (
-    <TextArea
-      name={name}
-      value={value}
-      placeholder={placeholder}
-      autoSize={autoSize}
-      onChange={handleChange}
-    />
-  );
+  return <TextArea name={name} value={value} placeholder={placeholder} autoSize={autoSize} onChange={handleChange} />;
 }

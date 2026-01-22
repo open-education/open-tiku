@@ -1,15 +1,15 @@
 // 题目选项信息
 export interface QuestionOption {
-  label: string,               // A, B, C, D, E
-  content: string,             // 选项内容
-  images?: string[], // 图片列表
-  order: number,                  // 顺序
+  label: string; // A, B, C, D, E
+  content: string; // 选项内容
+  images?: string[]; // 图片列表
+  order: number; // 顺序
 }
 
 // 解题分析
 export interface Content {
-  content: string,
-  images?: string[],
+  content: string;
+  images?: string[];
 }
 
 // 题目基本信息详情
@@ -86,16 +86,16 @@ export interface QuestionInfoResp {
 
 // 题目列表请求
 export interface QuestionListReq {
-  questionCateId: number,
-  questionTypeId?: number,
-  pageNo: number,
-  pageSize: number
+  questionCateId: number;
+  questionTypeId?: number;
+  pageNo: number;
+  pageSize: number;
 }
 
 // 题目列表返回
 export interface QuestionListResp {
-  pageNo: number,
-  pageSize: number
-  total: number
-  list: QuestionBaseInfoResp[]
+  pageNo: number;
+  pageSize: number;
+  total: number;
+  list: QuestionBaseInfoResp[];
 }

@@ -25,17 +25,8 @@ function SingleSelect(props: SingleSelectProps) {
         {/* 图片, 目前先不处理标签和图片同时存在的情况 */}
         {props.images?.map((imageName) => {
           return (
-            <div
-              key={imageName}
-              style={{ width: 200, height: 200, overflow: "hidden" }}
-            >
-              <Image
-                width="100%"
-                height="100%"
-                style={{ objectFit: "cover" }}
-                alt="basic"
-                src={`/api/file/read/${imageName}`}
-              />
+            <div key={imageName} style={{ width: 200, height: 200, overflow: "hidden" }}>
+              <Image width="100%" height="100%" style={{ objectFit: "cover" }} alt="basic" src={`/api/file/read/${imageName}`} />
             </div>
           );
         })}
@@ -59,11 +50,7 @@ export function CommonSelect(props: OptionProps) {
         {props.options?.map((item) => {
           return (
             <Col span={6} key={item.label}>
-              <SingleSelect
-                label={item.label}
-                content={item.content}
-                images={item.images}
-              />
+              <SingleSelect label={item.label} content={item.content} images={item.images} />
             </Col>
           );
         })}
@@ -75,11 +62,7 @@ export function CommonSelect(props: OptionProps) {
         {props.options?.map((item) => {
           return (
             <Col span={24} key={item.label}>
-              <SingleSelect
-                label={item.label}
-                content={item.content}
-                images={item.images}
-              />
+              <SingleSelect label={item.label} content={item.content} images={item.images} />
             </Col>
           );
         })}
@@ -103,11 +86,7 @@ export function CommonSelect(props: OptionProps) {
             {firstHalf.map((item) => {
               return (
                 <Col span={12} key={item.label}>
-                  <SingleSelect
-                    label={item.label}
-                    content={item.content}
-                    images={item.images}
-                  />
+                  <SingleSelect label={item.label} content={item.content} images={item.images} />
                 </Col>
               );
             })}
@@ -118,11 +97,7 @@ export function CommonSelect(props: OptionProps) {
             {secondHalf.map((item) => {
               return (
                 <Col span={12} key={item.label}>
-                  <SingleSelect
-                    label={item.label}
-                    content={item.content}
-                    images={item.images}
-                  />
+                  <SingleSelect label={item.label} content={item.content} images={item.images} />
                 </Col>
               );
             })}

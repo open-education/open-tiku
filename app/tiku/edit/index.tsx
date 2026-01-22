@@ -1,29 +1,12 @@
 // 题目编辑主页
-import React, {
-  type Dispatch,
-  type SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import React, { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { useLocation, useOutletContext } from "react-router-dom";
 import type { TiKuIndexContext } from "~/type/context";
-import {
-  Button,
-  Col,
-  Flex,
-  Row,
-  Splitter,
-  type UploadFile,
-  Watermark,
-} from "antd";
+import { Button, Col, Flex, Row, Splitter, type UploadFile, Watermark } from "antd";
 import { CommonBreadcrumb } from "~/tiku/common/breadcrumb";
 import Preview from "~/tiku/preview";
 import { EditQuestionTypeStyle } from "~/tiku/common/question-type";
-import type {
-  QuestionBaseInfo,
-  QuestionInfoResp,
-  QuestionOption,
-} from "~/type/question";
+import type { QuestionBaseInfo, QuestionInfoResp, QuestionOption } from "~/type/question";
 import { EditTagStyle } from "~/tiku/common/tag";
 import { EditRateInfoStyle } from "~/tiku/common/rate";
 import { EditTitleInfoStyle } from "~/tiku/common/title";
@@ -44,8 +27,7 @@ import { arrayToDict } from "~/util/common";
 export default function Edit(props: any) {
   const { pathMap } = useOutletContext<TiKuIndexContext>();
 
-  const setRefreshListNum: Dispatch<SetStateAction<number>> =
-    props.setRefreshListNum;
+  const setRefreshListNum: Dispatch<SetStateAction<number>> = props.setRefreshListNum;
   const location = useLocation();
   const pathname = StringUtil.getLastPart(location.pathname, "/");
 
@@ -55,34 +37,21 @@ export default function Edit(props: any) {
   const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? [];
 
   // 题目类型
-  const [questionTypeVal, setQuestionTypeVal] = useState<number>(
-    reqQuestionInfo.baseInfo.questionTypeId,
-  );
+  const [questionTypeVal, setQuestionTypeVal] = useState<number>(reqQuestionInfo.baseInfo.questionTypeId);
 
   // 监听题型类型是否为选择题
   const questionTypeDict = arrayToDict(questionTypeList, "id");
   // 是否显示选择题选项
-  const [showOptions, setShowOptions] = useState<boolean>(
-    questionTypeDict[reqQuestionInfo.baseInfo.questionTypeId]?.isSelect ??
-      false,
-  );
+  const [showOptions, setShowOptions] = useState<boolean>(questionTypeDict[reqQuestionInfo.baseInfo.questionTypeId]?.isSelect ?? false);
   useEffect(() => {
     setShowOptions(questionTypeDict[questionTypeVal]?.isSelect ?? false);
   }, [questionTypeVal]);
 
   // 题目标签
-  const [tagListVal, setTagListVal] = useState<number[]>(
-    reqQuestionInfo.baseInfo.questionTagIds ?? [],
-  );
-  const [rateVal, setRateVal] = useState<number>(
-    Number(reqQuestionInfo.baseInfo.difficultyLevel ?? 0),
-  );
-  const [titleVal, setTitleVal] = useState<string>(
-    reqQuestionInfo.baseInfo.title,
-  );
-  const [mentionVal, setMentionVal] = useState<string>(
-    reqQuestionInfo.baseInfo.comment ?? "",
-  );
+  const [tagListVal, setTagListVal] = useState<number[]>(reqQuestionInfo.baseInfo.questionTagIds ?? []);
+  const [rateVal, setRateVal] = useState<number>(Number(reqQuestionInfo.baseInfo.difficultyLevel ?? 0));
+  const [titleVal, setTitleVal] = useState<string>(reqQuestionInfo.baseInfo.title);
+  const [mentionVal, setMentionVal] = useState<string>(reqQuestionInfo.baseInfo.comment ?? "");
 
   const getImageFileList = (imageNames: string[]): UploadFile[] => {
     return imageNames?.map((name, i) => ({
@@ -92,92 +61,56 @@ export default function Edit(props: any) {
       url: `/api/file/read/${name}`,
     }));
   };
-  const [imageFileList, setImageFileList] = useState<UploadFile[]>(
-    getImageFileList(reqQuestionInfo.baseInfo.images ?? []),
-  );
+  const [imageFileList, setImageFileList] = useState<UploadFile[]>(getImageFileList(reqQuestionInfo.baseInfo.images ?? []));
 
-  const [showSelectVal, setShowSelectVal] = useState<number>(
-    reqQuestionInfo.baseInfo.optionsLayout ?? 1,
-  );
+  const [showSelectVal, setShowSelectVal] = useState<number>(reqQuestionInfo.baseInfo.optionsLayout ?? 1);
 
   // 选项数据
   const options: QuestionOption[] = reqQuestionInfo.baseInfo.options ?? [];
   // 定义一个默认对象，防止访问内部属性时报错
   const defaultOpt = { label: "", content: "", images: [], order: 0 };
-  const [
-    opt0 = defaultOpt,
-    opt1 = defaultOpt,
-    opt2 = defaultOpt,
-    opt3 = defaultOpt,
-    opt4 = defaultOpt,
-  ] = options;
+  const [opt0 = defaultOpt, opt1 = defaultOpt, opt2 = defaultOpt, opt3 = defaultOpt, opt4 = defaultOpt] = options;
   const [aVal, setAVal] = useState<string>(opt0.content ?? "");
-  const [aImageFileList, setAImageFileList] = useState<UploadFile[]>(
-    getImageFileList(opt0.images ?? []),
-  );
+  const [aImageFileList, setAImageFileList] = useState<UploadFile[]>(getImageFileList(opt0.images ?? []));
   const [bVal, setBVal] = useState<string>(opt1.content ?? "");
-  const [bImageFileList, setBImageFileList] = useState<UploadFile[]>(
-    getImageFileList(opt1.images ?? []),
-  );
+  const [bImageFileList, setBImageFileList] = useState<UploadFile[]>(getImageFileList(opt1.images ?? []));
   const [cVal, setCVal] = useState<string>(opt2.content ?? "");
-  const [cImageFileList, setCImageFileList] = useState<UploadFile[]>(
-    getImageFileList(opt2.images ?? []),
-  );
+  const [cImageFileList, setCImageFileList] = useState<UploadFile[]>(getImageFileList(opt2.images ?? []));
   const [dVal, setDVal] = useState<string>(opt3.content ?? "");
-  const [dImageFileList, setDImageFileList] = useState<UploadFile[]>(
-    getImageFileList(opt3.images ?? []),
-  );
+  const [dImageFileList, setDImageFileList] = useState<UploadFile[]>(getImageFileList(opt3.images ?? []));
   const [eVal, setEVal] = useState<string>(opt4.content ?? "");
-  const [eImageFileList, setEImageFileList] = useState<UploadFile[]>(
-    getImageFileList(opt4.images ?? []),
-  );
+  const [eImageFileList, setEImageFileList] = useState<UploadFile[]>(getImageFileList(opt4.images ?? []));
 
-  const [answerVal, setAnswerVal] = useState<string>(
-    reqQuestionInfo.extraInfo.answer ?? "",
-  );
-  const [knowledgeVal, setKnowledgeVal] = useState<string>(
-    reqQuestionInfo.extraInfo.knowledge ?? "",
-  );
-  const [analyzeVal, setAnalyzeVal] = useState<string>(
-    reqQuestionInfo.extraInfo.analysis?.content ?? "",
-  );
-  const [analyzeImageFileList, setAnalyzeImageFileList] = useState<
-    UploadFile[]
-  >(getImageFileList(reqQuestionInfo.extraInfo.analysis?.images ?? []));
-  const [processVal, setProcessVal] = useState<string>(
-    reqQuestionInfo.extraInfo.process?.content ?? "",
-  );
-  const [processImageFileList, setProcessImageFileList] = useState<
-    UploadFile[]
-  >(getImageFileList(reqQuestionInfo.extraInfo.process?.images ?? []));
-  const [remarkVal, setRemarkVal] = useState<string>(
-    reqQuestionInfo.extraInfo.remark ?? "",
-  );
+  const [answerVal, setAnswerVal] = useState<string>(reqQuestionInfo.extraInfo.answer ?? "");
+  const [knowledgeVal, setKnowledgeVal] = useState<string>(reqQuestionInfo.extraInfo.knowledge ?? "");
+  const [analyzeVal, setAnalyzeVal] = useState<string>(reqQuestionInfo.extraInfo.analysis?.content ?? "");
+  const [analyzeImageFileList, setAnalyzeImageFileList] = useState<UploadFile[]>(getImageFileList(reqQuestionInfo.extraInfo.analysis?.images ?? []));
+  const [processVal, setProcessVal] = useState<string>(reqQuestionInfo.extraInfo.process?.content ?? "");
+  const [processImageFileList, setProcessImageFileList] = useState<UploadFile[]>(getImageFileList(reqQuestionInfo.extraInfo.process?.images ?? []));
+  const [remarkVal, setRemarkVal] = useState<string>(reqQuestionInfo.extraInfo.remark ?? "");
 
   // 生成预览对象
-  const [openEditPreviewArea, setOpenEditPreviewArea] =
-    useState<boolean>(false);
+  const [openEditPreviewArea, setOpenEditPreviewArea] = useState<boolean>(false);
 
-  let [editPreviewQuestionInfo, setEditPreviewQuestionInfo] =
-    useState<QuestionBaseInfo>({
-      analysis: undefined,
-      answer: "",
-      authorId: 0,
-      comment: "",
-      contentPlain: "",
-      difficultyLevel: 0,
-      id: 0,
-      images: [],
-      knowledge: "",
-      options: [],
-      optionsLayout: 0,
-      process: undefined,
-      questionCateId: 0,
-      questionTagIds: [],
-      questionTypeId: 0,
-      remark: "",
-      title: "",
-    });
+  let [editPreviewQuestionInfo, setEditPreviewQuestionInfo] = useState<QuestionBaseInfo>({
+    analysis: undefined,
+    answer: "",
+    authorId: 0,
+    comment: "",
+    contentPlain: "",
+    difficultyLevel: 0,
+    id: 0,
+    images: [],
+    knowledge: "",
+    options: [],
+    optionsLayout: 0,
+    process: undefined,
+    questionCateId: 0,
+    questionTagIds: [],
+    questionTypeId: 0,
+    remark: "",
+    title: "",
+  });
 
   // 首页页面的值用于展示和提交
   const getCurrentQuestionBaseInfo = (): QuestionBaseInfo => {
@@ -264,29 +197,16 @@ export default function Edit(props: any) {
       <Row>
         <Col span={24}>
           {/* 面包屑快速导航 */}
-          {CommonBreadcrumb(
-            pathMap,
-            pathname,
-            childPathMap,
-            reqQuestionInfo.baseInfo.questionCateId,
-          )}
+          {CommonBreadcrumb(pathMap, pathname, childPathMap, reqQuestionInfo.baseInfo.questionCateId)}
         </Col>
       </Row>
 
       <div className="mt-2.5 text-blue-700">
         <p>编辑方式： </p>
+        <p>1. 鼠标移动到区块上会浮动出虚线边框表示该块内容的范围，直接调整要变更的内容后单击更新即可;</p>
+        <p>2. 如果变更了内容但是又不想更新, 不点击 更新 按钮即可, 但是预览还是你当前选择的效果，不会主动保存;</p>
         <p>
-          1.
-          鼠标移动到区块上会浮动出虚线边框表示该块内容的范围，直接调整要变更的内容后单击更新即可;
-        </p>
-        <p>
-          2. 如果变更了内容但是又不想更新, 不点击 更新 按钮即可,
-          但是预览还是你当前选择的效果，不会主动保存;
-        </p>
-        <p>
-          3.
-          题型类型编辑从选择题变为非选择题时不会自动清除原有的选项内容(除非后面是强需求才会支持清空),
-          如果要编辑需要先手动清空选项后再调整题型;
+          3. 题型类型编辑从选择题变为非选择题时不会自动清除原有的选项内容(除非后面是强需求才会支持清空), 如果要编辑需要先手动清空选项后再调整题型;
         </p>
       </div>
 
@@ -300,9 +220,7 @@ export default function Edit(props: any) {
         </Col>
       </Row>
 
-      <Splitter
-        style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)", marginTop: "10px" }}
-      >
+      <Splitter style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)", marginTop: "10px" }}>
         <Splitter.Panel defaultSize={"50%"}>
           {/* 题目类型 */}
           {
@@ -327,34 +245,13 @@ export default function Edit(props: any) {
           }
 
           {/* rate */}
-          {
-            <EditRateInfoStyle
-              val={rateVal}
-              setVal={setRateVal}
-              id={reqQuestionInfo.baseInfo.id}
-              setRefreshListNum={setRefreshListNum}
-            />
-          }
+          {<EditRateInfoStyle val={rateVal} setVal={setRateVal} id={reqQuestionInfo.baseInfo.id} setRefreshListNum={setRefreshListNum} />}
 
           {/* title */}
-          {
-            <EditTitleInfoStyle
-              val={titleVal}
-              setVal={setTitleVal}
-              id={reqQuestionInfo.baseInfo.id}
-              setRefreshListNum={setRefreshListNum}
-            />
-          }
+          {<EditTitleInfoStyle val={titleVal} setVal={setTitleVal} id={reqQuestionInfo.baseInfo.id} setRefreshListNum={setRefreshListNum} />}
 
           {/* mention */}
-          {
-            <EditMentionInfoStyle
-              val={mentionVal}
-              setVal={setMentionVal}
-              id={reqQuestionInfo.baseInfo.id}
-              setRefreshListNum={setRefreshListNum}
-            />
-          }
+          {<EditMentionInfoStyle val={mentionVal} setVal={setMentionVal} id={reqQuestionInfo.baseInfo.id} setRefreshListNum={setRefreshListNum} />}
 
           {/* image */}
           {
@@ -411,14 +308,7 @@ export default function Edit(props: any) {
           )}
 
           {/* answer */}
-          {
-            <EditAnswerInfoStyle
-              val={answerVal}
-              setVal={setAnswerVal}
-              id={reqQuestionInfo.baseInfo.id}
-              setRefreshListNum={setRefreshListNum}
-            />
-          }
+          {<EditAnswerInfoStyle val={answerVal} setVal={setAnswerVal} id={reqQuestionInfo.baseInfo.id} setRefreshListNum={setRefreshListNum} />}
 
           {/* knowledge */}
           {
@@ -455,25 +345,14 @@ export default function Edit(props: any) {
           }
 
           {/* remark */}
-          {
-            <EditRemarkInfoStyle
-              val={remarkVal}
-              setVal={setRemarkVal}
-              id={reqQuestionInfo.baseInfo.id}
-              setRefreshListNum={setRefreshListNum}
-            />
-          }
+          {<EditRemarkInfoStyle val={remarkVal} setVal={setRemarkVal} id={reqQuestionInfo.baseInfo.id} setRefreshListNum={setRefreshListNum} />}
         </Splitter.Panel>
 
         <Splitter.Panel defaultSize="50%">
           <Watermark content="预览区域 仅展示效果">
             <div className="min-h-475 p-5">
               {openEditPreviewArea ? (
-                <Preview
-                  questionInfo={editPreviewQuestionInfo}
-                  questionTypeList={questionTypeList}
-                  questionTagList={questionTagList}
-                />
+                <Preview questionInfo={editPreviewQuestionInfo} questionTypeList={questionTypeList} questionTagList={questionTagList} />
               ) : (
                 ""
               )}

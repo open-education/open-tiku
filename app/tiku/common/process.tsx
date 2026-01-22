@@ -17,9 +17,7 @@ export function AddProcessInfoStyle(props: AddProcessProps) {
   return (
     <Row gutter={[10, 10]}>
       <Col span={24}>
-        <div className="text-blue-700 text-[15px] mb-2.5 font-bold">
-          解题过程
-        </div>
+        <div className="text-blue-700 text-[15px] mb-2.5 font-bold">解题过程</div>
         {
           <SimpleTextArea
             name="process"
@@ -47,8 +45,7 @@ interface EditProcessProps {
 // 编辑解题过程样式
 export function EditProcessInfoStyle(props: EditProcessProps) {
   const [showEditProcess, setShowEditProcess] = React.useState(false);
-  const [showEditProcessErr, setShowEditProcessErr] =
-    React.useState<React.ReactNode>("");
+  const [showEditProcessErr, setShowEditProcessErr] = React.useState<React.ReactNode>("");
 
   const updateProcessVal = () => {
     const req: EditProcess = {
@@ -87,21 +84,8 @@ export function EditProcessInfoStyle(props: EditProcessProps) {
   return (
     <div className="p-2.5 hover:border border-red-700 border-dashed">
       <div>
-        {
-          <AddProcessInfoStyle
-            val={props.val}
-            setVal={props.setVal}
-            onStartEdit={setShowEditProcess}
-          />
-        }
-        {
-          <AddUploadImageStyle
-            images={props.images}
-            setImages={props.setImages}
-            showTitle={false}
-            onStartEdit={setShowEditProcess}
-          />
-        }
+        {<AddProcessInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditProcess} />}
+        {<AddUploadImageStyle images={props.images} setImages={props.setImages} showTitle={false} onStartEdit={setShowEditProcess} />}
       </div>
       {showEditProcessErr}
       {showEditProcess && showEditProcessArea}

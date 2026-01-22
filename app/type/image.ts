@@ -1,4 +1,4 @@
 export interface DeleteImageReq {
-  id?: number,
-  filename: string
+  id?: number;
+  filename: string;
 }

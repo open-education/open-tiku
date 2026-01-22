@@ -1,15 +1,4 @@
-import {
-  Alert,
-  Button,
-  Col,
-  Divider,
-  Drawer,
-  Flex,
-  Pagination,
-  Radio,
-  type RadioChangeEvent,
-  Row,
-} from "antd";
+import { Alert, Button, Col, Divider, Drawer, Flex, Pagination, Radio, type RadioChangeEvent, Row } from "antd";
 import type { QuestionListReq, QuestionListResp } from "~/type/question";
 import React, { useEffect, useState } from "react";
 import Add from "~/tiku/add";
@@ -36,9 +25,7 @@ export function ListInfo(props: any) {
   const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? {};
   const questionCateId: number = Number(props.questionCateId ?? 0);
 
-  const [questionTypeVal, setQuestionTypeVal] = useState<number>(
-    StringConst.listSelectAll,
-  );
+  const [questionTypeVal, setQuestionTypeVal] = useState<number>(StringConst.listSelectAll);
   const onQuestionTypeChange = ({ target: { value } }: RadioChangeEvent) => {
     setQuestionTypeVal(Number(value));
   };
@@ -79,14 +66,7 @@ export function ListInfo(props: any) {
         setQuestListResTotal(res.total);
       })
       .catch((err) => {
-        setReqQuestListErr(
-          <Alert
-            title="Error"
-            description={`读取题目列表出错: ${err.message}`}
-            type="error"
-            showIcon
-          />,
-        );
+        setReqQuestListErr(<Alert title="Error" description={`读取题目列表出错: ${err.message}`} type="error" showIcon />);
       });
   }, [questionCateId, questionTypeVal, refreshListNum]);
 
@@ -95,24 +75,13 @@ export function ListInfo(props: any) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState<string>("");
   const [drawerContent, setDrawerContent] = useState<React.ReactNode>("");
-  const drawerExtraInfo = (
-    <div className="text-xs text-blue-700">
-      提示: 鼠标触摸边框左右拖动可以调整到适合的宽度
-    </div>
-  );
+  const drawerExtraInfo = <div className="text-xs text-blue-700">提示: 鼠标触摸边框左右拖动可以调整到适合的宽度</div>;
   // 添加题目
   const showAddDrawer = () => {
     // 目录应该是3层才可以添加题目
     const nodes: Textbook[] = childPathMap.get(questionCateId) ?? [];
     if (nodes.length != 3) {
-      setReqQuestListErr(
-        <Alert
-          title="Error"
-          description="目前仅支持在三级目录下添加题目"
-          type="error"
-          showIcon
-        />,
-      );
+      setReqQuestListErr(<Alert title="Error" description="目前仅支持在三级目录下添加题目" type="error" showIcon />);
       return;
     } else {
       setReqQuestListErr("");
@@ -156,15 +125,8 @@ export function ListInfo(props: any) {
               题目类型:{" "}
             </div>
             {
-              <Radio.Group
-                defaultValue={questionTypeVal}
-                buttonStyle="solid"
-                onChange={onQuestionTypeChange}
-              >
-                <Radio.Button
-                  key={StringConst.listSelectAll}
-                  value={StringConst.listSelectAll}
-                >
+              <Radio.Group defaultValue={questionTypeVal} buttonStyle="solid" onChange={onQuestionTypeChange}>
+                <Radio.Button key={StringConst.listSelectAll} value={StringConst.listSelectAll}>
                   {StringConst.listSelectAllDesc}
                 </Radio.Button>
                 {questionTypeList.map((item) => {
@@ -204,23 +166,12 @@ export function ListInfo(props: any) {
             {CommonTag(questionInfo, questionTypeList, questionTagList)}
 
             {/* 标题 */}
-            <div className="mt-2.5">
-              {
-                <CommonTitle
-                  title={questionInfo.title}
-                  comment={questionInfo.comment}
-                  images={questionInfo.images}
-                />
-              }
-            </div>
+            <div className="mt-2.5">{<CommonTitle title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}</div>
 
             {/* 选项内容 */}
             <div className="mt-2.5">
               {questionInfo.options && questionInfo.options.length > 0 && (
-                <CommonSelect
-                  optionsLayout={questionInfo.optionsLayout ?? 1}
-                  options={questionInfo.options}
-                />
+                <CommonSelect optionsLayout={questionInfo.optionsLayout ?? 1} options={questionInfo.options} />
               )}
             </div>
 
@@ -243,12 +194,7 @@ export function ListInfo(props: any) {
 
       <Divider size="small" />
 
-      <Pagination
-        total={questListResTotal}
-        current={pageNo}
-        defaultPageSize={10}
-        onChange={onPageChange}
-      />
+      <Pagination total={questListResTotal} current={pageNo} defaultPageSize={10} onChange={onPageChange} />
 
       <Drawer
         title={drawerTitle}

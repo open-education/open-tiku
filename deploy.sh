@@ -214,7 +214,7 @@ start_app() {
     _log_file="$LOG_DIR/${APP_NAME}_$(date '+%Y%m%d_%H%M%S').log"
 
     # 启动, 导出环境变量->server.js
-    echo "启动命令: node server.js, 不使用 npm run start 否则无法管理两个进程id, 直接用 node 启动即可"
+    echo "启动命令: node server.js"
     echo "日志文件: $_log_file"
 
     # 使用 nohup 启动

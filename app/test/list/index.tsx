@@ -2,6 +2,7 @@ import { Button, Col, Divider, Flex, Pagination, Row } from "antd";
 import { useState } from "react";
 import { NavLink } from "react-router";
 
+// 试卷列表
 export default function Index(props: any) {
   const testList = [
     {
@@ -16,9 +17,7 @@ export default function Index(props: any) {
 
   // 分页信息
   const [pageNo, setPageNo] = useState<number>(1);
-  const [testListResTotal, setTestListResTotal] = useState<number>(
-    testList.length,
-  );
+  const [testListResTotal, setTestListResTotal] = useState<number>(testList.length);
   const onPageChange = (page: number) => {
     setPageNo(page);
   };
@@ -55,12 +54,7 @@ export default function Index(props: any) {
 
       {/* 分页 */}
       <div className="mt-2.5">
-        <Pagination
-          total={testListResTotal}
-          current={pageNo}
-          defaultPageSize={10}
-          onChange={onPageChange}
-        />
+        <Pagination total={testListResTotal} current={pageNo} defaultPageSize={10} onChange={onPageChange} />
       </div>
     </div>
   );

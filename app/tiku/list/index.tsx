@@ -32,13 +32,9 @@ export default function Index(props: any) {
   const [reqError, setReqError] = useState<React.ReactNode>("");
 
   // 题型列表
-  const [questionTypeList, setQuestionTypeList] = useState<TextbookOtherDict[]>(
-    [],
-  );
+  const [questionTypeList, setQuestionTypeList] = useState<TextbookOtherDict[]>([]);
   // 标签列表
-  const [questionTagList, setQuestionTagList] = useState<TextbookOtherDict[]>(
-    [],
-  );
+  const [questionTagList, setQuestionTagList] = useState<TextbookOtherDict[]>([]);
 
   // 路由加载时获取题型和标签列表
   useEffect(() => {
@@ -57,9 +53,7 @@ export default function Index(props: any) {
         setQuestionTypeList(res);
       })
       .catch((err) => {
-        setReqError(
-          <Alert title={`题型信息获取失败: ${err}`} type={"error"} />,
-        );
+        setReqError(<Alert title={`题型信息获取失败: ${err}`} type={"error"} />);
       });
     httpClient
       .get<TextbookOtherDict[]>(`/other/dict/list/${reqId}/question_tag`)
@@ -67,24 +61,17 @@ export default function Index(props: any) {
         setQuestionTagList(res);
       })
       .catch((err) => {
-        setReqError(
-          <Alert title={`标签信息获取失败: ${err}`} type={"error"} />,
-        );
+        setReqError(<Alert title={`标签信息获取失败: ${err}`} type={"error"} />);
       });
   }, []);
 
   // 递归生成树节点 - 菜单列表
-  const get_items = (
-    data: Textbook[],
-  ): Required<MenuProps>["items"][number][] => {
+  const get_items = (data: Textbook[]): Required<MenuProps>["items"][number][] => {
     return data.map((item) => ({
       key: item.id,
       label: item.label,
       // 递归逻辑：如果存在子节点，则再次调用自身, 菜单是直接渲染的, 如果没有就使用未定义即可
-      children:
-        item.children && item.children.length > 0
-          ? get_items(item.children)
-          : undefined,
+      children: item.children && item.children.length > 0 ? get_items(item.children) : undefined,
     }));
   };
 

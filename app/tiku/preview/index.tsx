@@ -22,36 +22,16 @@ export default function preview(props: any) {
       {/* 题型和标签 */}
       {CommonTag(questionInfo, questionTypeList, questionTagList)}
 
-      <Divider
-        size="small"
-        variant="dashed"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      />
+      <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
-      {
-        <CommonTitle
-          title={questionInfo.title}
-          comment={questionInfo.comment}
-          images={questionInfo.images}
-        />
-      }
+      {<CommonTitle title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}
 
       {/* 选项 */}
       {questionInfo.options && questionInfo.options.length > 0 && (
-        <CommonSelect
-          optionsLayout={questionInfo.optionsLayout ?? 1}
-          options={questionInfo.options}
-        />
+        <CommonSelect optionsLayout={questionInfo.optionsLayout ?? 1} options={questionInfo.options} />
       )}
 
-      <Divider
-        size="small"
-        variant="dashed"
-        titlePlacement="start"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      >
+      <Divider size="small" variant="dashed" titlePlacement="start" style={{ borderColor: "#7cb305" }} dashed>
         参考答案
       </Divider>
 
@@ -59,23 +39,14 @@ export default function preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.answer) && (
-            <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-            >
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
               {questionInfo.answer}
             </Markdown>
           )}
         </Col>
       </Row>
 
-      <Divider
-        size="small"
-        variant="dashed"
-        titlePlacement="start"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      >
+      <Divider size="small" variant="dashed" titlePlacement="start" style={{ borderColor: "#7cb305" }} dashed>
         知识点
       </Divider>
 
@@ -83,23 +54,14 @@ export default function preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.knowledge) && (
-            <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-            >
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
               {questionInfo.knowledge}
             </Markdown>
           )}
         </Col>
       </Row>
 
-      <Divider
-        size="small"
-        variant="dashed"
-        titlePlacement="start"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      >
+      <Divider size="small" variant="dashed" titlePlacement="start" style={{ borderColor: "#7cb305" }} dashed>
         解题分析
       </Divider>
 
@@ -107,10 +69,7 @@ export default function preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.analysis?.content) && (
-            <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-            >
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
               {questionInfo.analysis?.content}
             </Markdown>
           )}
@@ -119,26 +78,13 @@ export default function preview(props: any) {
         <Col span={24}>
           <Flex gap="small" wrap>
             {questionInfo.analysis?.images?.map((imageName) => {
-              return (
-                <Image
-                  height={200}
-                  key={imageName}
-                  alt="basic"
-                  src={`/api/file/read/${imageName}`}
-                />
-              );
+              return <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`} />;
             })}
           </Flex>
         </Col>
       </Row>
 
-      <Divider
-        size="small"
-        variant="dashed"
-        titlePlacement="start"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      >
+      <Divider size="small" variant="dashed" titlePlacement="start" style={{ borderColor: "#7cb305" }} dashed>
         解题过程
       </Divider>
 
@@ -146,10 +92,7 @@ export default function preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.process?.content) && (
-            <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-            >
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
               {questionInfo.process?.content}
             </Markdown>
           )}
@@ -158,26 +101,13 @@ export default function preview(props: any) {
         <Col span={24}>
           <Flex gap="small" wrap>
             {questionInfo.process?.images?.map((imageName) => {
-              return (
-                <Image
-                  height={200}
-                  key={imageName}
-                  alt="basic"
-                  src={`/api/file/read/${imageName}`}
-                />
-              );
+              return <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`} />;
             })}
           </Flex>
         </Col>
       </Row>
 
-      <Divider
-        size="small"
-        variant="dashed"
-        titlePlacement="start"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      >
+      <Divider size="small" variant="dashed" titlePlacement="start" style={{ borderColor: "#7cb305" }} dashed>
         备注
       </Divider>
 
@@ -185,23 +115,14 @@ export default function preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.remark) && (
-            <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-            >
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
               {questionInfo.remark}
             </Markdown>
           )}
         </Col>
       </Row>
 
-      <Divider
-        size="small"
-        variant="dashed"
-        titlePlacement="start"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      />
+      <Divider size="small" variant="dashed" titlePlacement="start" style={{ borderColor: "#7cb305" }} dashed />
     </div>
   );
 }

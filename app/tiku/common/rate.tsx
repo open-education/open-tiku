@@ -16,14 +16,7 @@ export function RateInfo(props: RateProps) {
     props.onStartEdit?.(true);
   };
 
-  return (
-    <Rate
-      allowHalf
-      defaultValue={props.val}
-      style={{ color: "green" }}
-      onChange={onEditRateChange}
-    />
-  );
+  return <Rate allowHalf defaultValue={props.val} style={{ color: "green" }} onChange={onEditRateChange} />;
 }
 
 interface AddRateProps {
@@ -37,16 +30,8 @@ export function AddRateInfoStyle(props: AddRateProps) {
   return (
     <Row gutter={[10, 10]}>
       <Col span={24}>
-        <div className="text-blue-700 text-[15px] mb-2.5 font-bold">
-          难易程度
-        </div>
-        {
-          <RateInfo
-            val={props.val}
-            setVal={props.setVal}
-            onStartEdit={props.onStartEdit}
-          />
-        }
+        <div className="text-blue-700 text-[15px] mb-2.5 font-bold">难易程度</div>
+        {<RateInfo val={props.val} setVal={props.setVal} onStartEdit={props.onStartEdit} />}
       </Col>
     </Row>
   );
@@ -62,8 +47,7 @@ interface EditRateProps {
 // 编辑题目难度样式
 export function EditRateInfoStyle(props: EditRateProps) {
   const [showEditRate, setShowEditRate] = React.useState(false);
-  const [showEditRateErr, setShowEditRateErr] =
-    React.useState<React.ReactNode>("");
+  const [showEditRateErr, setShowEditRateErr] = React.useState<React.ReactNode>("");
 
   const updateRateVal = () => {
     const req: EditRate = {
@@ -98,15 +82,7 @@ export function EditRateInfoStyle(props: EditRateProps) {
 
   return (
     <div className="p-2.5 hover:border border-red-700 border-dashed">
-      <div>
-        {
-          <AddRateInfoStyle
-            val={props.val}
-            setVal={props.setVal}
-            onStartEdit={setShowEditRate}
-          />
-        }
-      </div>
+      <div>{<AddRateInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditRate} />}</div>
       {showEditRateErr}
       {showEditRate && showEditRateArea}
     </div>

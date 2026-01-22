@@ -42,8 +42,7 @@ interface EditRemarkProps {
 // 编辑备注样式
 export function EditRemarkInfoStyle(props: EditRemarkProps) {
   const [showEditRemark, setShowEditRemark] = React.useState(false);
-  const [showEditRemarkErr, setShowEditRemarkErr] =
-    React.useState<React.ReactNode>("");
+  const [showEditRemarkErr, setShowEditRemarkErr] = React.useState<React.ReactNode>("");
 
   const updateRemarkVal = () => {
     const req: EditRemark = {
@@ -78,15 +77,7 @@ export function EditRemarkInfoStyle(props: EditRemarkProps) {
 
   return (
     <div className="p-2.5 hover:border border-red-700 border-dashed">
-      <div>
-        {
-          <AddRemarkInfoStyle
-            val={props.val}
-            setVal={props.setVal}
-            onStartEdit={setShowEditRemark}
-          />
-        }
-      </div>
+      <div>{<AddRemarkInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditRemark} />}</div>
       {showEditRemarkErr}
       {showEditRemark && showEditRemarkArea}
     </div>

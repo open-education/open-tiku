@@ -1,5 +1,5 @@
-import type {Textbook} from "~/type/textbook";
+import type { Textbook } from "~/type/textbook";
 
 export interface TiKuIndexContext {
-  pathMap: Map<number, Textbook[]>,
+  pathMap: Map<number, Textbook[]>;
 }

@@ -1,14 +1,5 @@
 // 选项风格
-import {
-  Alert,
-  Button,
-  Col,
-  Flex,
-  Radio,
-  type RadioChangeEvent,
-  Row,
-  Image,
-} from "antd";
+import { Alert, Button, Col, Flex, Radio, type RadioChangeEvent, Row, Image } from "antd";
 import { StringUtil } from "~/util/string";
 import React from "react";
 import type { EditSelect } from "~/type/edit";
@@ -69,8 +60,7 @@ interface EditSelectOptionLayoutProps {
 // 编辑选项样式
 export function EditSelectOptionLayout(props: EditSelectOptionLayoutProps) {
   const [showEditSelect, setShowEditSelect] = React.useState(false);
-  const [showEditSelectErr, setShowEditSelectErr] =
-    React.useState<React.ReactNode>("");
+  const [showEditSelectErr, setShowEditSelectErr] = React.useState<React.ReactNode>("");
 
   const updateSelectVal = () => {
     const req: EditSelect = {
@@ -105,15 +95,7 @@ export function EditSelectOptionLayout(props: EditSelectOptionLayoutProps) {
 
   return (
     <div className="p-2.5 hover:border border-red-700 border-dashed">
-      <div>
-        {
-          <AddSelectOptionLayout
-            val={props.val}
-            setVal={props.setVal}
-            onStartEdit={setShowEditSelect}
-          />
-        }
-      </div>
+      <div>{<AddSelectOptionLayout val={props.val} setVal={props.setVal} onStartEdit={setShowEditSelect} />}</div>
       {showEditSelectErr}
       {showEditSelect && showEditSelectArea}
     </div>

@@ -17,9 +17,7 @@ export function AddAnalyzeInfoStyle(props: AddAnalyzeProps) {
   return (
     <Row gutter={[10, 10]}>
       <Col span={24}>
-        <div className="text-blue-700 text-[15px] mb-2.5 font-bold">
-          解题分析
-        </div>
+        <div className="text-blue-700 text-[15px] mb-2.5 font-bold">解题分析</div>
         {
           <SimpleTextArea
             name="analyze"
@@ -47,8 +45,7 @@ interface EditAnalyzeProps {
 // 编辑解题分析样式
 export function EditAnalyzeInfoStyle(props: EditAnalyzeProps) {
   const [showEditAnalyze, setShowEditAnalyze] = React.useState(false);
-  const [showEditAnalyzeErr, setShowEditAnalyzeErr] =
-    React.useState<React.ReactNode>("");
+  const [showEditAnalyzeErr, setShowEditAnalyzeErr] = React.useState<React.ReactNode>("");
 
   const updateAnalyzeVal = () => {
     const req: EditAnalyze = {
@@ -87,21 +84,8 @@ export function EditAnalyzeInfoStyle(props: EditAnalyzeProps) {
   return (
     <div className="p-2.5 hover:border border-red-700 border-dashed">
       <div>
-        {
-          <AddAnalyzeInfoStyle
-            val={props.val}
-            setVal={props.setVal}
-            onStartEdit={setShowEditAnalyze}
-          />
-        }
-        {
-          <AddUploadImageStyle
-            images={props.images}
-            setImages={props.setImages}
-            showTitle={false}
-            onStartEdit={setShowEditAnalyze}
-          />
-        }
+        {<AddAnalyzeInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditAnalyze} />}
+        {<AddUploadImageStyle images={props.images} setImages={props.setImages} showTitle={false} onStartEdit={setShowEditAnalyze} />}
       </div>
       {showEditAnalyzeErr}
       {showEditAnalyze && showEditAnalyzeArea}

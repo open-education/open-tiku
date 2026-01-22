@@ -7,10 +7,7 @@ import type { Textbook } from "~/type/textbook";
 import { createTextbookPathDict } from "~/util/textbook-dict";
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "开放题库" },
-    { name: "description", content: "教材章节, 知识点题库" },
-  ];
+  return [{ title: "开放题库" }, { name: "description", content: "教材章节, 知识点题库" }];
 }
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
@@ -29,7 +26,5 @@ export function HydrateFallback() {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  return (
-    <Index textbooks={loaderData.textbooks} pathMap={loaderData.pathMap} />
-  );
+  return <Index textbooks={loaderData.textbooks} pathMap={loaderData.pathMap} />;
 }

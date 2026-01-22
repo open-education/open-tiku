@@ -10,13 +10,10 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const reqId: number = Number(params.id ?? 0);
 
   // 第6-8层级的菜单
-  const textbooks = await httpClient.get<Textbook[]>(
-    `/textbook/list/${reqId}/children`,
-  );
+  const textbooks = await httpClient.get<Textbook[]>(`/textbook/list/${reqId}/children`);
 
   // 构建字典
-  const childPathMap: Map<number, Textbook[]> =
-    createTextbookPathDict(textbooks);
+  const childPathMap: Map<number, Textbook[]> = createTextbookPathDict(textbooks);
 
   return { textbooks, childPathMap };
 }
@@ -27,10 +24,5 @@ export function HydrateFallback() {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  return (
-    <Index
-      textbooks={loaderData.textbooks}
-      childPathMap={loaderData.childPathMap}
-    />
-  );
+  return <Index textbooks={loaderData.textbooks} childPathMap={loaderData.childPathMap} />;
 }

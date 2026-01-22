@@ -16,9 +16,7 @@ export function AddAnswerInfoStyle(props: AddAnswerProps) {
   return (
     <Row gutter={[10, 10]}>
       <Col span={24}>
-        <div className="text-blue-700 text-[15px] mb-2.5 font-bold">
-          参考答案
-        </div>
+        <div className="text-blue-700 text-[15px] mb-2.5 font-bold">参考答案</div>
         {
           <SimpleTextArea
             name="answer"
@@ -44,8 +42,7 @@ interface EditAnswerProps {
 // 编辑参考答案样式
 export function EditAnswerInfoStyle(props: EditAnswerProps) {
   const [showEditAnswer, setShowEditAnswer] = React.useState(false);
-  const [showEditAnswerErr, setShowEditAnswerErr] =
-    React.useState<React.ReactNode>("");
+  const [showEditAnswerErr, setShowEditAnswerErr] = React.useState<React.ReactNode>("");
 
   const updateAnswerVal = () => {
     const req: EditAnswer = {
@@ -80,15 +77,7 @@ export function EditAnswerInfoStyle(props: EditAnswerProps) {
 
   return (
     <div className="p-2.5 hover:border border-red-700 border-dashed">
-      <div>
-        {
-          <AddAnswerInfoStyle
-            val={props.val}
-            setVal={props.setVal}
-            onStartEdit={setShowEditAnswer}
-          />
-        }
-      </div>
+      <div>{<AddAnswerInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditAnswer} />}</div>
       {showEditAnswerErr}
       {showEditAnswer && showEditAnswerArea}
     </div>

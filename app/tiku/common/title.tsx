@@ -43,8 +43,7 @@ interface EditTitleProps {
 // 编辑标题样式
 export function EditTitleInfoStyle(props: EditTitleProps) {
   const [showEditTitle, setShowEditTitle] = React.useState(false);
-  const [showEditTitleErr, setShowEditTitleErr] =
-    React.useState<React.ReactNode>("");
+  const [showEditTitleErr, setShowEditTitleErr] = React.useState<React.ReactNode>("");
 
   const updateRateVal = () => {
     const req: EditTitle = {
@@ -79,15 +78,7 @@ export function EditTitleInfoStyle(props: EditTitleProps) {
 
   return (
     <div className="p-2.5 hover:border border-red-700 border-dashed">
-      <div>
-        {
-          <AddTitleInfoStyle
-            val={props.val}
-            setVal={props.setVal}
-            onStartEdit={setShowEditTitle}
-          />
-        }
-      </div>
+      <div>{<AddTitleInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditTitle} />}</div>
       {showEditTitleErr}
       {showEditTitle && showEditTitleArea}
     </div>

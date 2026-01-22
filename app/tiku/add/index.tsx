@@ -1,23 +1,8 @@
 // 题目添加主页
 import React, { useEffect, useState } from "react";
-import {
-  Alert,
-  Button,
-  Col,
-  Divider,
-  Flex,
-  Row,
-  Splitter,
-  type UploadFile,
-  Watermark,
-} from "antd";
+import { Alert, Button, Col, Divider, Flex, Row, Splitter, type UploadFile, Watermark } from "antd";
 import Preview from "~/tiku/preview";
-import type {
-  CreateQuestionReq,
-  QuestionBaseInfo,
-  QuestionInfoResp,
-  QuestionOption,
-} from "~/type/question";
+import type { CreateQuestionReq, QuestionBaseInfo, QuestionInfoResp, QuestionOption } from "~/type/question";
 import { CommonBreadcrumb } from "~/tiku/common/breadcrumb";
 import type { TiKuIndexContext } from "~/type/context";
 import { useLocation, useOutletContext } from "react-router-dom";
@@ -54,14 +39,10 @@ export default function Add(props: any) {
 
   // 添加变式题时有上一层级标识
   const sourceId: number = Number(props.sourceId ?? 0);
-  const [questionTypeVal, setQuestionTypeVal] = useState<number>(
-    questionTypeList.length > 0 ? questionTypeList[0].id : 0,
-  );
+  const [questionTypeVal, setQuestionTypeVal] = useState<number>(questionTypeList.length > 0 ? questionTypeList[0].id : 0);
 
   // 是否显示选择题选项
-  const [showOptions, setShowOptions] = useState<boolean>(
-    questionTypeList.length > 0 ? questionTypeList[0].isSelect : false,
-  );
+  const [showOptions, setShowOptions] = useState<boolean>(questionTypeList.length > 0 ? questionTypeList[0].isSelect : false);
   // 监听题型类型是否为选择题
   const questionTypeDict = arrayToDict(questionTypeList, "id");
   useEffect(() => {
@@ -87,13 +68,9 @@ export default function Add(props: any) {
   const [answerVal, setAnswerVal] = useState<string>("");
   const [knowledgeVal, setKnowledgeVal] = useState<string>("");
   const [analyzeVal, setAnalyzeVal] = useState<string>("");
-  const [analyzeImageFileList, setAnalyzeImageFileList] = useState<
-    UploadFile[]
-  >([]);
+  const [analyzeImageFileList, setAnalyzeImageFileList] = useState<UploadFile[]>([]);
   const [processVal, setProcessVal] = useState<string>("");
-  const [processImageFileList, setProcessImageFileList] = useState<
-    UploadFile[]
-  >([]);
+  const [processImageFileList, setProcessImageFileList] = useState<UploadFile[]>([]);
   const [remarkVal, setRemarkVal] = useState<string>("");
 
   // 生成预览对象
@@ -202,12 +179,9 @@ export default function Add(props: any) {
   };
 
   // Notice
-  const [uploadQuestionIng, setUploadQuestionIng] =
-    useState<React.ReactNode>("");
-  const [uploadQuestionErr, setUploadQuestionErr] =
-    useState<React.ReactNode>("");
-  const [reqQuestionInfoErr, setReqQuestionInfoErr] =
-    useState<React.ReactNode>("");
+  const [uploadQuestionIng, setUploadQuestionIng] = useState<React.ReactNode>("");
+  const [uploadQuestionErr, setUploadQuestionErr] = useState<React.ReactNode>("");
+  const [reqQuestionInfoErr, setReqQuestionInfoErr] = useState<React.ReactNode>("");
 
   // 保存
   const onToUploadQuestion = () => {
@@ -264,35 +238,16 @@ export default function Add(props: any) {
             .then((res) => {
               props.setDrawerTitle("详情");
               props.setDrawerContent(
-                <Info
-                  questionInfo={res}
-                  questionTypeList={questionTypeList}
-                  questionTagList={questionTagList}
-                  childPathMap={childPathMap}
-                />,
+                <Info questionInfo={res} questionTypeList={questionTypeList} questionTagList={questionTagList} childPathMap={childPathMap} />,
               );
               props.setRefreshListNum(StringUtil.getRandomInt());
             })
             .catch((err) => {
-              setReqQuestionInfoErr(
-                <Alert
-                  title="Error"
-                  description={`读取题目详情出错: ${err.message}`}
-                  type="error"
-                  showIcon
-                />,
-              );
+              setReqQuestionInfoErr(<Alert title="Error" description={`读取题目详情出错: ${err.message}`} type="error" showIcon />);
             });
         })
         .catch((err) => {
-          setUploadQuestionErr(
-            <Alert
-              title="Error"
-              description={`上传题目出错: ${err.message}`}
-              type="error"
-              showIcon
-            />,
-          );
+          setUploadQuestionErr(<Alert title="Error" description={`上传题目出错: ${err.message}`} type="error" showIcon />);
         });
     }
   };
@@ -327,112 +282,40 @@ export default function Add(props: any) {
         </Col>
       </Row>
 
-      <Splitter
-        style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)", marginTop: "10px" }}
-      >
+      <Splitter style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)", marginTop: "10px" }}>
         <Splitter.Panel defaultSize={"50%"}>
           <div className="p-2.5">
-            {
-              <AddQuestionTypeStyle
-                typeList={questionTypeList}
-                typeVal={questionTypeVal}
-                setTypeVal={setQuestionTypeVal}
-              />
-            }
+            {<AddQuestionTypeStyle typeList={questionTypeList} typeVal={questionTypeVal} setTypeVal={setQuestionTypeVal} />}
           </div>
 
-          <Divider
-            size="small"
-            variant="dashed"
-            style={{ borderColor: "#7cb305" }}
-            dashed
-          />
+          <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
-          <div className="p-2.5">
-            {
-              <AddTagStyle
-                tagList={questionTagList}
-                tags={tagVal}
-                setTags={setTagVal}
-              />
-            }
-          </div>
+          <div className="p-2.5">{<AddTagStyle tagList={questionTagList} tags={tagVal} setTags={setTagVal} />}</div>
 
-          <Divider
-            size="small"
-            variant="dashed"
-            style={{ borderColor: "#7cb305" }}
-            dashed
-          />
+          <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
-          <div className="p-2.5">
-            {<AddRateInfoStyle val={rateVal} setVal={setRateVal} />}
-          </div>
+          <div className="p-2.5">{<AddRateInfoStyle val={rateVal} setVal={setRateVal} />}</div>
 
-          <Divider
-            size="small"
-            variant="dashed"
-            style={{ borderColor: "#7cb305" }}
-            dashed
-          />
+          <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
-          <div className="p-2.5">
-            {<AddTitleInfoStyle val={titleVal} setVal={setTitleVal} />}
-          </div>
+          <div className="p-2.5">{<AddTitleInfoStyle val={titleVal} setVal={setTitleVal} />}</div>
 
-          <Divider
-            size="small"
-            variant="dashed"
-            style={{ borderColor: "#7cb305" }}
-            dashed
-          />
+          <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
-          <div className="p-2.5">
-            {<AddMentionInfoStyle val={mentionVal} setVal={setMentionVal} />}
-          </div>
+          <div className="p-2.5">{<AddMentionInfoStyle val={mentionVal} setVal={setMentionVal} />}</div>
 
-          <Divider
-            size="small"
-            variant="dashed"
-            style={{ borderColor: "#7cb305" }}
-            dashed
-          />
+          <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
-          <div className="p-2.5">
-            {
-              <AddUploadImageStyle
-                images={imageFileList}
-                setImages={setImageFileList}
-                showTitle={true}
-              />
-            }
-          </div>
+          <div className="p-2.5">{<AddUploadImageStyle images={imageFileList} setImages={setImageFileList} showTitle={true} />}</div>
 
-          <Divider
-            size="small"
-            variant="dashed"
-            style={{ borderColor: "#7cb305" }}
-            dashed
-          />
+          <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
           {/* 选择题才需要显示选项信息 */}
           {showOptions && (
             <div>
-              <div className="p-2.5">
-                {
-                  <AddSelectOptionLayout
-                    val={showSelectVal}
-                    setVal={setShowSelectVal}
-                  />
-                }
-              </div>
+              <div className="p-2.5">{<AddSelectOptionLayout val={showSelectVal} setVal={setShowSelectVal} />}</div>
 
-              <Divider
-                size="small"
-                variant="dashed"
-                style={{ borderColor: "#7cb305" }}
-                dashed
-              />
+              <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
               <div className="p-2.5">
                 {
@@ -461,95 +344,39 @@ export default function Add(props: any) {
                 }
               </div>
 
-              <Divider
-                size="small"
-                variant="dashed"
-                style={{ borderColor: "#7cb305" }}
-                dashed
-              />
+              <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
             </div>
           )}
 
-          <div className="p-2.5">
-            {<AddAnswerInfoStyle val={answerVal} setVal={setAnswerVal} />}
-          </div>
+          <div className="p-2.5">{<AddAnswerInfoStyle val={answerVal} setVal={setAnswerVal} />}</div>
 
-          <Divider
-            size="small"
-            variant="dashed"
-            style={{ borderColor: "#7cb305" }}
-            dashed
-          />
+          <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
-          <div className="p-2.5">
-            {
-              <AddKnowledgeInfoStyle
-                val={knowledgeVal}
-                setVal={setKnowledgeVal}
-              />
-            }
-          </div>
+          <div className="p-2.5">{<AddKnowledgeInfoStyle val={knowledgeVal} setVal={setKnowledgeVal} />}</div>
 
-          <Divider
-            size="small"
-            variant="dashed"
-            style={{ borderColor: "#7cb305" }}
-            dashed
-          />
+          <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
           <div className="p-2.5">
             {<AddAnalyzeInfoStyle val={analyzeVal} setVal={setAnalyzeVal} />}
-            {
-              <AddUploadImageStyle
-                images={analyzeImageFileList}
-                setImages={setAnalyzeImageFileList}
-                showTitle={false}
-              />
-            }
+            {<AddUploadImageStyle images={analyzeImageFileList} setImages={setAnalyzeImageFileList} showTitle={false} />}
           </div>
 
-          <Divider
-            size="small"
-            variant="dashed"
-            style={{ borderColor: "#7cb305" }}
-            dashed
-          />
+          <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
           <div className="p-2.5">
             {<AddProcessInfoStyle val={processVal} setVal={setProcessVal} />}
-            {
-              <AddUploadImageStyle
-                images={processImageFileList}
-                setImages={setProcessImageFileList}
-                showTitle={false}
-              />
-            }
+            {<AddUploadImageStyle images={processImageFileList} setImages={setProcessImageFileList} showTitle={false} />}
           </div>
 
-          <Divider
-            size="small"
-            variant="dashed"
-            style={{ borderColor: "#7cb305" }}
-            dashed
-          />
+          <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
-          <div className="p-2.5">
-            {<AddRemarkInfoStyle val={remarkVal} setVal={setRemarkVal} />}
-          </div>
+          <div className="p-2.5">{<AddRemarkInfoStyle val={remarkVal} setVal={setRemarkVal} />}</div>
         </Splitter.Panel>
 
         <Splitter.Panel defaultSize="50%">
           <Watermark content="预览区域 仅展示效果">
             <div className="min-h-475 p-5">
-              {openPreviewArea ? (
-                <Preview
-                  questionInfo={questionInfo}
-                  questionTypeList={questionTypeList}
-                  questionTagList={questionTagList}
-                />
-              ) : (
-                ""
-              )}
+              {openPreviewArea ? <Preview questionInfo={questionInfo} questionTypeList={questionTypeList} questionTagList={questionTagList} /> : ""}
             </div>
           </Watermark>
         </Splitter.Panel>

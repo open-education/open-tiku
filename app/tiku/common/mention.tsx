@@ -42,8 +42,7 @@ interface EditMentionProps {
 // 编辑题目补充说明样式
 export function EditMentionInfoStyle(props: EditMentionProps) {
   const [showEditMention, setShowEditMention] = React.useState(false);
-  const [showEditMentionErr, setShowEditMentionErr] =
-    React.useState<React.ReactNode>("");
+  const [showEditMentionErr, setShowEditMentionErr] = React.useState<React.ReactNode>("");
 
   const updateMentionVal = () => {
     const req: EditMention = {
@@ -78,15 +77,7 @@ export function EditMentionInfoStyle(props: EditMentionProps) {
 
   return (
     <div className="p-2.5 hover:border border-red-700 border-dashed">
-      <div>
-        {
-          <AddMentionInfoStyle
-            val={props.val}
-            setVal={props.setVal}
-            onStartEdit={setShowEditMention}
-          />
-        }
-      </div>
+      <div>{<AddMentionInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditMention} />}</div>
       {showEditMentionErr}
       {showEditMention && showEditMentionArea}
     </div>

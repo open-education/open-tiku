@@ -10,8 +10,7 @@ export default function Index(props: any) {
     list: [
       {
         id: 1,
-        title:
-          "一、选择题（以下每小题中均有 ABCD 四个选项，其中只有一个是正确的，请选择出最符合题意的选项）。",
+        title: "一、选择题（以下每小题中均有 ABCD 四个选项，其中只有一个是正确的，请选择出最符合题意的选项）。",
         list: [
           {
             id: 1,
@@ -39,10 +38,8 @@ export default function Index(props: any) {
           },
           {
             id: 2,
-            title:
-              "2026年我国计划在某航天项目中投入资金约 1260000000 元，将数 1260000000 用科学记数法表示为（    ）",
-            comment:
-              "这部分内容可能超出了教材范围, 如果涉及不清楚的直接提问即可",
+            title: "2026年我国计划在某航天项目中投入资金约 1260000000 元，将数 1260000000 用科学记数法表示为（    ）",
+            comment: "这部分内容可能超出了教材范围, 如果涉及不清楚的直接提问即可",
             images: [],
             optionsLayout: 1,
             options: [
@@ -75,8 +72,7 @@ export default function Index(props: any) {
           },
           {
             id: 3,
-            title:
-              "已知代数式 $x + 2y$ 的值是 $3$，则代数式 $2x + 4y + 1$ 的值是（    ）",
+            title: "已知代数式 $x + 2y$ 的值是 $3$，则代数式 $2x + 4y + 1$ 的值是（    ）",
             comment: "",
             images: [],
             optionsLayout: 1,
@@ -110,15 +106,13 @@ export default function Index(props: any) {
         list: [
           {
             id: 1,
-            title:
-              "已知关于 $x$ 的方程 $2x + a = 1$ 的解是 $x = -1$，则 $a$ 的值是________。",
+            title: "已知关于 $x$ 的方程 $2x + a = 1$ 的解是 $x = -1$，则 $a$ 的值是________。",
             comment: "",
             order: 4,
           },
           {
             id: 2,
-            title:
-              "若代数式 $3x - 5$ 与 $x + 3$ 的值相等，则 $x$ 的值是________。",
+            title: "若代数式 $3x - 5$ 与 $x + 3$ 的值相等，则 $x$ 的值是________。",
             comment: "",
             order: 5,
           },
@@ -185,20 +179,12 @@ export default function Index(props: any) {
               {item.list?.map((info) => {
                 return (
                   <div key={info.id} className="mt-2.5">
-                    <CommonTitle
-                      no={info.order}
-                      title={info.title}
-                      comment={info.comment}
-                      images={info.images ?? []}
-                    />
+                    <CommonTitle no={info.order} title={info.title} comment={info.comment} images={info.images ?? []} />
 
                     {/* 选择题的选项信息, 非选择题不展示, 判断题以后再维护 */}
                     {info.options && info.options.length > 0 && (
                       <div className="mt-2.5">
-                        <CommonSelect
-                          optionsLayout={info.optionsLayout ?? 1}
-                          options={info.options}
-                        />
+                        <CommonSelect optionsLayout={info.optionsLayout ?? 1} options={info.options} />
                       </div>
                     )}
                   </div>

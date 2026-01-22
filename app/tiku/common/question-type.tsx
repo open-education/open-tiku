@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  Alert,
-  Button,
-  Col,
-  Flex,
-  Radio,
-  type RadioChangeEvent,
-  Row,
-} from "antd";
+import { Alert, Button, Col, Flex, Radio, type RadioChangeEvent, Row } from "antd";
 import { httpClient } from "~/util/http";
 import type { EditQuestionType } from "~/type/edit";
 import { StringUtil } from "~/util/string";
@@ -23,15 +15,7 @@ interface QuestionTypeProps {
 // 题目问题类型基础样式
 export function EditQuestionType(props: QuestionTypeProps) {
   if (!props.typeList.length) {
-    return (
-      <Alert
-        title="Warning"
-        description="问题类型为空"
-        type="warning"
-        showIcon
-        closable
-      />
-    );
+    return <Alert title="Warning" description="问题类型为空" type="warning" showIcon closable />;
   }
   const onEditQuestionsChange = ({ target: { value } }: RadioChangeEvent) => {
     props.setTypeVal(Number(value));
@@ -39,11 +23,7 @@ export function EditQuestionType(props: QuestionTypeProps) {
   };
 
   return (
-    <Radio.Group
-      defaultValue={props.typeVal}
-      buttonStyle="solid"
-      onChange={onEditQuestionsChange}
-    >
+    <Radio.Group defaultValue={props.typeVal} buttonStyle="solid" onChange={onEditQuestionsChange}>
       {props.typeList?.map((item) => {
         return (
           <Radio.Button key={item.id} value={item.id}>
@@ -69,14 +49,7 @@ export function AddQuestionTypeStyle(props: AddQuestionTypeProps) {
       <Col span={24}>
         <div className="text-blue-700 text-[15px] mb-2.5 font-bold">题型</div>
         <Flex vertical gap="middle">
-          {
-            <EditQuestionType
-              typeList={props.typeList}
-              typeVal={props.typeVal}
-              setTypeVal={props.setTypeVal}
-              onStartEdit={props.onStartEdit}
-            />
-          }
+          {<EditQuestionType typeList={props.typeList} typeVal={props.typeVal} setTypeVal={props.setTypeVal} onStartEdit={props.onStartEdit} />}
         </Flex>
       </Col>
     </Row>
@@ -93,10 +66,8 @@ interface EditQuestionTypeProps {
 
 // 编辑题目时题目类型样式
 export function EditQuestionTypeStyle(props: EditQuestionTypeProps) {
-  const [showEditQuestionTypeErr, setShowEditQuestionTypeErr] =
-    useState<React.ReactNode>("");
-  const [showEditQuestionType, setShowEditQuestionType] =
-    useState<boolean>(false);
+  const [showEditQuestionTypeErr, setShowEditQuestionTypeErr] = useState<React.ReactNode>("");
+  const [showEditQuestionType, setShowEditQuestionType] = useState<boolean>(false);
 
   const updateQuestionType = () => {
     const req: EditQuestionType = {

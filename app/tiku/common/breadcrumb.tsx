@@ -4,12 +4,7 @@ import type { BreadcrumbItemType } from "antd/lib/breadcrumb/Breadcrumb";
 import type { Textbook } from "~/type/textbook";
 
 // 面包屑导航
-export function CommonBreadcrumb(
-  pathMap: Map<number, Textbook[]>,
-  pathname: string,
-  childPathMap: Map<number, Textbook[]>,
-  questionCateId: number,
-) {
+export function CommonBreadcrumb(pathMap: Map<number, Textbook[]>, pathname: string, childPathMap: Map<number, Textbook[]>, questionCateId: number) {
   let breadcrumbList: BreadcrumbItemType[] = [];
 
   // 前5层级

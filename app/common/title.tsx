@@ -21,10 +21,7 @@ export function CommonTitle(props: TitleProps) {
     <Row gutter={[10, 10]}>
       <Col span={24}>
         {StringValidator.isNonEmpty(props.title) && (
-          <Markdown
-            remarkPlugins={[remarkMath, remarkGfm]}
-            rehypePlugins={[rehypeKatex]}
-          >
+          <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeKatex]}>
             {`${showNo}${props.title}`}
           </Markdown>
         )}
@@ -44,17 +41,8 @@ export function CommonTitle(props: TitleProps) {
           <Flex gap="small" wrap>
             {props.images.map((imageName) => {
               return (
-                <div
-                  key={imageName}
-                  style={{ width: 200, height: 200, overflow: "hidden" }}
-                >
-                  <Image
-                    width="100%"
-                    height="100%"
-                    style={{ objectFit: "cover" }}
-                    alt="basic"
-                    src={`/api/file/read/${imageName}`}
-                  />
+                <div key={imageName} style={{ width: 200, height: 200, overflow: "hidden" }}>
+                  <Image width="100%" height="100%" style={{ objectFit: "cover" }} alt="basic" src={`/api/file/read/${imageName}`} />
                 </div>
               );
             })}

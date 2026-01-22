@@ -10,9 +10,7 @@ export const ArrayUtil = {
       label: item.label,
       // 关键：将原始对象挂载到 raw 字段
       raw: item,
-      children: item.children
-        ? ArrayUtil.mapTextbookToOption(item.children)
-        : undefined,
+      children: item.children ? ArrayUtil.mapTextbookToOption(item.children) : undefined,
     }));
   },
 };

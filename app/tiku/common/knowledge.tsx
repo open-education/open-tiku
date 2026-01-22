@@ -42,8 +42,7 @@ interface EditKnowledgeProps {
 // 编辑参考答案样式
 export function EditKnowledgeInfoStyle(props: EditKnowledgeProps) {
   const [showEditKnowledge, setShowEditKnowledge] = React.useState(false);
-  const [showEditKnowledgeErr, setShowEditKnowledgeErr] =
-    React.useState<React.ReactNode>("");
+  const [showEditKnowledgeErr, setShowEditKnowledgeErr] = React.useState<React.ReactNode>("");
 
   const updateKnowledgeVal = () => {
     const req: EditKnowledge = {
@@ -78,15 +77,7 @@ export function EditKnowledgeInfoStyle(props: EditKnowledgeProps) {
 
   return (
     <div className="p-2.5 hover:border border-red-700 border-dashed">
-      <div>
-        {
-          <AddKnowledgeInfoStyle
-            val={props.val}
-            setVal={props.setVal}
-            onStartEdit={setShowEditKnowledge}
-          />
-        }
-      </div>
+      <div>{<AddKnowledgeInfoStyle val={props.val} setVal={props.setVal} onStartEdit={setShowEditKnowledge} />}</div>
       {showEditKnowledgeErr}
       {showEditKnowledge && showEditKnowledgeArea}
     </div>

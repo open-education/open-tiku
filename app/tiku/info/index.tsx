@@ -32,50 +32,24 @@ export default function Info(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {/* 面包屑快速导航 */}
-          {CommonBreadcrumb(
-            pathMap,
-            pathname,
-            childPathMap,
-            questionInfo.baseInfo.questionCateId,
-          )}
+          {CommonBreadcrumb(pathMap, pathname, childPathMap, questionInfo.baseInfo.questionCateId)}
         </Col>
       </Row>
 
       {/* 题型和标签 */}
       {CommonTag(questionInfo.baseInfo, questionTypeList, questionTagList)}
 
-      <Divider
-        size="small"
-        variant="dashed"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      />
+      <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
       {/* 题目标注和图片位置 */}
-      {
-        <CommonTitle
-          title={questionInfo.baseInfo.title}
-          comment={questionInfo.baseInfo.comment}
-          images={questionInfo.baseInfo.images}
-        />
-      }
+      {<CommonTitle title={questionInfo.baseInfo.title} comment={questionInfo.baseInfo.comment} images={questionInfo.baseInfo.images} />}
 
       {/* 选项 */}
-      {questionInfo.baseInfo.options &&
-        questionInfo.baseInfo.options.length > 0 && (
-          <CommonSelect
-            optionsLayout={questionInfo.baseInfo.optionsLayout ?? 1}
-            options={questionInfo.baseInfo.options}
-          />
-        )}
+      {questionInfo.baseInfo.options && questionInfo.baseInfo.options.length > 0 && (
+        <CommonSelect optionsLayout={questionInfo.baseInfo.optionsLayout ?? 1} options={questionInfo.baseInfo.options} />
+      )}
 
-      <Divider
-        size="small"
-        variant="dashed"
-        titlePlacement="start"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      >
+      <Divider size="small" variant="dashed" titlePlacement="start" style={{ borderColor: "#7cb305" }} dashed>
         参考答案
       </Divider>
 
@@ -83,23 +57,14 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.answer) && (
-            <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-            >
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
               {questionInfo.extraInfo.answer}
             </Markdown>
           )}
         </Col>
       </Row>
 
-      <Divider
-        size="small"
-        variant="dashed"
-        titlePlacement="start"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      >
+      <Divider size="small" variant="dashed" titlePlacement="start" style={{ borderColor: "#7cb305" }} dashed>
         知识点
       </Divider>
 
@@ -107,36 +72,22 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.knowledge) && (
-            <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-            >
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
               {questionInfo.extraInfo.knowledge}
             </Markdown>
           )}
         </Col>
       </Row>
 
-      <Divider
-        size="small"
-        variant="dashed"
-        titlePlacement="start"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      >
+      <Divider size="small" variant="dashed" titlePlacement="start" style={{ borderColor: "#7cb305" }} dashed>
         解题分析
       </Divider>
 
       {/* 解题分析 */}
       <Row>
         <Col span={24}>
-          {StringValidator.isNonEmpty(
-            questionInfo.extraInfo.analysis?.content,
-          ) && (
-            <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-            >
+          {StringValidator.isNonEmpty(questionInfo.extraInfo.analysis?.content) && (
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
               {questionInfo.extraInfo.analysis?.content}
             </Markdown>
           )}
@@ -145,39 +96,21 @@ export default function Info(props: any) {
         <Col span={24}>
           <Flex gap="small" wrap>
             {questionInfo.extraInfo.analysis?.images?.map((imageName) => {
-              return (
-                <Image
-                  height={200}
-                  key={imageName}
-                  alt="basic"
-                  src={`/api/file/read/${imageName}`}
-                />
-              );
+              return <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`} />;
             })}
           </Flex>
         </Col>
       </Row>
 
-      <Divider
-        size="small"
-        variant="dashed"
-        titlePlacement="start"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      >
+      <Divider size="small" variant="dashed" titlePlacement="start" style={{ borderColor: "#7cb305" }} dashed>
         解题过程
       </Divider>
 
       {/* 解题过程 */}
       <Row>
         <Col span={24}>
-          {StringValidator.isNonEmpty(
-            questionInfo.extraInfo.process?.content,
-          ) && (
-            <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-            >
+          {StringValidator.isNonEmpty(questionInfo.extraInfo.process?.content) && (
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
               {questionInfo.extraInfo.process?.content}
             </Markdown>
           )}
@@ -186,26 +119,13 @@ export default function Info(props: any) {
         <Col span={24}>
           <Flex gap="small" wrap>
             {questionInfo.extraInfo.process?.images?.map((imageName) => {
-              return (
-                <Image
-                  height={200}
-                  key={imageName}
-                  alt="basic"
-                  src={`/api/file/read/${imageName}`}
-                />
-              );
+              return <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`} />;
             })}
           </Flex>
         </Col>
       </Row>
 
-      <Divider
-        size="small"
-        variant="dashed"
-        titlePlacement="start"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      >
+      <Divider size="small" variant="dashed" titlePlacement="start" style={{ borderColor: "#7cb305" }} dashed>
         备注
       </Divider>
 
@@ -213,23 +133,14 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.remark) && (
-            <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-            >
+            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
               {questionInfo.extraInfo.remark}
             </Markdown>
           )}
         </Col>
       </Row>
 
-      <Divider
-        size="small"
-        variant="dashed"
-        titlePlacement="start"
-        style={{ borderColor: "#7cb305" }}
-        dashed
-      />
+      <Divider size="small" variant="dashed" titlePlacement="start" style={{ borderColor: "#7cb305" }} dashed />
     </div>
   );
 }
