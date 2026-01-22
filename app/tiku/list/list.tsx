@@ -11,6 +11,7 @@ import { CommonSelect } from "~/common/select";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
 import { CommonQuickJumpTag, CommonTag } from "~/tiku/common/tag";
+import "katex/dist/katex.min.css";
 
 // 列表信息
 export function ListInfo(props: any) {

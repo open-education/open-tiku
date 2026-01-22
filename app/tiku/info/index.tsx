@@ -4,7 +4,6 @@ import { Col, Divider, Flex, Image, Row } from "antd";
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import "katex/dist/katex.min.css";
 
 import type { QuestionInfoResp } from "~/type/question";
 import { StringUtil, StringValidator } from "~/util/string";

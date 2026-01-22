@@ -63,6 +63,7 @@ export const StringConst = {
   tiKuChapterOrKnowledgeSourceVal: "1", // 教材章节或知识点
   tikuMy: "2", // 我的题库
   tikuMyBox: "3", // 我的试题篮
+  tikuMaxNum: 30, // 每种题型最多选择题目数量
 };
 
 // 字符串常量工具

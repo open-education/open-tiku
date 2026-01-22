@@ -88,6 +88,7 @@ export interface QuestionInfoResp {
 export interface QuestionListReq {
   questionCateId: number;
   questionTypeId?: number;
+  ids?: number[];
   pageNo: number;
   pageSize: number;
 }
