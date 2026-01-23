@@ -10,7 +10,8 @@ import { CommonTitle } from "~/common/title";
 import { CommonSelect } from "~/common/select";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
-import { CommonQuickJumpTag, CommonTag } from "~/tiku/common/tag";
+import { CommonQuickJumpTag } from "~/tiku/common/tag";
+import { CommonTag } from "~/common/tag";
 import "katex/dist/katex.min.css";
 
 // 列表信息
@@ -164,7 +165,13 @@ export function ListInfo(props: any) {
             className="group relative p-4 pb-4 hover:pb-12 border border-transparent hover:border-blue-500 transition-all duration-300 ease-in-out bg-white overflow-hidden"
           >
             {/* 标签 */}
-            {CommonTag(questionInfo, questionTypeList, questionTagList)}
+            <CommonTag
+              questionTypeList={questionTypeList}
+              questionTagList={questionTagList}
+              questionTypeId={questionInfo.questionTypeId}
+              questionTagIds={questionInfo.questionTagIds ?? []}
+              difficultyLevel={questionInfo.difficultyLevel}
+            />
 
             {/* 标题 */}
             <div className="mt-2.5">{<CommonTitle title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}</div>

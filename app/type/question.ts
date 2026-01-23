@@ -89,6 +89,8 @@ export interface QuestionListReq {
   questionCateId: number;
   questionTypeId?: number;
   ids?: number[];
+  titleVal?: string;
+  tagIds?: number[];
   pageNo: number;
   pageSize: number;
 }

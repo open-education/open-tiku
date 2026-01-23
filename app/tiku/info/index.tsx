@@ -7,7 +7,7 @@ import rehypeKatex from "rehype-katex";
 
 import type { QuestionInfoResp } from "~/type/question";
 import { StringUtil, StringValidator } from "~/util/string";
-import { CommonTag } from "~/tiku/common/tag";
+import { CommonTag } from "~/common/tag";
 import { CommonTitle } from "~/common/title";
 import { CommonSelect } from "~/common/select";
 import { useLocation, useOutletContext } from "react-router-dom";
@@ -36,7 +36,13 @@ export default function Info(props: any) {
       </Row>
 
       {/* 题型和标签 */}
-      {CommonTag(questionInfo.baseInfo, questionTypeList, questionTagList)}
+      <CommonTag
+        questionTypeList={questionTypeList}
+        questionTagList={questionTagList}
+        questionTypeId={questionInfo.baseInfo.questionTypeId}
+        questionTagIds={questionInfo.baseInfo.questionTagIds ?? []}
+        difficultyLevel={questionInfo.baseInfo.difficultyLevel}
+      />
 
       <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 

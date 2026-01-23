@@ -1,6 +1,5 @@
-import { Alert, Button, Checkbox, Col, Flex, type GetProp, Row, Tag } from "antd";
+import { Alert, Button, Checkbox, Col, Flex, type GetProp, Row } from "antd";
 import type { QuestionBaseInfoResp, QuestionInfoResp } from "~/type/question";
-import { arrayToDict } from "~/util/common";
 import React, { type Dispatch, type SetStateAction, useState } from "react";
 import { httpClient } from "~/util/http";
 import Info from "~/tiku/info";
@@ -9,34 +8,6 @@ import type { EditQuestionTags } from "~/type/edit";
 import Add from "~/tiku/add";
 import { StringUtil } from "~/util/string";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
-import { StarFilled } from "@ant-design/icons";
-
-// 题目列表展示标签样式 题目类型在前 标签依次在后
-export function CommonTag(questionInfo: QuestionBaseInfoResp, questionTypeList: TextbookOtherDict[], questionTagList: TextbookOtherDict[]) {
-  const questionTypeDict = arrayToDict(questionTypeList, "id");
-  const tagsDict = arrayToDict(questionTagList, "id");
-  return (
-    <Row gutter={[10, 10]}>
-      <Col span={24}>
-        <Flex gap="small" wrap>
-          <Tag color="geekblue" key={questionInfo.questionTypeId}>
-            {questionTypeDict[questionInfo.questionTypeId].itemValue}
-          </Tag>
-          {questionInfo.questionTagIds?.map((tagKey) => {
-            return (
-              <Tag color="green" key={tagKey}>
-                {tagsDict[tagKey].itemValue}
-              </Tag>
-            );
-          })}
-          <Tag color="red">
-            {questionInfo.difficultyLevel} <StarFilled style={{ color: "green" }} />
-          </Tag>
-        </Flex>
-      </Col>
-    </Row>
-  );
-}
 
 // 题目列表右下快速操作区域
 export function CommonQuickJumpTag(

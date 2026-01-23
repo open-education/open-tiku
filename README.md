@@ -133,7 +133,7 @@ VITE_API_BASE_URL=/api
 npm run dev
 ```
 
-### 格式化
+#### 格式化
 
 [VS Code](https://code.visualstudio.com/), 其它 IDE 注意不要引起代码大的格式化变动即可
 

@@ -7,12 +7,13 @@ import rehypeKatex from "rehype-katex";
 
 import { StringValidator } from "~/util/string";
 import type { QuestionBaseInfo } from "~/type/question";
-import { CommonTag } from "~/tiku/common/tag";
+import { CommonTag } from "~/common/tag";
 import { CommonTitle } from "~/common/title";
 import { CommonSelect } from "~/common/select";
 import type { TextbookOtherDict } from "~/type/textbook";
 
-export default function preview(props: any) {
+// 预览
+export default function Preview(props: any) {
   const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
   const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
   const questionInfo: QuestionBaseInfo = props.questionInfo ?? {};
@@ -20,7 +21,13 @@ export default function preview(props: any) {
   return (
     <div>
       {/* 题型和标签 */}
-      {CommonTag(questionInfo, questionTypeList, questionTagList)}
+      <CommonTag
+        questionTypeList={questionTypeList}
+        questionTagList={questionTagList}
+        questionTypeId={questionInfo.questionTypeId}
+        questionTagIds={questionInfo.questionTagIds ?? []}
+        difficultyLevel={questionInfo.difficultyLevel}
+      />
 
       <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
