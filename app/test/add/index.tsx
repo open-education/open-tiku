@@ -1,9 +1,11 @@
-import { Button, Drawer, Form, Input, Select } from "antd";
+import { Button, Divider, Drawer, Form, Input, Select } from "antd";
 import { useState } from "react";
-import type { Textbook, TextbookOption, TextbookOtherDict } from "~/type/textbook";
+import type { TextbookOption, TextbookOtherDict } from "~/type/textbook";
 import "katex/dist/katex.min.css";
 import SelectQuestion from "~/test/add/select-question";
 import ShowQuestionList from "~/test/add/show-question";
+import type { Rule, SelectQuestionIds } from "~/type/test";
+import { arrayToDict } from "~/util/common";
 
 const { TextArea } = Input;
 
@@ -14,17 +16,50 @@ export default function Add(props: any) {
   const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
   const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
 
-  // 组卷规则
+  // 规则样例数据
+  const rules: Rule[] = [
+    {
+      id: 1,
+      value: "rule1",
+      label: "规则1",
+      list: [
+        {
+          id: 1,
+          label: "一、选择题(本大题共12小题, 每题5分, 共60分. 每小题均有 A B C D 四个选项, 其中只有一个选项正确, 请用 2B 铅笔在答题卡相应位置涂抹)",
+          num: 12,
+          score: 60,
+        },
+        {
+          id: 2,
+          label: "二、填空题(共4个题)",
+          num: 4,
+          score: 20,
+        },
+        {
+          id: 3,
+          label: "三、解答题(共4个题)",
+          num: 4,
+          score: 70,
+          scores: [15, 15, 15, 20],
+        },
+      ],
+    },
+  ];
+  const rulesDict = arrayToDict(rules, "value");
+
+  // 组卷规则和明细
   const [ruleVal, setRuleVal] = useState<string>("rule1");
+  const [ruleItems, setRuleItems] = useState<Rule>(rulesDict[ruleVal]);
   const onRuleChange = (value: string) => {
     setRuleVal(value);
+    setRuleItems(rulesDict[value]);
   };
 
   // 题型标识
   const [questionCateId, setQuestionCateId] = useState<number>(0);
 
-  // 选择题目
-  const [questionIds, setQuestionIds] = useState<number[]>([]);
+  // 存储最终题目
+  const [questionIdsMap, setQuestionIdsMap] = useState<Record<number, SelectQuestionIds>>({});
 
   // Drawer
   const [addDrawerSize, setAddDrawerSize] = useState(1200);
@@ -35,20 +70,10 @@ export default function Add(props: any) {
     setOpenDrawer(false);
   };
 
-  // 挑选题目
-  const onClickSelectQuestion = () => {
-    setDrawerContent(
-      <SelectQuestion
-        textbookOptions={textbookOptions}
-        setQuestionCateId={setQuestionCateId}
-        questionTypeList={questionTypeList}
-        questionTagList={questionTagList}
-        questionIds={questionIds}
-        setQuestionIds={setQuestionIds}
-      />,
-    );
-
-    setOpenDrawer(true);
+  // 提交试卷
+  const onSubmitTest = () => {
+    console.log("提交...");
+    console.log("selectQuestionIds: ", questionIdsMap);
   };
 
   return (
@@ -60,49 +85,94 @@ export default function Add(props: any) {
         <p className="text-blue-700">3. 题目排列顺序就是在试卷上的顺序, 请添加完毕后再拖拽, 否则移除时会重新刷新导致之前的排序失效;</p>
       </div>
 
+      <Divider />
+
+      <div>
+        <Button
+          type="primary"
+          onClick={() => {
+            console.log("提交: ", questionIdsMap);
+          }}
+        >
+          提交
+        </Button>
+      </div>
+
+      <Divider />
+
       {/* 组题表单 */}
       <div className="mt-2.5">
         <Form labelWrap={true} layout="horizontal" labelCol={{ span: 1 }} wrapperCol={{ span: 23 }}>
-          <Form.Item label="标题" extra="比如 某年某中学某班级xxx册试卷">
+          <Form.Item label="标题" extra="比如 某年某中学某班级xxx测试卷">
             <Input placeholder="请输入试卷标题" />
           </Form.Item>
 
-          <Form.Item label="组卷规则">
-            <Select
-              value={ruleVal}
-              onChange={onRuleChange}
-              options={[
-                { value: "rule1", label: "规则1" },
-                { value: "rule2", label: "规则2" },
-                { value: "rule3", label: "规则3" },
-              ]}
-            />
+          <Form.Item label="组卷规则" extra="选择规则后会展示出包含的题型, 在对应的题型下添加题目即可">
+            <Select value={ruleVal} onChange={onRuleChange} options={rules} />
           </Form.Item>
 
-          <Form.Item label="题型" extra="比如 一、选择题">
-            <Input placeholder="请输入题型名称" />
-          </Form.Item>
+          {/* 根据组卷规则添加题目模板 */}
+          {ruleItems.list?.map((item) => {
+            // 获取当前循环项对应的选中数组，如果没有则默认为空数组 []
+            const currentIds: SelectQuestionIds = questionIdsMap[item.id] || {
+              currentIds: [],
+              sortedIds: [],
+            };
+            const setCurrentIds = (req: SelectQuestionIds) => {
+              setQuestionIdsMap((prev) => {
+                return {
+                  ...prev,
+                  [item.id]: req,
+                };
+              });
+            };
 
-          <Form.Item label="题型描述" extra="比如 下列4个选项中....">
-            <TextArea value="" placeholder="请输入题型描述" autoSize={{ minRows: 2, maxRows: 5 }} />
-          </Form.Item>
+            return (
+              <div key={item.id}>
+                <Form.Item label="题型">
+                  <TextArea value={item.label} placeholder="请输入题型信息" autoSize={{ minRows: 2, maxRows: 5 }} />
+                </Form.Item>
 
-          <Form.Item label="挑选题目">
-            <Button color="primary" variant="dashed" onClick={onClickSelectQuestion}>
-              挑选题目
-            </Button>
-          </Form.Item>
+                <Form.Item label="挑选题目">
+                  <Button
+                    color="primary"
+                    variant="dashed"
+                    onClick={() => {
+                      setDrawerContent(
+                        <SelectQuestion
+                          key={item.id}
+                          textbookOptions={textbookOptions}
+                          setQuestionCateId={setQuestionCateId}
+                          questionTypeList={questionTypeList}
+                          questionTagList={questionTagList}
+                          questionIds={currentIds}
+                          setQuestionIds={setCurrentIds}
+                        />,
+                      );
+
+                      setOpenDrawer(true);
+                    }}
+                  >
+                    选题
+                  </Button>
+                </Form.Item>
+
+                {/* 每种题型展示题目列表 */}
+                <ShowQuestionList
+                  key={item.id}
+                  questionTypeList={questionTypeList}
+                  questionTagList={questionTagList}
+                  questionIds={currentIds}
+                  setQuestionIds={setCurrentIds}
+                  questionCateId={questionCateId}
+                />
+
+                <Divider />
+              </div>
+            );
+          })}
         </Form>
       </div>
-
-      {/* 每种题型展示题目列表 */}
-      <ShowQuestionList
-        questionTypeList={questionTypeList}
-        questionTagList={questionTagList}
-        questionIds={questionIds}
-        setQuestionIds={setQuestionIds}
-        questionCateId={questionCateId}
-      />
 
       {/* 展示抽屉 */}
       <div>

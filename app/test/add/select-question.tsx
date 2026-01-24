@@ -22,6 +22,7 @@ import type { Textbook, TextbookOption, TextbookOtherDict } from "~/type/textboo
 import { httpClient } from "~/util/http";
 import { StringConst, StringConstUtil } from "~/util/string";
 import { CommonTag } from "~/common/tag";
+import type { SelectQuestionIds } from "~/type/test";
 
 type SearchProps = GetProps<typeof Input.Search>;
 
@@ -32,8 +33,8 @@ interface SelectQuestionProps {
   setQuestionCateId: (value: number) => void;
   questionTypeList: TextbookOtherDict[];
   questionTagList: TextbookOtherDict[];
-  questionIds: number[];
-  setQuestionIds: (value: number[]) => void;
+  questionIds: SelectQuestionIds;
+  setQuestionIds: (value: SelectQuestionIds) => void;
 }
 
 // 挑选题目弹框
@@ -81,9 +82,12 @@ export default function SelectQuestion(props: SelectQuestionProps) {
 
   // 选择题目
   const onSelectQuestionChange: GetProp<typeof Checkbox.Group, "onChange"> = (checkedValues) => {
-    props.setQuestionIds(checkedValues as number[]);
+    const req = props.questionIds;
+    req.currentIds = checkedValues as number[];
+    props.setQuestionIds(req);
   };
 
+  // 搜索标题
   const [titleVal, setTitleVal] = useState<string>("");
   const onSearch: SearchProps["onSearch"] = (value, _e, info) => {
     setTitleVal(value);
@@ -190,6 +194,7 @@ export default function SelectQuestion(props: SelectQuestionProps) {
         <div>
           {reqQuestListErr}
 
+          {/* 外部组件移除选中的值时该组件未能刷新最新的选中状态 */}
           <Checkbox.Group style={{ width: "100%" }} onChange={onSelectQuestionChange}>
             <Row gutter={[10, 10]} align={"middle"}>
               {questionListResp.list.map((questionInfo) => {

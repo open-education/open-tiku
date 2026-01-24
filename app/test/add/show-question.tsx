@@ -10,13 +10,14 @@ import type { TextbookOtherDict } from "~/type/textbook";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import type { SelectQuestionIds } from "~/type/test";
 
 interface ItemProps {
   questionInfo: QuestionBaseInfoResp;
   questionTypeList: TextbookOtherDict[];
   questionTagList: TextbookOtherDict[];
-  questionIds: number[];
-  setQuestionIds: (value: number[]) => void;
+  questionIds: SelectQuestionIds;
+  setQuestionIds: (value: SelectQuestionIds) => void;
 }
 
 // 一个可拖拽排序的单元即是一个题目
@@ -26,6 +27,13 @@ function SortableItem(props: ItemProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+  };
+
+  // 移除其中一个选中
+  const onClickRemove = (id: number) => {
+    const req = props.questionIds;
+    req.currentIds = req.currentIds.filter((id) => id != props.questionInfo.id);
+    props.setQuestionIds(req);
   };
 
   return (
@@ -58,7 +66,7 @@ function SortableItem(props: ItemProps) {
             color="primary"
             variant="dashed"
             onClick={() => {
-              props.setQuestionIds(props.questionIds.filter((id) => id != props.questionInfo.id));
+              onClickRemove(props.questionInfo.id);
             }}
           >
             移除
@@ -95,8 +103,8 @@ function SortableItem(props: ItemProps) {
 interface ShowQuestionListProps {
   questionTypeList: TextbookOtherDict[];
   questionTagList: TextbookOtherDict[];
-  questionIds: number[];
-  setQuestionIds: (value: number[]) => void;
+  questionIds: SelectQuestionIds;
+  setQuestionIds: (value: SelectQuestionIds) => void;
   questionCateId: number;
 }
 
@@ -108,7 +116,7 @@ export default function ShowQuestionList(props: ShowQuestionListProps) {
   const [questionListResp, setQuestionListResp] = useState<QuestionBaseInfoResp[]>([]);
   useEffect(() => {
     // 渲染题型列表, 试卷题目数量有限而且不会超过30个不分页
-    if (props.questionIds.length == 0) {
+    if (props.questionIds.currentIds.length == 0) {
       if (reqShowQuestListErr) {
         setReqShowQuestListErr("");
       }
@@ -117,14 +125,14 @@ export default function ShowQuestionList(props: ShowQuestionListProps) {
     }
 
     // 最多只能选择30个题目
-    if (props.questionIds.length > StringConst.tikuMaxNum) {
+    if (props.questionIds.currentIds.length > StringConst.tikuMaxNum) {
       setReqShowQuestListErr(<Alert title="Error" description="每种题型最多只能选择30个题目" type="error" showIcon />);
       return;
     }
 
     const questionListReq: QuestionListReq = {
       questionCateId: props.questionCateId,
-      ids: props.questionIds,
+      ids: props.questionIds.currentIds,
       pageNo: 1,
       pageSize: 30,
     };
@@ -139,11 +147,11 @@ export default function ShowQuestionList(props: ShowQuestionListProps) {
       .catch((err) => {
         setReqShowQuestListErr(<Alert title="Error" description={`读取题目列表出错: ${err.message}`} type="error" showIcon />);
       });
-  }, [props.questionIds]);
+  }, [props.questionIds.currentIds]);
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
-  // 拖拽结束后更新数组顺序
+  // 拖拽结束后更新数组顺序, 如果没有拖拽就获取默认的顺序
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -154,6 +162,12 @@ export default function ShowQuestionList(props: ShowQuestionListProps) {
       });
     }
   };
+
+  // 排序后其实是重排序了结果值, 需要监听新的顺序列表
+  useEffect(() => {
+    const req = props.questionIds;
+    req.sortedIds = questionListResp.map((item) => item.id) || [];
+  }, [questionListResp]);
 
   return (
     <div>
