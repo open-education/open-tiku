@@ -185,7 +185,7 @@ export default function SelectQuestion(props: SelectQuestionProps) {
         </Form.Item>
 
         <Form.Item label="标题搜索">
-          <Search placeholder="请输入标题关键字" onSearch={onSearch} style={{ width: 400 }} />
+          <Search placeholder="请输入标题关键字" onSearch={onSearch} style={{ width: "50%" }} />
         </Form.Item>
 
         <Divider size="small" />

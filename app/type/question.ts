@@ -95,6 +95,16 @@ export interface QuestionListReq {
   pageSize: number;
 }
 
+// 题目变式题列表请求
+export interface QuestionSimilarListReq {
+  questionId: number;
+  questionCateId: number;
+  questionTypeId?: number;
+  tagIds?: number[];
+  pageNo: number;
+  pageSize: number;
+}
+
 // 题目列表返回
 export interface QuestionListResp {
   pageNo: number;

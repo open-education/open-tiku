@@ -1,4 +1,20 @@
-import { Alert, Button, Col, Divider, Drawer, Flex, Pagination, Radio, type RadioChangeEvent, Row } from "antd";
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Col,
+  Divider,
+  Form,
+  Drawer,
+  Flex,
+  type GetProp,
+  Pagination,
+  Radio,
+  type RadioChangeEvent,
+  Row,
+  type GetProps,
+  Input,
+} from "antd";
 import type { QuestionListReq, QuestionListResp } from "~/type/question";
 import React, { useEffect, useState } from "react";
 import Add from "~/tiku/add";
@@ -13,6 +29,10 @@ import { httpClient } from "~/util/http";
 import { CommonQuickJumpTag } from "~/tiku/common/tag";
 import { CommonTag } from "~/common/tag";
 import "katex/dist/katex.min.css";
+
+type SearchProps = GetProps<typeof Input.Search>;
+
+const { Search } = Input;
 
 // 列表信息
 export function ListInfo(props: any) {
@@ -30,6 +50,24 @@ export function ListInfo(props: any) {
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(StringConst.listSelectAll);
   const onQuestionTypeChange = ({ target: { value } }: RadioChangeEvent) => {
     setQuestionTypeVal(Number(value));
+  };
+
+  // 选择题目标签
+  const [tagsVal, setTagsVal] = useState<number[]>([]);
+  const onSelectQuestionTagChange: GetProp<typeof Checkbox.Group, "onChange"> = (checkedValues) => {
+    setTagsVal(checkedValues as number[]);
+  };
+
+  // 搜索标题
+  const [titleVal, setTitleVal] = useState<string>("");
+  const onSearch: SearchProps["onSearch"] = (value, _e, info) => {
+    setTitleVal(value);
+  };
+
+  // 搜索ID标题
+  const [titleId, setTitleId] = useState<string>("");
+  const onIdSearch: SearchProps["onSearch"] = (value, _e, info) => {
+    setTitleId(value);
   };
 
   const [pageNo, setPageNo] = useState<number>(1);
@@ -57,6 +95,16 @@ export function ListInfo(props: any) {
     if (questionTypeVal > 0) {
       questionListReq.questionTypeId = questionTypeVal;
     }
+    if (tagsVal && tagsVal.length > 0) {
+      questionListReq.tagIds = tagsVal;
+    }
+    if (titleVal && titleVal.length > 0) {
+      questionListReq.titleVal = titleVal;
+    }
+    if (titleId && titleId.length > 0) {
+      questionListReq.ids = [Number(titleId)];
+    }
+
     httpClient
       .post<QuestionListResp>("/question/list", questionListReq)
       .then((res) => {
@@ -70,7 +118,7 @@ export function ListInfo(props: any) {
       .catch((err) => {
         setReqQuestListErr(<Alert title="Error" description={`读取题目列表出错: ${err.message}`} type="error" showIcon />);
       });
-  }, [questionCateId, questionTypeVal, refreshListNum]);
+  }, [questionCateId, questionTypeVal, tagsVal, titleVal, titleId, pageNo, refreshListNum]);
 
   // Drawer
   const [addDrawerSize, setAddDrawerSize] = useState(1200);
@@ -106,27 +154,19 @@ export function ListInfo(props: any) {
   const onCloseDrawer = () => {
     setOpenDrawer(false);
   };
+
   return (
     <div>
       {/* 顶部管理工具栏 */}
-      <Row gutter={[15, 15]}>
+      <Row gutter={[15, 15]} align={"middle"}>
         <Col span={24}>
           {/* 面包屑快速导航 */}
           {CommonBreadcrumb(pathMap, pathname, childPathMap, questionCateId)}
         </Col>
 
         <Col span={24}>
-          <Flex gap="small" wrap>
-            <div
-              style={{
-                display: "inline-block",
-                lineHeight: "35px",
-                marginRight: "10px",
-              }}
-            >
-              题目类型:{" "}
-            </div>
-            {
+          <Form labelWrap={true} layout="horizontal" labelCol={{ span: 1.5 }} wrapperCol={{ span: 22.5 }}>
+            <Form.Item label="选择题型">
               <Radio.Group defaultValue={questionTypeVal} buttonStyle="solid" onChange={onQuestionTypeChange}>
                 <Radio.Button key={StringConst.listSelectAll} value={StringConst.listSelectAll}>
                   {StringConst.listSelectAllDesc}
@@ -139,8 +179,28 @@ export function ListInfo(props: any) {
                   );
                 })}
               </Radio.Group>
-            }
-          </Flex>
+            </Form.Item>
+
+            <Form.Item label="选择标签">
+              <Checkbox.Group onChange={onSelectQuestionTagChange}>
+                {questionTagList.map((item) => {
+                  return (
+                    <Checkbox value={item.id} key={item.id}>
+                      {item.itemValue}
+                    </Checkbox>
+                  );
+                })}
+              </Checkbox.Group>
+            </Form.Item>
+
+            <Form.Item label="标题搜索">
+              <Search placeholder="请输入标题关键字" onSearch={onSearch} style={{ width: "50%" }} />
+            </Form.Item>
+
+            <Form.Item label="标识搜索">
+              <Search placeholder="请输入标题ID" onSearch={onIdSearch} style={{ width: "50%" }} />
+            </Form.Item>
+          </Form>
         </Col>
 
         <Col span={24}>
@@ -174,7 +234,9 @@ export function ListInfo(props: any) {
             />
 
             {/* 标题 */}
-            <div className="mt-2.5">{<CommonTitle title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}</div>
+            <div className="mt-2.5">
+              {<CommonTitle id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}
+            </div>
 
             {/* 选项内容 */}
             <div className="mt-2.5">
@@ -184,7 +246,7 @@ export function ListInfo(props: any) {
             </div>
 
             {/* 题目其它标签, 比如查看答案, 关联题目等 */}
-            <div className="absolute bottom-3 right-4 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
+            <div className="absolute right-4 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
               {CommonQuickJumpTag(
                 questionInfo,
                 setOpenDrawer,

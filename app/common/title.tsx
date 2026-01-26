@@ -6,7 +6,8 @@ import remarkMath from "remark-math";
 import { StringValidator } from "~/util/string";
 
 interface TitleProps {
-  no?: number;
+  no?: number; // 显示题号-一般试卷用
+  id?: number; // 显示题目id-普通列表用
   title: string;
   comment: string;
   images?: string[];
@@ -16,13 +17,14 @@ interface TitleProps {
 export function CommonTitle(props: TitleProps) {
   // 存在有效题号时展示题号
   const showNo = props.no ? `${props.no}&#46; ` : "";
+  const showId = props.id ? `ID: [${props.id}] ` : "";
 
   return (
     <Row gutter={[10, 10]}>
       <Col span={24}>
         {StringValidator.isNonEmpty(props.title) && (
           <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeKatex]}>
-            {`${showNo}${props.title}`}
+            {`${showNo}${showId}${props.title}`}
           </Markdown>
         )}
       </Col>

@@ -8,6 +8,7 @@ import type { EditQuestionTags } from "~/type/edit";
 import Add from "~/tiku/add";
 import { StringUtil } from "~/util/string";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
+import { Link } from "react-router";
 
 // 题目列表右下快速操作区域
 export function CommonQuickJumpTag(
@@ -27,12 +28,12 @@ export function CommonQuickJumpTag(
       label: "详情",
     },
     {
-      key: "7",
+      key: "2",
       value: "edit",
       label: "编辑",
     },
     {
-      key: "8",
+      key: "3",
       value: "similar",
       label: "添加变式题",
     },
@@ -107,6 +108,18 @@ export function CommonQuickJumpTag(
               </Button>
             );
           })}
+          <Button color="primary" variant="link">
+            <Link
+              to={{
+                pathname: "similar",
+                search: `?id=${questionInfo.id}&cateId=${questionInfo.questionCateId}`,
+              }}
+              target="_blank"
+              rel="noreferrer"
+            >
+              查看变式题
+            </Link>
+          </Button>
         </Flex>
       </Col>
     </Row>
