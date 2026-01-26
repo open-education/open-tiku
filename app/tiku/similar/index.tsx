@@ -110,7 +110,7 @@ export default function Index(props: any) {
       </div>
 
       <div className="mt-2.5">
-        <Form labelWrap={true} layout="horizontal" labelCol={{ span: 1 }} wrapperCol={{ span: 23 }}>
+        <Form labelWrap={true} layout="horizontal" labelCol={{ span: 1.5 }} wrapperCol={{ span: 22.5 }}>
           <Form.Item label="选择题型">
             <Radio.Group defaultValue={questionTypeVal} buttonStyle="solid" onChange={onQuestionTypeChange}>
               <Radio.Button key={StringConst.listSelectAll} value={StringConst.listSelectAll}>
