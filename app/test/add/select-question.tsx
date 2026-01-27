@@ -82,14 +82,15 @@ export default function SelectQuestion(props: SelectQuestionProps) {
 
   // 选择题目
   const onSelectQuestionChange: GetProp<typeof Checkbox.Group, "onChange"> = (checkedValues) => {
-    const req = props.questionIds;
-    req.currentIds = checkedValues as number[];
-    props.setQuestionIds(req);
+    props.setQuestionIds({
+      ...props.questionIds,
+      currentIds: checkedValues as number[],
+    });
   };
 
   // 搜索标题
   const [titleVal, setTitleVal] = useState<string>("");
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) => {
+  const onSearch: SearchProps["onSearch"] = (value, _e, _) => {
     setTitleVal(value);
   };
 
@@ -145,97 +146,101 @@ export default function SelectQuestion(props: SelectQuestionProps) {
 
   return (
     <div>
-      <Form labelWrap={true} layout="horizontal" labelCol={{ span: 2 }} wrapperCol={{ span: 22 }}>
-        <Form.Item label="题目来源">
-          <Select value={sourceVal} onChange={onSourceChange} options={StringConstUtil.tikuSourceList} />
-        </Form.Item>
-
-        {/* 选择教材章节或知识点子类名称 */}
-        {sourceVal === "1" && (
-          <Form.Item label="教材章节或知识点名称">
-            <Cascader style={{ width: "100%" }} options={props.textbookOptions} onChange={onSelectOptionChange} placeholder="请选择章节小节名称" />
+      <div>
+        <Form labelWrap={true} layout="horizontal" labelCol={{ span: 2 }} wrapperCol={{ span: 22 }}>
+          <Form.Item label="题目来源">
+            <Select value={sourceVal} onChange={onSourceChange} options={StringConstUtil.tikuSourceList} />
           </Form.Item>
-        )}
 
-        <Form.Item label="选择题型">
-          <Radio.Group defaultValue={questionTypeVal} buttonStyle="solid" onChange={onQuestionTypeChange}>
-            <Radio.Button key={StringConst.listSelectAll} value={StringConst.listSelectAll}>
-              {StringConst.listSelectAllDesc}
-            </Radio.Button>
-            {props.questionTypeList.map((item) => {
-              return (
-                <Radio.Button key={item.id} value={item.id}>
-                  {item.itemValue}
-                </Radio.Button>
-              );
-            })}
-          </Radio.Group>
-        </Form.Item>
+          {/* 选择教材章节或知识点子类名称 */}
+          {sourceVal === "1" && (
+            <Form.Item label="教材章节或知识点名称">
+              <Cascader style={{ width: "100%" }} options={props.textbookOptions} onChange={onSelectOptionChange} placeholder="请选择章节小节名称" />
+            </Form.Item>
+          )}
 
-        <Form.Item label="选择标签">
-          <Checkbox.Group onChange={onSelectQuestionTagChange}>
-            {props.questionTagList.map((item) => {
-              return (
-                <Checkbox value={item.id} key={item.id}>
-                  {item.itemValue}
-                </Checkbox>
-              );
-            })}
-          </Checkbox.Group>
-        </Form.Item>
-
-        <Form.Item label="标题搜索">
-          <Search placeholder="请输入标题关键字" onSearch={onSearch} style={{ width: "50%" }} />
-        </Form.Item>
-
-        <Divider size="small" />
-
-        {/* 题目列表 */}
-        <div>
-          {reqQuestListErr}
-
-          {/* 外部组件移除选中的值时该组件未能刷新最新的选中状态 */}
-          <Checkbox.Group style={{ width: "100%" }} onChange={onSelectQuestionChange}>
-            <Row gutter={[10, 10]} align={"middle"}>
-              {questionListResp.list.map((questionInfo) => {
+          <Form.Item label="选择题型">
+            <Radio.Group defaultValue={questionTypeVal} buttonStyle="solid" onChange={onQuestionTypeChange}>
+              <Radio.Button key={StringConst.listSelectAll} value={StringConst.listSelectAll}>
+                {StringConst.listSelectAllDesc}
+              </Radio.Button>
+              {props.questionTypeList.map((item) => {
                 return (
-                  <Col span={24} key={questionInfo.id}>
-                    <Checkbox value={questionInfo.id}>
-                      <div
-                        key={questionInfo.id}
-                        className="group relative p-4 pb-4 hover:pb-2.5 border border-transparent hover:border-blue-500 transition-all duration-300 ease-in-out bg-white overflow-hidden"
-                      >
-                        {/* 标签 */}
-                        <div className="mt-2.5">
-                          <CommonTag
-                            questionTypeList={props.questionTypeList}
-                            questionTagList={props.questionTagList}
-                            questionTypeId={questionInfo.questionTypeId}
-                            questionTagIds={questionInfo.questionTagIds ?? []}
-                            difficultyLevel={questionInfo.difficultyLevel}
-                          />
-                        </div>
-
-                        {/* 标题 */}
-                        <div className="mt-2.5">
-                          {<CommonTitle title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}
-                        </div>
-
-                        {/* 选项内容 */}
-                        <div className="mt-2.5">
-                          {questionInfo.options && questionInfo.options.length > 0 && (
-                            <CommonSelect optionsLayout={questionInfo.optionsLayout ?? 1} options={questionInfo.options} />
-                          )}
-                        </div>
-                      </div>
-                    </Checkbox>
-                  </Col>
+                  <Radio.Button key={item.id} value={item.id}>
+                    {item.itemValue}
+                  </Radio.Button>
                 );
               })}
-            </Row>
-          </Checkbox.Group>
-        </div>
-      </Form>
+            </Radio.Group>
+          </Form.Item>
+
+          <Form.Item label="选择标签">
+            <Checkbox.Group onChange={onSelectQuestionTagChange}>
+              {props.questionTagList.map((item) => {
+                return (
+                  <Checkbox value={item.id} key={item.id}>
+                    {item.itemValue}
+                  </Checkbox>
+                );
+              })}
+            </Checkbox.Group>
+          </Form.Item>
+
+          <Form.Item label="标题搜索">
+            <Search placeholder="请输入标题关键字" onSearch={onSearch} style={{ width: "50%" }} />
+          </Form.Item>
+        </Form>
+      </div>
+
+      <Divider size="small" />
+
+      {/* 题目列表 */}
+      <div>
+        {reqQuestListErr}
+
+        {/* 外部组件移除选中的值时该组件未能刷新最新的选中状态 */}
+        <Checkbox.Group style={{ width: "100%" }} onChange={onSelectQuestionChange}>
+          <Row gutter={[10, 10]} align={"middle"}>
+            {questionListResp.list.map((questionInfo) => {
+              return (
+                <Col span={24} key={questionInfo.id}>
+                  {/* Checkbox 的设计问题, 内部无法撑开自动去按内容实际宽度处理, 这些写组件的人真他妈恶心还弱智 */}
+                  <Checkbox
+                    className="flex w-full items-start mb-4 [&>span:last-child]:flex-1 [&>span:last-child]:w-0"
+                    style={{ marginInlineStart: 0 }}
+                    value={questionInfo.id}
+                  >
+                    <div className="group relative p-4 pb-4 hover:pb-2.5 border border-transparent hover:border-blue-500 transition-all duration-300 ease-in-out bg-white overflow-hidden">
+                      {/* 标签 */}
+                      <div className="mt-2.5">
+                        <CommonTag
+                          questionTypeList={props.questionTypeList}
+                          questionTagList={props.questionTagList}
+                          questionTypeId={questionInfo.questionTypeId}
+                          questionTagIds={questionInfo.questionTagIds ?? []}
+                          difficultyLevel={questionInfo.difficultyLevel}
+                        />
+                      </div>
+
+                      {/* 标题 */}
+                      <div className="mt-2.5">
+                        {<CommonTitle title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}
+                      </div>
+
+                      {/* 选项内容 */}
+                      <div className="mt-2.5">
+                        {questionInfo.options && questionInfo.options.length > 0 && (
+                          <CommonSelect optionsLayout={questionInfo.optionsLayout ?? 1} options={questionInfo.options} />
+                        )}
+                      </div>
+                    </div>
+                  </Checkbox>
+                </Col>
+              );
+            })}
+          </Row>
+        </Checkbox.Group>
+      </div>
     </div>
   );
 }

@@ -88,12 +88,7 @@ export default function Add(props: any) {
       <Divider />
 
       <div>
-        <Button
-          type="primary"
-          onClick={() => {
-            console.log("提交: ", questionIdsMap);
-          }}
-        >
+        <Button type="primary" onClick={onSubmitTest}>
           提交
         </Button>
       </div>

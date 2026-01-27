@@ -1,5 +1,4 @@
 import { Col, Flex, Row, Tag } from "antd";
-import type { QuestionBaseInfoResp } from "~/type/question";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { arrayToDict } from "~/util/common";
 import { StarFilled } from "@ant-design/icons";

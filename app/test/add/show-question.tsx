@@ -31,9 +31,10 @@ function SortableItem(props: ItemProps) {
 
   // 移除其中一个选中
   const onClickRemove = (id: number) => {
-    const req = props.questionIds;
-    req.currentIds = req.currentIds.filter((id) => id != props.questionInfo.id);
-    props.setQuestionIds(req);
+    props.setQuestionIds({
+      ...props.questionIds,
+      currentIds: props.questionIds.currentIds.filter((item) => item !== id),
+    });
   };
 
   return (

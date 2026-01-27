@@ -24,7 +24,7 @@ export function CommonTitle(props: TitleProps) {
       <Col span={24}>
         {StringValidator.isNonEmpty(props.title) && (
           <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeKatex]}>
-            {`${showNo}${showId}${props.title}`}
+            {`${showNo}${showId} ${props.title}`}
           </Markdown>
         )}
       </Col>
