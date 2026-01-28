@@ -1,6 +1,6 @@
 // 题目和图片风格
 import { StringUtil } from "~/util/string";
-import { Alert, Button, Col, Flex, Image, Row } from "antd";
+import { Alert, Button, Col, Flex, Row } from "antd";
 import React from "react";
 import type { EditTitle } from "~/type/edit";
 import { httpClient } from "~/util/http";

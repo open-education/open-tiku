@@ -1,5 +1,4 @@
 import { Breadcrumb } from "antd";
-import React from "react";
 import type { BreadcrumbItemType } from "antd/lib/breadcrumb/Breadcrumb";
 import type { Textbook } from "~/type/textbook";
 
