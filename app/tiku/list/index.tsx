@@ -40,11 +40,11 @@ export default function Index(props: any) {
   useEffect(() => {
     // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再3层深度上, 因此只要有3层深度就可以把题型类型和标签返回, 后续如果有优化再处理
     const nodes: Textbook[] = pathMap.get(textbookId) ?? [];
-    if (nodes.length < 3) {
+    if (nodes.length < 2) {
       return;
     }
     // 目前题型和标签类型挂载在第三层上
-    const reqId: number = nodes[2].id;
+    const reqId: number = nodes[1].id;
 
     // 类型是在第三级上, 需要往上找-pathMap
     httpClient

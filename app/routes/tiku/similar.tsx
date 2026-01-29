@@ -35,9 +35,9 @@ export async function clientLoader({ params, request }: Route.ClientLoaderArgs) 
 
   // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再3层深度上, 因此只要有3层深度就可以把题型类型和标签返回, 后续如果有优化再处理
   const nodes: Textbook[] = pathMap.get(textbookId) ?? [];
-  if (nodes.length >= 3) {
+  if (nodes.length >= 2) {
     // 目前题型和标签类型挂载在第三层上
-    const typeId: number = nodes[2].id;
+    const typeId: number = nodes[1].id;
 
     [questionTypeList, questionTagList] = await Promise.all([
       httpClient.get<TextbookOtherDict[]>(`/other/dict/list/${typeId}/question_type`),
