@@ -18,8 +18,8 @@ export default function Index(props: any) {
   const questionCateId: number = Number(props.questionCateId ?? 0);
   const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
   const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
-  const pathMap: Map<number, Textbook[]> = props.pathMap ?? {};
-  const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? {};
+  const pathMap: Map<string, Textbook[]> = props.pathMap ?? {};
+  const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? {};
 
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(StringConst.listSelectAll);
   const onQuestionTypeChange = ({ target: { value } }: RadioChangeEvent) => {

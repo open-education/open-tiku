@@ -13,7 +13,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const textbooks = await httpClient.get<Textbook[]>(`/textbook/list/${reqId}/children`);
 
   // 构建字典
-  const childPathMap: Map<number, Textbook[]> = createTextbookPathDict(textbooks);
+  const childPathMap: Map<string, Textbook[]> = createTextbookPathDict(textbooks);
 
   return { textbooks, childPathMap };
 }

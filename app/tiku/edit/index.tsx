@@ -34,7 +34,7 @@ export default function Edit(props: any) {
   const reqQuestionInfo: QuestionInfoResp = props.questionInfo;
   const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
   const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
-  const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? [];
+  const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? [];
 
   // 题目类型
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(reqQuestionInfo.baseInfo.questionTypeId);

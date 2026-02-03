@@ -44,7 +44,7 @@ export function ListInfo(props: any) {
   // 获取属性中的数据
   const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
   const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
-  const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? {};
+  const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? {};
   const questionCateId: number = Number(props.questionCateId ?? 0);
 
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(StringConst.listSelectAll);
@@ -129,7 +129,7 @@ export function ListInfo(props: any) {
   // 添加题目
   const showAddDrawer = () => {
     // 目录应该是3层才可以添加题目
-    const nodes: Textbook[] = childPathMap.get(questionCateId) ?? [];
+    const nodes: Textbook[] = childPathMap.get(questionCateId.toString() + StringConst.dictPath) ?? [];
     if (nodes.length != 3) {
       setReqQuestListErr(<Alert title="Error" description="目前仅支持在三级目录下添加题目" type="error" showIcon />);
       return;
