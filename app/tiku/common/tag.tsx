@@ -19,7 +19,7 @@ export function CommonQuickJumpTag(
   setRefreshListNum: Dispatch<SetStateAction<number>>,
   questionTypeList: TextbookOtherDict[],
   questionTagList: TextbookOtherDict[],
-  childPathMap: Map<number, Textbook[]>,
+  childPathMap: Map<string, Textbook[]>,
 ) {
   const quickToolList = [
     {
