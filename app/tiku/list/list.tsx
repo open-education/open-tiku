@@ -130,8 +130,7 @@ export function ListInfo(props: any) {
   // 添加题目
   const showAddDrawer = () => {
     // 目录应该是3层才可以添加题目
-    const nodes: Textbook[] = childPathMap.get(questionCateId.toString() + StringConst.dictPath) ?? [];
-    if (nodes.length != 3 && cateKeyPath.length != 3) {
+    if (cateKeyPath.length != 3) {
       setReqQuestListErr(<Alert title="Error" description="目前仅支持在三级目录下添加题目" type="error" showIcon />);
       return;
     } else {
