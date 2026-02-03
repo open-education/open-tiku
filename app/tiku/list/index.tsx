@@ -76,9 +76,11 @@ export default function Index(props: any) {
   };
 
   // 题型标识, 目前其它导航栏标识暂时未对应题目, 后续可能需要支持
-  const [questionCateId, setQuestionCateId] = React.useState<string>("");
+  const [questionCateId, setQuestionCateId] = useState<string>("");
+  const [cateKeyPath, setCateKeyPath] = useState<string[]>([]);
   const onLeftMenuClick: MenuProps["onClick"] = (e) => {
     setQuestionCateId(e.key);
+    setCateKeyPath(e.keyPath);
   };
 
   // 检测是否是较小屏幕
@@ -165,6 +167,7 @@ export default function Index(props: any) {
               questionTypeList={questionTypeList}
               questionTagList={questionTagList}
               questionCateId={questionCateId}
+              cateKeyPath={cateKeyPath}
               childPathMap={childPathMap}
             />
           </Content>

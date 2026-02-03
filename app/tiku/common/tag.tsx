@@ -8,7 +8,7 @@ import type { EditQuestionTags } from "~/type/edit";
 import Add from "~/tiku/add";
 import { StringUtil } from "~/util/string";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
-import { Link } from "react-router";
+import { Link, createSearchParams } from "react-router";
 
 // 题目列表右下快速操作区域
 export function CommonQuickJumpTag(
@@ -20,6 +20,7 @@ export function CommonQuickJumpTag(
   questionTypeList: TextbookOtherDict[],
   questionTagList: TextbookOtherDict[],
   childPathMap: Map<string, Textbook[]>,
+  cateKeyPath: string[],
 ) {
   const quickToolList = [
     {
@@ -63,6 +64,7 @@ export function CommonQuickJumpTag(
             questionTagList={questionTagList}
             childPathMap={childPathMap}
             questionCateId={questionInfo.questionCateId}
+            cateKeyPath={cateKeyPath}
           />,
         );
         return;
@@ -83,6 +85,7 @@ export function CommonQuickJumpTag(
             key={questionInfo.id}
             questionInfo={res}
             questionCateId={questionInfo.questionCateId}
+            cateKeyPath={cateKeyPath}
             questionTypeList={questionTypeList}
             questionTagList={questionTagList}
             setRefreshListNum={setRefreshListNum}
@@ -91,7 +94,13 @@ export function CommonQuickJumpTag(
         );
       } else {
         setDrawerContent(
-          <Info questionInfo={res} questionTypeList={questionTypeList} questionTagList={questionTagList} childPathMap={childPathMap} />,
+          <Info
+            questionInfo={res}
+            questionTypeList={questionTypeList}
+            questionTagList={questionTagList}
+            childPathMap={childPathMap}
+            cateKeyPath={cateKeyPath}
+          />,
         );
       }
     });
@@ -112,7 +121,11 @@ export function CommonQuickJumpTag(
             <Link
               to={{
                 pathname: "similar",
-                search: `?id=${questionInfo.id}&cateId=${questionInfo.questionCateId}`,
+                search: createSearchParams({
+                  id: questionInfo.id.toString(),
+                  cateId: questionInfo.questionCateId.toString(),
+                  cateKeyPath: cateKeyPath,
+                }).toString(),
               }}
               target="_blank"
               rel="noreferrer"

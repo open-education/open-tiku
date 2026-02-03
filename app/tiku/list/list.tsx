@@ -46,6 +46,7 @@ export function ListInfo(props: any) {
   const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
   const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? {};
   const questionCateId: number = Number(props.questionCateId ?? 0);
+  const cateKeyPath: string[] = props.cateKeyPath ?? [];
 
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(StringConst.listSelectAll);
   const onQuestionTypeChange = ({ target: { value } }: RadioChangeEvent) => {
@@ -130,7 +131,7 @@ export function ListInfo(props: any) {
   const showAddDrawer = () => {
     // 目录应该是3层才可以添加题目
     const nodes: Textbook[] = childPathMap.get(questionCateId.toString() + StringConst.dictPath) ?? [];
-    if (nodes.length != 3) {
+    if (nodes.length != 3 && cateKeyPath.length != 3) {
       setReqQuestListErr(<Alert title="Error" description="目前仅支持在三级目录下添加题目" type="error" showIcon />);
       return;
     } else {
@@ -148,6 +149,7 @@ export function ListInfo(props: any) {
         questionTagList={questionTagList}
         childPathMap={childPathMap}
         questionCateId={questionCateId}
+        cateKeyPath={cateKeyPath}
       />,
     );
   };
@@ -161,7 +163,7 @@ export function ListInfo(props: any) {
       <Row gutter={[15, 15]} align={"middle"}>
         <Col span={24}>
           {/* 面包屑快速导航 */}
-          {CommonBreadcrumb(pathMap, pathname, childPathMap, questionCateId)}
+          {CommonBreadcrumb(pathMap, pathname, childPathMap, questionCateId, cateKeyPath)}
         </Col>
 
         <Col span={24}>
@@ -256,6 +258,7 @@ export function ListInfo(props: any) {
                 questionTypeList,
                 questionTagList,
                 childPathMap,
+                cateKeyPath,
               )}
             </div>
           </div>

@@ -36,6 +36,7 @@ export default function Add(props: any) {
   const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
   const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? [];
   const questionCateId: number = Number(props.questionCateId ?? 0);
+  const cateKeyPath: string[] = props.cateKeyPath ?? [];
 
   // 添加变式题时有上一层级标识
   const sourceId: number = Number(props.sourceId ?? 0);
@@ -257,7 +258,7 @@ export default function Add(props: any) {
       <Row>
         <Col span={24}>
           {/* 面包屑快速导航 */}
-          {CommonBreadcrumb(pathMap, pathname, childPathMap, questionCateId)}
+          {CommonBreadcrumb(pathMap, pathname, childPathMap, questionCateId, cateKeyPath)}
         </Col>
       </Row>
 

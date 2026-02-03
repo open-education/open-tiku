@@ -16,6 +16,7 @@ export async function clientLoader({ params, request }: Route.ClientLoaderArgs) 
   const url = new URL(request.url);
   const questionId = Number(url.searchParams.get("id") || 0);
   const questionCateId = Number(url.searchParams.get("cateId") || 0);
+  const cateKeyPath = url.searchParams.getAll("cateKeyPath") ?? [];
 
   // 并发请求
   const [textbooks, childTextbooks] = await Promise.all([
@@ -45,7 +46,7 @@ export async function clientLoader({ params, request }: Route.ClientLoaderArgs) 
     ]);
   }
 
-  return { textbookId, questionId, questionCateId, pathMap, childPathMap, questionTypeList, questionTagList };
+  return { textbookId, questionId, questionCateId, cateKeyPath, pathMap, childPathMap, questionTypeList, questionTagList };
 }
 
 // HydrateFallback is rendered while the client loader is running
@@ -59,6 +60,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       textbookId={loaderData.textbookId}
       questionId={loaderData.questionId}
       questionCateId={loaderData.questionCateId}
+      cateKeyPath={loaderData.cateKeyPath}
       pathMap={loaderData.pathMap}
       childPathMap={loaderData.childPathMap}
       questionTypeList={loaderData.questionTypeList}
