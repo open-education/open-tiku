@@ -3,7 +3,10 @@ import { Col, Divider, Flex, Image, Row } from "antd";
 
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
+import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
 import { StringValidator } from "~/util/string";
 import type { QuestionBaseInfo } from "~/type/question";
@@ -11,6 +14,7 @@ import { CommonTag } from "~/common/tag";
 import { CommonTitle } from "~/common/title";
 import { CommonSelect } from "~/common/select";
 import type { TextbookOtherDict } from "~/type/textbook";
+import { allowSchema } from "~/util/schema";
 
 // 预览
 export default function Preview(props: any) {
@@ -46,7 +50,7 @@ export default function Preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.answer) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.answer}
             </Markdown>
           )}
@@ -61,7 +65,7 @@ export default function Preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.knowledge) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.knowledge}
             </Markdown>
           )}
@@ -76,7 +80,7 @@ export default function Preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.analysis?.content) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.analysis?.content}
             </Markdown>
           )}
@@ -99,7 +103,7 @@ export default function Preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.process?.content) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.process?.content}
             </Markdown>
           )}
@@ -122,7 +126,7 @@ export default function Preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.remark) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.remark}
             </Markdown>
           )}

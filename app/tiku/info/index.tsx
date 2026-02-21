@@ -3,7 +3,10 @@ import { Col, Divider, Flex, Image, Row } from "antd";
 
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
+import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
 import type { QuestionInfoResp } from "~/type/question";
 import { StringUtil, StringValidator } from "~/util/string";
@@ -14,6 +17,7 @@ import { useLocation, useOutletContext } from "react-router-dom";
 import type { TiKuIndexContext } from "~/type/context";
 import { CommonBreadcrumb } from "~/tiku/common/breadcrumb";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
+import { allowSchema } from "~/util/schema";
 
 // 题目详情
 export default function Info(props: any) {
@@ -62,7 +66,7 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.answer) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.extraInfo.answer}
             </Markdown>
           )}
@@ -77,7 +81,7 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.knowledge) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.extraInfo.knowledge}
             </Markdown>
           )}
@@ -92,7 +96,7 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.analysis?.content) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.extraInfo.analysis?.content}
             </Markdown>
           )}
@@ -115,7 +119,7 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.process?.content) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.extraInfo.process?.content}
             </Markdown>
           )}
@@ -138,7 +142,7 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.remark) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.extraInfo.remark}
             </Markdown>
           )}
