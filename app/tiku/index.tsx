@@ -10,7 +10,7 @@ const { Header } = Layout;
 // 题目首页
 export default function Index(props: any) {
   const textbooks: Textbook[] = props.textbooks ?? [];
-  const pathMap: Map<number, Textbook[]> = props.pathMap ?? {};
+  const pathMap: Map<string, Textbook[]> = props.pathMap ?? {};
 
   // 递归生成树节点 - 菜单列表
   const get_items = (data: Textbook[]): Required<MenuProps>["items"][number][] => {

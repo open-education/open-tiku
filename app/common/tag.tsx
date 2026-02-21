@@ -20,7 +20,7 @@ export function CommonTag(props: TagProps) {
       <Col span={24}>
         <Flex gap="small" wrap>
           <Tag color="geekblue" key={props.questionTypeId}>
-            {questionTypeDict[props.questionTypeId].itemValue}
+            {questionTypeDict[props.questionTypeId]?.itemValue}
           </Tag>
           {props.questionTagIds?.map((tagKey) => {
             return (

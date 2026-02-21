@@ -27,15 +27,17 @@ export default function Info(props: any) {
 
   const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
   const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
-  const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? [];
+  const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? [];
   const questionInfo: QuestionInfoResp = props.questionInfo;
+
+  const cateKeyPath: string[] = props.cateKeyPath ?? [];
 
   return (
     <div>
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {/* 面包屑快速导航 */}
-          {CommonBreadcrumb(pathMap, pathname, childPathMap, questionInfo.baseInfo.questionCateId)}
+          {CommonBreadcrumb(pathMap, pathname, childPathMap, questionInfo.baseInfo.questionCateId, cateKeyPath)}
         </Col>
       </Row>
 
