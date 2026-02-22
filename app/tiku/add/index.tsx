@@ -239,7 +239,13 @@ export default function Add(props: any) {
             .then((res) => {
               props.setDrawerTitle("详情");
               props.setDrawerContent(
-                <Info questionInfo={res} questionTypeList={questionTypeList} questionTagList={questionTagList} childPathMap={childPathMap} />,
+                <Info
+                  questionInfo={res}
+                  questionTypeList={questionTypeList}
+                  questionTagList={questionTagList}
+                  childPathMap={childPathMap}
+                  cateKeyPath={cateKeyPath}
+                />,
               );
               props.setRefreshListNum(StringUtil.getRandomInt());
             })
