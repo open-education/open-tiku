@@ -16,10 +16,11 @@ export default function Index(props: any) {
   const textbookId: number = Number(props.textbookId ?? 0);
   const questionId: number = Number(props.questionId ?? 0);
   const questionCateId: number = Number(props.questionCateId ?? 0);
+  const cateKeyPath: string[] = props.cateKeyPath ?? [];
   const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
   const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
-  const pathMap: Map<number, Textbook[]> = props.pathMap ?? {};
-  const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? {};
+  const pathMap: Map<string, Textbook[]> = props.pathMap ?? {};
+  const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? {};
 
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(StringConst.listSelectAll);
   const onQuestionTypeChange = ({ target: { value } }: RadioChangeEvent) => {
@@ -100,7 +101,7 @@ export default function Index(props: any) {
         <Row gutter={[15, 15]}>
           <Col span={24}>
             {/* 面包屑快速导航 */}
-            {CommonBreadcrumb(pathMap, textbookId.toString(), childPathMap, questionCateId)}
+            {CommonBreadcrumb(pathMap, textbookId.toString(), childPathMap, questionCateId, cateKeyPath)}
           </Col>
         </Row>
       </div>

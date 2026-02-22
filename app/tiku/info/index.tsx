@@ -3,7 +3,10 @@ import { Col, Divider, Flex, Image, Row } from "antd";
 
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
+import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
 import type { QuestionInfoResp } from "~/type/question";
 import { StringUtil, StringValidator } from "~/util/string";
@@ -14,6 +17,7 @@ import { useLocation, useOutletContext } from "react-router-dom";
 import type { TiKuIndexContext } from "~/type/context";
 import { CommonBreadcrumb } from "~/tiku/common/breadcrumb";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
+import { allowSchema } from "~/util/schema";
 
 // 题目详情
 export default function Info(props: any) {
@@ -23,15 +27,17 @@ export default function Info(props: any) {
 
   const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
   const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
-  const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? [];
+  const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? [];
   const questionInfo: QuestionInfoResp = props.questionInfo;
+
+  const cateKeyPath: string[] = props.cateKeyPath ?? [];
 
   return (
     <div>
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {/* 面包屑快速导航 */}
-          {CommonBreadcrumb(pathMap, pathname, childPathMap, questionInfo.baseInfo.questionCateId)}
+          {CommonBreadcrumb(pathMap, pathname, childPathMap, questionInfo.baseInfo.questionCateId, cateKeyPath)}
         </Col>
       </Row>
 
@@ -62,7 +68,7 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.answer) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.extraInfo.answer}
             </Markdown>
           )}
@@ -77,7 +83,7 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.knowledge) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.extraInfo.knowledge}
             </Markdown>
           )}
@@ -92,7 +98,7 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.analysis?.content) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.extraInfo.analysis?.content}
             </Markdown>
           )}
@@ -115,7 +121,7 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.process?.content) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.extraInfo.process?.content}
             </Markdown>
           )}
@@ -138,7 +144,7 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.remark) && (
-            <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.extraInfo.remark}
             </Markdown>
           )}

@@ -1,0 +1,55 @@
+import { defaultSchema } from "rehype-sanitize";
+
+// markdown 中允许解析的 html 标签配置
+export const allowSchema = {
+  ...defaultSchema,
+  tagNames: [
+    "br",
+    "u",
+    "em",
+    "strong",
+    "code",
+    "span",
+    // 仅允许这些 html 标签
+    "annotation",
+    "math",
+    "menclose",
+    "mfrac",
+    "mglyph",
+    "mi",
+    "mlongdiv",
+    "mmultiscripts",
+    "mn",
+    "mo",
+    "mover",
+    "mpadded",
+    "mphantom",
+    "mroot",
+    "mrow",
+    "ms",
+    "mscarries",
+    "mscarry",
+    "msgroup",
+    "msline",
+    "mspace",
+    "msqrt",
+    "msrow",
+    "mstack",
+    "mstyle",
+    "msub",
+    "msubsup",
+    "msup",
+    "mtable",
+    "mtd",
+    "mtext",
+    "mtr",
+    "munder",
+    "munderover",
+    "semantics",
+    // MathML 标签
+  ],
+  attributes: {
+    ...defaultSchema.attributes,
+    "*": ["className", "style"], // 允许公式使用的样式类
+  },
+};

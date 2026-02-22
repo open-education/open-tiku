@@ -6,6 +6,7 @@ export interface Textbook {
   key: string;
   sortOrder: number;
   pathDepth: number;
+  tableName?: string;
   children?: Textbook[];
 }
 

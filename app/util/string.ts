@@ -62,6 +62,9 @@ export const StringConst = {
   tikuMy: "2", // 我的题库
   tikuMyBox: "3", // 我的试题篮
   tikuMaxNum: 30, // 每种题型最多选择题目数量
+
+  questionCateTableName: "question_cate", // 题型表
+  dictPath: "_cate", // 面包屑字典路径
 };
 
 // 字符串常量工具

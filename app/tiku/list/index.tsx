@@ -26,7 +26,7 @@ export default function Index(props: any) {
 
   // 教材目录和知识点列表
   const textbooks: Textbook[] = props.textbooks ?? [];
-  const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? [];
+  const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? [];
 
   // 请求错误
   const [reqError, setReqError] = useState<React.ReactNode>("");
@@ -39,7 +39,7 @@ export default function Index(props: any) {
   // 路由加载时获取题型和标签列表
   useEffect(() => {
     // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再3层深度上, 因此只要有3层深度就可以把题型类型和标签返回, 后续如果有优化再处理
-    const nodes: Textbook[] = pathMap.get(textbookId) ?? [];
+    const nodes: Textbook[] = pathMap.get(textbookId.toString()) ?? [];
     if (nodes.length < 2) {
       return;
     }
@@ -76,9 +76,11 @@ export default function Index(props: any) {
   };
 
   // 题型标识, 目前其它导航栏标识暂时未对应题目, 后续可能需要支持
-  const [questionCateId, setQuestionCateId] = React.useState<string>("");
+  const [questionCateId, setQuestionCateId] = useState<string>("");
+  const [cateKeyPath, setCateKeyPath] = useState<string[]>([]);
   const onLeftMenuClick: MenuProps["onClick"] = (e) => {
     setQuestionCateId(e.key);
+    setCateKeyPath(e.keyPath);
   };
 
   // 检测是否是较小屏幕
@@ -165,6 +167,7 @@ export default function Index(props: any) {
               questionTypeList={questionTypeList}
               questionTagList={questionTagList}
               questionCateId={questionCateId}
+              cateKeyPath={cateKeyPath}
               childPathMap={childPathMap}
             />
           </Content>

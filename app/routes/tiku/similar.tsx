@@ -16,6 +16,7 @@ export async function clientLoader({ params, request }: Route.ClientLoaderArgs) 
   const url = new URL(request.url);
   const questionId = Number(url.searchParams.get("id") || 0);
   const questionCateId = Number(url.searchParams.get("cateId") || 0);
+  const cateKeyPath = url.searchParams.getAll("cateKeyPath") ?? [];
 
   // 并发请求
   const [textbooks, childTextbooks] = await Promise.all([
@@ -26,15 +27,15 @@ export async function clientLoader({ params, request }: Route.ClientLoaderArgs) 
   ]);
 
   // 将教材字典转化为 Map 格式, 存储 id 对应的所有层, 重复存储便于后续面包屑等使用
-  const pathMap: Map<number, Textbook[]> = createTextbookPathDict(textbooks);
-  const childPathMap: Map<number, Textbook[]> = createTextbookPathDict(childTextbooks);
+  const pathMap: Map<string, Textbook[]> = createTextbookPathDict(textbooks);
+  const childPathMap: Map<string, Textbook[]> = createTextbookPathDict(childTextbooks);
 
   // 获取题型类型和标签
   let questionTypeList: TextbookOtherDict[] = [];
   let questionTagList: TextbookOtherDict[] = [];
 
   // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再3层深度上, 因此只要有3层深度就可以把题型类型和标签返回, 后续如果有优化再处理
-  const nodes: Textbook[] = pathMap.get(textbookId) ?? [];
+  const nodes: Textbook[] = pathMap.get(textbookId.toString()) ?? [];
   if (nodes.length >= 2) {
     // 目前题型和标签类型挂载在第三层上
     const typeId: number = nodes[1].id;
@@ -45,7 +46,7 @@ export async function clientLoader({ params, request }: Route.ClientLoaderArgs) 
     ]);
   }
 
-  return { textbookId, questionId, questionCateId, pathMap, childPathMap, questionTypeList, questionTagList };
+  return { textbookId, questionId, questionCateId, cateKeyPath, pathMap, childPathMap, questionTypeList, questionTagList };
 }
 
 // HydrateFallback is rendered while the client loader is running
@@ -59,6 +60,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       textbookId={loaderData.textbookId}
       questionId={loaderData.questionId}
       questionCateId={loaderData.questionCateId}
+      cateKeyPath={loaderData.cateKeyPath}
       pathMap={loaderData.pathMap}
       childPathMap={loaderData.childPathMap}
       questionTypeList={loaderData.questionTypeList}

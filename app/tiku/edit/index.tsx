@@ -34,7 +34,9 @@ export default function Edit(props: any) {
   const reqQuestionInfo: QuestionInfoResp = props.questionInfo;
   const questionTypeList: TextbookOtherDict[] = props.questionTypeList ?? [];
   const questionTagList: TextbookOtherDict[] = props.questionTagList ?? [];
-  const childPathMap: Map<number, Textbook[]> = props.childPathMap ?? [];
+  const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? [];
+
+  const cateKeyPath: string[] = props.cateKeyPath ?? [];
 
   // 题目类型
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(reqQuestionInfo.baseInfo.questionTypeId);
@@ -197,7 +199,7 @@ export default function Edit(props: any) {
       <Row>
         <Col span={24}>
           {/* 面包屑快速导航 */}
-          {CommonBreadcrumb(pathMap, pathname, childPathMap, reqQuestionInfo.baseInfo.questionCateId)}
+          {CommonBreadcrumb(pathMap, pathname, childPathMap, reqQuestionInfo.baseInfo.questionCateId, cateKeyPath)}
         </Col>
       </Row>
 
