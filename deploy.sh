@@ -27,7 +27,7 @@ show_help() {
     echo "  $0 stop                    # 停止应用程序"
     echo "  $0 restart -v 1.5.0        # 重启并升级到版本 1.5.0"
     echo "  $0 status                  # 查看状态"
-    echo "  $0 sh deploy.sh restart -p 8082 -v v0.0.1-beta # 常用完整命令名称, 端口因为要配置 nginx 代理转发调整需要对应调整 nginx 配置"
+    echo "  $0 sh deploy.sh restart -p 8082 -v v0.0.1-beta # 常用完整命令名称, 端口因为要配置 nginx|caddy 代理转发调整需要对应调整 nginx|caddy 配置"
 }
 
 # 检查进程是否运行
