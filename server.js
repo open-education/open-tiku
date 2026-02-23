@@ -17,6 +17,14 @@ if (process.env.NODE_ENV === "production") {
     }),
   );
 
+  // 处理根目录下的静态资源（如 favicon.ico, robots.txt, sitemap.xml 等）
+  // 这些文件通常位于你的 public 文件夹中，打包后会出现在 build/client 根目录
+  app.use(
+    express.static("./build/client", {
+      maxAge: "1d", // 建议给一天缓存，或者不设置缓存
+    }),
+  );
+
   app.use(
     createRequestHandler({
       build: await import("./build/server/index.js"),
