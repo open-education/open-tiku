@@ -28,6 +28,8 @@ import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
 import { CommonQuickJumpTag } from "~/tiku/common/tag";
 import { CommonTag } from "~/common/tag";
+import { UploadQuestion } from "~/tiku/upload/question/index";
+import { TaskList } from "~/tiku/upload/question/task";
 import "katex/dist/katex.min.css";
 
 type SearchProps = GetProps<typeof Input.Search>;
@@ -86,7 +88,8 @@ export function ListInfo(props: any) {
     total: 0,
   });
 
-  useEffect(() => {
+  // 请求条件变化时刷新列表
+  const reqRefreshList = () => {
     // 默认查询第一章第一节的题目列表
     const questionListReq: QuestionListReq = {
       questionCateId: questionCateId,
@@ -119,7 +122,19 @@ export function ListInfo(props: any) {
       .catch((err) => {
         setReqQuestListErr(<Alert title="Error" description={`读取题目列表出错: ${err.message}`} type="error" showIcon />);
       });
-  }, [questionCateId, questionTypeVal, tagsVal, titleVal, titleId, pageNo, refreshListNum]);
+  };
+
+  useEffect(() => {
+    reqRefreshList();
+  }, [questionTypeVal, tagsVal, titleVal, titleId, pageNo, refreshListNum]);
+
+  useEffect(() => {
+    // 题型变化时页码需要恢复默认第1页
+    if (pageNo != 1) {
+      setPageNo(1);
+    }
+    reqRefreshList();
+  }, [questionCateId]);
 
   // Drawer
   const [addDrawerSize, setAddDrawerSize] = useState(1200);
@@ -127,14 +142,23 @@ export function ListInfo(props: any) {
   const [drawerTitle, setDrawerTitle] = useState<string>("");
   const [drawerContent, setDrawerContent] = useState<React.ReactNode>("");
   const drawerExtraInfo = <div className="text-xs text-blue-700">提示: 鼠标触摸边框左右拖动可以调整到适合的宽度</div>;
+
+  // 检查入口是否层级正确
+  const checkPathLevel = (msg: string): boolean => {
+    if (cateKeyPath.length != 3) {
+      setReqQuestListErr(<Alert title="Error" description={msg} type="error" showIcon />);
+      return false;
+    } else {
+      setReqQuestListErr("");
+      return true;
+    }
+  };
+
   // 添加题目
   const showAddDrawer = () => {
     // 目录应该是3层才可以添加题目
-    if (cateKeyPath.length != 3) {
-      setReqQuestListErr(<Alert title="Error" description="目前仅支持在三级目录下添加题目" type="error" showIcon />);
+    if (!checkPathLevel("目前仅支持在题型下添加题目")) {
       return;
-    } else {
-      setReqQuestListErr("");
     }
 
     setOpenDrawer(true);
@@ -152,6 +176,32 @@ export function ListInfo(props: any) {
       />,
     );
   };
+
+  // 显示上传题目抽屉
+  const onUploadQuestionDrawer = () => {
+    // 目录应该是3层才可以上传题目
+    if (!checkPathLevel("目前仅支持在题型下上传题目")) {
+      return;
+    }
+
+    setOpenDrawer(true);
+    setDrawerTitle("上传题目");
+
+    setDrawerContent(<UploadQuestion />);
+  };
+
+  // 查看上传题目任务列表
+  const showTaskListDrawer = () => {
+    // 目录应该是3层才可以查看上传任务
+    if (!checkPathLevel("目前仅支持在题型下查看任务")) {
+      return;
+    }
+
+    setOpenDrawer(true);
+    setDrawerTitle("查看任务");
+    setDrawerContent(<TaskList />);
+  };
+
   const onCloseDrawer = () => {
     setOpenDrawer(false);
   };
@@ -209,6 +259,12 @@ export function ListInfo(props: any) {
             <div className="inline-block leading-8.75 mr-2.5">快速入口:</div>
             <Button color="primary" variant="dashed" onClick={showAddDrawer}>
               添加题目
+            </Button>
+            <Button color="primary" variant="dashed" onClick={onUploadQuestionDrawer}>
+              上传题目
+            </Button>
+            <Button color="primary" variant="dashed" onClick={showTaskListDrawer}>
+              查看任务
             </Button>
           </Flex>
         </Col>
