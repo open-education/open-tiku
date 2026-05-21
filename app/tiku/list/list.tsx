@@ -187,7 +187,7 @@ export function ListInfo(props: any) {
     setOpenDrawer(true);
     setDrawerTitle("上传题目");
 
-    setDrawerContent(<UploadQuestion />);
+    setDrawerContent(<UploadQuestion questionCateId={questionCateId} />);
   };
 
   // 查看上传题目任务列表
@@ -199,7 +199,7 @@ export function ListInfo(props: any) {
 
     setOpenDrawer(true);
     setDrawerTitle("查看任务");
-    setDrawerContent(<TaskList />);
+    setDrawerContent(<TaskList questionCateId={questionCateId} />);
   };
 
   const onCloseDrawer = () => {

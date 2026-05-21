@@ -1,19 +1,74 @@
-import { Button, Input, Upload, type UploadProps } from "antd";
+import { Alert, Button, Input, Upload, type UploadProps } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+import { StringValidator } from "~/util/string";
+import { httpClient } from "~/util/http";
+import type { TaskSaveReq } from "~/type/task";
 
 // 批量上传题目
 export function UploadQuestion(props: any) {
+  const questionCateId: number = props.questionCateId ?? 0;
+
+  const [fileUrl, setFileUrl] = useState<string>("");
+  const [fileName, setFileName] = useState<string>("");
+  const [fileNotice, setFileNotice] = useState<React.ReactNode>("");
   const handleChange: UploadProps["onChange"] = (info) => {
     if (info.file.status !== "uploading") {
-      console.log(info.file, info.fileList);
+      setFileNotice(<Alert title="文件上传中" type="info" />);
     }
     if (info.file.status === "done") {
-      console.log("success");
+      // 本身有的文件不会有 response 字段
+      if (info.file.response && info.file.response.data) {
+        setFileNotice("");
+        let res = info.file.response.data;
+        setFileUrl(res.url);
+        setFileName(res.name);
+      }
     } else if (info.file.status === "error") {
-      console.log("failed");
+      setFileNotice(<Alert title="文件上传失败" type="error" />);
     } else {
       console.log("info");
     }
+  };
+
+  const [email, setEmail] = useState<string>("");
+  const onEmailChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const [saveErr, setSaveErr] = useState<React.ReactNode>("");
+
+  const saveFile = () => {
+    if (questionCateId === 0 || questionCateId < 0) {
+      setSaveErr(<Alert title="题型为空" type={"error"} />);
+      return;
+    }
+    if (!StringValidator.isNonEmpty(fileUrl)) {
+      setSaveErr(<Alert title="文件为空" type={"error"} />);
+      return;
+    }
+    if (!StringValidator.isNonEmpty(fileName)) {
+      setSaveErr(<Alert title="文件名称为空" type={"error"} />);
+      return;
+    }
+
+    let req: TaskSaveReq = {
+      questionCateId,
+      taskType: 1,
+      name: fileName,
+      url: fileUrl,
+      email: email,
+    };
+
+    httpClient
+      .post<number>("/task/add", req)
+      .then((taskId) => {
+        // 成功后调整
+        console.log(taskId);
+      })
+      .catch((err) => {
+        setSaveErr(<Alert title={`任务创建失败: ${err.message}`} type={"error"} />);
+      });
   };
 
   return (
@@ -22,7 +77,7 @@ export function UploadQuestion(props: any) {
         <div>提示: </div>
         <div>1. 目前仅支持上传 markdown 文档, 后缀名为 .md;</div>
         <div>2. markdown 文件格式见下面模板规范, 如果有差异或者需要调整, 则需要更新解析逻辑后才可正确导入题目;</div>
-        <div>3. 题目上传后不会立即处理, 系统会根据资源使用情况定时处理, 处理完成后会将处理结果发送至你的邮件中;</div>
+        <div>3. 题目上传后不会立即处理, 系统会根据资源使用情况定时处理, 处理完成后会将处理结果发送至你的邮件中(如果填写);</div>
       </div>
 
       <div className="mt-2.5">
@@ -42,13 +97,19 @@ export function UploadQuestion(props: any) {
         </Upload>
       </div>
 
+      <div className="mt-2.5">{fileNotice}</div>
+
       <div className="mt-2.5">
-        <Input placeholder="请输入接收任务结果通知的邮箱地址" value={""} />
+        <Input placeholder="请输入接收任务结果通知的邮箱地址" value={email} onChange={onEmailChange} />
       </div>
 
       <div className="mt-2.5">
-        <Button type="primary">保存</Button>
+        <Button type="primary" onClick={saveFile}>
+          保存
+        </Button>
       </div>
+
+      <div className="mt-2.5">{saveErr}</div>
     </>
   );
 }
