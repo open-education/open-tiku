@@ -53,7 +53,7 @@ export function AddUploadImageStyle(props: UploadImageProps) {
 
       // 异步删除无法等待前端
       httpClient
-        .post<boolean>(`/file/delete`, reqDel)
+        .post<boolean>(`/file/delete/image`, reqDel)
         .then((res) => {
           console.log(res);
         })
@@ -89,7 +89,7 @@ export function AddUploadImageStyle(props: UploadImageProps) {
       <div style={{ paddingTop: "10px" }}>
         <Upload
           accept=".jpg,.jpeg,.png,.gif"
-          action={"/api/file/upload"}
+          action={"/api/file/upload/image"}
           listType="picture-card"
           fileList={props.images}
           onPreview={handleImagePreview}

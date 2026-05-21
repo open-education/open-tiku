@@ -107,7 +107,7 @@ export default function Info(props: any) {
         <Col span={24}>
           <Flex gap="small" wrap>
             {questionInfo.extraInfo.analysis?.images?.map((imageName) => {
-              return <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`} />;
+              return <Image height={200} key={imageName} alt="basic" src={`/api/file/read/image/${imageName}`} />;
             })}
           </Flex>
         </Col>
@@ -130,7 +130,7 @@ export default function Info(props: any) {
         <Col span={24}>
           <Flex gap="small" wrap>
             {questionInfo.extraInfo.process?.images?.map((imageName) => {
-              return <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`} />;
+              return <Image height={200} key={imageName} alt="basic" src={`/api/file/read/image/${imageName}`} />;
             })}
           </Flex>
         </Col>
