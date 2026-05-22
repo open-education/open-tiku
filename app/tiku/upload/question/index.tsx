@@ -1,7 +1,7 @@
 import { Alert, Button, Input, Upload, type UploadProps, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
-import { StringConst, StringValidator } from "~/util/string";
+import { StringConst, StringUtil, StringValidator } from "~/util/string";
 import { httpClient } from "~/util/http";
 import type { TaskSaveReq } from "~/type/task";
 
@@ -80,6 +80,8 @@ export function UploadQuestion(props: any) {
           type: "success",
           content: "任务添加成功",
         });
+
+        props.setRefreshTaskListNum(StringUtil.getRandomInt());
       })
       .catch((err) => {
         setSaveErr(<Alert title={`任务创建失败: ${err.message}`} type={"error"} />);

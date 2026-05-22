@@ -88,8 +88,15 @@ export function ListInfo(props: any) {
     total: 0,
   });
 
-  // 请求条件变化时刷新列表
-  const reqRefreshList = () => {
+  useEffect(() => {
+    // 当分类变化时，如果需要，先重置页码
+    if (questionCateId) {
+      if (pageNo !== 1) {
+        setPageNo(1);
+        return; // 等待页码更新后重新触发
+      }
+    }
+
     // 默认查询第一章第一节的题目列表
     const questionListReq: QuestionListReq = {
       questionCateId: questionCateId,
@@ -122,19 +129,7 @@ export function ListInfo(props: any) {
       .catch((err) => {
         setReqQuestListErr(<Alert title="Error" description={`读取题目列表出错: ${err.message}`} type="error" showIcon />);
       });
-  };
-
-  useEffect(() => {
-    reqRefreshList();
-  }, [questionTypeVal, tagsVal, titleVal, titleId, pageNo, refreshListNum]);
-
-  useEffect(() => {
-    // 题型变化时页码需要恢复默认第1页
-    if (pageNo != 1) {
-      setPageNo(1);
-    }
-    reqRefreshList();
-  }, [questionCateId]);
+  }, [questionCateId, questionTypeVal, tagsVal, titleVal, titleId, pageNo, refreshListNum]);
 
   // Drawer
   const [addDrawerSize, setAddDrawerSize] = useState(1200);
@@ -177,6 +172,9 @@ export function ListInfo(props: any) {
     );
   };
 
+  // 刷新任务列表
+  const [refreshTaskListNum, setRefreshTaskListNum] = useState<number>(0);
+
   // 显示上传题目抽屉
   const onUploadQuestionDrawer = () => {
     // 目录应该是3层才可以上传题目
@@ -187,7 +185,7 @@ export function ListInfo(props: any) {
     setOpenDrawer(true);
     setDrawerTitle("上传题目");
 
-    setDrawerContent(<UploadQuestion questionCateId={questionCateId} />);
+    setDrawerContent(<UploadQuestion questionCateId={questionCateId} setRefreshTaskListNum={setRefreshTaskListNum} />);
   };
 
   // 查看上传题目任务列表
@@ -199,7 +197,7 @@ export function ListInfo(props: any) {
 
     setOpenDrawer(true);
     setDrawerTitle("查看任务");
-    setDrawerContent(<TaskList questionCateId={questionCateId} />);
+    setDrawerContent(<TaskList questionCateId={questionCateId} refreshTaskListNum={refreshTaskListNum} />);
   };
 
   const onCloseDrawer = () => {
