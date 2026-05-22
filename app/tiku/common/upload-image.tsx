@@ -30,8 +30,8 @@ export function AddUploadImageStyle(props: UploadImageProps) {
       // 文件上传成功后会在 file 对象上追加 reponse 记录服务端的返回值
       if (file.status == "done") {
         // 本身有的文件不会有 response 字段
-        if (file.response && file.response.data && file.response.data.length > 0) {
-          let res = file.response.data[0];
+        if (file.response && file.response.data) {
+          let res = file.response.data;
           file.url = res.url;
           file.name = res.name;
         }

@@ -1,12 +1,14 @@
-import { Alert, Button, Input, Upload, type UploadProps } from "antd";
+import { Alert, Button, Input, Upload, type UploadProps, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
-import { StringValidator } from "~/util/string";
+import { StringConst, StringValidator } from "~/util/string";
 import { httpClient } from "~/util/http";
 import type { TaskSaveReq } from "~/type/task";
 
 // 批量上传题目
 export function UploadQuestion(props: any) {
+  const [messageApi, contextHolder] = message.useMessage();
+
   const questionCateId: number = props.questionCateId ?? 0;
 
   const [fileUrl, setFileUrl] = useState<string>("");
@@ -21,8 +23,8 @@ export function UploadQuestion(props: any) {
       if (info.file.response && info.file.response.data) {
         setFileNotice("");
         let res = info.file.response.data;
-        setFileUrl(res.url);
-        setFileName(res.name);
+        setFileUrl(res.name); // 实际上 url 是前端访问的地址, name 是文件在磁盘上的名字, 路径需要根据业务去确定
+        setFileName(res.originalName); // 原始文件名, 给前端展示
       }
     } else if (info.file.status === "error") {
       setFileNotice(<Alert title="文件上传失败" type="error" />);
@@ -54,7 +56,7 @@ export function UploadQuestion(props: any) {
 
     let req: TaskSaveReq = {
       questionCateId,
-      taskType: 1,
+      taskType: StringConst.taskTypeUploadQuestion,
       name: fileName,
       url: fileUrl,
       email: email,
@@ -64,7 +66,20 @@ export function UploadQuestion(props: any) {
       .post<number>("/task/add", req)
       .then((taskId) => {
         // 成功后调整
-        console.log(taskId);
+        if (saveErr) {
+          setSaveErr("");
+        }
+
+        // 清空表单内容避免重复添加
+        setFileName("");
+        setFileUrl("");
+        setEmail("");
+
+        // 是否加载任务列表
+        messageApi.open({
+          type: "success",
+          content: "任务添加成功",
+        });
       })
       .catch((err) => {
         setSaveErr(<Alert title={`任务创建失败: ${err.message}`} type={"error"} />);
@@ -73,6 +88,8 @@ export function UploadQuestion(props: any) {
 
   return (
     <>
+      {contextHolder}
+
       <div className="text-sm text-blue-700 mb-2.5">
         <div>提示: </div>
         <div>1. 目前仅支持上传 markdown 文档, 后缀名为 .md;</div>
