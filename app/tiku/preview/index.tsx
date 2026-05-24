@@ -4,6 +4,7 @@ import { Col, Divider, Flex, Image, Row } from "antd";
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
 import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
@@ -15,6 +16,7 @@ import { CommonTitle } from "~/common/title";
 import { CommonSelect } from "~/common/select";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { allowSchema } from "~/util/schema";
+import { table } from "~/component/table";
 
 // 预览
 export default function Preview(props: any) {
@@ -50,7 +52,7 @@ export default function Preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.answer) && (
-            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.answer}
             </Markdown>
           )}
@@ -80,7 +82,11 @@ export default function Preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.analysis?.content) && (
-            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
+            <Markdown
+              remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]}
+              rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}
+              components={table}
+            >
               {questionInfo.analysis?.content}
             </Markdown>
           )}
@@ -103,7 +109,11 @@ export default function Preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.process?.content) && (
-            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
+            <Markdown
+              remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]}
+              rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}
+              components={table}
+            >
               {questionInfo.process?.content}
             </Markdown>
           )}
@@ -126,7 +136,11 @@ export default function Preview(props: any) {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.remark) && (
-            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
+            <Markdown
+              remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]}
+              rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}
+              components={table}
+            >
               {questionInfo.remark}
             </Markdown>
           )}

@@ -3,10 +3,12 @@ import Markdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import remarkMath from "remark-math";
 import rehypeSanitize from "rehype-sanitize";
 import { StringValidator } from "~/util/string";
 import { allowSchema } from "~/util/schema";
+import { table } from "~/component/table";
 
 interface TitleProps {
   no?: number; // 显示题号-一般试卷用
@@ -26,7 +28,11 @@ export function CommonTitle(props: TitleProps) {
     <Row gutter={[10, 10]}>
       <Col span={24}>
         {StringValidator.isNonEmpty(props.title) && (
-          <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
+          <Markdown
+            remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]}
+            rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}
+            components={table}
+          >
             {`${showNo}${showId} ${props.title}`}
           </Markdown>
         )}
