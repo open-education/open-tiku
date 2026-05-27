@@ -1,5 +1,5 @@
 import { Alert, Layout, Menu, type MenuProps, Spin, theme } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useNavigation } from "react-router";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
@@ -19,7 +19,7 @@ export default function Index(props: any) {
 
   const location = useLocation();
   const pathname = StringUtil.getLastPart(location.pathname, "/");
-  const textbookId: number = Number(pathname ?? 0);
+  const fiveLevelId: number = Number(pathname ?? 0);
 
   // 从父组件中获取全局菜单字典
   const { pathMap } = useOutletContext<TiKuIndexContext>();
@@ -27,6 +27,12 @@ export default function Index(props: any) {
   // 教材目录和知识点列表
   const textbooks: Textbook[] = props.textbooks ?? [];
   const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? [];
+
+  // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再2层深度上, 因此只要有2层深度就可以把题型类型和标签返回, 后续如果有优化再处理
+  const textbookId = useMemo(() => {
+    const nodes = pathMap.get(fiveLevelId.toString()) ?? [];
+    return nodes.length > 2 ? nodes[1].id : 0;
+  }, [fiveLevelId, pathMap]);
 
   // 请求错误
   const [reqError, setReqError] = useState<React.ReactNode>("");
@@ -38,17 +44,14 @@ export default function Index(props: any) {
 
   // 路由加载时获取题型和标签列表
   useEffect(() => {
-    // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再3层深度上, 因此只要有3层深度就可以把题型类型和标签返回, 后续如果有优化再处理
-    const nodes: Textbook[] = pathMap.get(textbookId.toString()) ?? [];
-    if (nodes.length < 2) {
+    // 没有有效的教材标识则无法查询
+    if (textbookId <= 0) {
       return;
     }
-    // 目前题型和标签类型挂载在第三层上
-    const reqId: number = nodes[1].id;
 
     // 类型是在第三级上, 需要往上找-pathMap
     httpClient
-      .get<TextbookOtherDict[]>(`/other/dict/list/${reqId}/question_type`)
+      .get<TextbookOtherDict[]>(`/other/dict/list/${textbookId}/question_type`)
       .then((res) => {
         setQuestionTypeList(res);
       })
@@ -56,7 +59,7 @@ export default function Index(props: any) {
         setReqError(<Alert title={`题型信息获取失败: ${err}`} type={"error"} />);
       });
     httpClient
-      .get<TextbookOtherDict[]>(`/other/dict/list/${reqId}/question_tag`)
+      .get<TextbookOtherDict[]>(`/other/dict/list/${textbookId}/question_tag`)
       .then((res) => {
         setQuestionTagList(res);
       })
@@ -167,6 +170,7 @@ export default function Index(props: any) {
               questionTypeList={questionTypeList}
               questionTagList={questionTagList}
               questionCateId={questionCateId}
+              textbookId={textbookId}
               cateKeyPath={cateKeyPath}
               childPathMap={childPathMap}
             />

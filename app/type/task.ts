@@ -5,6 +5,7 @@ export interface TaskSaveReq {
   name: string;
   url: string;
   email: string;
+  textbookId: number;
 }
 
 // 任务列表请求

@@ -49,6 +49,7 @@ export function ListInfo(props: any) {
   const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? {};
   const questionCateId: number = Number(props.questionCateId ?? 0);
   const cateKeyPath: string[] = props.cateKeyPath ?? [];
+  const textbookId: number = props.textbookId ?? 0;
 
   const [questionTypeVal, setQuestionTypeVal] = useState<number>(StringConst.listSelectAll);
   const onQuestionTypeChange = ({ target: { value } }: RadioChangeEvent) => {
@@ -185,7 +186,7 @@ export function ListInfo(props: any) {
     setOpenDrawer(true);
     setDrawerTitle("上传题目");
 
-    setDrawerContent(<UploadQuestion questionCateId={questionCateId} setRefreshTaskListNum={setRefreshTaskListNum} />);
+    setDrawerContent(<UploadQuestion questionCateId={questionCateId} textbookId={textbookId} setRefreshTaskListNum={setRefreshTaskListNum} />);
   };
 
   // 查看上传题目任务列表

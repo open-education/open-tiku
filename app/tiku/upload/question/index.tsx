@@ -10,6 +10,7 @@ export function UploadQuestion(props: any) {
   const [messageApi, contextHolder] = message.useMessage();
 
   const questionCateId: number = props.questionCateId ?? 0;
+  const textbookId: number = props.textbookId ?? 0;
 
   const [fileUrl, setFileUrl] = useState<string>("");
   const [fileName, setFileName] = useState<string>("");
@@ -41,7 +42,11 @@ export function UploadQuestion(props: any) {
   const [saveErr, setSaveErr] = useState<React.ReactNode>("");
 
   const saveFile = () => {
-    if (questionCateId === 0 || questionCateId < 0) {
+    if (textbookId <= 0) {
+      setSaveErr(<Alert title="教材选择异常" type={"error"} />);
+      return;
+    }
+    if (questionCateId <= 0) {
       setSaveErr(<Alert title="题型为空" type={"error"} />);
       return;
     }
@@ -60,6 +65,7 @@ export function UploadQuestion(props: any) {
       name: fileName,
       url: fileUrl,
       email: email,
+      textbookId,
     };
 
     httpClient
