@@ -1,5 +1,5 @@
 // 选项风格
-import { Alert, Button, Col, Flex, Radio, type RadioChangeEvent, Row, Image } from "antd";
+import { Alert, Button, Col, Flex, Radio, type RadioChangeEvent, Row } from "antd";
 import { StringUtil } from "~/util/string";
 import React from "react";
 import type { EditSelect } from "~/type/edit";
