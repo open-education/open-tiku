@@ -90,14 +90,12 @@ export function ListInfo(props: any) {
   });
 
   useEffect(() => {
-    // 当分类变化时，如果需要，先重置页码
-    if (questionCateId) {
-      if (pageNo !== 1) {
-        setPageNo(1);
-        return; // 等待页码更新后重新触发
-      }
+    if (questionCateId && pageNo !== 1) {
+      setPageNo(1);
     }
+  }, [questionCateId]); // 依赖只有分类ID，不会触发数据加载
 
+  useEffect(() => {
     // 默认查询第一章第一节的题目列表
     const questionListReq: QuestionListReq = {
       questionCateId: questionCateId,
