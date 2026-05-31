@@ -4,6 +4,7 @@ import { Col, Divider, Flex, Image, Row } from "antd";
 import Markdown from "react-markdown";
 import remarkMath from "remark-math";
 import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
@@ -18,6 +19,7 @@ import type { TiKuIndexContext } from "~/type/context";
 import { CommonBreadcrumb } from "~/tiku/common/breadcrumb";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import { allowSchema } from "~/util/schema";
+import { table } from "~/component/table";
 
 // 题目详情
 export default function Info(props: any) {
@@ -68,7 +70,7 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.answer) && (
-            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
+            <Markdown remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
               {questionInfo.extraInfo.answer}
             </Markdown>
           )}
@@ -98,7 +100,11 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.analysis?.content) && (
-            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
+            <Markdown
+              remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]}
+              rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}
+              components={table}
+            >
               {questionInfo.extraInfo.analysis?.content}
             </Markdown>
           )}
@@ -107,7 +113,7 @@ export default function Info(props: any) {
         <Col span={24}>
           <Flex gap="small" wrap>
             {questionInfo.extraInfo.analysis?.images?.map((imageName) => {
-              return <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`} />;
+              return <Image height={200} key={imageName} alt="basic" src={`/api/file/read/image/${imageName}`} />;
             })}
           </Flex>
         </Col>
@@ -121,7 +127,11 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.process?.content) && (
-            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
+            <Markdown
+              remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]}
+              rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}
+              components={table}
+            >
               {questionInfo.extraInfo.process?.content}
             </Markdown>
           )}
@@ -130,7 +140,7 @@ export default function Info(props: any) {
         <Col span={24}>
           <Flex gap="small" wrap>
             {questionInfo.extraInfo.process?.images?.map((imageName) => {
-              return <Image height={200} key={imageName} alt="basic" src={`/api/file/read/${imageName}`} />;
+              return <Image height={200} key={imageName} alt="basic" src={`/api/file/read/image/${imageName}`} />;
             })}
           </Flex>
         </Col>
@@ -144,7 +154,11 @@ export default function Info(props: any) {
       <Row>
         <Col span={24}>
           {StringValidator.isNonEmpty(questionInfo.extraInfo.remark) && (
-            <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}>
+            <Markdown
+              remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]}
+              rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}
+              components={table}
+            >
               {questionInfo.extraInfo.remark}
             </Markdown>
           )}

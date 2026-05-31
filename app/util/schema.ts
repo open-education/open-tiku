@@ -5,12 +5,22 @@ export const allowSchema = {
   ...defaultSchema,
   tagNames: [
     "br",
+    "p",
     "u",
     "em",
     "strong",
     "code",
     "span",
-    // 仅允许这些 html 标签
+    "table",
+    "thead",
+    "tbody",
+    "tr",
+    "th",
+    "td",
+    "caption",
+    "colgroup",
+    "col",
+    // 仅允许上面这些 html 标签, 包括表格
     "annotation",
     "math",
     "menclose",
@@ -46,10 +56,16 @@ export const allowSchema = {
     "munder",
     "munderover",
     "semantics",
-    // MathML 标签
+    // 允许上面这些 MathML 标签
   ],
   attributes: {
     ...defaultSchema.attributes,
     "*": ["className", "style"], // 允许公式使用的样式类
+    table: ["class", "style", "border", "cellpadding", "cellspacing"],
+    th: ["class", "style", "align", "colspan", "rowspan"],
+    td: ["class", "style", "align", "colspan", "rowspan"],
+    tr: ["class", "style"],
+    thead: ["class", "style"],
+    tbody: ["class", "style"],
   },
 };

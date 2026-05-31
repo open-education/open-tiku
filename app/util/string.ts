@@ -65,6 +65,8 @@ export const StringConst = {
 
   questionCateTableName: "question_cate", // 题型表
   dictPath: "_cate", // 面包屑字典路径
+
+  taskTypeUploadQuestion: 1, // 任务类型是上传题目
 };
 
 // 字符串常量工具
