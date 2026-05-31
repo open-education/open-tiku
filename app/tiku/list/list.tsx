@@ -16,7 +16,7 @@ import {
   Input,
 } from "antd";
 import type { QuestionListReq, QuestionListResp } from "~/type/question";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Add from "~/tiku/add";
 import { CommonBreadcrumb } from "~/tiku/common/breadcrumb";
 import { useLocation, useOutletContext } from "react-router-dom";
@@ -89,13 +89,19 @@ export function ListInfo(props: any) {
     total: 0,
   });
 
-  useEffect(() => {
-    if (questionCateId && pageNo !== 1) {
-      setPageNo(1);
-    }
-  }, [questionCateId]); // 依赖只有分类ID，不会触发数据加载
+  // 监听分类是否发生变化
+  const prevCateIdRef = useRef(questionCateId);
 
   useEffect(() => {
+    const isCateChanged = prevCateIdRef.current !== questionCateId;
+    prevCateIdRef.current = questionCateId;
+
+    // 分类变化且当前不是第1页 → 重置到第1页，本次不发请求
+    if (isCateChanged && pageNo !== 1) {
+      setPageNo(1);
+      return;
+    }
+
     // 默认查询第一章第一节的题目列表
     const questionListReq: QuestionListReq = {
       questionCateId: questionCateId,
