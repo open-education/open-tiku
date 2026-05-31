@@ -112,15 +112,15 @@ Prettier: Print Width 用户空间设置 150 个字符宽度, 现在显示器都
 
 部署需要先使用 [build.sh](build.sh) 脚本来打包, 打包后的目标文件 存储在 target 目录中, 打包完毕后将该压缩包上传至代码仓库 Releases 处管理即可
 
+```
+sh build.sh
+```
+
 其中 package.json server.js 两个文件一起进行了打包, deploy.sh 第一次需要手动上传至服务器, 后续有变更需要重新上传
 
 #### 部署
 
 目前需要手动登陆至服务器进行部署, 部署脚本见 [deploy.sh](deploy.sh) 内容说明
-
-```
-sh build.sh
-```
 
 因为 node 环境变量的原因, 部署时需要提供一个环境变量, 比如当前目录下 .env 文件，内容类似如下
 

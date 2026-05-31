@@ -1,7 +1,10 @@
 import { createRequestHandler } from "@react-router/express";
 import express from "express";
+import compression from "compression";
 
 const app = express();
+
+app.use(compression());
 
 console.log("process.env.NODE_ENV: ", process.env.NODE_ENV);
 
