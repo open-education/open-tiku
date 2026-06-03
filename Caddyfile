@@ -1,0 +1,63 @@
+# 题库首页
+tiku.wiseteacher.net {
+	# 网站根目录: SPA 构建产物的绝对路径
+	root * /var/www/open-tiku
+
+	# 开启 gzip/zstd 压缩，减少传输体积，提升加载速度
+	encode gzip zstd
+
+	# 设置安全响应头, 增强浏览器端的安全性
+	header {
+		# 禁止浏览器 MIME 类型嗅探
+		X-Content-Type-Options "nosniff"
+		# 禁止页面被嵌入 iframe
+		X-Frame-Options "DENY"
+		# HSTS
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+	}
+
+	# 处理图片和文件请求(在 SPA 回退之前)
+	route /images/* {
+		header Cache-Control "public, max-age=86400"
+		file_server
+	}
+
+	route /files/* {
+		header Cache-Control "public, max-age=86400"
+		file_server
+	}
+
+	# 针对 /assets/ 目录下的资源设置长期缓存
+	route /assets/* {
+		header Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
+
+	# 针对常见静态资源扩展名设置一年期不可变缓存
+	@static {
+		path *.js *.css *.png *.jpg *.jpeg *.gif *.svg *.ico *.woff2 *.woff *.ttf
+	}
+	route @static {
+		header Cache-Control "public, max-age=31536000, immutable"
+	}
+
+	# 入口文件 index.html 绝对不能缓存
+	route /index.html {
+		header Cache-Control "no-store, must-revalidate"
+		file_server
+	}
+
+	# SPA 核心回退: 当请求的路径对应文件不存在时, 返回 index.html
+	handle {
+		try_files {path} /index.html
+		file_server
+	}
+
+	# 将 /api/* 的请求代理到后端服务
+	handle_path /api/* {
+		reverse_proxy 127.0.0.1:8083 {
+			header_up Host {host}
+			header_up X-Real-IP {remote}
+		}
+	}
+}

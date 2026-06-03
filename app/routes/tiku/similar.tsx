@@ -1,7 +1,5 @@
 import type { Route } from "./+types/similar";
 import Index from "~/tiku/similar/index";
-import { LoadingOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
 import { httpClient } from "~/util/http";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import { createTextbookPathDict } from "~/util/textbook-dict";
@@ -47,11 +45,6 @@ export async function clientLoader({ params, request }: Route.ClientLoaderArgs) 
   }
 
   return { textbookId, questionId, questionCateId, cateKeyPath, pathMap, childPathMap, questionTypeList, questionTagList };
-}
-
-// HydrateFallback is rendered while the client loader is running
-export function HydrateFallback() {
-  return <Spin indicator={<LoadingOutlined spin />} />;
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {

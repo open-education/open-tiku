@@ -60,7 +60,7 @@ export default function Edit(props: any) {
       name,
       status: "done",
       uid: i.toString(),
-      url: `/api/file/read/${name}`,
+      url: `/images/${name}`,
     }));
   };
   const [imageFileList, setImageFileList] = useState<UploadFile[]>(getImageFileList(reqQuestionInfo.baseInfo.images ?? []));

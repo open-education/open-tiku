@@ -1,7 +1,5 @@
 import type { Route } from "./+types/add";
 import Add from "~/test/add/index";
-import { LoadingOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
 import { httpClient } from "~/util/http";
 import type { Textbook, TextbookOption, TextbookOtherDict } from "~/type/textbook";
 import { ArrayUtil } from "~/util/object";
@@ -41,11 +39,6 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const textbookOptions: TextbookOption[] = ArrayUtil.mapTextbookToOption(childTextbooks);
 
   return { textbookOptions, questionTypeList, questionTagList };
-}
-
-// HydrateFallback is rendered while the client loader is running
-export function HydrateFallback() {
-  return <Spin indicator={<LoadingOutlined spin />} />;
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
