@@ -53,7 +53,7 @@ export function CommonTitle(props: TitleProps) {
             {props.images.map((imageName) => {
               return (
                 <div key={imageName} style={{ width: 200, height: 200, overflow: "hidden" }}>
-                  <Image width="100%" height="100%" style={{ objectFit: "cover" }} alt="basic" src={`/api/file/read/image/${imageName}`} />
+                  <Image width="100%" height="100%" style={{ objectFit: "cover" }} alt="basic" src={`/images/${imageName}`} />
                 </div>
               );
             })}

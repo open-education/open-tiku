@@ -24,7 +24,7 @@ if [ ! -f "package.json" ]; then
 fi
 
 # 清理旧文件
-rm -rf "$BUILD_DIR" "$PACKAGE_NAME"
+rm -rf "$BUILD_DIR" "$TARGET_DIR"
 
 # 安装依赖
 echo "安装依赖..."
@@ -43,17 +43,26 @@ if ! npm run build; then
 fi
 
 # 验证构建
-if [ ! -d "$BUILD_DIR" ] || [ -z "$(ls -A "$BUILD_DIR")" ]; then
+if [ ! -d "$BUILD_DIR/client" ] || [ -z "$(ls -A "$BUILD_DIR/client")" ]; then
     echo "错误: 构建目录为空"
     exit 1
 fi
 
-# 压缩
-rm -rf ${TARGET_DIR}
-mkdir ${TARGET_DIR}
+# 删除被 Vite 错误拷贝进来的图片和文件目录
+echo "清理被 Vite 拷贝的软链接静态资源..."
+rm -rf "$BUILD_DIR/client/images"
+rm -rf "$BUILD_DIR/client/files"
 
-echo "创建压缩包, 同时拷贝文件 package.json server.js package-lock.json 一并打包, 部署时需要执行安装依赖..."
-tar -czf "$PACKAGE_NAME" "$BUILD_DIR" package.json package-lock.json server.js
+echo "已删除: $BUILD_DIR/client/images"
+echo "已删除: $BUILD_DIR/client/files"
+
+# 创建 target 目录
+mkdir -p "$TARGET_DIR"
+
+# 压缩（使用 -C 参数）
+echo "创建压缩包..."
+tar -czf "$PACKAGE_NAME" -C "$BUILD_DIR/client" .
+
 echo "======================"
 echo "压缩包: $PACKAGE_NAME"
 echo "大小: $(du -h "$PACKAGE_NAME" | cut -f1)"
