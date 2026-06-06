@@ -9,6 +9,7 @@ import { CommonTag } from "~/common/tag";
 import { CommonTitle } from "~/common/title";
 import { CommonSelect } from "~/common/select";
 import Info from "~/tiku/info/index";
+import "katex/dist/katex.min.css";
 
 // 变式题列表
 export default function Index(props: any) {

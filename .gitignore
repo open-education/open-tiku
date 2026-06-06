@@ -11,3 +11,7 @@ target
 # React Router
 /.react-router/
 /build/
+
+# ignore public images and files
+public/files
+public/images
