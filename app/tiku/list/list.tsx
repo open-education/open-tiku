@@ -75,7 +75,7 @@ export function ListInfo(props: any) {
   };
 
   const [pageNo, setPageNo] = useState<number>(1);
-  const [questListResTotal, setQuestListResTotal] = useState<number>(0);
+  const [questionListRespTotal, setQuestionListRespTotal] = useState<number>(0);
   const onPageChange = (page: number) => {
     setPageNo(page);
   };
@@ -93,6 +93,13 @@ export function ListInfo(props: any) {
   const prevCateIdRef = useRef(questionCateId);
 
   useEffect(() => {
+    // 如果不是第三层级则不请求题目列表
+    if (cateKeyPath.length != 3) {
+      setQuestionListResp(questionListResp);
+      setQuestionListRespTotal(questionListResp.total);
+      return;
+    }
+
     const isCateChanged = prevCateIdRef.current !== questionCateId;
     prevCateIdRef.current = questionCateId;
 
@@ -129,7 +136,7 @@ export function ListInfo(props: any) {
         }
 
         setQuestionListResp(res);
-        setQuestListResTotal(res.total);
+        setQuestionListRespTotal(res.total);
       })
       .catch((err) => {
         setReqQuestListErr(<Alert title="Error" description={`读取题目列表出错: ${err.message}`} type="error" showIcon />);
@@ -325,7 +332,7 @@ export function ListInfo(props: any) {
 
       <Divider size="small" />
 
-      <Pagination total={questListResTotal} current={pageNo} defaultPageSize={10} onChange={onPageChange} />
+      <Pagination total={questionListRespTotal} current={pageNo} defaultPageSize={10} onChange={onPageChange} />
 
       <Drawer
         title={drawerTitle}
