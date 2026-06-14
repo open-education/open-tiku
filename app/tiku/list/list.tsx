@@ -15,6 +15,7 @@ import {
   type GetProps,
   Input,
   Spin,
+  Empty,
 } from "antd";
 import type { QuestionListReq, QuestionListResp } from "~/type/question";
 import React, { useEffect, useRef, useState } from "react";
@@ -117,7 +118,7 @@ export function ListInfo(props: any) {
     }
 
     // 加载中提示
-    setReqQuestionListProgress(<Spin />);
+    setReqQuestionListProgress(<Spin size="large" />);
 
     // 默认查询第一章第一节的题目列表
     const questionListReq: QuestionListReq = {
@@ -293,6 +294,8 @@ export function ListInfo(props: any) {
       <Divider />
 
       {reqQuestionListProgress}
+
+      {questionListResp.total == 0 && <Empty />}
 
       {reqQuestionListErr}
 
