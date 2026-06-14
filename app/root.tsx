@@ -3,6 +3,7 @@ import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration }
 import type { Route } from "./+types/root";
 import "./app.css";
 import React from "react";
+import { Spin } from "antd";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -33,6 +34,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   );
+}
+
+// SPA 模式只能在根路由添加加载中的提示
+export function HydrateFallback() {
+  return <Spin />;
 }
 
 export default function App() {
