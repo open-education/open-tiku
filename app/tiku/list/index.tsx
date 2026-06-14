@@ -1,6 +1,5 @@
-import { Alert, Layout, Menu, type MenuProps, Spin, theme } from "antd";
+import { Alert, Empty, Layout, Menu, type MenuProps, Spin, theme } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
-import { LoadingOutlined } from "@ant-design/icons";
 import { useNavigation } from "react-router";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
@@ -27,6 +26,14 @@ export default function Index(props: any) {
   // 教材目录和知识点列表
   const textbooks: Textbook[] = props.textbooks ?? [];
   const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? [];
+
+  useEffect(() => {
+    // 如果没有教材目录则清空题型标识
+    if (textbooks.length == 0) {
+      setQuestionCateId("");
+      setCateKeyPath([]);
+    }
+  }, [textbooks]);
 
   // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再2层深度上, 因此只要有2层深度就可以把题型类型和标签返回, 后续如果有优化再处理
   const textbookId = useMemo(() => {
@@ -87,13 +94,11 @@ export default function Index(props: any) {
   };
 
   // 检测是否是较小屏幕
-  const useIsMobile = (breakpoint = 768) => {
+  const useIsMobile = (breakpoint = 768): boolean => {
     // 默认值（SSR 时使用）
     const [isMobile, setIsMobile] = useState(false);
-    const [isSSR, setIsSSR] = useState(true);
 
     useEffect(() => {
-      setIsSSR(false);
       const checkMobile = () => {
         setIsMobile(window.innerWidth < breakpoint);
       };
@@ -104,21 +109,21 @@ export default function Index(props: any) {
       return () => window.removeEventListener("resize", checkMobile);
     }, [breakpoint]);
 
-    return { isMobile, isSSR };
+    return isMobile;
   };
 
+  // 页面 Link 是否在加载中
   const navigation = useNavigation();
-  const isNavigating = Boolean(navigation.location);
+  const isNavigating = navigation.state === "loading";
 
   const showLeftOrTopMenu = () => {
-    const { isMobile, isSSR } = useIsMobile();
-    if (isSSR) {
-      return <Spin indicator={<LoadingOutlined spin />} />;
-    }
+    const isMobile = useIsMobile();
 
     if (isMobile) {
       return (
         <Layout style={{ padding: "0 12px 12px" }}>
+          {textbooks.length == 0 && <Empty />}
+
           <Menu
             mode="inline"
             defaultSelectedKeys={[questionCateId]}
@@ -132,6 +137,8 @@ export default function Index(props: any) {
     }
     return (
       <Sider theme={"light"} width={"21%"}>
+        {textbooks.length == 0 && <Empty />}
+
         <Menu
           mode="inline"
           defaultSelectedKeys={[questionCateId]}
@@ -150,7 +157,7 @@ export default function Index(props: any) {
       <Layout>
         {reqError}
 
-        {isNavigating && <Spin indicator={<LoadingOutlined spin />} />}
+        {isNavigating && <Spin size="large" />}
 
         {/* 显示左侧或者顶部二级菜单, PC端显示左侧菜单, 其它端直接顶部显示即可 */}
         {showLeftOrTopMenu()}

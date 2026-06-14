@@ -38,7 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 // SPA 模式只能在根路由添加加载中的提示
 export function HydrateFallback() {
-  return <Spin />;
+  return <Spin size="large" />;
 }
 
 export default function App() {
