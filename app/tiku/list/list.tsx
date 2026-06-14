@@ -82,7 +82,7 @@ export function ListInfo(props: any) {
   };
 
   // 题型列表加载进度
-  const [reqQuestionListProgress, setReqQuestionListProgress] = useState<React.ReactNode>("");
+  const [reqQuestionListProgress, setReqQuestionListProgress] = useState<boolean>(false);
 
   const [reqQuestionListErr, setReqQuestionListErr] = useState<React.ReactNode>(null);
   const [refreshListNum, setRefreshListNum] = useState<number>(0);
@@ -99,6 +99,7 @@ export function ListInfo(props: any) {
   useEffect(() => {
     // 如果不是第三层级则不请求题目列表
     if (cateKeyPath.length != 3) {
+      setReqQuestionListProgress(false);
       setQuestionListResp({
         list: [],
         pageNo: 0,
@@ -117,8 +118,7 @@ export function ListInfo(props: any) {
       return;
     }
 
-    // 加载中提示
-    setReqQuestionListProgress(<Spin size="large" />);
+    setReqQuestionListProgress(true);
 
     // 默认查询第一章第一节的题目列表
     const questionListReq: QuestionListReq = {
@@ -150,7 +150,7 @@ export function ListInfo(props: any) {
         setReqQuestionListErr(<Alert title="Error" description={`读取题目列表出错: ${err.message}`} type="error" showIcon />);
       })
       .finally(() => {
-        setReqQuestionListProgress("");
+        setReqQuestionListProgress(false);
       });
   }, [questionCateId, questionTypeVal, tagsVal, titleVal, titleId, pageNo, refreshListNum]);
 
@@ -293,57 +293,57 @@ export function ListInfo(props: any) {
 
       <Divider />
 
-      {reqQuestionListProgress}
-
       {questionListResp.total == 0 && <Empty />}
 
       {reqQuestionListErr}
 
       {/* 一个选择题的样式 */}
-      {questionListResp.list?.map((questionInfo) => {
-        return (
-          <div
-            key={questionInfo.id}
-            className="group relative p-4 pb-4 hover:pb-12 border border-transparent hover:border-blue-500 transition-all duration-300 ease-in-out bg-white overflow-hidden"
-          >
-            {/* 标签 */}
-            <CommonTag
-              questionTypeList={questionTypeList}
-              questionTagList={questionTagList}
-              questionTypeId={questionInfo.questionTypeId}
-              questionTagIds={questionInfo.questionTagIds ?? []}
-              difficultyLevel={questionInfo.difficultyLevel}
-            />
+      <Spin spinning={reqQuestionListProgress} description="Loading...">
+        {questionListResp.list?.map((questionInfo) => {
+          return (
+            <div
+              key={questionInfo.id}
+              className="group relative p-4 pb-4 hover:pb-12 border border-transparent hover:border-blue-500 transition-all duration-300 ease-in-out bg-white overflow-hidden"
+            >
+              {/* 标签 */}
+              <CommonTag
+                questionTypeList={questionTypeList}
+                questionTagList={questionTagList}
+                questionTypeId={questionInfo.questionTypeId}
+                questionTagIds={questionInfo.questionTagIds ?? []}
+                difficultyLevel={questionInfo.difficultyLevel}
+              />
 
-            {/* 标题 */}
-            <div className="mt-2.5">
-              {<CommonTitle id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}
-            </div>
+              {/* 标题 */}
+              <div className="mt-2.5">
+                {<CommonTitle id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}
+              </div>
 
-            {/* 选项内容 */}
-            <div className="mt-2.5">
-              {questionInfo.options && questionInfo.options.length > 0 && (
-                <CommonSelect optionsLayout={questionInfo.optionsLayout ?? 1} options={questionInfo.options} />
-              )}
-            </div>
+              {/* 选项内容 */}
+              <div className="mt-2.5">
+                {questionInfo.options && questionInfo.options.length > 0 && (
+                  <CommonSelect optionsLayout={questionInfo.optionsLayout ?? 1} options={questionInfo.options} />
+                )}
+              </div>
 
-            {/* 题目其它标签, 比如查看答案, 关联题目等 */}
-            <div className="absolute right-4 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
-              {CommonQuickJumpTag(
-                questionInfo,
-                setOpenDrawer,
-                setDrawerTitle,
-                setDrawerContent,
-                setRefreshListNum,
-                questionTypeList,
-                questionTagList,
-                childPathMap,
-                cateKeyPath,
-              )}
+              {/* 题目其它标签, 比如查看答案, 关联题目等 */}
+              <div className="absolute right-4 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
+                {CommonQuickJumpTag(
+                  questionInfo,
+                  setOpenDrawer,
+                  setDrawerTitle,
+                  setDrawerContent,
+                  setRefreshListNum,
+                  questionTypeList,
+                  questionTagList,
+                  childPathMap,
+                  cateKeyPath,
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </Spin>
 
       <Divider size="small" />
 

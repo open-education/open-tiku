@@ -27,12 +27,10 @@ export default function Index(props: any) {
   const textbooks: Textbook[] = props.textbooks ?? [];
   const childPathMap: Map<string, Textbook[]> = props.childPathMap ?? [];
 
+  // 教材目录变化则清空题型标识
   useEffect(() => {
-    // 如果没有教材目录则清空题型标识
-    if (textbooks.length == 0) {
-      setQuestionCateId("");
-      setCateKeyPath([]);
-    }
+    setQuestionCateId("");
+    setCateKeyPath([]);
   }, [textbooks]);
 
   // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再2层深度上, 因此只要有2层深度就可以把题型类型和标签返回, 后续如果有优化再处理
@@ -123,7 +121,23 @@ export default function Index(props: any) {
       return (
         <Layout style={{ padding: "0 12px 12px" }}>
           {textbooks.length == 0 && <Empty />}
-
+          <Spin spinning={isNavigating} description="Loading...">
+            <Menu
+              mode="inline"
+              defaultSelectedKeys={[questionCateId]}
+              defaultOpenKeys={[]}
+              style={{ borderInlineEnd: 0 }}
+              onClick={onLeftMenuClick}
+              items={get_items(textbooks)}
+            />
+          </Spin>
+        </Layout>
+      );
+    }
+    return (
+      <Sider theme={"light"} width={"21%"}>
+        {textbooks.length == 0 && <Empty />}
+        <Spin spinning={isNavigating} description="Loading...">
           <Menu
             mode="inline"
             defaultSelectedKeys={[questionCateId]}
@@ -132,21 +146,7 @@ export default function Index(props: any) {
             onClick={onLeftMenuClick}
             items={get_items(textbooks)}
           />
-        </Layout>
-      );
-    }
-    return (
-      <Sider theme={"light"} width={"21%"}>
-        {textbooks.length == 0 && <Empty />}
-
-        <Menu
-          mode="inline"
-          defaultSelectedKeys={[questionCateId]}
-          defaultOpenKeys={[]}
-          style={{ borderInlineEnd: 0 }}
-          onClick={onLeftMenuClick}
-          items={get_items(textbooks)}
-        />
+        </Spin>
       </Sider>
     );
   };
@@ -156,8 +156,6 @@ export default function Index(props: any) {
       {/* 中间内容体 */}
       <Layout>
         {reqError}
-
-        {isNavigating && <Spin size="large" />}
 
         {/* 显示左侧或者顶部二级菜单, PC端显示左侧菜单, 其它端直接顶部显示即可 */}
         {showLeftOrTopMenu()}
