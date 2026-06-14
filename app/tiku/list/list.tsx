@@ -14,6 +14,7 @@ import {
   Row,
   type GetProps,
   Input,
+  Spin,
 } from "antd";
 import type { QuestionListReq, QuestionListResp } from "~/type/question";
 import React, { useEffect, useRef, useState } from "react";
@@ -79,7 +80,10 @@ export function ListInfo(props: any) {
     setPageNo(page);
   };
 
-  const [reqQuestListErr, setReqQuestListErr] = useState<React.ReactNode>(null);
+  // 题型列表加载进度
+  const [reqQuestionListProgress, setReqQuestionListProgress] = useState<React.ReactNode>("");
+
+  const [reqQuestionListErr, setReqQuestionListErr] = useState<React.ReactNode>(null);
   const [refreshListNum, setRefreshListNum] = useState<number>(0);
   const [questionListResp, setQuestionListResp] = useState<QuestionListResp>({
     list: [],
@@ -112,6 +116,9 @@ export function ListInfo(props: any) {
       return;
     }
 
+    // 加载中提示
+    setReqQuestionListProgress(<Spin />);
+
     // 默认查询第一章第一节的题目列表
     const questionListReq: QuestionListReq = {
       questionCateId: questionCateId,
@@ -134,14 +141,15 @@ export function ListInfo(props: any) {
     httpClient
       .post<QuestionListResp>("/question/list", questionListReq)
       .then((res) => {
-        if (reqQuestListErr) {
-          setReqQuestListErr("");
-        }
+        setReqQuestionListErr("");
 
         setQuestionListResp(res);
       })
       .catch((err) => {
-        setReqQuestListErr(<Alert title="Error" description={`读取题目列表出错: ${err.message}`} type="error" showIcon />);
+        setReqQuestionListErr(<Alert title="Error" description={`读取题目列表出错: ${err.message}`} type="error" showIcon />);
+      })
+      .finally(() => {
+        setReqQuestionListProgress("");
       });
   }, [questionCateId, questionTypeVal, tagsVal, titleVal, titleId, pageNo, refreshListNum]);
 
@@ -155,10 +163,10 @@ export function ListInfo(props: any) {
   // 检查入口是否层级正确
   const checkPathLevel = (msg: string): boolean => {
     if (cateKeyPath.length != 3) {
-      setReqQuestListErr(<Alert title="Error" description={msg} type="error" showIcon />);
+      setReqQuestionListErr(<Alert title="Error" description={msg} type="error" showIcon />);
       return false;
     } else {
-      setReqQuestListErr("");
+      setReqQuestionListErr("");
       return true;
     }
   };
@@ -284,7 +292,9 @@ export function ListInfo(props: any) {
 
       <Divider />
 
-      {reqQuestListErr}
+      {reqQuestionListProgress}
+
+      {reqQuestionListErr}
 
       {/* 一个选择题的样式 */}
       {questionListResp.list?.map((questionInfo) => {
