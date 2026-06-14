@@ -100,8 +100,8 @@ if [ ! -d "$DEPLOY_DIR" ]; then
     echo "请先手动创建目录和软链接:"
     echo "  sudo mkdir -p $DEPLOY_DIR"
     echo "  cd $DEPLOY_DIR"
-    echo "  sudo ln -s /home/zhangguangxun/meta/images images"
-    echo "  sudo ln -s /home/zhangguangxun/meta/files files"
+    echo "  sudo ln -s /var/www/meta/images images"
+    echo "  sudo ln -s /var/www/meta/files files"
     exit 1
 fi
 

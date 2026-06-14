@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import type { TaskListReq, TaskListResp } from "~/type/task";
 import { httpClient } from "~/util/http";
 import { StringConst } from "~/util/string";
+import type { BaseType } from "antd/es/typography/Base";
 
 const { Text } = Typography;
 
@@ -52,8 +53,8 @@ export function TaskList(props: any) {
   };
 
   // 状态文字样式
-  const getTextTypeDesc = (status: number) => {
-    const statusMap: Record<number, string> = {
+  const getTextTypeDesc = (status: number): BaseType => {
+    const statusMap: Record<number, BaseType> = {
       1: "secondary",
       2: "warning",
       3: "success",
