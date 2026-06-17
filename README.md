@@ -6,7 +6,7 @@
 
 项目使用的是 [React Router](https://reactrouter.com/) 框架.
 
-前端 UI 组件库使用的是 [Ant Design](https://ant.design/index-cn/).
+前端 UI 组件库使用的是 [Ant Design](https://ant.design/index-cn/)(新功能不再使用, 后续会被替换为 `shadcn/ui`) 和 [shadcn/ui](https://ui.shadcn.com/).
 
 ### 安装
 
