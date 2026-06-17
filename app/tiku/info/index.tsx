@@ -19,7 +19,7 @@ import type { TiKuIndexContext } from "~/type/context";
 import { CommonBreadcrumb } from "~/tiku/common/breadcrumb";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import { allowSchema } from "~/util/schema";
-import { table } from "~/component/table";
+import { table } from "~/common/table";
 
 // 题目详情
 export default function Info(props: any) {

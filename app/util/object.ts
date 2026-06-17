@@ -6,7 +6,7 @@ export const ArrayUtil = {
    */
   mapTextbookToOption: (list: Textbook[]): TextbookOption[] => {
     return list.map((item) => ({
-      value: item.id.toString(),
+      value: item.key,
       label: item.label,
       // 关键：将原始对象挂载到 raw 字段
       raw: item,

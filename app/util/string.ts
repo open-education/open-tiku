@@ -67,23 +67,24 @@ export const StringConst = {
   dictPath: "_cate", // 面包屑字典路径
 
   taskTypeUploadQuestion: 1, // 任务类型是上传题目
+
+  // 试卷不做过多的东西, 标签直接记录固定即可, 如果需要手动维护即可
+  // 试卷标签
+  examTags: ["高考", "中考", "小升初", "期末", "月考", "会考"],
+  // 每种标签对应的样式
+  examTagClass: new Map<string, string>([
+    ["高考", "bg-red-50 text-red-700 border-red-100"],
+    ["中考", "bg-orange-50 text-orange-700 border-orange-100"],
+    ["小升初", "bg-sky-50 text-sky-700 border-sky-100"],
+    ["期末", "bg-emerald-50 text-emerald-700 border-emerald-100"],
+    ["月考", "bg-violet-50 text-violet-700 border-violet-100"],
+    ["会考", "bg-amber-50 text-amber-700 border-amber-100"],
+  ]),
 };
 
 // 字符串常量工具
 export const StringConstUtil = {
-  // 题目来源
-  tikuSourceList: [
-    {
-      label: "教材章节或知识点",
-      value: StringConst.tiKuChapterOrKnowledgeSourceVal,
-    },
-    {
-      label: "我的题库",
-      value: StringConst.tikuMy,
-    },
-    {
-      label: "我的试题篮",
-      value: StringConst.tikuMyBox,
-    },
-  ],
+  getExamTagClass: (tag: string): string => {
+    return StringConst.examTagClass.get(tag) || "";
+  },
 };

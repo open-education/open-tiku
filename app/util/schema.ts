@@ -20,6 +20,21 @@ export const allowSchema = {
     "caption",
     "colgroup",
     "col",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    // 添加列表相关标签
+    "ul", // 无序列表
+    "ol", // 有序列表
+    "li", // 列表项
+
+    // 如果需要嵌套列表，可能还需要
+    "dl", // 定义列表
+    "dt", // 定义术语
+    "dd", // 定义描述
     // 仅允许上面这些 html 标签, 包括表格
     "annotation",
     "math",
@@ -67,5 +82,9 @@ export const allowSchema = {
     tr: ["class", "style"],
     thead: ["class", "style"],
     tbody: ["class", "style"],
+    // 列表可以添加的样式或属性
+    ul: ["class", "style", "type"],
+    ol: ["class", "style", "type", "start"],
+    li: ["class", "style"],
   },
 };

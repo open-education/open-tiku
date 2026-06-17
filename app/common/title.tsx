@@ -8,7 +8,7 @@ import remarkMath from "remark-math";
 import rehypeSanitize from "rehype-sanitize";
 import { StringValidator } from "~/util/string";
 import { allowSchema } from "~/util/schema";
-import { table } from "~/component/table";
+import { table } from "~/common/table";
 
 interface TitleProps {
   no?: number; // 显示题号-一般试卷用

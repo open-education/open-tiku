@@ -16,7 +16,7 @@ import { CommonTitle } from "~/common/title";
 import { CommonSelect } from "~/common/select";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { allowSchema } from "~/util/schema";
-import { table } from "~/component/table";
+import { table } from "~/common/table";
 
 // 预览
 export default function Preview(props: any) {
