@@ -3,8 +3,8 @@
 // 但是个人使用比如 DeepSeek 几乎是完全免费的, 因此需要个人借助其它 ai 平台将试卷题目转化为 markdown 格式后拷贝过来上传
 
 import { useState } from "react";
-import { ChapterDropdownNav } from "~/common/exam/chapter-nav";
-import { TagSelect } from "~/common/exam/exam-tag";
+import { ChapterDropdownNav } from "~/common/exam/nav";
+import { TagSelect } from "~/common/exam/tag";
 import { GradeSelect } from "~/common/exam/grade";
 import { SemesterSelect } from "~/common/exam/semester";
 import { YearSelect } from "~/common/exam/year";
@@ -15,47 +15,50 @@ import type { Textbook } from "~/type/textbook";
 import { StringConst } from "~/util/string";
 import { Watermark } from "~/common/watermark";
 import { Textarea } from "~/components/ui/textarea";
-import { Preview } from "~/exam/preview";
 import { Input } from "~/components/ui/input";
 import type { Group, PaperMeta, QuestionInfo } from "~/type/exam";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { Plus, Trash2, X } from "lucide-react";
 import { Label } from "~/components/ui/label";
 import type { QuestionOption } from "~/type/question";
+import { ExamPaperMeta } from "~/common/exam/paper";
 
 // 初始化默认值等信息
 const generateId = () => Math.random().toString(36).substring(2, 9);
 const defaultPaperMeta: PaperMeta = {
-  related_id: 0,
+  relatedId: 0,
   tag: "",
   title: "",
   score: 0,
   source: "",
   year: "",
   groups: [],
+  id: 0,
+  status: 0,
+  createAt: "",
+  updateAt: "",
 };
 
 const defaultQuestionInfo = (order: number): QuestionInfo => ({
-  id: generateId(),
+  genId: generateId(),
   order,
   stem: "",
   answer: "",
   analysis: "",
   score: 0,
   options: [],
+  id: 0,
+  groupId: 0,
 });
 
 const defaultGroup = (): Group => ({
-  id: generateId(),
+  genId: generateId(),
   typeName: "",
   subTitle: "",
   questions: [],
+  id: 0,
+  paperId: 0,
 });
-
-// 预设题型数量最多10个题型
-const groupNumberMap = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
-// 预设选项最多5个选项
-const optionLabels = ["A", "B", "C", "D", "E", "F"];
 
 export default function Add(props: any) {
   // 表单选项
@@ -77,27 +80,27 @@ export default function Add(props: any) {
   };
 
   // 删除一个大题
-  const removeGroup = (groupId: string) => {
+  const removeGroup = (groupGenId: string) => {
     setPaper((prev) => ({
       ...prev,
-      groups: prev.groups.filter((g) => g.id !== groupId),
+      groups: prev.groups.filter((g) => g.genId !== groupGenId),
     }));
   };
 
   // 更新一个大题
-  const updateGroup = (groupId: string, key: keyof Group, value: string) => {
+  const updateGroup = (groupGenId: string, key: keyof Group, value: string) => {
     setPaper((prev) => ({
       ...prev,
-      groups: prev.groups.map((g) => (g.id === groupId ? { ...g, [key]: value } : g)),
+      groups: prev.groups.map((g) => (g.genId === groupGenId ? { ...g, [key]: value } : g)),
     }));
   };
 
   // ---- 小题操作 ----
-  const addQuestion = (groupId: string) => {
+  const addQuestion = (groupGenId: string) => {
     setPaper((prev) => ({
       ...prev,
       groups: prev.groups.map((g) => {
-        if (g.id !== groupId) return g;
+        if (g.genId !== groupGenId) return g;
         const nextOrder = g.questions.length + 1;
         return {
           ...g,
@@ -107,41 +110,41 @@ export default function Add(props: any) {
     }));
   };
 
-  const removeQuestion = (groupId: string, questionId: string) => {
+  const removeQuestion = (groupGenId: string, questionId: string) => {
     setPaper((prev) => ({
       ...prev,
       groups: prev.groups.map((g) => {
-        if (g.id !== groupId) return g;
-        const filtered = g.questions.filter((q) => q.id !== questionId);
+        if (g.genId !== groupGenId) return g;
+        const filtered = g.questions.filter((q) => q.genId !== questionId);
         const reordered = filtered.map((q, idx) => ({ ...q, order: idx + 1 }));
         return { ...g, questions: reordered };
       }),
     }));
   };
 
-  const updateQuestion = (groupId: string, questionId: string, key: keyof QuestionInfo, value: string | string[] | number) => {
+  const updateQuestion = (groupGenId: string, questionId: string, key: keyof QuestionInfo, value: string | string[] | number) => {
     setPaper((prev) => ({
       ...prev,
       groups: prev.groups.map((g) => {
-        if (g.id !== groupId) return g;
+        if (g.genId !== groupGenId) return g;
         return {
           ...g,
-          questions: g.questions.map((q) => (q.id === questionId ? { ...q, [key]: value } : q)),
+          questions: g.questions.map((q) => (q.genId === questionId ? { ...q, [key]: value } : q)),
         };
       }),
     }));
   };
 
   // ---- 选项操作 ----
-  const addOption = (groupId: string, questionId: string) => {
+  const addOption = (groupGenId: string, questionId: string) => {
     setPaper((prev) => ({
       ...prev,
       groups: prev.groups.map((g) => {
-        if (g.id !== groupId) return g;
+        if (g.genId !== groupGenId) return g;
         return {
           ...g,
           questions: g.questions.map((q) => {
-            if (q.id !== questionId) return q;
+            if (q.genId !== questionId) return q;
             // 计算新选项的 label (A, B, C, D, E...)
             const newLabel = String.fromCharCode(65 + q.options.length);
 
@@ -158,15 +161,15 @@ export default function Add(props: any) {
     }));
   };
 
-  const updateOption = (groupId: string, questionId: string, index: number, value: QuestionOption) => {
+  const updateOption = (groupGenId: string, questionId: string, index: number, value: QuestionOption) => {
     setPaper((prev) => ({
       ...prev,
       groups: prev.groups.map((g) => {
-        if (g.id !== groupId) return g;
+        if (g.genId !== groupGenId) return g;
         return {
           ...g,
           questions: g.questions.map((q) => {
-            if (q.id !== questionId) return q;
+            if (q.genId !== questionId) return q;
             const newOptions = [...q.options];
             newOptions[index] = value;
             return { ...q, options: newOptions };
@@ -179,15 +182,15 @@ export default function Add(props: any) {
   // 移除选项时需要刷新选项的标签和排序等信息
   // 也不是现在的做法比如 A B C D 我突然移除 B 结果变为 A B C 实际上应该删除移除之后的所有选项
   // 因为试卷的选项内容是固定的
-  const removeOption = (groupId: string, questionId: string, index: number) => {
+  const removeOption = (groupGenId: string, questionId: string, index: number) => {
     setPaper((prev) => ({
       ...prev,
       groups: prev.groups.map((g) => {
-        if (g.id !== groupId) return g;
+        if (g.genId !== groupGenId) return g;
         return {
           ...g,
           questions: g.questions.map((q) => {
-            if (q.id !== questionId) return q;
+            if (q.genId !== questionId) return q;
 
             // 删除当前索引及其后面的所有选项
             const newOptions = q.options.slice(0, index);
@@ -222,7 +225,7 @@ export default function Add(props: any) {
       <div className="mb-6">
         <ResizablePanelGroup orientation="horizontal">
           <ResizablePanel defaultSize="50%">
-            <div className="">
+            <div>
               <div className="flex flex-col gap-3">
                 <div className="grid grid-cols-5 gap-4 items-center">
                   <div className="col-span-1">选择考点名称/年级</div>
@@ -326,17 +329,17 @@ export default function Add(props: any) {
               <div className="space-y-4 mt-3">
                 {paper.groups.map((group, idx) => (
                   <GroupCard
-                    key={group.id}
+                    key={group.genId}
                     group={group}
                     index={idx}
-                    onUpdateGroup={(key, value) => updateGroup(group.id, key, value)}
-                    onRemoveGroup={() => removeGroup(group.id)}
-                    onAddQuestion={() => addQuestion(group.id)}
-                    onRemoveQuestion={(qId) => removeQuestion(group.id, qId)}
-                    onUpdateQuestion={(qId, key, value) => updateQuestion(group.id, qId, key, value)}
-                    onAddOption={(qId) => addOption(group.id, qId)}
-                    onUpdateOption={(qId, idx, value) => updateOption(group.id, qId, idx, value)}
-                    onRemoveOption={(qId, idx) => removeOption(group.id, qId, idx)}
+                    onUpdateGroup={(key, value) => updateGroup(group.genId, key, value)}
+                    onRemoveGroup={() => removeGroup(group.genId)}
+                    onAddQuestion={() => addQuestion(group.genId)}
+                    onRemoveQuestion={(qId) => removeQuestion(group.genId, qId)}
+                    onUpdateQuestion={(qId, key, value) => updateQuestion(group.genId, qId, key, value)}
+                    onAddOption={(qId) => addOption(group.genId, qId)}
+                    onUpdateOption={(qId, idx, value) => updateOption(group.genId, qId, idx, value)}
+                    onRemoveOption={(qId, idx) => removeOption(group.genId, qId, idx)}
                   />
                 ))}
 
@@ -351,7 +354,7 @@ export default function Add(props: any) {
           <ResizablePanel defaultSize="50%">
             <Watermark className="h-full w-full border bg-slate-50">
               <div className="p-8">
-                <Preview examContent={""} />
+                <ExamPaperMeta paperMeta={paper} />
               </div>
             </Watermark>
           </ResizablePanel>
@@ -392,7 +395,7 @@ function GroupCard({
     <Card className="border border-primary/10">
       <CardHeader className="bg-muted/20">
         <div className="flex items-center gap-3 flex-wrap">
-          <span className="font-bold text-primary min-w-4">{groupNumberMap[index] || index + 1}</span>
+          <span className="font-bold text-primary min-w-4">{StringConst.groupNumberMap[index] || index + 1}</span>
           <Input
             value={group.typeName}
             onChange={(e) => onUpdateGroup("typeName", e.target.value)}
@@ -413,13 +416,13 @@ function GroupCard({
       <CardContent className="space-y-4">
         {group.questions.map((q) => (
           <QuestionItem
-            key={q.id}
+            key={q.genId}
             question={q}
-            onRemove={() => onRemoveQuestion(q.id)}
-            onUpdate={(key, value) => onUpdateQuestion(q.id, key, value)}
-            onAddOption={() => onAddOption(q.id)}
-            onUpdateOption={(idx, value) => onUpdateOption(q.id, idx, value)}
-            onRemoveOption={(idx) => onRemoveOption(q.id, idx)}
+            onRemove={() => onRemoveQuestion(q.genId)}
+            onUpdate={(key, value) => onUpdateQuestion(q.genId, key, value)}
+            onAddOption={() => onAddOption(q.genId)}
+            onUpdateOption={(idx, value) => onUpdateOption(q.genId, idx, value)}
+            onRemoveOption={(idx) => onRemoveOption(q.genId, idx)}
           />
         ))}
         <Button variant="outline" size="sm" onClick={onAddQuestion}>
@@ -471,7 +474,7 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {question.options.map((opt, idx) => (
               <div key={idx} className="flex items-center gap-2">
-                <span className="font-mono font-medium w-5 text-sm text-muted-foreground">{optionLabels[idx]}.</span>
+                <span className="font-mono font-medium w-5 text-sm text-muted-foreground">{StringConst.optionLabels[idx]}.</span>
                 <Input
                   value={opt.content}
                   onChange={(e) => {
@@ -483,7 +486,7 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
                     };
                     onUpdateOption(idx, newOpt);
                   }}
-                  placeholder={`选项 ${optionLabels[idx]}`}
+                  placeholder={`选项 ${StringConst.optionLabels[idx]}`}
                   className="flex-1 text-sm"
                 />
                 <Button variant="ghost" size="sm" onClick={() => onRemoveOption(idx)} className="h-6 w-6 p-0">

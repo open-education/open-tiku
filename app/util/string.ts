@@ -1,10 +1,10 @@
 // 字符串验证工具类
 export const StringValidator = {
   // 检查是否为非空字符串
-  isNonEmpty: (str: any) => typeof str === "string" && str.length > 0,
+  isNonEmpty: (str: any): str is string => typeof str === "string" && str.length > 0,
 
   // 检查是否为非空白字符串
-  isNonWhitespace: (str: any) => typeof str === "string" && str.trim().length > 0,
+  isNonWhitespace: (str: any): str is string => typeof str === "string" && str.trim().length > 0,
 
   // 检查是否包含特定内容
   contains: (str: any, search: any) => StringValidator.isNonEmpty(str) && str.includes(search),
@@ -80,6 +80,10 @@ export const StringConst = {
     ["月考", "bg-violet-50 text-violet-700 border-violet-100"],
     ["会考", "bg-amber-50 text-amber-700 border-amber-100"],
   ]),
+  // 预设题型数量最多10个题型
+  groupNumberMap: ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"],
+  // 预设选项最多5个选项
+  optionLabels: ["A", "B", "C", "D", "E", "F"],
 };
 
 // 字符串常量工具

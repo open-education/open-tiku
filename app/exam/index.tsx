@@ -1,8 +1,8 @@
 import { NotepadTextDashed } from "lucide-react";
 import React, { useState } from "react";
-import { ChapterDropdownNav } from "~/common/exam/chapter-nav";
-import { ExamPaper } from "~/common/exam/exam-paper";
-import { TagSelect } from "~/common/exam/exam-tag";
+import { ChapterDropdownNav } from "~/common/exam/nav";
+import { ExamPaper } from "~/common/exam/paper";
+import { TagSelect } from "~/common/exam/tag";
 import { GradeSelect } from "~/common/exam/grade";
 import { SemesterSelect } from "~/common/exam/semester";
 import { YearSelect } from "~/common/exam/year";

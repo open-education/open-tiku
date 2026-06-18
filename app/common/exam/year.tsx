@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 
+/// 年选择器
+
 interface YearSelectProps {
   value?: string;
   onValueChange?: (value: string | null) => void; // 改为 string | null
