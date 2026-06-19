@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { ChapterDropdownNav } from "~/common/nav";
 import { TagSelect } from "~/common/paper/tag";
 import { GradeSelect } from "~/common/paper/grade";
@@ -252,7 +252,7 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
   const [addWarnInfo, setAddWarnInfo] = useState<React.ReactNode>("");
 
   // 提交试卷
-  const handleAddPaper = (status: number) => {
+  const handleAddPaper = useCallback((status: number) => {
     // 检查必填参数是否为空
     if (paper.relatedId <= 0) {
       toast.error(<div className="text-red-700">学段/考点不能为空</div>, {
@@ -339,7 +339,7 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
         setDrafing(false);
         setApproving(false);
       });
-  };
+  }, []);
 
   return (
     <div>

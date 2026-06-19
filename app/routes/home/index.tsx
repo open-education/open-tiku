@@ -77,23 +77,30 @@ export default function Index() {
   const actions = (
     <div className="flex flex-wrap items-center justify-end gap-4">
       <div className="flex flex-wrap gap-2.5">
-        <Button className="w-32" variant="outline" size="lg" onClick={() => {}}>
+        <Button className="w-32" variant="outline" size="lg">
           <Upload size={14} />
-          上传视频
+          <NavLink to={""} state={{ selectNavProps }}>
+            上传视频
+          </NavLink>
         </Button>
-        <Button className="w-32" variant="outline" size="lg" onClick={() => {}}>
+        <Button className="w-32" variant="outline" size="lg">
           <Upload size={14} />
           <NavLink to={"paper"} state={{ selectNavProps }}>
             上传试卷
           </NavLink>
         </Button>
-        <Button className="w-32" variant="outline" size="lg" onClick={() => {}}>
+        <Button className="w-32" variant="outline" size="lg">
           <Upload size={14} />
-          上传题目
+          <NavLink to={"question"} state={{ selectNavProps }}>
+            上传题目
+          </NavLink>
         </Button>
-        <Button className="w-32" variant="default" size="lg" onClick={() => {}}>
+
+        <Button className="w-32" variant="default" size="lg">
           <GraduationCap size={14} />
-          开始练题
+          <NavLink to={""} state={{ selectNavProps }}>
+            开始练题
+          </NavLink>
           <ArrowRight size={13} />
         </Button>
       </div>
@@ -112,12 +119,12 @@ export default function Index() {
       {textbooksIsLoading || (latestIsLoading && <Loading />)}
 
       {/* 统计总数*/}
-      <div>
+      <div className="mt-3">
         <CountStats />
       </div>
 
       {/* 关键导航 */}
-      <div>
+      <div className="mt-3">
         <ChapterExpandNav
           textbooks={textbooks}
           onSelectionChange={(selection, selectedTextbooks) => {

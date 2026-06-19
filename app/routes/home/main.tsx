@@ -18,14 +18,14 @@ export function meta({}: Route.MetaArgs) {
 // 其它页面后续替换只保留静态的头和底
 export default function Main() {
   return (
-    <div className="min-h-screen bg-background text-foreground p-4">
+    <div className="min-h-screen bg-background text-foreground pl-4 pr-4">
       {/* 网站首页头部 */}
       <div>
         <Header />
       </div>
 
       {/* 替换网站内容 */}
-      <div>
+      <div className="min-h-200">
         <Outlet />
       </div>
 

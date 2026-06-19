@@ -19,18 +19,16 @@ function Header() {
         </NavLink>
 
         {/* Nav links */}
-        <nav className="hidden md:flex items-center gap-1 flex-1">
+        <nav className="flex items-center gap-1 flex-1">
           <Button variant="ghost" size="sm">
-            <a href="#">题目库</a>
+            <NavLink to={"question"}>题目库</NavLink>
           </Button>
           <Button variant="ghost" size="sm">
-            <a href="#" className="flex items-center gap-1.5">
-              <FileText size={13} />
-              精选试卷
-            </a>
+            <FileText size={13} />
+            <NavLink to={"paper"}>精选试卷</NavLink>
           </Button>
           <Button variant="ghost" size="sm">
-            <a href="#">关于</a>
+            <NavLink to={""}>关于</NavLink>
           </Button>
         </nav>
 

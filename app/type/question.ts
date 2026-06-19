@@ -112,3 +112,13 @@ export interface QuestionListResp {
   total: number;
   list: QuestionBaseInfoResp[];
 }
+
+// 题目列表搜索字段维护
+export interface QuestionSearch {
+  twoLevelId: number; // 第2层标识-用于查询题目类型和标签
+  fiveLevelId: number; // 第5层标识-用于获取知识点分类和教材目录
+  eightId: number; // 第8层标识-用于查询该题型下的题目列表
+  typeId: number; // 题目类型
+  tagIds: number[]; // 题目标签
+  id: number; // 题目主键
+}
