@@ -1,6 +1,6 @@
-import { NotepadTextDashed } from "lucide-react";
-import React, { useState } from "react";
-import { ChapterDropdownNav } from "~/common/paper/nav";
+import { AlertCircleIcon, NotepadTextDashed } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { ChapterDropdownNav } from "~/common/nav";
 import { ExamPaper } from "~/common/paper/meta";
 import { TagSelect } from "~/common/paper/tag";
 import { GradeSelect } from "~/common/paper/grade";
@@ -8,21 +8,16 @@ import { SemesterSelect } from "~/common/paper/semester";
 import { YearSelect } from "~/common/paper/year";
 import { Button } from "~/components/ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "~/components/ui/empty";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "~/components/ui/pagination";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "~/components/ui/sheet";
-import { Spinner } from "~/components/ui/spinner";
-import type { PaperMeta, PaperMetaSearch } from "~/type/paper";
+import type { PaperListReq, PaperListResp, PaperMetaSearch } from "~/type/paper";
 import type { Textbook } from "~/type/textbook";
 import Add from "~/paper/add";
-import { StringConst } from "~/util/string";
+import { StringConst, StringValidator } from "~/util/string";
+import { httpClient } from "~/util/http";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { SimplePagination } from "~/common/page";
+import { Separator } from "~/components/ui/separator";
+import { Loading } from "~/common/load";
 import "katex/dist/katex.min.css";
 
 // 默认的搜索属性
@@ -46,7 +41,66 @@ export default function Index(props: any) {
     setMetaSearch((prev) => ({ ...prev, [key]: value }));
   };
 
-  const papers: PaperMeta[] = [];
+  // 列表相关错误信息展示
+  const [listWarnInfo, setListWarnInfo] = useState<React.ReactNode>("");
+  // 列表加载状态标识
+  const [listLoading, setListLoading] = useState<boolean>(false);
+  // 页码
+  const [pageNo, setPageNo] = useState<number>(1);
+  const [paperListResp, setPaperListResp] = useState<PaperListResp>({
+    list: [],
+    pageNo: pageNo,
+    pageSize: StringConst.pageSize,
+    total: 0,
+  });
+
+  // 加载试卷列表
+  useEffect(() => {
+    // 考点/学段必须选择
+    if (metaSearch.relatedId <= 0) {
+      return;
+    }
+
+    setListLoading(true);
+
+    const paperListReq: PaperListReq = {
+      relatedId: metaSearch.relatedId,
+      pageNo: pageNo,
+      pageSize: StringConst.pageSize,
+    };
+    if (StringValidator.isNonEmpty(metaSearch.tag)) {
+      paperListReq.tag = metaSearch.tag;
+    }
+    if (StringValidator.isNonEmpty(metaSearch.year)) {
+      paperListReq.year = metaSearch.year;
+    }
+    if (StringValidator.isNonEmpty(metaSearch.grade) && metaSearch.grade !== "不选") {
+      paperListReq.grade = metaSearch.grade;
+    }
+    if (StringValidator.isNonEmpty(metaSearch.semester) && metaSearch.semester !== "不选") {
+      paperListReq.semester = metaSearch.semester;
+    }
+
+    httpClient
+      .post<PaperListResp>("/paper/list", paperListReq)
+      .then((res) => {
+        setPaperListResp(res);
+      })
+      .catch((err) => {
+        setListWarnInfo(
+          <div className="mt-3">
+            <Alert variant="destructive">
+              <AlertCircleIcon />
+              <AlertTitle>列表获取失败</AlertTitle>
+              <AlertDescription>{err.message}</AlertDescription>
+            </Alert>
+          </div>,
+        );
+      })
+      .finally(() => {
+        setListLoading(false);
+      });
+  }, [metaSearch, pageNo]);
 
   // Sheet相关操作变量
   const [openSheet, setOpenSheet] = useState<boolean>(false);
@@ -72,6 +126,7 @@ export default function Index(props: any) {
 
   return (
     <div>
+      {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
         <div className="grid grid-cols-5 gap-4 items-center">
           <div className="col-span-1">学段/考点</div>
@@ -144,57 +199,55 @@ export default function Index(props: any) {
         </div>
       </div>
 
-      <div>
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <NotepadTextDashed />
-            </EmptyMedia>
-            <EmptyTitle>No Data</EmptyTitle>
-            <EmptyDescription>没有查找到任何试卷，如有试卷，可以尝试上传试卷，管理员审核通过后，其它人就可以看到该试卷了。</EmptyDescription>
-          </EmptyHeader>
-        </Empty>
+      <div className="mt-3">
+        <Separator />
       </div>
 
-      <div className="fixed inset-0 grid place-items-center pointer-events-none">
-        <div className="px-6 py-3 rounded-lg pointer-events-auto">
-          <Button variant="ghost" disabled>
-            <Spinner className="size-8" />
-            Please wait...
-          </Button>
+      {/* 列表显示错误 */}
+      {listWarnInfo}
+
+      {/* 空数据提示 */}
+      {paperListResp.total == 0 && (
+        <div className="mt-3">
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <NotepadTextDashed />
+              </EmptyMedia>
+              <EmptyTitle>No Data</EmptyTitle>
+              <EmptyDescription>没有查找到任何试卷，如有试卷，可以尝试上传试卷，管理员审核通过后，其他人就可以看到该试卷了。</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         </div>
+      )}
+
+      {/* 加载中提示 */}
+      {listLoading && <Loading />}
+
+      {/* 试卷列表 */}
+      <div className="mt-3">
+        <ExamPaper
+          papers={paperListResp.list}
+          setOpenSheet={setOpenSheet}
+          setSheetTitle={setSheetTitle}
+          setSheetContent={setSheetContent}
+          setLoading={setListLoading}
+        />
       </div>
 
-      <div>
-        <ExamPaper papers={papers} />
-      </div>
-
-      <div>
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" isActive>
-                2
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+      {/* 分页信息 */}
+      {paperListResp.total > 0 && (
+        <div className="mt-3">
+          <SimplePagination
+            pageNo={paperListResp.pageNo}
+            pageSize={paperListResp.pageSize}
+            total={paperListResp.total}
+            onPageChange={(pageNo) => {
+              setPageNo(pageNo);
+            }}
+          />
+        </div>
+      )}
 
       {/* 试卷页面Sheet内容 */}
       <div>

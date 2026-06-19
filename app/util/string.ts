@@ -52,6 +52,8 @@ export const StringUtil = {
 
 // 部分字符串常量维护
 export const StringConst = {
+  // 每页显示数据条数
+  pageSize: 10,
   // 题目列表题型选择 全部 标识
   listSelectAll: 0,
   listSelectAllDesc: "全部",

@@ -3,7 +3,7 @@
 // 但是个人使用比如 DeepSeek 几乎是完全免费的, 因此需要个人借助其它 ai 平台将试卷题目转化为 markdown 格式后拷贝过来上传
 
 import React, { useMemo, useState } from "react";
-import { ChapterDropdownNav } from "~/common/paper/nav";
+import { ChapterDropdownNav } from "~/common/nav";
 import { TagSelect } from "~/common/paper/tag";
 import { GradeSelect } from "~/common/paper/grade";
 import { SemesterSelect } from "~/common/paper/semester";
@@ -24,6 +24,7 @@ import type { Content, QuestionOption } from "~/type/question";
 import { ExamPaperMeta } from "~/common/paper/meta";
 import { httpClient } from "~/util/http";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { toast } from "sonner";
 
 // 初始化默认值等信息
 const generateId = () => Math.random().toString(36).substring(2, 9);
@@ -37,8 +38,8 @@ const defaultPaperMeta: PaperMeta = {
   groups: [],
   id: 0,
   status: 0,
-  createAt: "",
-  updateAt: "",
+  createdAt: "",
+  updatedAt: "",
   grade: "",
   semester: "",
   remark: "",
@@ -251,6 +252,38 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
 
   // 提交试卷
   const handleAddPaper = (status: number) => {
+    // 检查必填参数是否为空
+    if (paper.relatedId <= 0) {
+      toast.error(<div className="text-red-700">学段/考点不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (!StringValidator.isNonEmpty(paper.tag)) {
+      toast.error(<div className="text-red-700">标签不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (!StringValidator.isNonEmpty(paper.year)) {
+      toast.error(<div className="text-red-700">年份不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+
     if (!confirm("确定要保存试卷吗？")) {
       return;
     }

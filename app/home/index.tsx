@@ -1,6 +1,5 @@
-import { ArrowRight, Upload, GraduationCap, ChevronRight } from "lucide-react";
-import { useState } from "react";
-import { ChapterExpandNav } from "~/common/exam/nav";
+import { ArrowRight, Upload, GraduationCap } from "lucide-react";
+import { ChapterExpandNav } from "~/common/nav";
 import { Button } from "~/components/ui/button";
 import type { Textbook } from "~/type/textbook";
 

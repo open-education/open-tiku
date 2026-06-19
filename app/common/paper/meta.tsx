@@ -8,27 +8,67 @@ import type { PaperMeta } from "~/type/paper";
 import { StringConst, StringConstUtil, StringValidator } from "~/util/string";
 import { TagShow } from "~/common/paper/tag";
 import { ExamQuestion } from "~/common/paper/question";
+import { httpClient } from "~/util/http";
+import { toast } from "sonner";
+
+/// 试卷元数据
 
 // 试卷列表样式展示
 interface ExamPaperProps {
   papers: PaperMeta[];
+
+  // 以下为 Sheet 操作方法和属性
+  setOpenSheet: (value: boolean) => void;
+  setSheetTitle: (value: string) => void;
+  setSheetContent: (value: React.ReactNode) => void;
+
+  // 提示加载中
+  setLoading: (value: boolean) => void;
 }
 
-function ExamPaper(props: ExamPaperProps) {
-  const { papers } = props;
+function ExamPaper({ papers, setOpenSheet, setSheetTitle, setSheetContent, setLoading }: ExamPaperProps) {
+  // 点击卡片展示详情
+  const handleClickCard = (id: number) => {
+    setLoading(true);
+
+    httpClient
+      .get<PaperMeta>(`/paper/info/${id}`)
+      .then((res) => {
+        // 查询成功后加载右侧 Sheet 详情信息
+        setOpenSheet(true);
+        setSheetTitle("查看详情");
+        setSheetContent(<ExamPaperMeta paperMeta={res} />);
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">{err.message}</div>);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
       {papers.map((paper) => (
-        <Card key={paper.title} className="group flex flex-col cursor-pointer hover:border-primary/30 hover:shadow-md transition-all duration-150">
+        <Card
+          key={paper.title}
+          className="group flex flex-col cursor-pointer hover:border-primary/30 hover:shadow-md transition-all duration-150"
+          onClick={() => {
+            handleClickCard(paper.id);
+          }}
+        >
           <CardContent className="px-4 py-3.5 flex flex-col h-full">
             <div className="flex items-start justify-between gap-2 mb-2.5">
               <Badge className={cn("text-[10px] font-medium", StringConstUtil.getExamTagClass(paper.tag))}>{paper.tag}</Badge>
               {paper.year && <span className="text-[10px] text-muted-foreground shrink-0">{paper.year}</span>}
+              {paper.grade && <span className="text-[11px] text-muted-foreground">{paper.grade}</span>}
+              {paper.semester && <span className="text-[11px] text-muted-foreground">{paper.semester}</span>}
             </div>
             <p className="text-[13px] font-medium leading-snug mb-auto line-clamp-2 group-hover:text-primary transition-colors">{paper.title}</p>
             <Separator className="mt-3 mb-2.5" />
             <div className="flex items-center justify-between">
-              <span className="text-[11px] text-muted-foreground">{paper.grade}</span>
+              <span className="text-[11px] text-muted-foreground">{paper.authorName}</span>
+              <span className="text-[11px] text-muted-foreground">{paper.createdAt}</span>
               <span className="text-[11px] text-muted-foreground">{paper.count} 题</span>
             </div>
           </CardContent>

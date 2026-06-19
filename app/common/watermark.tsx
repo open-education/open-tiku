@@ -1,5 +1,7 @@
 import { cn } from "~/lib/utils";
 
+/// 简单的水印
+
 interface WatermarkProps {
   children: React.ReactNode;
   className?: string;

@@ -5,7 +5,7 @@ import { CommonTitle } from "~/common/title";
 import { CommonSelect } from "~/common/select";
 import type { QuestionOption } from "~/type/question";
 import type { PaperQuestion } from "~/type/paper";
-import { SimpleFullContent } from "../simple-content";
+import { SimpleFullContent } from "~/common/simple-content";
 
 /// 试卷题目样式
 
@@ -76,7 +76,7 @@ function ExamQuestion(props: ExamQuestionProps) {
               <div className="grid grid-cols-10 gap-1 items-center">
                 <div className="col-span-1">解析</div>
                 <div className="col-span-9">
-                  <SimpleFullContent content={question.analysis} />
+                  <SimpleFullContent content={question.analysis.content} />
                 </div>
               </div>
             </div>

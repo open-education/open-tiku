@@ -22,8 +22,8 @@ export interface PaperMeta {
   status: number; // 状态
   statusDesc: string; // 状态描述
   remarkExt: string; // 操作备注
-  createAt: string; // 创建时间
-  updateAt: string; // 更新时间
+  createdAt: string; // 创建时间
+  updatedAt: string; // 更新时间
 }
 
 // 题型分组
@@ -60,4 +60,23 @@ export interface PaperMetaSearch {
   year: string; // 年份
   grade: string; // 年级
   semester: string; // 学期
+}
+
+// 试卷列表请求
+export interface PaperListReq {
+  relatedId: number;
+  tag?: string; // 标签
+  year?: string; // 年份
+  grade?: string; // 年级
+  semester?: string; // 学期
+  pageNo: number;
+  pageSize: number;
+}
+
+// 试卷列表信息
+export interface PaperListResp {
+  list: PaperMeta[];
+  pageNo: number;
+  pageSize: number;
+  total: number;
 }
