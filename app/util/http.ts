@@ -7,16 +7,16 @@ class HttpClient {
     this.baseURL = baseURL;
   }
 
-  async get<T = any>(path: string, options?: RequestInit): Promise<T> {
+  get = async <T = any>(path: string, options?: RequestInit): Promise<T> => {
     const url = this.buildUrl(path);
     const response = await fetch(url, {
       method: "GET",
       ...options,
     });
     return this.handleResponse(response);
-  }
+  };
 
-  async post<T = any>(path: string, data: any, options?: RequestInit): Promise<T> {
+  post = async <T = any>(path: string, data: any, options?: RequestInit): Promise<T> => {
     const url = this.buildUrl(path);
     const reqBody = JSON.stringify(data);
     const response = await fetch(url, {
@@ -29,7 +29,7 @@ class HttpClient {
       ...options,
     });
     return this.handleResponse(response);
-  }
+  };
 
   private buildUrl(path: string): string {
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;

@@ -8,6 +8,8 @@
 
 前端 UI 组件库使用的是 [Ant Design](https://ant.design/index-cn/)(新功能不再使用, 后续会被替换为 `shadcn/ui`) 和 [shadcn/ui](https://ui.shadcn.com/).
 
+部分查询功能使用 [SWR](https://swr.vercel.app/) 维护状态, 选择它的原因是因为包比较小, 大部分功能还是使用原生的 `fetch` 请求处理, 使用了 `SWR` 的数据在[fetcher.ts](./app/util/fetcher.ts) 文件中统一管理.
+
 ### 安装
 
 安装依赖和配置后端 caddy 代理

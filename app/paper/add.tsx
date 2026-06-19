@@ -1,7 +1,3 @@
-/// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑
-// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
-// 但是个人使用比如 DeepSeek 几乎是完全免费的, 因此需要个人借助其它 ai 平台将试卷题目转化为 markdown 格式后拷贝过来上传
-
 import React, { useMemo, useState } from "react";
 import { ChapterDropdownNav } from "~/common/nav";
 import { TagSelect } from "~/common/paper/tag";
@@ -25,6 +21,10 @@ import { ExamPaperMeta } from "~/common/paper/meta";
 import { httpClient } from "~/util/http";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { toast } from "sonner";
+
+/// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑
+/// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
+/// 但是个人使用比如 DeepSeek 几乎是完全免费的, 因此需要个人借助其它 ai 平台将试卷题目转化为 markdown 格式后拷贝过来上传
 
 // 初始化默认值等信息
 const generateId = () => Math.random().toString(36).substring(2, 9);
@@ -85,6 +85,7 @@ interface AddProps {
   setSheetDesc: (value: string) => void;
   setSheetContent: (value: React.ReactNode) => void;
 }
+
 export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc, setSheetContent }: AddProps) {
   // 计算初始值, 编辑时也是更新这个初始化值
   const initialPaperMeta = useMemo(() => {

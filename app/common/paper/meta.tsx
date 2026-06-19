@@ -1,6 +1,5 @@
 import { ArrowRight, FileText } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
@@ -10,6 +9,7 @@ import { TagShow } from "~/common/paper/tag";
 import { ExamQuestion } from "~/common/paper/question";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
+import { NavLink } from "react-router";
 
 /// 试卷元数据
 
@@ -23,13 +23,13 @@ interface ExamPaperProps {
   setSheetContent: (value: React.ReactNode) => void;
 
   // 提示加载中
-  setLoading: (value: boolean) => void;
+  setLoading?: (value: boolean) => void;
 }
 
 function ExamPaper({ papers, setOpenSheet, setSheetTitle, setSheetContent, setLoading }: ExamPaperProps) {
   // 点击卡片展示详情
   const handleClickCard = (id: number) => {
-    setLoading(true);
+    setLoading?.(true);
 
     httpClient
       .get<PaperMeta>(`/paper/info/${id}`)
@@ -43,7 +43,7 @@ function ExamPaper({ papers, setOpenSheet, setSheetTitle, setSheetContent, setLo
         toast.error(<div className="text-red-700">{err.message}</div>);
       })
       .finally(() => {
-        setLoading(false);
+        setLoading?.(false);
       });
   };
 
@@ -91,11 +91,11 @@ function ExamPaperHeader() {
           中高考 · 期末月考 · 名校特供
         </Badge>
       </div>
-      <Button variant="link" size="sm">
-        <a href="#" className="flex items-center gap-1 text-xs">
+      <NavLink to={"/paper"}>
+        <div className="flex items-center gap-1 text-xs">
           全部试卷 <ArrowRight size={11} />
-        </a>
-      </Button>
+        </div>
+      </NavLink>
     </div>
   );
 }
@@ -167,4 +167,4 @@ function ExamPaperMeta({ paperMeta }: ExamPaperMetaProps) {
   );
 }
 
-export { ExamPaper, ExamPaperMeta };
+export { ExamPaper, ExamPaperHeader, ExamPaperMeta };

@@ -150,7 +150,7 @@ function ChapterExpandNav(props: ChapterExpandNavProps) {
   // 当选中状态变化时通知父组件
   useEffect(() => {
     onSelectionChange?.(selectedValues, selectedTextbooks);
-  }, [selectedValues, selectedTextbooks, onSelectionChange]);
+  }, [selectedValues, selectedTextbooks]);
 
   // 处理层级选择
   const handleLevelSelect = useCallback(
@@ -200,7 +200,7 @@ function ChapterExpandNav(props: ChapterExpandNavProps) {
     <section>
       <Card className="overflow-hidden">
         {/* Progress */}
-        <Progress value={(completedCount / 5) * 100} className="h-0.5 rounded-none" />
+        <Progress value={(completedCount / 5) * 100} className="rounded-none" />
         <CardContent className="px-6 md:px-8 pt-6 pb-0">
           <div className="divide-y divide-border">
             {steps.map((levelKey, index) => {
@@ -531,4 +531,12 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
   );
 }
 
+// 导航选择记录数据
+interface SelectNavProps {
+  selectedKeys: string[];
+  relatedId: number;
+  relatedName: string;
+}
+
+export type { LevelProps, SelectNavProps };
 export { ChapterExpandNav, ChapterDropdownNav };
