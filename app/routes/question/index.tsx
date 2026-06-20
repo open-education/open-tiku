@@ -4,28 +4,30 @@ import { createTextbookPathDict } from "~/util/textbook-dict";
 import { useQuestionCates, useQuestionList, useQuestionTags, useQuestionTypes, useTextbooks } from "~/util/fetcher";
 import { ChapterDropdownNav, type SelectNavProps } from "~/common/nav";
 import { useLocation } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { QuestionSearch } from "~/type/question";
-import { MultiTagSelect, TypeSelect } from "~/common/question/tag";
+import { MultiTagSelect, OperateTags, TagShow, TypeSelect } from "~/common/question/tag";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { StringConst } from "~/util/string";
 import { SimplePagination } from "~/common/page";
 import { Separator } from "~/components/ui/separator";
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "~/components/ui/empty";
-import { AlertCircleIcon, NotepadTextDashed } from "lucide-react";
 import { Loading } from "~/common/load";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
-import { CommonTitle } from "~/common/title";
-import { CommonSelect } from "~/common/select";
+import { SimpleAlert } from "~/common/alert";
+import { TitleShow } from "~/common/question/title";
+import { MultiOptionShow } from "~/common/question/select";
+import { SimpleSheet } from "~/common/sheet";
+import { SimpleNoData } from "~/common/empty";
+import { ArrayUtil, DictUtil } from "~/util/object";
 import "katex/dist/katex.min.css";
 
 /// 题目首页
 
 export function meta({}: Route.MetaArgs) {
-  return [{ title: "开放题库" }, { name: "description", content: "教材章节, 知识点题库" }];
+  return [{ title: "题目库" }, { name: "description", content: "教材章节, 知识点题库" }];
 }
 
+// 题目相关后续操作都在这个路由内完成
 export default function Home() {
   const location = useLocation();
   // 首页可能传递过来已经选择好的导航级联信息keys列表
@@ -59,7 +61,10 @@ export default function Home() {
 
   // 查询题目类型和标签
   const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionTypes(questionSearch.twoLevelId);
+  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, "id"), [questionTypes]);
+
   const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionTags(questionSearch.twoLevelId);
+  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(questionSearch.fiveLevelId);
@@ -71,6 +76,22 @@ export default function Home() {
     isLoading: questionListRespLoading,
     error: questionListRespErr,
   } = useQuestionList(questionSearch, pageNo);
+
+  // 页面加载中
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Sheet相关操作变量
+  const [openSheet, setOpenSheet] = useState<boolean>(false);
+  const [sheetTitle, setSheetTitle] = useState<React.ReactNode>("");
+  const [sheetDesc, setSheetDesc] = useState<React.ReactNode>("");
+  const [sheetContent, setSheetContent] = useState<React.ReactNode>("");
+
+  // 添加题目
+  const handleAdd = () => {
+    setOpenSheet(true);
+    setSheetTitle("添加题目");
+    setSheetContent(<div>这是一段文字</div>);
+  };
 
   return (
     <div className="mt-3">
@@ -162,7 +183,7 @@ export default function Home() {
           <div className="col-span-1">操作</div>
           <div className="col-span-4">
             <div className="col-span-4 flex flex-wrap gap-2">
-              <Button variant="outline" onClick={() => {}}>
+              <Button variant="outline" onClick={handleAdd}>
                 添加题目
               </Button>
               <Button variant="outline" onClick={() => {}}>
@@ -183,67 +204,41 @@ export default function Home() {
       {/* 空数据提示 */}
       {questionListResp.total == 0 && (
         <div className="mt-3">
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <NotepadTextDashed />
-              </EmptyMedia>
-              <EmptyTitle>No Data</EmptyTitle>
-              <EmptyDescription>没有查找到任何题目，如有题目，可以尝试上传题目，管理员审核通过后，其他人就可以看到该题目了。</EmptyDescription>
-            </EmptyHeader>
-          </Empty>
+          <SimpleNoData desc="没有查找到任何题目，如有题目，可以尝试上传题目，管理员审核通过后，其他人就可以看到该题目了。" />
         </div>
       )}
 
       {/* 相关错误信息 */}
       {textbooksErr && (
         <div className="mt-3">
-          <Alert variant="destructive">
-            <AlertCircleIcon />
-            <AlertTitle>菜单获取失败</AlertTitle>
-            <AlertDescription>{textbooksErr.message}</AlertDescription>
-          </Alert>
+          <SimpleAlert title="菜单获取失败" message={textbooksErr.message} />
         </div>
       )}
       {questionTypesErr && (
         <div className="mt-3">
-          <Alert variant="destructive">
-            <AlertCircleIcon />
-            <AlertTitle>题目类型获取失败</AlertTitle>
-            <AlertDescription>{questionTypesErr.message}</AlertDescription>
-          </Alert>
+          <SimpleAlert title="题目类型获取失败" message={questionTypesErr.message} />
         </div>
       )}
       {questionTagsErr && (
         <div className="mt-3">
-          <Alert variant="destructive">
-            <AlertCircleIcon />
-            <AlertTitle>题目标签获取失败</AlertTitle>
-            <AlertDescription>{questionTagsErr.message}</AlertDescription>
-          </Alert>
+          <SimpleAlert title="题目标签获取失败" message={questionTagsErr.message} />
         </div>
       )}
       {questionCatesErr && (
         <div className="mt-3">
-          <Alert variant="destructive">
-            <AlertCircleIcon />
-            <AlertTitle>导航题型获取失败</AlertTitle>
-            <AlertDescription>{questionCatesErr.message}</AlertDescription>
-          </Alert>
+          <SimpleAlert title="导航题型获取失败" message={questionCatesErr.message} />
         </div>
       )}
       {questionListRespErr && (
         <div className="mt-3">
-          <Alert variant="destructive">
-            <AlertCircleIcon />
-            <AlertTitle>导航题型获取失败</AlertTitle>
-            <AlertDescription>{questionListRespErr.message}</AlertDescription>
-          </Alert>
+          <SimpleAlert title="题目列表获取失败" message={questionListRespErr.message} />
         </div>
       )}
 
       {/* 相关加载中 */}
-      {(textbooksLoading || questionTypesLoading || questionTagsLoading || questionCatesLoading || questionListRespLoading) && <Loading />}
+      {(isLoading || textbooksLoading || questionTypesLoading || questionTagsLoading || questionCatesLoading || questionListRespLoading) && (
+        <Loading />
+      )}
 
       {/* 题目列表 */}
       <div className="mt-3">
@@ -254,21 +249,38 @@ export default function Home() {
               className="group relative p-4 pb-4 hover:pb-12 border border-transparent hover:border-blue-500 transition-all duration-300 ease-in-out bg-white overflow-hidden"
             >
               {/* 标签 */}
+              <div className="flex gap-3 items-center w-full">
+                <TagShow
+                  typeValue={DictUtil.getQuestionTypeName(questionInfo.questionTypeId, questionTypeDict)}
+                  tagNames={DictUtil.getQuestionTagNames(questionInfo.questionTagIds ?? [], questionTagDict)}
+                  difficultyLevelValue={questionInfo.difficultyLevel}
+                />
+              </div>
 
               {/* 标题 */}
               <div className="mt-2.5">
-                {<CommonTitle id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}
+                {<TitleShow id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}
               </div>
 
               {/* 选项内容 */}
               <div className="mt-2.5">
                 {questionInfo.options && questionInfo.options.length > 0 && (
-                  <CommonSelect optionsLayout={questionInfo.optionsLayout ?? 1} options={questionInfo.options} />
+                  <MultiOptionShow optionsLayout={questionInfo.optionsLayout ?? 1} options={questionInfo.options} />
                 )}
               </div>
 
               {/* 题目其它标签, 比如查看答案, 关联题目等 */}
-              <div className="absolute right-4 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2"></div>
+              <div className="absolute right-4 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
+                <OperateTags
+                  questionTypeDict={questionTypeDict}
+                  questionTagDict={questionTagDict}
+                  questionId={questionInfo.id}
+                  setOpenSheet={setOpenSheet}
+                  setSheetTitle={setSheetTitle}
+                  setSheetContent={setSheetContent}
+                  setLoading={setIsLoading}
+                />
+              </div>
             </div>
           );
         })}
@@ -276,7 +288,7 @@ export default function Home() {
 
       {/* 分页 */}
       {questionListResp.total > 0 && (
-        <div className="mt-3">
+        <div className="mt-3 mb-3">
           <SimplePagination
             pageNo={questionListResp.pageNo}
             pageSize={questionListResp.pageSize}
@@ -287,6 +299,11 @@ export default function Home() {
           />
         </div>
       )}
+
+      {/* 题目页面Sheet内容 */}
+      <div>
+        <SimpleSheet openSheet={openSheet} setOpenSheet={setOpenSheet} sheetTitle={sheetTitle} sheetDesc={sheetDesc} sheetContent={sheetContent} />
+      </div>
     </div>
   );
 }

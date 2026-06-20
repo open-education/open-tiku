@@ -1,8 +1,12 @@
 /// 题目题目相关标签选择器
 
 import { useState } from "react";
+import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
+import type { QuestionInfoResp } from "~/type/question";
 import type { TextbookOtherDict } from "~/type/textbook";
+import { httpClient } from "~/util/http";
+import { QuestionInfo } from "~/common/question/meta";
 
 interface TypeSelectProps {
   /** 标签选项数组 */
@@ -83,4 +87,116 @@ function MultiTagSelect({ options, defaultValue = [], onChange }: MultiTagSelect
   );
 }
 
-export { TypeSelect, MultiTagSelect };
+// 列表详情等标签展示
+// 题目类型标签
+// 题目本身的标签
+// 难度标签
+interface TagShowProps {
+  typeValue: string;
+  tagNames: string[];
+  difficultyLevelValue: number;
+}
+function TagShow({ typeValue, tagNames, difficultyLevelValue }: TagShowProps) {
+  // 生成标签列表
+  const getBadges = () => {
+    // 题目类型
+    const typeNode: React.ReactNode = (
+      <Badge variant={"outline"} key={typeValue}>
+        {typeValue}
+      </Badge>
+    );
+
+    // 题目标签
+    const tagNode = tagNames.map((val) => {
+      return (
+        <Badge variant={"outline"} key={val}>
+          {val}
+        </Badge>
+      );
+    });
+
+    // 难度
+    const difficultyNode = (
+      <Badge variant={"outline"} key={difficultyLevelValue}>
+        {difficultyLevelValue}
+      </Badge>
+    );
+
+    return (
+      <>
+        {typeNode}
+        {tagNode}
+        {difficultyNode}
+      </>
+    );
+  };
+
+  return <>{getBadges()}</>;
+}
+
+// 查看题目详情编辑等标签操作
+interface OperateTagsProps {
+  questionId: number; // 题目主键
+  questionTypeDict: Record<number, TextbookOtherDict>;
+  questionTagDict: Record<number, TextbookOtherDict>;
+
+  // 以下为 Sheet 操作方法和属性
+  setOpenSheet: (value: boolean) => void;
+  setSheetTitle: (value: string) => void;
+  setSheetContent: (value: React.ReactNode) => void;
+
+  // 提示加载中
+  setLoading?: (value: boolean) => void;
+}
+function OperateTags({ questionId, questionTypeDict, questionTagDict, setOpenSheet, setSheetTitle, setSheetContent, setLoading }: OperateTagsProps) {
+  // 查看详情
+  const handleViewInfo = () => {
+    setLoading?.(true);
+
+    httpClient
+      .get<QuestionInfoResp>(`/question/info/${questionId}`)
+      .then((res) => {
+        setOpenSheet(true);
+        setSheetTitle("查看详情");
+        setSheetContent(<QuestionInfo questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} infoResp={res} />);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading?.(false);
+      });
+  };
+
+  // 编辑详情
+  const handleEditInfo = () => {
+    setOpenSheet(true);
+  };
+
+  // 添加变式题
+  const handleAdd = () => {
+    setOpenSheet(true);
+  };
+
+  // 查看变式题
+  const handleViewSimiar = () => {};
+
+  return (
+    <>
+      <Button variant={"link"} onClick={handleViewInfo}>
+        详情
+      </Button>
+      <Button variant={"link"} onClick={handleEditInfo}>
+        编辑
+      </Button>
+      <Button variant={"link"} onClick={handleAdd}>
+        添加变式题
+      </Button>
+      <Button variant={"link"} onClick={handleViewSimiar}>
+        查看变式题
+      </Button>
+    </>
+  );
+}
+
+export { TypeSelect, MultiTagSelect, TagShow, OperateTags };

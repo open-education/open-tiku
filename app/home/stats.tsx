@@ -3,7 +3,7 @@
 // 总数统计
 function CountStats() {
   return (
-    <section className="mx-auto">
+    <section>
       <div className="flex items-end justify-between gap-6">
         <div>
           <p className="text-xs tracking-[0.16em] font-medium uppercase mb-3">K–12 数学题库平台</p>

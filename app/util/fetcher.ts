@@ -82,8 +82,6 @@ export function useQuestionList(search: QuestionSearch, pageNo: number) {
     req.ids = [search.id];
   }
 
-  console.log("useQuestionList: ", req);
-
   // 生成 SWR 的 key（只有 relatedId > 0 时才发起请求，否则为 null）
   const key = req.questionCateId > 0 ? JSON.stringify(req) : null;
   return useSWR(key, () => httpClient.post<QuestionListResp>("/question/list", req), {

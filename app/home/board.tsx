@@ -73,7 +73,7 @@ function Board() {
   }
 
   return (
-    <section className="mx-auto pb-14">
+    <section className="pb-14">
       <Card className="overflow-hidden">
         <Tabs defaultValue="latest">
           {/* Tab bar — override TabsList to span full width, border-bottom style */}

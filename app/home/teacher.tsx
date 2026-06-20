@@ -1,7 +1,7 @@
 function Teacher() {
   return (
     <section className="bg-primary">
-      <div className="mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
           <p className="text-primary-foreground text-xl font-medium mb-1" style={{ fontFamily: '"Noto Serif SC", serif' }}>
             教师专区

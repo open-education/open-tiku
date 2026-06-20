@@ -3,7 +3,6 @@ import { useCallback, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { ArrowRight, GraduationCap, Upload } from "lucide-react";
 import { CountStats } from "~/home/stats";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "~/components/ui/sheet";
 import { ExamPaper, ExamPaperHeader } from "~/common/paper/meta";
 import { Loading } from "~/common/load";
 import { toast } from "sonner";
@@ -13,6 +12,7 @@ import { Teacher } from "~/home/teacher";
 import { NavLink } from "react-router";
 import { useLatestPapers, useTextbooks } from "~/util/fetcher";
 import type { Textbook } from "~/type/textbook";
+import { SimpleSheet } from "~/common/sheet";
 
 // 默认首页
 export default function Index() {
@@ -109,7 +109,7 @@ export default function Index() {
 
   // Sheet相关操作变量
   const [openSheet, setOpenSheet] = useState<boolean>(false);
-  const [sheetTitle, setSheetTitle] = useState<string>("");
+  const [sheetTitle, setSheetTitle] = useState<React.ReactNode>("");
   const [sheetDesc, setSheetDesc] = useState<React.ReactNode>("");
   const [sheetContent, setSheetContent] = useState<React.ReactNode>("");
 
@@ -158,15 +158,7 @@ export default function Index() {
       {/* 网站通用 Sheet */}
       {/* 试卷页面Sheet内容 */}
       <div>
-        <Sheet open={openSheet} onOpenChange={setOpenSheet}>
-          <SheetContent className="w-[80vw]! max-w-[80vw]! sm:w-[70vw]! md:w-[80vw]! lg:w-[80vw]! overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle>{sheetTitle}</SheetTitle>
-              <SheetDescription>{sheetDesc}</SheetDescription>
-            </SheetHeader>
-            <div className="px-4">{sheetContent}</div>
-          </SheetContent>
-        </Sheet>
+        <SimpleSheet openSheet={openSheet} setOpenSheet={setOpenSheet} sheetTitle={sheetTitle} sheetDesc={sheetDesc} sheetContent={sheetContent} />
       </div>
     </div>
   );
