@@ -6,7 +6,7 @@ import { ChapterDropdownNav, type SelectNavProps } from "~/common/nav";
 import { useLocation } from "react-router";
 import { useEffect, useMemo, useState } from "react";
 import type { QuestionSearch } from "~/type/question";
-import { MultiTagSelect, OperateTags, TagShow, TypeSelect } from "~/common/question/tag";
+import { MultiTagSelect, TypeSelect } from "~/common/question/tag";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { StringConst } from "~/util/string";
@@ -14,11 +14,10 @@ import { SimplePagination } from "~/common/page";
 import { Separator } from "~/components/ui/separator";
 import { Loading } from "~/common/load";
 import { SimpleAlert } from "~/common/alert";
-import { TitleShow } from "~/common/question/title";
-import { MultiOptionShow } from "~/common/question/select";
 import { SimpleSheet } from "~/common/sheet";
 import { SimpleNoData } from "~/common/empty";
-import { ArrayUtil, DictUtil } from "~/util/object";
+import { ArrayUtil } from "~/util/object";
+import { QuestionListShow } from "~/common/question/list";
 import "katex/dist/katex.min.css";
 
 /// 题目首页
@@ -94,13 +93,13 @@ export default function Home() {
   };
 
   return (
-    <div className="mt-3">
+    <div className="p-3">
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
         {/* 选择前5层级 */}
-        <div className="grid grid-cols-5 gap-4 items-center">
-          <div className="col-span-1">学段/考点</div>
-          <div className="col-span-4">
+        <div className="grid grid-cols-10 gap-1 items-center">
+          <div className="col-span-1">年级/考点:</div>
+          <div className="col-span-9">
             <ChapterDropdownNav
               textbooks={textbooks}
               onSelect={(selectedItems: Textbook[]) => {
@@ -119,9 +118,9 @@ export default function Home() {
         </div>
 
         {/* 根据前5层级选择后3层级 */}
-        <div className="grid grid-cols-5 gap-4 items-center">
-          <div className="col-span-1">题型</div>
-          <div className="col-span-4">
+        <div className="grid grid-cols-10 gap-4 items-center">
+          <div className="col-span-1">题型:</div>
+          <div className="col-span-9">
             <ChapterDropdownNav
               textbooks={questionCates}
               onSelect={(selectedItems: Textbook[]) => {
@@ -139,9 +138,9 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-5 gap-4 items-center">
-          <div className="col-span-1">类型</div>
-          <div className="col-span-4">
+        <div className="grid grid-cols-10 gap-4 items-center">
+          <div className="col-span-1">类型:</div>
+          <div className="col-span-9">
             <TypeSelect
               options={questionTypes}
               defaultValue={0}
@@ -152,9 +151,9 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-5 gap-4 items-center">
-          <div className="col-span-1">标签</div>
-          <div className="col-span-4">
+        <div className="grid grid-cols-10 gap-4 items-center">
+          <div className="col-span-1">标签:</div>
+          <div className="col-span-9">
             <MultiTagSelect
               options={questionTags}
               defaultValue={[]}
@@ -165,9 +164,9 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-5 gap-4 items-center">
-          <div className="col-span-1">ID</div>
-          <div className="col-span-4">
+        <div className="grid grid-cols-10 gap-4 items-center">
+          <div className="col-span-1">ID:</div>
+          <div className="col-span-9">
             <Input
               type="number"
               value={questionSearch.id}
@@ -179,10 +178,10 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-5 gap-4 items-center">
-          <div className="col-span-1">操作</div>
-          <div className="col-span-4">
-            <div className="col-span-4 flex flex-wrap gap-2">
+        <div className="grid grid-cols-10 gap-1 items-center">
+          <div className="col-span-1">操作:</div>
+          <div className="col-span-9">
+            <div className="flex flex-wrap gap-1">
               <Button variant="outline" onClick={handleAdd}>
                 添加题目
               </Button>
@@ -241,49 +240,17 @@ export default function Home() {
       )}
 
       {/* 题目列表 */}
-      <div className="mt-3">
-        {questionListResp.list?.map((questionInfo) => {
-          return (
-            <div
-              key={questionInfo.id}
-              className="group relative p-4 pb-4 hover:pb-12 border border-transparent hover:border-blue-500 transition-all duration-300 ease-in-out bg-white overflow-hidden"
-            >
-              {/* 标签 */}
-              <div className="flex gap-3 items-center w-full">
-                <TagShow
-                  typeValue={DictUtil.getQuestionTypeName(questionInfo.questionTypeId, questionTypeDict)}
-                  tagNames={DictUtil.getQuestionTagNames(questionInfo.questionTagIds ?? [], questionTagDict)}
-                  difficultyLevelValue={questionInfo.difficultyLevel}
-                />
-              </div>
-
-              {/* 标题 */}
-              <div className="mt-2.5">
-                {<TitleShow id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}
-              </div>
-
-              {/* 选项内容 */}
-              <div className="mt-2.5">
-                {questionInfo.options && questionInfo.options.length > 0 && (
-                  <MultiOptionShow optionsLayout={questionInfo.optionsLayout ?? 1} options={questionInfo.options} />
-                )}
-              </div>
-
-              {/* 题目其它标签, 比如查看答案, 关联题目等 */}
-              <div className="absolute right-4 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
-                <OperateTags
-                  questionTypeDict={questionTypeDict}
-                  questionTagDict={questionTagDict}
-                  questionId={questionInfo.id}
-                  setOpenSheet={setOpenSheet}
-                  setSheetTitle={setSheetTitle}
-                  setSheetContent={setSheetContent}
-                  setLoading={setIsLoading}
-                />
-              </div>
-            </div>
-          );
-        })}
+      <div className="pt-3">
+        <QuestionListShow
+          questionTypeDict={questionTypeDict}
+          questionTagDict={questionTagDict}
+          listResp={questionListResp}
+          setOpenSheet={setOpenSheet}
+          setSheetTitle={setSheetTitle}
+          setSheetDesc={setSheetDesc}
+          setSheetContent={setSheetContent}
+          setLoading={setIsLoading}
+        />
       </div>
 
       {/* 分页 */}

@@ -119,12 +119,12 @@ export default function Index() {
       {textbooksIsLoading || (latestIsLoading && <Loading />)}
 
       {/* 统计总数*/}
-      <div className="mt-3">
+      <div className="ml-4 mr-4 mt-3">
         <CountStats />
       </div>
 
       {/* 关键导航 */}
-      <div className="mt-3">
+      <div className="ml-4 mr-4 mt-3">
         <ChapterExpandNav
           textbooks={textbooks}
           onSelectionChange={(selection, selectedTextbooks) => {
@@ -135,18 +135,18 @@ export default function Index() {
       </div>
 
       {/* 精选试卷 */}
-      <div className="mt-3">
+      <div className="ml-4 mr-4 mt-3">
         <ExamPaperHeader />
         <ExamPaper papers={latestPapers} setOpenSheet={setOpenSheet} setSheetTitle={setSheetTitle} setSheetContent={setSheetContent} />
       </div>
 
       {/* 统计面板 */}
-      <div className="mt-3">
+      <div className="ml-4 mr-4 mt-3">
         <Board />
       </div>
 
       {/* 网站碎碎念 */}
-      <div className="mt-3">
+      <div className="ml-4 mr-4 mt-3">
         <Note />
       </div>
 

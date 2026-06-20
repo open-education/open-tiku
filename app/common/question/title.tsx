@@ -1,23 +1,27 @@
-/// 标题设计
-
 import { StringValidator } from "~/util/string";
 import { SimpleFullContent } from "~/common/simple-content";
 import { ImageZoom } from "../image";
 
+/// 标题设计--试卷和题库均使用后续移动到父级
+
 interface TitleShowProps {
+  no?: number; // 试卷显示题号
   id?: number; // 显示题目id-普通列表用
   title: string;
   comment: string;
   images?: string[];
 }
 
-function TitleShow({ id = 0, title, comment, images = [] }: TitleShowProps) {
+function TitleShow({ no = 0, id = 0, title, comment, images = [] }: TitleShowProps) {
+  // 试卷和题目显示前缀
+  const content = no > 0 ? `${no}&#46; ${title}` : `**ID[${id}].** ${title}`;
+
   return (
     <div>
       {/* 题干 */}
       {StringValidator.isNonEmpty(title) && (
         <div>
-          <SimpleFullContent content={title} />
+          <SimpleFullContent content={content} />
         </div>
       )}
       {/* 标记 */}

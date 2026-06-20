@@ -1,5 +1,6 @@
 import type React from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "~/components/ui/sheet";
+import { StringValidator } from "~/util/string";
 
 /// Sheet 样式统一管理
 
@@ -16,9 +17,9 @@ function SimpleSheet({ openSheet, setOpenSheet, sheetTitle, sheetDesc, sheetCont
       <SheetContent className="w-[80vw]! max-w-[80vw]! sm:w-[70vw]! md:w-[80vw]! lg:w-[80vw]! overflow-y-auto">
         <SheetHeader>
           <SheetTitle>{sheetTitle}</SheetTitle>
-          <SheetDescription>{sheetDesc}</SheetDescription>
+          {StringValidator.isNonEmpty(sheetDesc) && <SheetDescription>{sheetDesc}</SheetDescription>}
         </SheetHeader>
-        <div className="px-4">{sheetContent}</div>
+        {sheetContent}
       </SheetContent>
     </Sheet>
   );

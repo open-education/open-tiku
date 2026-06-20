@@ -41,12 +41,12 @@ function QuestionInfo({ questionTypeDict, questionTagDict, infoResp }: QuestionI
           </div>
 
           {/* 题干 - 突出显示 */}
-          <div>
+          <div className="text-sm">
             <TitleShow id={baseInfo.id} title={baseInfo.title} comment={baseInfo.comment ?? ""} images={baseInfo.images ?? []} />
           </div>
 
           {/* 选项 */}
-          <div>
+          <div className="text-sm">
             <MultiOptionShow optionsLayout={baseInfo.optionsLayout ?? 2} options={baseInfo.options ?? []} />
           </div>
 
@@ -72,7 +72,7 @@ function QuestionInfo({ questionTypeDict, questionTagDict, infoResp }: QuestionI
       <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
         <CardContent className="space-y-6">
           {/* 参考答案 - 带图标高亮 */}
-          <div className="flex items-start gap-4 p-4 bg-emerald-50/60 dark:bg-emerald-950/30 rounded-lg border border-emerald-200/60 dark:border-emerald-800/40">
+          <div className="text-sm flex items-start gap-4 p-4 bg-emerald-50/60 dark:bg-emerald-950/30 rounded-lg border border-emerald-200/60 dark:border-emerald-800/40">
             <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
             <div>
               <h4 className="font-semibold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider mb-1">参考答案</h4>
@@ -85,7 +85,7 @@ function QuestionInfo({ questionTypeDict, questionTagDict, infoResp }: QuestionI
           <Separator className="bg-gray-100 dark:bg-gray-800" />
 
           {/* 解题分析 - 左侧强调边框 */}
-          <div className="border-l-4 border-l-sky-400 pl-4 py-1 bg-sky-50/30 dark:bg-sky-950/20 rounded-r-lg">
+          <div className="text-sm border-l-4 border-l-sky-400 pl-4 py-1 bg-sky-50/30 dark:bg-sky-950/20 rounded-r-lg">
             <div className="flex items-center gap-2 text-sky-700 dark:text-sky-300 mb-1">
               <Lightbulb className="w-4 h-4" />
               <span>解题分析</span>
@@ -96,7 +96,7 @@ function QuestionInfo({ questionTypeDict, questionTagDict, infoResp }: QuestionI
           </div>
 
           {/* 解题过程 */}
-          <div className="border-l-4 border-l-sky-400 pl-4 py-1 bg-sky-50/30 dark:bg-sky-950/20 rounded-r-lg">
+          <div className="text-sm border-l-4 border-l-sky-400 pl-4 py-1 bg-sky-50/30 dark:bg-sky-950/20 rounded-r-lg">
             <div className="flex items-center gap-2 text-sky-700 dark:text-sky-300 mb-1">
               <Lightbulb className="w-4 h-4" />
               <span>解题过程</span>
@@ -107,7 +107,7 @@ function QuestionInfo({ questionTypeDict, questionTagDict, infoResp }: QuestionI
           </div>
 
           {/* 解题过程 - 时间线步骤 */}
-          <div>
+          <div className="text-sm">
             <h4 className=" text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2">
               <span className="w-6 h-0.5 bg-gray-300 dark:bg-gray-600"></span>
               推演步骤
@@ -120,7 +120,7 @@ function QuestionInfo({ questionTypeDict, questionTagDict, infoResp }: QuestionI
               {solutionSteps.map((step, idx) => (
                 <div key={idx} className="relative flex items-start gap-4 pb-4 last:pb-0 group">
                   {/* 序号圆点 */}
-                  <div className="relative z-10 flex items-center justify-center w-9 h-9 rounded-full bg-white dark:bg-gray-900 border-2 border-indigo-200 dark:border-indigo-800 group-hover:border-indigo-500 transition-colors shadow-sm flex-shrink-0">
+                  <div className="relative z-10 flex items-center justify-center w-9 h-9 rounded-full bg-white dark:bg-gray-900 border-2 border-indigo-200 dark:border-indigo-800 group-hover:border-indigo-500 transition-colors shadow-sm shrink-0">
                     <span className=" text-indigo-600 dark:text-indigo-400">{step.id}</span>
                   </div>
                   {/* 步骤内容 */}
@@ -135,7 +135,7 @@ function QuestionInfo({ questionTypeDict, questionTagDict, infoResp }: QuestionI
           <Separator className="bg-gray-100 dark:bg-gray-800" />
 
           {/* 备注 - 警告/提示风格 */}
-          <div className="flex items-start gap-3 p-4 bg-amber-50/60 dark:bg-amber-950/30 rounded-lg border border-amber-200/50 dark:border-amber-800/40">
+          <div className="text-sm flex items-start gap-3 p-4 bg-amber-50/60 dark:bg-amber-950/30 rounded-lg border border-amber-200/50 dark:border-amber-800/40">
             <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
             <div>
               <h4 className="text-amber-700 dark:text-amber-300 uppercase tracking-wider mb-0.5">易错备注</h4>

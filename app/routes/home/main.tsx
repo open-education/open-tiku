@@ -18,9 +18,9 @@ export function meta({}: Route.MetaArgs) {
 // 其它页面后续替换只保留静态的头和底
 export default function Main() {
   return (
-    <div className="bg-background text-foreground pl-4 pr-4">
+    <div className="text-foreground text-sm bg-gray-100">
       {/* 网站首页头部 */}
-      <div>
+      <div className="pl-4 pr-4">
         <Header />
       </div>
 
@@ -30,7 +30,7 @@ export default function Main() {
       </div>
 
       {/* ── Footer ── */}
-      <div>
+      <div className="pl-4 pr-4">
         <Footer />
       </div>
     </div>

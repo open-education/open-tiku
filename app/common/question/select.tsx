@@ -2,6 +2,8 @@ import type { QuestionOption } from "~/type/question";
 import { SimpleFullContent } from "../simple-content";
 import { StringValidator } from "~/util/string";
 
+/// 选择题选项样式--试卷和题库均使用后续移动到父级
+
 // 单个选项样式
 interface SingleOptionShowProps {
   label: string;

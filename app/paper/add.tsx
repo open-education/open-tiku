@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ChapterDropdownNav } from "~/common/nav";
 import { TagSelect } from "~/common/paper/tag";
 import { GradeSelect } from "~/common/paper/grade";
@@ -252,7 +252,7 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
   const [addWarnInfo, setAddWarnInfo] = useState<React.ReactNode>("");
 
   // 提交试卷
-  const handleAddPaper = useCallback((status: number) => {
+  const handleAddPaper = (status: number) => {
     // 检查必填参数是否为空
     if (paper.relatedId <= 0) {
       toast.error(<div className="text-red-700">学段/考点不能为空</div>, {
@@ -339,10 +339,10 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
         setDrafing(false);
         setApproving(false);
       });
-  }, []);
+  };
 
   return (
-    <div>
+    <div className="text-sm pl-4 pr-4">
       <div>
         <p>1. 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜</p>
         <p>2. 但是个人使用比如 DeepSeek 几乎是完全免费的, 因此需要个人借助其它 ai 平台将试卷题目转化为 markdown 格式后拷贝过来上传</p>
@@ -366,9 +366,9 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
           <ResizablePanel defaultSize="50%">
             <div>
               <div className="flex flex-col gap-3">
-                <div className="grid grid-cols-5 gap-4 items-center">
-                  <div className="col-span-1">学段/考点</div>
-                  <div className="col-span-4">
+                <div className="grid grid-cols-10 gap-1 items-center">
+                  <div className="col-span-1">学段/考点:</div>
+                  <div className="col-span-9">
                     <ChapterDropdownNav
                       textbooks={textbooks}
                       onSelect={(selectedItems: Textbook[]) => {
@@ -389,36 +389,37 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
                   </div>
                 </div>
 
-                <div className="grid grid-cols-5 gap-4 items-center">
-                  <div className="col-span-1">标签</div>
-                  <div className="col-span-4">
+                <div className="grid grid-cols-10 gap-1 items-center">
+                  <div className="col-span-1">标签:</div>
+                  <div className="col-span-9">
                     <TagSelect
                       options={StringConst.examTags}
                       defaultValue={paper.tag ?? ""}
                       onSelect={(val) => {
+                        console.log("val: ", val);
                         updatePaperMeta("tag", val);
                       }}
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-5 gap-4 items-center">
-                  <div className="col-span-1">年份</div>
-                  <div className="col-span-4">
+                <div className="grid grid-cols-10 gap-1 items-center">
+                  <div className="col-span-1">年份:</div>
+                  <div className="col-span-9">
                     <YearSelect value={paper.year ?? ""} onValueChange={(val) => updatePaperMeta("year", val ?? "")} placeholder="选择年份" />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-5 gap-4 items-center">
-                  <div className="col-span-1">年级</div>
-                  <div className="col-span-4">
+                <div className="grid grid-cols-10 gap-1 items-center">
+                  <div className="col-span-1">年级:</div>
+                  <div className="col-span-9">
                     <GradeSelect value={paper.grade ?? ""} onValueChange={(val) => updatePaperMeta("grade", val ?? "")} placeholder="选择年级" />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-5 gap-4 items-center">
-                  <div className="col-span-1">学期</div>
-                  <div className="col-span-4">
+                <div className="grid grid-cols-10 gap-1 items-center">
+                  <div className="col-span-1">学期:</div>
+                  <div className="col-span-9">
                     <SemesterSelect
                       value={paper.semester ?? ""}
                       onValueChange={(val) => updatePaperMeta("semester", val ?? "")}
@@ -427,16 +428,16 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
                   </div>
                 </div>
 
-                <div className="grid grid-cols-5 gap-4 items-center">
-                  <div className="col-span-1">标题</div>
-                  <div className="col-span-4">
+                <div className="grid grid-cols-10 gap-1 items-center">
+                  <div className="col-span-1">标题:</div>
+                  <div className="col-span-9">
                     <Textarea value={paper.title} onChange={(e) => updatePaperMeta("title", e.target.value)} placeholder={"请输入试卷标题"} />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-5 gap-4 items-center">
-                  <div className="col-span-1">分数</div>
-                  <div className="col-span-4">
+                <div className="grid grid-cols-10 gap-1 items-center">
+                  <div className="col-span-1">分数:</div>
+                  <div className="col-span-9">
                     <Input
                       type="number"
                       value={paper.score}
@@ -448,16 +449,16 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
                   </div>
                 </div>
 
-                <div className="grid grid-cols-5 gap-4 items-center">
-                  <div className="col-span-1">来源</div>
-                  <div className="col-span-4">
+                <div className="grid grid-cols-10 gap-1 items-center">
+                  <div className="col-span-1">来源:</div>
+                  <div className="col-span-9">
                     <Textarea value={paper.source} onChange={(e) => updatePaperMeta("source", e.target.value)} placeholder={"请输入试卷来源"} />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-5 gap-4 items-center">
-                  <div className="col-span-1">备注</div>
-                  <div className="col-span-4">
+                <div className="grid grid-cols-10 gap-1 items-center">
+                  <div className="col-span-1">备注:</div>
+                  <div className="col-span-9">
                     <Textarea value={paper.remark} onChange={(e) => updatePaperMeta("remark", e.target.value)} placeholder={"请输入备注信息"} />
                   </div>
                 </div>
@@ -538,13 +539,13 @@ function GroupCard({
             value={group.typeName}
             onChange={(e) => onUpdateGroup("typeName", e.target.value)}
             placeholder="题型名称，如：选择题、填空题、解答题..."
-            className="w-48 text-sm"
+            className="w-48"
           />
           <Input
             value={group.subTitle}
             onChange={(e) => onUpdateGroup("subTitle", e.target.value)}
             placeholder="题型描述, 如: 本题共8小题, 每小题5分"
-            className="flex-1 min-w-50 text-sm"
+            className="flex-1 min-w-50"
           />
           <Button variant="destructive" size="sm" onClick={onRemoveGroup}>
             <Trash2 className="h-4 w-4" />
@@ -588,7 +589,7 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
     <div className="border rounded-lg p-4 space-y-3 bg-white">
       {/* 题号 + 删除 */}
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-muted-foreground">{question.order}. 小题</span>
+        <span className="text-muted-foreground">{question.order}. 小题</span>
         <Button variant="ghost" size="sm" onClick={onRemove} className="h-6 w-6 p-0">
           <X className="h-4 w-4" />
         </Button>
@@ -596,23 +597,23 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
 
       {/* 题干 */}
       <div className="space-y-1">
-        <Label className="text-xs">题干</Label>
+        <Label>题干</Label>
         <Textarea
           value={question.stem}
           onChange={(e) => onUpdate("stem", e.target.value)}
           placeholder="从 Markdown 中复制题干粘贴到这里..."
-          className="min-h-15 font-mono text-sm"
+          className="min-h-15"
         />
       </div>
 
       {/* 选项 - 默认不显示，用户点击添加才出现 */}
       {question.options.length > 0 && (
         <div className="space-y-1">
-          <Label className="text-xs">选项</Label>
+          <Label>选项</Label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {question.options.map((opt, idx) => (
               <div key={idx} className="flex items-center gap-2">
-                <span className="font-mono font-medium w-5 text-sm text-muted-foreground">{StringConst.optionLabels[idx]}.</span>
+                <span className="w-5 text-muted-foreground">{StringConst.optionLabels[idx]}.</span>
                 <Input
                   value={opt.content}
                   onChange={(e) => {
@@ -625,7 +626,7 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
                     onUpdateOption(idx, newOpt);
                   }}
                   placeholder={`选项 ${StringConst.optionLabels[idx]}`}
-                  className="flex-1 text-sm"
+                  className="flex-1"
                 />
                 <Button variant="ghost" size="sm" onClick={() => onRemoveOption(idx)} className="h-6 w-6 p-0">
                   <X className="h-3 w-3" />
@@ -653,29 +654,18 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
       {/* 答案 + 分值 */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="space-y-1 sm:col-span-2">
-          <Label className="text-xs">答案</Label>
-          <Input
-            value={question.answer}
-            onChange={(e) => onUpdate("answer", e.target.value)}
-            placeholder="如: A 或 ABD 或 2 或 略"
-            className="text-sm"
-          />
+          <Label>答案</Label>
+          <Input value={question.answer} onChange={(e) => onUpdate("answer", e.target.value)} placeholder="如: A 或 ABD 或 2 或 略" />
         </div>
         <div className="space-y-1">
-          <Label className="text-xs">分值</Label>
-          <Input
-            type="number"
-            value={question.score}
-            onChange={(e) => onUpdate("score", Number(e.target.value))}
-            placeholder="5"
-            className="text-sm"
-          />
+          <Label>分值</Label>
+          <Input type="number" value={question.score} onChange={(e) => onUpdate("score", Number(e.target.value))} placeholder="5" />
         </div>
       </div>
 
       {/* 解析 */}
       <div className="space-y-1">
-        <Label className="text-xs">解析</Label>
+        <Label>解析</Label>
         <Textarea
           value={question.analysis.content}
           onChange={(e) => {
@@ -686,7 +676,7 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
             onUpdate("analysis", newAnalysis);
           }}
           placeholder="从 Markdown 中复制解析内容粘贴到这里..."
-          className="min-h-12.5 font-mono text-sm"
+          className="min-h-12.5"
         />
       </div>
     </div>

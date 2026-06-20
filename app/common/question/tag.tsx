@@ -7,6 +7,7 @@ import type { QuestionInfoResp } from "~/type/question";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
 import { QuestionInfo } from "~/common/question/meta";
+import { SimilarQuestionList } from "~/question/similar";
 
 interface TypeSelectProps {
   /** 标签选项数组 */
@@ -137,18 +138,30 @@ function TagShow({ typeValue, tagNames, difficultyLevelValue }: TagShowProps) {
 // 查看题目详情编辑等标签操作
 interface OperateTagsProps {
   questionId: number; // 题目主键
+  eightId: number; // 第8层题型标识
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
-  setSheetTitle: (value: string) => void;
+  setSheetTitle: (value: React.ReactNode) => void;
+  setSheetDesc: (value: React.ReactNode) => void;
   setSheetContent: (value: React.ReactNode) => void;
 
   // 提示加载中
   setLoading?: (value: boolean) => void;
 }
-function OperateTags({ questionId, questionTypeDict, questionTagDict, setOpenSheet, setSheetTitle, setSheetContent, setLoading }: OperateTagsProps) {
+function OperateTags({
+  questionId,
+  eightId,
+  questionTypeDict,
+  questionTagDict,
+  setOpenSheet,
+  setSheetTitle,
+  setSheetDesc,
+  setSheetContent,
+  setLoading,
+}: OperateTagsProps) {
   // 查看详情
   const handleViewInfo = () => {
     setLoading?.(true);
@@ -178,8 +191,15 @@ function OperateTags({ questionId, questionTypeDict, questionTagDict, setOpenShe
     setOpenSheet(true);
   };
 
-  // 查看变式题
-  const handleViewSimiar = () => {};
+  // 查看变式题列表
+  const handleViewSimiarList = () => {
+    setOpenSheet(true);
+    setSheetTitle("变式题列表");
+    setSheetDesc("变式题暂不支持查看详情");
+    setSheetContent(
+      <SimilarQuestionList questionTypeDict={questionTypeDict} questionTagDict={questionTypeDict} questionId={questionId} eightId={eightId} />,
+    );
+  };
 
   return (
     <>
@@ -192,7 +212,7 @@ function OperateTags({ questionId, questionTypeDict, questionTagDict, setOpenShe
       <Button variant={"link"} onClick={handleAdd}>
         添加变式题
       </Button>
-      <Button variant={"link"} onClick={handleViewSimiar}>
+      <Button variant={"link"} onClick={handleViewSimiarList}>
         查看变式题
       </Button>
     </>

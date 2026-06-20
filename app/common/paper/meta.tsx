@@ -59,17 +59,17 @@ function ExamPaper({ papers, setOpenSheet, setSheetTitle, setSheetContent, setLo
         >
           <CardContent className="px-4 py-3.5 flex flex-col h-full">
             <div className="flex items-start justify-between gap-2 mb-2.5">
-              <Badge className={cn("text-[10px] font-medium", StringConstUtil.getExamTagClass(paper.tag))}>{paper.tag}</Badge>
-              {paper.year && <span className="text-[10px] text-muted-foreground shrink-0">{paper.year}</span>}
-              {paper.grade && <span className="text-[11px] text-muted-foreground">{paper.grade}</span>}
-              {paper.semester && <span className="text-[11px] text-muted-foreground">{paper.semester}</span>}
+              <Badge className={cn("", StringConstUtil.getExamTagClass(paper.tag))}>{paper.tag}</Badge>
+              {paper.year && <span className="text-muted-foreground shrink-0">{paper.year}</span>}
+              {paper.grade && <span className="text-muted-foreground">{paper.grade}</span>}
+              {paper.semester && <span className="text-muted-foreground">{paper.semester}</span>}
             </div>
-            <p className="text-[13px] font-medium leading-snug mb-auto line-clamp-2 group-hover:text-primary transition-colors">{paper.title}</p>
+            <p className="text-sm leading-snug mb-auto line-clamp-2 group-hover:text-primary transition-colors">{paper.title}</p>
             <Separator className="mt-3 mb-2.5" />
             <div className="flex items-center justify-between">
-              <span className="text-[11px] text-muted-foreground">{paper.authorName}</span>
-              <span className="text-[11px] text-muted-foreground">{paper.createdAt}</span>
-              <span className="text-[11px] text-muted-foreground">{paper.count} 题</span>
+              <span className="text-muted-foreground">{paper.authorName}</span>
+              <span className="text-muted-foreground">{paper.createdAt}</span>
+              <span className="text-muted-foreground">{paper.count} 题</span>
             </div>
           </CardContent>
         </Card>
@@ -85,9 +85,9 @@ function ExamPaperHeader() {
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           <FileText size={14} className="text-muted-foreground" />
-          <span className="text-sm font-medium">精选试卷</span>
+          <span className="">精选试卷</span>
         </div>
-        <Badge variant="outline" className="text-[10px] font-normal">
+        <Badge variant="outline" className="font-normal">
           中高考 · 期末月考 · 名校特供
         </Badge>
       </div>
@@ -110,11 +110,23 @@ function ExamPaperMeta({ paperMeta }: ExamPaperMetaProps) {
     const groupName = subTitle
       ? `${StringConst.groupNumberMap[index]}、${typeName}（${subTitle}）`
       : `${StringConst.groupNumberMap[index]}、${typeName}`;
-    return <div className="text-base">{groupName}</div>;
+    return <div className="text-sm">{groupName}</div>;
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 pl-4 pr-4">
+      {/* 来源和备注, 只展示存在的信息 */}
+      <div className="flex flex-col gap-1">
+        {paperMeta.score > 0 && <div>分数: {paperMeta.score}</div>}
+        {paperMeta.authorName && (
+          <div>
+            由 <span className="text-sm font-medium text-blue-600">{paperMeta.authorName}</span> 上传
+          </div>
+        )}
+        {paperMeta.source && <div>来源: {paperMeta.source}</div>}
+        {paperMeta.remark && <div>备注: {paperMeta.remark}</div>}
+      </div>
+
       {/* 生成标签 */}
       <div className="flex gap-3 items-center w-full">
         <TagShow
@@ -126,28 +138,8 @@ function ExamPaperMeta({ paperMeta }: ExamPaperMetaProps) {
         />
       </div>
 
-      {/* 来源和备注 */}
-      <div className="flex flex-col gap-3">
-        <div className="grid grid-cols-5 gap-2 items-center">
-          <div className="col-span-1">试卷分数</div>
-          <div className="col-span-4">{paperMeta.score}</div>
-        </div>
-        <div className="grid grid-cols-5 gap-2 items-center">
-          <div className="col-span-1">上传</div>
-          <div className="col-span-4">{paperMeta.authorName}</div>
-        </div>
-        <div className="grid grid-cols-5 gap-2 items-center">
-          <div className="col-span-1">试卷来源</div>
-          <div className="col-span-4">{paperMeta.source}</div>
-        </div>
-        <div className="grid grid-cols-5 gap-2 items-center">
-          <div className="col-span-1">备注</div>
-          <div className="col-span-4">{paperMeta.remark}</div>
-        </div>
-      </div>
-
       {/* 标题 */}
-      <div className="text-lg text-center">{paperMeta.title}</div>
+      <div className="text-base font-medium text-center">{paperMeta.title}</div>
 
       {/* 试卷内容 */}
       {paperMeta.groups?.map((group, idx) => {

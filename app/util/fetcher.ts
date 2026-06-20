@@ -4,7 +4,7 @@ import { httpClient } from "~/util/http";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import type { PaperListReq, PaperListResp, PaperMeta, PaperMetaSearch } from "~/type/paper";
 import { StringConst, StringValidator } from "~/util/string";
-import type { QuestionListReq, QuestionListResp, QuestionSearch } from "~/type/question";
+import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from "~/type/question";
 
 /// 使用 SWR 缓存查询组件
 /// https://swr.vercel.app/
@@ -87,4 +87,16 @@ export function useQuestionList(search: QuestionSearch, pageNo: number) {
   return useSWR(key, () => httpClient.post<QuestionListResp>("/question/list", req), {
     keepPreviousData: true, // 分页切换时保留旧数据，体验更好
   });
+}
+
+// 变式题列表, 只展示题干, 不展示详情, 因为变式题本身在列表题目中
+export function useSimilarList(questionId: number, eightId: number, pageNo: number) {
+  const req: QuestionSimilarListReq = {
+    questionId: questionId,
+    questionCateId: eightId,
+    pageNo: pageNo,
+    pageSize: StringConst.pageSize,
+  };
+
+  return useSWR({ url: "/question/similar", data: req }, ({ url, data }) => httpClient.post(url, data));
 }
