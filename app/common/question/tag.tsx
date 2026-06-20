@@ -1,5 +1,3 @@
-/// 题目题目相关标签选择器
-
 import { useState } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -8,6 +6,8 @@ import type { TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
 import { QuestionInfo } from "~/common/question/meta";
 import { SimilarQuestionList } from "~/question/similar";
+
+/// 题目题目相关标签选择器
 
 interface TypeSelectProps {
   /** 标签选项数组 */
