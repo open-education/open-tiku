@@ -87,8 +87,8 @@ export default function Index() {
 
   // Sheet相关操作变量
   const [openSheet, setOpenSheet] = useState<boolean>(false);
-  const [sheetTitle, setSheetTitle] = useState<React.ReactNode>("");
-  const [sheetDesc, setSheetDesc] = useState<React.ReactNode>("");
+  const [sheetTitle, setSheetTitle] = useState<string>("");
+  const [sheetDesc, setSheetDesc] = useState<string>("");
   const [sheetContent, setSheetContent] = useState<React.ReactNode>("");
 
   // 添加试卷Sheet
@@ -196,7 +196,7 @@ export default function Index() {
       {/* 空数据提示 */}
       {paperListResp.total == 0 && (
         <div className="mt-3">
-          <SimpleNoData desc="没有查找到任何试卷，如有试卷，可以尝试上传试卷，管理员审核通过后，其他人就可以看到该试卷了。" />
+          <SimpleNoData desc="没有查找到任何试卷，如有试卷，可以尝试添加试卷，管理员审核通过后，其他人就可以看到该试卷了。" />
         </div>
       )}
 
@@ -209,6 +209,7 @@ export default function Index() {
           papers={paperListResp.list}
           setOpenSheet={setOpenSheet}
           setSheetTitle={setSheetTitle}
+          setSheetDesc={setSheetDesc}
           setSheetContent={setSheetContent}
           setLoading={setIsLoading}
         />

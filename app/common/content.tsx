@@ -11,12 +11,12 @@ import { table } from "~/common/table";
 
 /// 简单的 markdown 内容
 
-interface ContentProps {
+interface SimpleFullContentProps {
   content: string;
 }
 
 // 完整: 尽可能解析所有的内容
-function SimpleFullContent(props: ContentProps) {
+function SimpleFullContent(props: SimpleFullContentProps) {
   const { content } = props;
 
   return (

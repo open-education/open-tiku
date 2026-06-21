@@ -3,10 +3,10 @@ import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { Lightbulb, CheckCircle2, Layers, AlertCircle } from "lucide-react";
 import type { QuestionInfoResp } from "~/type/question";
-import { SimpleFullContent } from "~/common/simple-content";
+import { SimpleFullContent } from "~/common/content";
 import { TagShow } from "~/common/question/tag";
 import { TitleShow } from "~/common/question/title";
-import { MultiOptionShow } from "./select";
+import { MultiOptionShow } from "~/common/question/select";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { DictUtil } from "~/util/object";
 
@@ -17,17 +17,11 @@ interface QuestionInfoProps {
   infoResp: QuestionInfoResp;
 }
 function QuestionInfo({ questionTypeDict, questionTagDict, infoResp }: QuestionInfoProps) {
+  // 有详情返回时优先详情返回, 否则理解为预览数据
   const { baseInfo, extraInfo } = infoResp;
 
-  // todo ---------- 静态数据 ----------
-  const solutionSteps = [
-    { id: 1, desc: "将 x = 2 代入 f(x) = x² + 2x + 1" },
-    { id: 2, desc: "计算乘方：2² = 4" },
-    { id: 3, desc: "计算乘法与加法：4 + 4 + 1 = 9" },
-  ];
-
   return (
-    <div className="my-2.5 space-y-8">
+    <div className="space-y-4 pl-4 pb-4 pr-4">
       {/* 题目 */}
       <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
         <CardContent className="space-y-6">
@@ -117,7 +111,7 @@ function QuestionInfo({ questionTypeDict, questionTagDict, infoResp }: QuestionI
               {/* 竖向连接线 */}
               <div className="absolute left-4.75 top-3 bottom-3 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
 
-              {solutionSteps.map((step, idx) => (
+              {baseInfo.steps?.map((step, idx) => (
                 <div key={idx} className="relative flex items-start gap-4 pb-4 last:pb-0 group">
                   {/* 序号圆点 */}
                   <div className="relative z-10 flex items-center justify-center w-9 h-9 rounded-full bg-white dark:bg-gray-900 border-2 border-indigo-200 dark:border-indigo-800 group-hover:border-indigo-500 transition-colors shadow-sm shrink-0">
@@ -125,7 +119,7 @@ function QuestionInfo({ questionTypeDict, questionTagDict, infoResp }: QuestionI
                   </div>
                   {/* 步骤内容 */}
                   <div className="pt-1.5 pb-1 px-4 bg-gray-50/50 dark:bg-gray-900/30 rounded-lg border border-gray-100 dark:border-gray-800 flex-1 hover:bg-gray-100/50 dark:hover:bg-gray-800/30 transition-colors">
-                    <p className=" text-gray-700 dark:text-gray-300 leading-relaxed">{step.desc}</p>
+                    <p className=" text-gray-700 dark:text-gray-300 leading-relaxed">{step.content}</p>
                   </div>
                 </div>
               ))}

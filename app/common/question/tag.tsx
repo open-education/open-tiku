@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import type { QuestionInfoResp } from "~/type/question";
+import type { QuestionInfoResp, QuestionSearch } from "~/type/question";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
-import { QuestionInfo } from "~/common/question/meta";
+import { QuestionInfo } from "~/common/question/info";
 import { SimilarQuestionList } from "~/question/similar";
+import Add from "~/question/add";
+import { toast } from "sonner";
 
 /// 题目题目相关标签选择器
 
@@ -141,11 +143,12 @@ interface OperateTagsProps {
   eightId: number; // 第8层题型标识
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
+  questionSearch: QuestionSearch;
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
-  setSheetTitle: (value: React.ReactNode) => void;
-  setSheetDesc: (value: React.ReactNode) => void;
+  setSheetTitle: (value: string) => void;
+  setSheetDesc: (value: string) => void;
   setSheetContent: (value: React.ReactNode) => void;
 
   // 提示加载中
@@ -156,6 +159,7 @@ function OperateTags({
   eightId,
   questionTypeDict,
   questionTagDict,
+  questionSearch,
   setOpenSheet,
   setSheetTitle,
   setSheetDesc,
@@ -169,12 +173,12 @@ function OperateTags({
     httpClient
       .get<QuestionInfoResp>(`/question/info/${questionId}`)
       .then((res) => {
-        setOpenSheet(true);
         setSheetTitle("查看详情");
         setSheetContent(<QuestionInfo questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} infoResp={res} />);
+        setOpenSheet(true);
       })
       .catch((err) => {
-        console.log(err);
+        toast.error(<div className="text-red-700">`查询题目详情出错: ${err.message}`</div>);
       })
       .finally(() => {
         setLoading?.(false);
@@ -183,22 +187,53 @@ function OperateTags({
 
   // 编辑详情
   const handleEditInfo = () => {
-    setOpenSheet(true);
+    setLoading?.(true);
+
+    httpClient
+      .get<QuestionInfoResp>(`/question/info/${questionId}`)
+      .then((res) => {
+        setSheetTitle("编辑详情");
+        setSheetDesc("编辑时 章节/考点 不修改则空值不关心");
+        setSheetContent(
+          <Add
+            questionSearch={questionSearch}
+            setSheetTitle={setSheetTitle}
+            setSheetDesc={setSheetDesc}
+            setSheetContent={setSheetContent}
+            infoResp={res} // 编辑时详情是最高优先级, 会覆盖其它值
+          />,
+        );
+        setOpenSheet(true);
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">`编辑查询题目详情出错: ${err.message}`</div>);
+      })
+      .finally(() => {
+        setLoading?.(false);
+      });
   };
 
   // 添加变式题
-  const handleAdd = () => {
+  const handleSimilarAdd = () => {
+    // 变式题将当前题目主键作为变式题的父题标识
+    const similarSearch = { sourceId: questionId, ...questionSearch };
+
+    setSheetTitle("添加变式题");
+    setSheetDesc("题目需要借助其它 ai 工具转为 markdown 源格式文档后使用");
+    setSheetContent(
+      <Add questionSearch={similarSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
+    );
     setOpenSheet(true);
   };
 
   // 查看变式题列表
-  const handleViewSimiarList = () => {
-    setOpenSheet(true);
+  const handleSimiarList = () => {
     setSheetTitle("变式题列表");
     setSheetDesc("变式题暂不支持查看详情");
     setSheetContent(
       <SimilarQuestionList questionTypeDict={questionTypeDict} questionTagDict={questionTypeDict} questionId={questionId} eightId={eightId} />,
     );
+    setOpenSheet(true);
   };
 
   return (
@@ -209,10 +244,10 @@ function OperateTags({
       <Button variant={"link"} onClick={handleEditInfo}>
         编辑
       </Button>
-      <Button variant={"link"} onClick={handleAdd}>
+      <Button variant={"link"} onClick={handleSimilarAdd}>
         添加变式题
       </Button>
-      <Button variant={"link"} onClick={handleViewSimiarList}>
+      <Button variant={"link"} onClick={handleSimiarList}>
         查看变式题
       </Button>
     </>

@@ -78,7 +78,9 @@ export default function Add(props: any) {
   const [openPreviewArea, setOpenPreviewArea] = useState<boolean>(false);
 
   let [questionInfo, setQuestionInfo] = useState<QuestionBaseInfo>({
-    analysis: undefined,
+    analysis: {
+      content: "",
+    },
     answer: "",
     authorId: 0,
     comment: "",
@@ -89,12 +91,15 @@ export default function Add(props: any) {
     knowledge: "",
     options: [],
     optionsLayout: 0,
-    process: undefined,
+    process: {
+      content: "",
+    },
     questionCateId: 0,
     questionTagIds: [],
     questionTypeId: 0,
     remark: "",
     title: "",
+    originalName: "",
   });
 
   // 首页页面的值用于展示和提交
@@ -170,6 +175,7 @@ export default function Add(props: any) {
       questionTypeId: questionTypeVal,
       remark: remarkVal,
       title: titleVal,
+      originalName: "",
     };
   };
 
@@ -198,6 +204,7 @@ export default function Add(props: any) {
         questionTypeId: currentInfo.questionTypeId,
         title: currentInfo.title,
         difficultyLevel: currentInfo.difficultyLevel,
+        originalName: "",
       };
       if (currentInfo.sourceId && currentInfo.sourceId > 0) {
         uploadReq.sourceId = currentInfo.sourceId;

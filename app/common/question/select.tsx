@@ -1,5 +1,5 @@
 import type { QuestionOption } from "~/type/question";
-import { SimpleFullContent } from "~/common/simple-content";
+import { SimpleFullContent } from "~/common/content";
 import { StringValidator } from "~/util/string";
 
 /// 选择题选项样式--试卷和题库均使用后续移动到父级
@@ -67,11 +67,6 @@ function MultiOptionShow({ optionsLayout = 2, options = [] }: MultiOptionShowPro
     );
   } else {
     // 将数组分成两部分, 5各选项的如果后续需要再调整样式, 5个选项一般选择一列的样式应该是最好的
-    const options: QuestionOption[] = props.options ?? [];
-    if (options.length === 0) {
-      return "";
-    }
-
     const mid = Math.floor(options.length / 2);
     const firstHalf = options.slice(0, mid);
     const secondHalf = options.slice(mid);

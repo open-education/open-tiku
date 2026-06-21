@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import type { QuestionOption } from "~/type/question";
 import type { PaperQuestion } from "~/type/paper";
-import { SimpleFullContent } from "~/common/simple-content";
-import { MultiOptionShow } from "../question/select";
-import { TitleShow } from "../question/title";
+import { SimpleFullContent } from "~/common/content";
+import { MultiOptionShow } from "~/common/question/select";
+import { TitleShow } from "~/common/question/title";
 import { Button } from "~/components/ui/button";
 
 /// 试卷题目样式

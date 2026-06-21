@@ -1,4 +1,4 @@
-import type { QuestionBaseInfoResp, QuestionListResp } from "~/type/question";
+import type { QuestionBaseInfoResp, QuestionListResp, QuestionSearch } from "~/type/question";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { OperateTags, TagShow } from "~/common/question/tag";
 import { DictUtil } from "~/util/object";
@@ -12,11 +12,12 @@ interface QuestionListShowProps {
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
   listResp: QuestionListResp;
+  questionSearch: QuestionSearch;
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
-  setSheetTitle: (value: React.ReactNode) => void;
-  setSheetDesc: (value: React.ReactNode) => void;
+  setSheetTitle: (value: string) => void;
+  setSheetDesc: (value: string) => void;
   setSheetContent: (value: React.ReactNode) => void;
 
   // 提示加载中
@@ -26,6 +27,7 @@ function QuestionListShow({
   questionTypeDict,
   questionTagDict,
   listResp,
+  questionSearch,
   setOpenSheet,
   setSheetTitle,
   setSheetDesc,
@@ -36,7 +38,7 @@ function QuestionListShow({
     <>
       {listResp.list?.map((questionInfo) => {
         return (
-          <div key={questionInfo.id} className="mt-4 pt-3 bg-white">
+          <div key={questionInfo.id} className="mt-4 p-3 bg-white">
             {/* 题干选项等部分 */}
             <SingleQuestionCommonPart questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} questionInfo={questionInfo} />
 
@@ -47,6 +49,7 @@ function QuestionListShow({
                 questionTagDict={questionTagDict}
                 questionId={questionInfo.id}
                 eightId={questionInfo.questionCateId}
+                questionSearch={questionSearch}
                 setOpenSheet={setOpenSheet}
                 setSheetTitle={setSheetTitle}
                 setSheetDesc={setSheetDesc}

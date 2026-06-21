@@ -4,6 +4,7 @@ import { SimpleNoData } from "~/common/empty";
 import { Loading } from "~/common/load";
 import { SimplePagination } from "~/common/page";
 import { SimilarQuestionListShow } from "~/common/question/list";
+import { Separator } from "~/components/ui/separator";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { useSimilarList } from "~/util/fetcher";
 import { StringConst } from "~/util/string";
@@ -33,7 +34,11 @@ export function SimilarQuestionList({ questionTypeDict, questionTagDict, questio
   } = useSimilarList(questionId, eightId, pageNo);
 
   return (
-    <div className="pl-4">
+    <div className="pl-4 pb-4 pr-4">
+      <div>
+        <Separator />
+      </div>
+
       {/* 空数据提示 */}
       {listResp.total == 0 && (
         <div className="mt-3">

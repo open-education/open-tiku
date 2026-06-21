@@ -109,8 +109,8 @@ export default function Index() {
 
   // Sheet相关操作变量
   const [openSheet, setOpenSheet] = useState<boolean>(false);
-  const [sheetTitle, setSheetTitle] = useState<React.ReactNode>("");
-  const [sheetDesc, setSheetDesc] = useState<React.ReactNode>("");
+  const [sheetTitle, setSheetTitle] = useState<string>("");
+  const [sheetDesc, setSheetDesc] = useState<string>("");
   const [sheetContent, setSheetContent] = useState<React.ReactNode>("");
 
   return (
@@ -137,7 +137,13 @@ export default function Index() {
       {/* 精选试卷 */}
       <div className="ml-4 mr-4 mt-3">
         <ExamPaperHeader />
-        <ExamPaper papers={latestPapers} setOpenSheet={setOpenSheet} setSheetTitle={setSheetTitle} setSheetContent={setSheetContent} />
+        <ExamPaper
+          papers={latestPapers}
+          setOpenSheet={setOpenSheet}
+          setSheetTitle={setSheetTitle}
+          setSheetDesc={setSheetDesc}
+          setSheetContent={setSheetContent}
+        />
       </div>
 
       {/* 统计面板 */}

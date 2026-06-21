@@ -18,6 +18,7 @@ import { SimpleSheet } from "~/common/sheet";
 import { SimpleNoData } from "~/common/empty";
 import { ArrayUtil } from "~/util/object";
 import { QuestionListShow } from "~/common/question/list";
+import Add from "~/question/add";
 import "katex/dist/katex.min.css";
 
 /// 题目首页
@@ -35,28 +36,36 @@ export default function Home() {
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
   // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
-  const pathMap: Map<string, Textbook[]> = createTextbookPathDict(textbooks);
+  const pathMap = useMemo(() => {
+    return createTextbookPathDict(textbooks);
+  }, [textbooks]);
 
   // 搜索对象维护
   const [questionSearch, setQuestionSearch] = useState<QuestionSearch>({
     twoLevelId: 0,
-    fiveLevelId: selectNavProps.relatedId ?? 0,
+    fiveLevelId: selectNavProps.relatedId > 0 ? selectNavProps.relatedId : 0,
+    fiveLevelSelectKeys: [],
     eightId: 0,
+    eightLevelSelectKeys: [],
     typeId: 0,
     tagIds: [],
     id: 0,
   });
-  const updateQuestionSearch = (key: keyof QuestionSearch, value: number | number[]) => {
+  const updateQuestionSearch = (key: keyof QuestionSearch, value: number | number[] | string[]) => {
     setQuestionSearch((prev) => ({ ...prev, [key]: value }));
   };
 
   useEffect(() => {
     // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再2层深度上, 因此只要有2层深度就可以把题型类型和标签返回, 后续如果有优化再处理
     // 很明显 fiveLevelId 是选择下拉菜单触发的优先级最高
+    if (!questionSearch.fiveLevelId || pathMap.size === 0) {
+      return;
+    }
+
     const nodes = pathMap.get(questionSearch.fiveLevelId.toString()) ?? [];
     const twoLevelId = nodes.length > 2 ? nodes[1].id : 0;
     updateQuestionSearch("twoLevelId", twoLevelId);
-  }, [questionSearch.fiveLevelId]);
+  }, [questionSearch.fiveLevelId, pathMap]);
 
   // 查询题目类型和标签
   const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionTypes(questionSearch.twoLevelId);
@@ -81,15 +90,18 @@ export default function Home() {
 
   // Sheet相关操作变量
   const [openSheet, setOpenSheet] = useState<boolean>(false);
-  const [sheetTitle, setSheetTitle] = useState<React.ReactNode>("");
-  const [sheetDesc, setSheetDesc] = useState<React.ReactNode>("");
+  const [sheetTitle, setSheetTitle] = useState<string>("");
+  const [sheetDesc, setSheetDesc] = useState<string>("");
   const [sheetContent, setSheetContent] = useState<React.ReactNode>("");
 
   // 添加题目
   const handleAdd = () => {
-    setOpenSheet(true);
     setSheetTitle("添加题目");
-    setSheetContent(<div>这是一段文字</div>);
+    setSheetDesc("");
+    setSheetContent(
+      <Add questionSearch={questionSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
+    );
+    setOpenSheet(true);
   };
 
   return (
@@ -98,21 +110,26 @@ export default function Home() {
       <div className="flex flex-col gap-3">
         {/* 选择前5层级 */}
         <div className="grid grid-cols-10 gap-1 items-center">
-          <div className="col-span-1">年级/考点:</div>
+          <div className="col-span-1">章节/考点:</div>
           <div className="col-span-9">
             <ChapterDropdownNav
               textbooks={textbooks}
               onSelect={(selectedItems: Textbook[]) => {
                 if (!selectedItems) {
                   updateQuestionSearch("fiveLevelId", 0);
+                  updateQuestionSearch("fiveLevelSelectKeys", []);
                   return;
                 }
 
                 const current: Textbook = selectedItems[selectedItems.length - 1];
                 updateQuestionSearch("fiveLevelId", current.id);
+                updateQuestionSearch(
+                  "fiveLevelSelectKeys",
+                  selectedItems.map((item) => item.key),
+                );
               }}
               defaultSelectedKeys={selectNavProps.selectedKeys}
-              placeholder="请选择学段/考点"
+              placeholder="请选择章节/考点"
             />
           </div>
         </div>
@@ -126,11 +143,16 @@ export default function Home() {
               onSelect={(selectedItems: Textbook[]) => {
                 if (!selectedItems) {
                   updateQuestionSearch("eightId", 0);
+                  updateQuestionSearch("eightLevelSelectKeys", []);
                   return;
                 }
 
                 const current: Textbook = selectedItems[selectedItems.length - 1];
                 updateQuestionSearch("eightId", current.id);
+                updateQuestionSearch(
+                  "eightLevelSelectKeys",
+                  selectedItems.map((info) => info.key),
+                );
               }}
               defaultSelectedKeys={[]}
               placeholder="请选择题型"
@@ -240,11 +262,12 @@ export default function Home() {
       )}
 
       {/* 题目列表 */}
-      <div className="pt-3">
+      <div>
         <QuestionListShow
           questionTypeDict={questionTypeDict}
           questionTagDict={questionTagDict}
           listResp={questionListResp}
+          questionSearch={questionSearch}
           setOpenSheet={setOpenSheet}
           setSheetTitle={setSheetTitle}
           setSheetDesc={setSheetDesc}

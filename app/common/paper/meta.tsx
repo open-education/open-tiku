@@ -20,13 +20,14 @@ interface ExamPaperProps {
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
   setSheetTitle: (value: string) => void;
+  setSheetDesc: (value: string) => void;
   setSheetContent: (value: React.ReactNode) => void;
 
   // 提示加载中
   setLoading?: (value: boolean) => void;
 }
 
-function ExamPaper({ papers, setOpenSheet, setSheetTitle, setSheetContent, setLoading }: ExamPaperProps) {
+function ExamPaper({ papers, setOpenSheet, setSheetTitle, setSheetDesc, setSheetContent, setLoading }: ExamPaperProps) {
   // 点击卡片展示详情
   const handleClickCard = (id: number) => {
     setLoading?.(true);
@@ -37,6 +38,7 @@ function ExamPaper({ papers, setOpenSheet, setSheetTitle, setSheetContent, setLo
         // 查询成功后加载右侧 Sheet 详情信息
         setOpenSheet(true);
         setSheetTitle("查看详情");
+        setSheetDesc("");
         setSheetContent(<ExamPaperMeta paperMeta={res} />);
       })
       .catch((err) => {
@@ -114,7 +116,11 @@ function ExamPaperMeta({ paperMeta }: ExamPaperMetaProps) {
   };
 
   return (
-    <div className="flex flex-col gap-3 pl-4 pr-4">
+    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4">
+      <div>
+        <Separator />
+      </div>
+
       {/* 来源和备注, 只展示存在的信息 */}
       <div className="flex flex-col gap-1">
         {paperMeta.score > 0 && <div>分数: {paperMeta.score}</div>}
@@ -125,6 +131,10 @@ function ExamPaperMeta({ paperMeta }: ExamPaperMetaProps) {
         )}
         {paperMeta.source && <div>来源: {paperMeta.source}</div>}
         {paperMeta.remark && <div>备注: {paperMeta.remark}</div>}
+      </div>
+
+      <div>
+        <Separator />
       </div>
 
       {/* 生成标签 */}
@@ -139,14 +149,14 @@ function ExamPaperMeta({ paperMeta }: ExamPaperMetaProps) {
       </div>
 
       {/* 标题 */}
-      <div className="text-base font-medium text-center">{paperMeta.title}</div>
+      <div className="text-base font-bold text-center">{paperMeta.title}</div>
 
       {/* 试卷内容 */}
       {paperMeta.groups?.map((group, idx) => {
         return (
           <div>
             {/* 题型名称 */}
-            <div className="mt-2.5 mb-2.5">{getGroupName(idx, group.typeName, group.subTitle)}</div>
+            <div className="mt-2.5 mb-2.5 font-bold">{getGroupName(idx, group.typeName, group.subTitle)}</div>
 
             {/* 小题列表 */}
             {group.questions?.map((question, idx) => {

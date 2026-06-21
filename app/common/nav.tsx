@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Check, ChevronDown } from "lucide-react";
+import { StringConst } from "~/util/string";
 
 // 章节导航选择
 // 前5层级标识
@@ -198,7 +199,7 @@ function ChapterExpandNav(props: ChapterExpandNavProps) {
 
   return (
     <section>
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden pt-0">
         {/* Progress */}
         <Progress value={(completedCount / 5) * 100} className="rounded-none" />
         <CardContent className="px-6 md:px-8 pt-6 pb-0">
@@ -378,8 +379,8 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
         const node = nodeMap.get(key);
         if (!node) return null;
 
-        // 验证父子关系
-        if (parentKey !== null && node.parentId !== nodeMap.get(parentKey)?.id) {
+        // 验证父子关系, 第8层级不满足这个要求, 第8层级不验证, 第8层的 tableName 字段为 question_cate
+        if (node.tableName !== StringConst.questionCateTableName && parentKey !== null && node.parentId !== nodeMap.get(parentKey)?.id) {
           return null;
         }
 

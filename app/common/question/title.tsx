@@ -1,6 +1,6 @@
 import { StringValidator } from "~/util/string";
-import { SimpleFullContent } from "~/common/simple-content";
-import { ImageZoom } from "../image";
+import { SimpleFullContent } from "~/common/content";
+import { ImageZoom } from "~/common/image";
 
 /// 标题设计--试卷和题库均使用后续移动到父级
 

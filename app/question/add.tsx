@@ -1,0 +1,913 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
+import { Button } from "~/components/ui/button";
+import { Label } from "~/components/ui/label";
+import { Badge } from "~/components/ui/badge";
+import { Separator } from "~/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { FileText, Settings2, ListChecks, Brain, Wand2, Footprints, MessageSquare, ImagePlus, Trash2, Plus, BookOpen } from "lucide-react";
+import type { Content, CreateQuestionReq, QuestionInfoResp, QuestionOption, QuestionSearch } from "~/type/question";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
+import { Watermark } from "~/common/watermark";
+import type { Textbook } from "~/type/textbook";
+import { ChapterDropdownNav } from "~/common/nav";
+import { MultiTagSelect, TypeSelect } from "~/common/question/tag";
+import { StringConst, StringValidator } from "~/util/string";
+import { ArrayUtil } from "~/util/object";
+import { useQuestionCates, useQuestionTags, useQuestionTypes, useTextbooks } from "~/util/fetcher";
+import { SimpleAlert } from "~/common/alert";
+import { Loading } from "~/common/load";
+import { toast } from "sonner";
+import { QuestionInfo } from "~/common/question/info";
+import { httpClient } from "~/util/http";
+import { createTextbookPathDict } from "~/util/textbook-dict";
+
+/// 题目添加和编辑
+
+interface AddProps {
+  questionSearch: QuestionSearch; // 列表页面搜索携带的信息
+  infoResp?: QuestionInfoResp; // 初始化数据信息, 比如修改时会是详情完整信息
+
+  setSheetTitle: (value: string) => void;
+  setSheetDesc: (value: string) => void;
+  setSheetContent: (value: React.ReactNode) => void;
+}
+
+export default function Add({
+  questionSearch = {
+    twoLevelId: 0,
+    fiveLevelId: 0,
+    eightId: 0,
+    typeId: 0,
+    tagIds: [],
+    id: 0,
+    fiveLevelSelectKeys: [],
+    eightLevelSelectKeys: [],
+  },
+  infoResp = {
+    baseInfo: {
+      id: 0,
+      questionCateId: 0,
+      questionTypeId: 0,
+      originalName: "",
+      title: "",
+      contentPlain: "",
+      comment: "",
+      difficultyLevel: 1.0,
+    },
+    extraInfo: {},
+  },
+  setSheetTitle,
+  setSheetDesc,
+  setSheetContent,
+}: AddProps) {
+  console.log("questionSearch: ", questionSearch);
+  // 初始化数据状态管理
+  const initAddDefaultReq = useMemo(() => {
+    // infoResp 为详情传递过来的完整信息, 优先级最高
+    if (infoResp.baseInfo.id > 0) {
+      return { ...infoResp.baseInfo, ...infoResp.extraInfo };
+    }
+
+    // 初始化部分默认值
+    const initAddDefault: CreateQuestionReq = {
+      questionCateId: 0,
+      questionTypeId: 0,
+      originalName: "",
+      title: "",
+      difficultyLevel: 1.0,
+      optionsLayout: 1,
+      source: "",
+    };
+
+    // questionSearch 为列表页传递过来的数据, 可能选也可能为空
+    if (questionSearch.eightId > 0) {
+      initAddDefault.questionCateId = questionSearch.eightId;
+    }
+    if (questionSearch.typeId > 0) {
+      initAddDefault.questionTypeId = questionSearch.typeId;
+    }
+    if (questionSearch.tagIds.length > 0) {
+      initAddDefault.questionTagIds = questionSearch.tagIds;
+    }
+    if (questionSearch.sourceId && questionSearch.sourceId > 0) {
+      // 此时为变式题母题标识id
+      initAddDefault.sourceId = questionSearch.sourceId;
+    }
+
+    return initAddDefault;
+  }, []);
+  const [addReq, setAddReq] = useState<CreateQuestionReq>(initAddDefaultReq);
+  const updateAddReq = (key: keyof CreateQuestionReq, value: number | number[] | string | string[]) => {
+    setAddReq((prev) => ({ ...prev, [key]: value }));
+  };
+
+  // 两层导航信息要单独管理
+  const [twoLevelId, setTwoLevelId] = useState<number>(questionSearch.twoLevelId);
+  const [fiveLevelId, setFiveLevelId] = useState<number>(questionSearch.fiveLevelId);
+
+  // 5层导航信息
+  const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
+  // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
+  const pathMap: Map<string, Textbook[]> = createTextbookPathDict(textbooks);
+
+  useEffect(() => {
+    // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再2层深度上, 因此只要有2层深度就可以把题型类型和标签返回, 后续如果有优化再处理
+    // 很明显 fiveLevelId 是选择下拉菜单触发的优先级最高
+    const nodes = pathMap.get(fiveLevelId.toString()) ?? [];
+    const twoLevelId = nodes.length > 2 ? nodes[1].id : 0;
+    setTwoLevelId(twoLevelId);
+  }, [fiveLevelId]);
+
+  // 查询题目类型和标签
+  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionTypes(twoLevelId);
+  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, "id"), [questionTypes]);
+
+  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionTags(twoLevelId);
+  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
+
+  // 获取教材/考点题型列表
+  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
+
+  // 是否是选择题, 列表页可能携带需要填充默认值
+  const [isChoice, setIsChoice] = useState<boolean>(questionTypeDict[addReq.questionTypeId]?.isSelect);
+
+  // 按钮提交状态
+  const [drafing, setDrafing] = useState<boolean>(false);
+  const [approving, setApproving] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [addWarnInfo, setAddWarnInfo] = useState<React.ReactNode>("");
+
+  // 更新解题分析和解题过程
+  const updateContent = (field: "analysis" | "process", key: keyof Content, value: string | string[]) => {
+    setAddReq((prev) => ({
+      ...prev,
+      [field]: {
+        ...((prev[field] as Content) || {}),
+        [key]: value,
+      },
+    }));
+  };
+
+  // 添加选项
+  const addOption = () => {
+    const current = addReq.options || [];
+    const newLabel = String.fromCharCode(65 + current.length);
+    setAddReq((prev) => ({
+      ...prev,
+      options: [...current, { label: newLabel, content: "", images: [], order: current.length }],
+    }));
+  };
+
+  // 移除选项
+  const removeOption = (index: number) => {
+    setAddReq((prev) => ({
+      ...prev,
+      options: prev.options?.filter((_, i) => i !== index) || [],
+    }));
+  };
+
+  // 更新选项
+  const updateOption = (index: number, field: keyof QuestionOption, value: string | string[] | number) => {
+    setAddReq((prev) => {
+      const newOptions = [...(prev.options || [])];
+      newOptions[index] = { ...newOptions[index], [field]: value };
+      return { ...prev, options: newOptions };
+    });
+  };
+
+  // 步骤逻辑
+  const addStep = () => {
+    const current = addReq.steps || [];
+    setAddReq((prev) => ({
+      ...prev,
+      steps: [...current, { id: current.length + 1, content: "" }],
+    }));
+  };
+  const removeStep = (index: number) => {
+    setAddReq((prev) => ({
+      ...prev,
+      steps: prev.steps?.filter((_, i) => i !== index) || [],
+    }));
+  };
+  const updateStep = (index: number, content: string) => {
+    setAddReq((prev) => {
+      const newSteps = [...(prev.steps || [])];
+      newSteps[index] = { ...newSteps[index], content };
+      return { ...prev, steps: newSteps };
+    });
+  };
+
+  // 图片增删简写
+  const addImageToField = (field: "images" | "analysis.images" | "process.images", url: string) => {
+    if (field === "images") setAddReq((p) => ({ ...p, images: [...(p.images || []), url] }));
+    else if (field === "analysis.images") {
+      const current = (addReq.analysis?.images as string[]) || [];
+      updateContent("analysis", "images", [...current, url]);
+    } else {
+      const current = (addReq.process?.images as string[]) || [];
+      updateContent("process", "images", [...current, url]);
+    }
+  };
+  const removeImageFromField = (field: "images" | "analysis.images" | "process.images", index: number) => {
+    if (field === "images") setAddReq((p) => ({ ...p, images: p.images?.filter((_, i) => i !== index) || [] }));
+    else if (field === "analysis.images") {
+      const current = (addReq.analysis?.images as string[]) || [];
+      updateContent(
+        "analysis",
+        "images",
+        current.filter((_, i) => i !== index),
+      );
+    } else {
+      const current = (addReq.process?.images as string[]) || [];
+      updateContent(
+        "process",
+        "images",
+        current.filter((_, i) => i !== index),
+      );
+    }
+  };
+
+  // 提交
+  const handleAddSubmit = (status: number) => {
+    // 检查必填参数是否为空
+    if (addReq.questionCateId <= 0) {
+      toast.error(<div className="text-red-700">题型类型不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (addReq.questionTypeId <= 0) {
+      toast.error(<div className="text-red-700">题目类型不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (addReq.difficultyLevel <= 0) {
+      toast.error(<div className="text-red-700">难度系数不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (!StringValidator.isNonEmpty(addReq.title)) {
+      toast.error(<div className="text-red-700">题目标题不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (isChoice && (!addReq.options || addReq.options.length < 2)) {
+      toast.error(<div className="text-red-700">选择题至少需要两个选项</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+
+    if (!confirm("确定要保存试卷吗？")) {
+      return;
+    }
+
+    setAddWarnInfo("");
+    setIsLoading(true);
+
+    if (status == 0) {
+      setDrafing(true);
+    } else {
+      setApproving(true);
+    }
+
+    // 添加题目成功并预览详情, 未提交的题目只能在 我的题目 中可见
+    httpClient
+      .post<number>("/question/add", addReq)
+      .then((addId) => {
+        httpClient
+          .get(`/question/info/${addId}`)
+          .then((res) => {
+            setSheetTitle("题目详情");
+            setSheetDesc("当前仅是预览状态, 需管理员审核通过后题目方可被搜索展示");
+            setSheetContent(<QuestionInfo questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} infoResp={res} />);
+          })
+          .catch((err) => {
+            setAddWarnInfo(<SimpleAlert title="查询题目详情失败" message={err.message} />);
+          });
+      })
+      .catch((err) => {
+        setAddWarnInfo(<SimpleAlert title="添加题目失败" message={err.message} />);
+      })
+      .finally(() => {
+        setDrafing(false);
+        setApproving(false);
+        setIsLoading(false);
+      });
+  };
+
+  return (
+    <div className="text-sm pl-4 pr-4 pb-4">
+      <div className="text-xs">
+        <div>1. 题目需要借助其它 ai 工具转为 markdown 源格式文档后使用</div>
+        <div>2. 如果你的 markdwon 源格式文档符合题目标准格式, 直接粘贴到指定区域会尝试解析出题目的各个部分并填充到对应的表单中</div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button variant="default" onClick={() => handleAddSubmit(0)} disabled={drafing}>
+          {drafing ? "存为草稿中..." : "存为草稿"}
+        </Button>
+        <Button variant="outline" onClick={() => handleAddSubmit(1)} disabled={approving}>
+          {approving ? "提交审核中..." : "提交审核"}
+        </Button>
+      </div>
+      {/* 警告信息 */}
+      {addWarnInfo}
+      {/* 加载中信息 */}
+      {(isLoading || textbooksLoading || questionTypesLoading || questionTagsLoading || questionCatesLoading) && <Loading />}
+      {/* 相关错误信息 */}
+      {textbooksErr && (
+        <div className="mt-3">
+          <SimpleAlert title="学段/年级列表获取失败" message={textbooksErr.message} />
+        </div>
+      )}
+      {questionTypesErr && (
+        <div className="mt-3">
+          <SimpleAlert title="题目类型获取失败" message={questionTypesErr.message} />
+        </div>
+      )}
+      {questionTagsErr && (
+        <div className="mt-3">
+          <SimpleAlert title="题目标签获取失败" message={questionTagsErr.message} />
+        </div>
+      )}
+      {questionCatesErr && (
+        <div className="mt-3">
+          <SimpleAlert title="题型类型获取失败" message={questionCatesErr.message} />
+        </div>
+      )}
+      <div className="mt-3 mb-3">
+        <Separator />
+      </div>
+      <div>
+        <ResizablePanelGroup orientation="horizontal">
+          <ResizablePanel defaultSize="50%">
+            {/* ========== 区块 1：基础信息 ========== */}
+            <Card className="ml-3 mr-3 mt-1 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Settings2 className="w-5 h-5 text-primary" />
+                  <CardTitle>基础设置</CardTitle>
+                </div>
+                <CardDescription>配置题目所属题型, 题目类型, 标签, 原创者名称, 来源和难度系数</CardDescription>
+              </CardHeader>
+              <Separator />
+              <CardContent>
+                <div className="flex flex-col gap-3">
+                  {/* 选择前5层级 */}
+                  <div className="grid grid-cols-10 gap-1 items-center">
+                    <div className="col-span-1">
+                      章节/考点:<span className="text-destructive">*</span>
+                    </div>
+                    <div className="col-span-9">
+                      <ChapterDropdownNav
+                        textbooks={textbooks}
+                        onSelect={(selectedItems: Textbook[]) => {
+                          if (!selectedItems) {
+                            setFiveLevelId(0);
+                            return;
+                          }
+
+                          const current: Textbook = selectedItems[selectedItems.length - 1];
+                          setFiveLevelId(current.id);
+                        }}
+                        defaultSelectedKeys={questionSearch.fiveLevelSelectKeys || []}
+                        placeholder="请选择学段/考点"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 根据前5层级选择后3层级 */}
+                  <div className="grid grid-cols-10 gap-4 items-center">
+                    <div className="col-span-1">
+                      题型:<span className="text-destructive">*</span>
+                    </div>
+                    <div className="col-span-9">
+                      <ChapterDropdownNav
+                        textbooks={questionCates}
+                        onSelect={(selectedItems: Textbook[]) => {
+                          if (!selectedItems) {
+                            updateAddReq("questionCateId", 0);
+                            return;
+                          }
+
+                          const current: Textbook = selectedItems[selectedItems.length - 1];
+                          updateAddReq("questionCateId", current.id);
+                        }}
+                        defaultSelectedKeys={questionSearch.eightLevelSelectKeys || []}
+                        placeholder="请选择题型"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-10 gap-4 items-center">
+                    <div className="col-span-1">
+                      类型:<span className="text-destructive">*</span>
+                    </div>
+                    <div className="col-span-9">
+                      <TypeSelect
+                        options={questionTypes}
+                        defaultValue={addReq.questionTypeId}
+                        onSelect={(val) => {
+                          updateAddReq("questionTypeId", val);
+                          setIsChoice(questionTypeDict[val]?.isSelect);
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-10 gap-4 items-center">
+                    <div className="col-span-1">标签:</div>
+                    <div className="col-span-9">
+                      <MultiTagSelect
+                        options={questionTags}
+                        defaultValue={addReq.questionTagIds ?? []}
+                        onChange={(val) => updateAddReq("questionTagIds", val)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-10 gap-4 items-center">
+                    <div className="col-span-1">原创者:</div>
+                    <div className="col-span-9">
+                      <Input
+                        id="originalName"
+                        value={addReq.originalName}
+                        onChange={(e) => updateAddReq("originalName", e.target.value)}
+                        placeholder="请输入原创者代号, 不要填写真实信息, 保护他人隐私"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-10 gap-4 items-center">
+                    <div className="col-span-1">来源:</div>
+                    <div className="col-span-9">
+                      <Input
+                        id="source"
+                        value={addReq.source}
+                        onChange={(e) => updateAddReq("source", e.target.value)}
+                        placeholder="请输入题目来源, 标注版权信息"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-10 gap-4 items-center">
+                    <div className="col-span-1">
+                      难度:<span className="text-destructive">*</span>
+                    </div>
+                    <div className="col-span-9">
+                      <RadioGroup
+                        value={addReq.difficultyLevel}
+                        onValueChange={(val) => updateAddReq("difficultyLevel", val)}
+                        defaultValue={addReq.difficultyLevel}
+                        className="flex gap-4 w-fit"
+                      >
+                        {StringConst.difficultyLevelList.map(({ id, value, label }) => (
+                          <div key={id} className="flex items-center gap-2">
+                            <RadioGroupItem value={value} id={id} />
+                            <Label htmlFor={id}>{label}</Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* ========== 区块 2：题干 ========== */}
+            <Card className="ml-3 mr-3 mt-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-primary" />
+                  <CardTitle>题干</CardTitle>
+                </div>
+                <CardDescription>题目正文, 补充说明与相关图片</CardDescription>
+              </CardHeader>
+              <Separator />
+              <CardContent>
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-sm font-medium">
+                    题干内容 <span className="text-destructive">*</span>
+                  </Label>
+                  <Textarea
+                    id="title"
+                    className="min-h-25 resize-y"
+                    value={addReq.title || ""}
+                    onChange={(e) => updateAddReq("title", e.target.value)}
+                    placeholder="输入题目正文..."
+                  />
+                </div>
+                <div className="space-y-2 mt-3">
+                  <Label htmlFor="comment" className="text-sm font-medium">
+                    补充说明
+                  </Label>
+                  <Textarea
+                    id="comment"
+                    className="min-h-15 resize-y"
+                    value={addReq.comment || ""}
+                    onChange={(e) => updateAddReq("comment", e.target.value)}
+                    placeholder="例如：题目背景、特殊约束等"
+                  />
+                </div>
+
+                {/* 图片列表 */}
+                <div className="mt-3 space-y-2 bg-muted/20 rounded-xl p-4 border border-dashed border-border/60">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium flex items-center gap-1">
+                      <ImagePlus className="w-4 h-4" /> 题干图片
+                    </Label>
+                    <Button type="button" variant="ghost" size="sm" className="h-8 gap-1" onClick={() => addImageToField("images", "")}>
+                      <Plus className="w-4 h-4" /> 添加
+                    </Button>
+                  </div>
+                  {((addReq.images || []) as string[]).map((url, idx) => (
+                    <div key={idx} className="flex items-center gap-2 mt-2">
+                      <Input
+                        value={url}
+                        onChange={(e) => {
+                          const newImages = [...(addReq.images || [])];
+                          newImages[idx] = e.target.value;
+                          updateAddReq("images", newImages);
+                        }}
+                        placeholder="输入图片 URL"
+                        className="h-9 bg-background"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="h-9 w-9 shrink-0"
+                        onClick={() => removeImageFromField("images", idx)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  {((addReq.images || []) as string[]).length === 0 && <p className="text-xs text-muted-foreground py-1">暂无图片，点击上方添加</p>}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* ========== 区块 3：选项 (条件渲染) ========== */}
+            {isChoice && (
+              <Card className="ml-3 mr-3 mt-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <ListChecks className="w-5 h-5 text-primary" />
+                    <CardTitle>选项设置</CardTitle>
+                    <Badge variant="secondary" className="font-normal text-xs">
+                      选择题
+                    </Badge>
+                  </div>
+                  <CardDescription>配置选项内容和布局</CardDescription>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  {/* 布局切换 */}
+                  <div className="flex items-center gap-6 bg-muted/30 rounded-lg p-2 px-4 w-fit">
+                    <span className="text-sm font-medium">选项布局</span>
+                    <RadioGroup
+                      value={addReq.optionsLayout}
+                      onValueChange={(val) => updateAddReq("optionsLayout", val)}
+                      defaultValue={addReq.optionsLayout || 1}
+                      className="flex gap-4 w-fit"
+                    >
+                      {StringConst.selectLayoutList.map(({ id, value, label }) => (
+                        <div key={id} className="flex items-center gap-2">
+                          <RadioGroupItem value={value} id={id} />
+                          <Label htmlFor={id}>{label}</Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </div>
+
+                  {/* 选项列表 */}
+                  <div className="space-y-4">
+                    {(addReq.options || []).map((opt, optIdx) => (
+                      <div key={optIdx} className="bg-muted/10 border rounded-xl p-5 space-y-3 relative transition-all hover:border-primary/20">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                              {opt.label}
+                            </div>
+                            <span className="text-xs text-muted-foreground">选项 {optIdx + 1}</span>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="text-destructive hover:text-destructive h-8 px-2"
+                            onClick={() => removeOption(optIdx)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <Textarea
+                          value={opt.content}
+                          onChange={(e) => updateOption(optIdx, "content", e.target.value)}
+                          placeholder="输入选项内容"
+                          className="min-h-15 bg-background/60"
+                        />
+                        {/* 选项内图片 */}
+                        <div className="pl-1 space-y-1.5">
+                          <Label className="text-xs text-muted-foreground">选项图片</Label>
+                          {(opt.images || []).map((imgUrl, imgIdx) => (
+                            <div key={imgIdx} className="flex items-center gap-2">
+                              <Input
+                                value={imgUrl}
+                                onChange={(e) => {
+                                  const newImages = [...(opt.images || [])];
+                                  newImages[imgIdx] = e.target.value;
+                                  updateOption(optIdx, "images", newImages);
+                                }}
+                                placeholder="图片 URL"
+                                className="h-8 bg-background/60 text-sm"
+                              />
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="icon"
+                                className="h-8 w-8 shrink-0"
+                                onClick={() => {
+                                  const newImages = (opt.images || []).filter((_, i) => i !== imgIdx);
+                                  updateOption(optIdx, "images", newImages);
+                                }}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            type="button"
+                            variant="link"
+                            size="sm"
+                            className="h-auto p-0 text-xs"
+                            onClick={() => {
+                              const url = prompt("请输入图片 URL：");
+                              if (url !== null) {
+                                const newImages = [...(opt.images || []), url];
+                                updateOption(optIdx, "images", newImages);
+                              }
+                            }}
+                          >
+                            + 添加图片
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    <Button type="button" variant="outline" className="w-full border-dashed h-11 gap-2" onClick={addOption}>
+                      <Plus className="w-4 h-4" /> 添加选项
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* ========== 区块 4：答案与知识点 ========== */}
+            <Card className="ml-3 mr-3 mt-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-primary" />
+                  <CardTitle>答案与知识点</CardTitle>
+                </div>
+              </CardHeader>
+              <Separator />
+              <CardContent>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="answer" className="text-sm font-medium">
+                    参考答案
+                  </Label>
+                  <Textarea
+                    id="answer"
+                    className="min-h-17.5"
+                    value={addReq.answer || ""}
+                    onChange={(e) => updateAddReq("answer", e.target.value)}
+                    placeholder="输入参考答案"
+                  />
+                </div>
+
+                <div className="mt-3 space-y-2 md:col-span-2">
+                  <Label htmlFor="knowledge" className="text-sm font-medium">
+                    涉及知识点
+                  </Label>
+                  <Textarea
+                    id="knowledge"
+                    className="min-h-17.5"
+                    value={addReq.knowledge || ""}
+                    onChange={(e) => updateAddReq("knowledge", e.target.value)}
+                    placeholder="输入知识点，多个可用逗号分隔"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* ========== 区块 5：解题分析 ========== */}
+            <Card className="ml-3 mr-3 mt-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-primary" />
+                  <CardTitle>解题分析</CardTitle>
+                </div>
+              </CardHeader>
+              <Separator />
+              <CardContent>
+                <Textarea
+                  value={addReq.analysis?.content || ""}
+                  onChange={(e) => updateContent("analysis", "content", e.target.value)}
+                  placeholder="详细的解题分析..."
+                  className="min-h-20"
+                />
+
+                <div className="mt-3 bg-muted/20 rounded-xl p-4 border border-dashed border-border/60 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium flex items-center gap-1">
+                      <ImagePlus className="w-4 h-4" /> 分析图片
+                    </Label>
+                    <Button type="button" variant="ghost" size="sm" className="h-8 gap-1" onClick={() => addImageToField("analysis.images", "")}>
+                      <Plus className="w-4 h-4" /> 添加
+                    </Button>
+                  </div>
+                  {((addReq.analysis?.images as string[]) || []).map((url, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <Input
+                        value={url}
+                        onChange={(e) => {
+                          const current = (addReq.analysis?.images as string[]) || [];
+                          const newImages = [...current];
+                          newImages[idx] = e.target.value;
+                          updateContent("analysis", "images", newImages);
+                        }}
+                        className="h-9 bg-background"
+                        placeholder="图片 URL"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="h-9 w-9 shrink-0"
+                        onClick={() => removeImageFromField("analysis.images", idx)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* ========== 区块 6：解题过程 ========== */}
+            <Card className="ml-3 mr-3 mt-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Wand2 className="w-5 h-5 text-primary" />
+                  <CardTitle>解题过程</CardTitle>
+                </div>
+              </CardHeader>
+              <Separator />
+              <CardContent>
+                <Textarea
+                  value={addReq.process?.content || ""}
+                  onChange={(e) => updateContent("process", "content", e.target.value)}
+                  placeholder="详细的解题步骤过程..."
+                  className="min-h-20"
+                />
+
+                <div className="mt-3 bg-muted/20 rounded-xl p-4 border border-dashed border-border/60 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium flex items-center gap-1">
+                      <ImagePlus className="w-4 h-4" /> 过程图片
+                    </Label>
+                    <Button type="button" variant="ghost" size="sm" className="h-8 gap-1" onClick={() => addImageToField("process.images", "")}>
+                      <Plus className="w-4 h-4" /> 添加
+                    </Button>
+                  </div>
+                  {((addReq.process?.images as string[]) || []).map((url, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <Input
+                        value={url}
+                        onChange={(e) => {
+                          const current = (addReq.process?.images as string[]) || [];
+                          const newImages = [...current];
+                          newImages[idx] = e.target.value;
+                          updateContent("process", "images", newImages);
+                        }}
+                        className="h-9 bg-background"
+                        placeholder="图片 URL"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="h-9 w-9 shrink-0"
+                        onClick={() => removeImageFromField("process.images", idx)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* ========== 区块 7：步骤提示 ========== */}
+            <Card className="ml-3 mr-3 mt-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Footprints className="w-5 h-5 text-primary" />
+                  <CardTitle>解题步骤提示</CardTitle>
+                </div>
+                <CardDescription>分步骤引导学生思考</CardDescription>
+              </CardHeader>
+              <Separator />
+              <CardContent>
+                {(addReq.steps || []).map((step, idx) => (
+                  <div key={idx} className="flex items-start gap-3 bg-muted/10 rounded-lg p-4 border border-border/40">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0 mt-1">
+                      {step.id}
+                    </div>
+                    <Textarea
+                      value={step.content}
+                      onChange={(e) => updateStep(idx, e.target.value)}
+                      placeholder={`输入第 ${step.id} 步提示内容`}
+                      className="min-h-12.5 bg-background/60 flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-destructive hover:text-destructive shrink-0 mt-1"
+                      onClick={() => removeStep(idx)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+                <Button type="button" variant="outline" className="w-full border-dashed h-11 gap-2" onClick={addStep}>
+                  <Plus className="w-4 h-4" /> 添加步骤
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* ========== 区块 8：备注 ========== */}
+            <Card className="m-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-primary" />
+                  <CardTitle>易错备注</CardTitle>
+                </div>
+              </CardHeader>
+              <Separator />
+              <CardContent>
+                <Textarea
+                  value={addReq.remark || ""}
+                  onChange={(e) => updateAddReq("remark", e.target.value)}
+                  placeholder="例如：易错题型、解题技巧提醒等"
+                  className="min-h-17.5"
+                />
+              </CardContent>
+            </Card>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize="50%">
+            <Watermark className="h-full w-full border bg-slate-50">
+              <div className="">
+                <QuestionInfo
+                  questionTypeDict={questionTypeDict}
+                  questionTagDict={questionTagDict}
+                  infoResp={{ baseInfo: { id: 0, contentPlain: "", ...addReq }, extraInfo: { ...addReq } }}
+                />
+              </div>
+            </Watermark>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
+    </div>
+  );
+}

@@ -14,13 +14,13 @@ import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
 import type { PaperGroup, PaperMeta, PaperMetaSearch, PaperQuestion } from "~/type/paper";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { AlertCircleIcon, Plus, Trash2, X } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import { Label } from "~/components/ui/label";
 import type { Content, QuestionOption } from "~/type/question";
 import { ExamPaperMeta } from "~/common/paper/meta";
 import { httpClient } from "~/util/http";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { toast } from "sonner";
+import { SimpleAlert } from "~/common/alert";
 
 /// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑
 /// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
@@ -44,7 +44,7 @@ const defaultPaperMeta: PaperMeta = {
   semester: "",
   remark: "",
   authorId: 0,
-  authorName: "",
+  authorName: "admin", // 当前登录用户昵称
   count: 0,
   statusDesc: "",
   remarkExt: "",
@@ -312,27 +312,11 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
             setSheetContent(<ExamPaperMeta paperMeta={res} />);
           })
           .catch((err) => {
-            setAddWarnInfo(
-              <div className="mt-3">
-                <Alert variant="destructive">
-                  <AlertCircleIcon />
-                  <AlertTitle>获取试卷详情失败</AlertTitle>
-                  <AlertDescription>{err.message}</AlertDescription>
-                </Alert>
-              </div>,
-            );
+            setAddWarnInfo(<SimpleAlert title="获取试卷详情失败" message={err.message} />);
           });
       })
       .catch((err) => {
-        setAddWarnInfo(
-          <div className="mt-3">
-            <Alert variant="destructive">
-              <AlertCircleIcon />
-              <AlertTitle>添加失败</AlertTitle>
-              <AlertDescription>{err.message}</AlertDescription>
-            </Alert>
-          </div>,
-        );
+        setAddWarnInfo(<SimpleAlert title="添加试卷失败" message={err.message} />);
       })
       .finally(() => {
         // 不管成功失败最终都要清除按钮控制
@@ -342,13 +326,14 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
   };
 
   return (
-    <div className="text-sm pl-4 pr-4">
-      <div>
+    <div className="text-sm pl-4 pr-4 pb-4">
+      <div className="text-xs">
         <p>1. 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜</p>
-        <p>2. 但是个人使用比如 DeepSeek 几乎是完全免费的, 因此需要个人借助其它 ai 平台将试卷题目转化为 markdown 格式后拷贝过来上传</p>
+        <p>2. 但个人使用比如 DeepSeek 几乎是完全免费的, 因此需要个人借助其它 ai 平台将试卷题目转化为 markdown 格式后拷贝过来上传</p>
+        <p>3. 如果试卷有统一的格式和排版, 后续支持将整个文档粘贴进来后一次性解析出所有的题目</p>
       </div>
 
-      <div className="flex flex-wrap gap-2 mt-3">
+      <div className="mt-3 flex flex-wrap gap-2">
         <Button variant="default" onClick={() => handleAddPaper(0)} disabled={drafing}>
           {drafing ? "存为草稿中..." : "存为草稿"}
         </Button>
