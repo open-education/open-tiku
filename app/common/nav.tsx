@@ -199,10 +199,9 @@ function ChapterExpandNav(props: ChapterExpandNavProps) {
 
   return (
     <section>
-      <Card className="overflow-hidden pt-0">
-        {/* Progress */}
+      <Card className="p-0 pb-4">
         <Progress value={(completedCount / 5) * 100} className="rounded-none" />
-        <CardContent className="px-6 md:px-8 pt-6 pb-0">
+        <CardContent>
           <div className="divide-y divide-border">
             {steps.map((levelKey, index) => {
               // 获取当前层级的选项 keys

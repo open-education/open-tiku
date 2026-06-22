@@ -20,9 +20,7 @@ export default function Main() {
   return (
     <div className="text-foreground text-sm bg-gray-100">
       {/* 网站首页头部 */}
-      <div className="pl-4 pr-4">
-        <Header />
-      </div>
+      <Header />
 
       {/* 替换网站内容 */}
       <div className="min-h-200">
@@ -30,9 +28,7 @@ export default function Main() {
       </div>
 
       {/* ── Footer ── */}
-      <div className="pl-4 pr-4">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   );
 }

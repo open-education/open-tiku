@@ -23,7 +23,7 @@ function Note() {
 
   return (
     <section className="border-t border-border bg-muted/30">
-      <div className="px-6 py-14 grid md:grid-cols-3 gap-10 md:gap-8">
+      <div className="px-6 py-6 grid md:grid-cols-3 gap-10 md:gap-8">
         {FEATURES.map(({ icon: Icon, title, desc }) => (
           <div key={title} className="flex gap-4">
             <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">

@@ -63,7 +63,7 @@ export default function Index() {
     setMetaSearch((prev) => ({ ...prev, [key]: value }));
   };
 
-  const { data: textbooks = [], isLoading: textbooksIdLoading, error: textbooksErr } = useTextbooks();
+  const { data: textbooks = [], isLoading: textbooksIdLoading, error: textbooksErr } = useTextbooks(5);
   if (textbooksErr) {
     toast.error(<div className="text-red-700">{textbooksErr.message}</div>);
   }
@@ -94,16 +94,8 @@ export default function Index() {
   // 添加试卷Sheet
   const addExamSheet = () => {
     setSheetTitle("添加试卷");
-    setSheetDesc("");
-    setSheetContent(
-      <Add
-        textbooks={textbooks}
-        metaSearch={metaSearch}
-        setSheetTitle={setSheetTitle}
-        setSheetDesc={setSheetDesc}
-        setSheetContent={setSheetContent}
-      />,
-    );
+    setSheetDesc("当前为新增试卷模式");
+    setSheetContent(<Add metaSearch={metaSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
     setOpenSheet(true);
   };
 
@@ -207,6 +199,7 @@ export default function Index() {
       <div className="mt-3">
         <ExamPaper
           papers={paperListResp.list}
+          metaSearch={metaSearch}
           setOpenSheet={setOpenSheet}
           setSheetTitle={setSheetTitle}
           setSheetDesc={setSheetDesc}

@@ -22,6 +22,7 @@ import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { SimpleAlert } from "~/common/alert";
 import { ImageUpload } from "~/common/image";
+import { useTextbooks } from "~/util/fetcher";
 
 /// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑
 /// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
@@ -78,18 +79,23 @@ const defaultGroup = (): PaperGroup => ({
 });
 
 interface AddProps {
-  textbooks: Textbook[];
   metaSearch: PaperMetaSearch;
+  infoResp?: PaperMeta; // 如果是详情页面过来的则处于编译状态
 
   // 以下为 Sheet 操作方法和属性
-  setSheetTitle: (value: string) => void;
-  setSheetDesc: (value: string) => void;
-  setSheetContent: (value: React.ReactNode) => void;
+  setSheetTitle?: (value: string) => void;
+  setSheetDesc?: (value: string) => void;
+  setSheetContent?: (value: React.ReactNode) => void;
 }
 
-export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc, setSheetContent }: AddProps) {
+export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc, setSheetContent }: AddProps) {
   // 计算初始值, 编辑时也是更新这个初始化值
   const initialPaperMeta = useMemo(() => {
+    // 如果是详情进来的则仅使用详情的数据
+    if (infoResp && infoResp.id > 0) {
+      return { ...infoResp };
+    }
+
     const updates: Partial<PaperMeta> = {};
     const fields = ["relatedId", "relatedName", "tag", "year", "grade", "semester"] as const;
 
@@ -114,6 +120,15 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
   const updatePaperMeta = (key: keyof PaperMeta, value: string | number) => {
     setPaper((prev) => ({ ...prev, [key]: value }));
   };
+  console.log("paper: ", paper);
+
+  const [addWarnInfo, setAddWarnInfo] = useState<React.ReactNode>("");
+
+  // 获取前5层导航信息
+  const { data: textbooks = [], isLoading: textbooksIdLoading, error: textbooksErr } = useTextbooks(5);
+  if (textbooksErr) {
+    setAddWarnInfo(<SimpleAlert title="获取试卷详情失败" message={textbooksErr.message} />);
+  }
 
   // ---- 大题操作 ----
   // 追加一个默认题型默认值
@@ -250,7 +265,6 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
   // 按钮提交状态
   const [drafing, setDrafing] = useState<boolean>(false);
   const [approving, setApproving] = useState<boolean>(false);
-  const [addWarnInfo, setAddWarnInfo] = useState<React.ReactNode>("");
 
   // 提交试卷
   const handleAddPaper = (status: number) => {
@@ -308,9 +322,9 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
         httpClient
           .get<PaperMeta>(`/paper/info/${resId}`)
           .then((res) => {
-            setSheetTitle("试卷详情");
-            setSheetDesc("仅为详情预览, 需审核通过后其他人可见, 可去 我的试卷 查看");
-            setSheetContent(<ExamPaperMeta paperMeta={res} />);
+            setSheetTitle?.("试卷详情");
+            setSheetDesc?.("仅为详情预览, 需审核通过后其他人可见, 可去 我的试卷 查看");
+            setSheetContent?.(<ExamPaperMeta paperMeta={res} />);
           })
           .catch((err) => {
             setAddWarnInfo(<SimpleAlert title="获取试卷详情失败" message={err.message} />);
@@ -329,10 +343,7 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
   return (
     <div className="text-sm pl-4 pr-4 pb-4">
       <div className="text-xs">
-        <div>1. 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜</div>
-        <div>2. 但个人使用比如 DeepSeek 几乎是完全免费的, 因此需要个人借助其它 ai 平台将试卷题目转化为 markdown 格式后拷贝过来上传</div>
-        <div>3. 如果试卷有统一的格式和排版, 后续支持将整个文档粘贴进来后一次性解析出所有的题目</div>
-        <div>4. 图片标识请使用右上角的 上传图片 工具上传图片后获得</div>
+        <div>1. 图片标识请使用右上角的 上传图片 工具上传图片后获得</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -484,7 +495,7 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
           <ResizablePanel defaultSize="50%">
             <Watermark className="h-full w-full border bg-slate-50">
               <div className="p-4">
-                <ExamPaperMeta paperMeta={paper} />
+                <ExamPaperMeta paperMeta={paper} metaSearch={metaSearch} isPreview={true} />
               </div>
             </Watermark>
           </ResizablePanel>

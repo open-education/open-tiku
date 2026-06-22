@@ -64,16 +64,11 @@ function Board() {
   ];
 
   function RankBadge({ n }: { n: number }) {
-    const variant = n === 1 ? "rank1" : n === 2 ? "rank2" : n === 3 ? "rank3" : "rankN";
-    return (
-      <Badge variant={variant} className="w-6 h-6 rounded flex items-center justify-center p-0 shrink-0">
-        {n}
-      </Badge>
-    );
+    return <Badge className="w-6 h-6 rounded flex items-center justify-center p-0 shrink-0">{n}</Badge>;
   }
 
   return (
-    <section className="pb-14">
+    <section>
       <Card className="overflow-hidden">
         <Tabs defaultValue="latest">
           {/* Tab bar — override TabsList to span full width, border-bottom style */}
