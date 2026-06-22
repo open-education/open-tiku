@@ -84,13 +84,13 @@ function SingleQuestionCommonPart({ questionTypeDict, questionTagDict, questionI
 
       {/* 标题 */}
       <div className="mt-2.5">
-        {<TitleShow id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}
+        {<TitleShow id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment || ""} images={questionInfo.images} />}
       </div>
 
       {/* 选项内容 */}
       <div className="mt-2.5">
         {questionInfo.options && questionInfo.options.length > 0 && (
-          <MultiOptionShow optionsLayout={questionInfo.optionsLayout ?? 1} options={questionInfo.options} />
+          <MultiOptionShow optionsLayout={questionInfo.optionsLayout || 1} options={questionInfo.options} />
         )}
       </div>
     </>

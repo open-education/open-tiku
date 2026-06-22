@@ -1,13 +1,14 @@
 import { useRef, useState, type ChangeEvent } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "~/lib/utils";
-import { FileImage, ImageUp, Loader2, Trash2, X } from "lucide-react";
+import { FileImage, ImagePlus, ImageUp, Loader2, Plus, Trash2, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import type { DeleteImageReq, UploadFileResp } from "~/type/image";
 import { httpClient } from "~/util/http";
 import { SimpleAlert } from "~/common/alert";
+import { Label } from "~/components/ui/label";
 
 /// 图片相关组件
 
@@ -30,6 +31,11 @@ function ImageZoom({
   closePosition = "top-right",
   ...props
 }: ImageZoomProps) {
+  // 如果图片名称为空否则不渲染页面
+  if (!imageName) {
+    return "";
+  }
+
   const [open, setOpen] = useState(false);
 
   const positionClass = closePosition === "top-right" ? "top-4 right-4" : "bottom-4 right-4";
@@ -324,4 +330,37 @@ function ImageUpload() {
   );
 }
 
-export { ImageZoom, ImageUpload };
+// 添加图片
+interface ImageAddProps {
+  name: string; // 描述是什么图片
+  images?: string[];
+
+  add: () => void; // 添加则对对应的 images 属性初始化一个空值
+  update: (idx: number, val: string) => void; // 更新时替换当前索引的值
+  remove: (idx: number) => void; // 移除现有图片中当前索引的图片
+}
+function ImageAdd({ name, images = [], add, update, remove }: ImageAddProps) {
+  return (
+    <div className="mt-3 bg-muted/20 rounded-xl p-4 border border-dashed border-border/60 space-y-2">
+      <div className="flex items-center justify-between">
+        <Label className="flex items-center gap-1">
+          <ImagePlus className="w-4 h-4" /> {name}
+        </Label>
+        <Button type="button" variant="ghost" size="sm" className="h-8 gap-1" onClick={add}>
+          <Plus className="w-4 h-4" /> 添加
+        </Button>
+      </div>
+      {images.map((url, idx) => (
+        <div key={idx} className="flex items-center gap-2">
+          <Input value={url} onChange={(e) => update(idx, e.target.value)} className="h-9 bg-background" placeholder="输入图片标识" />
+          <Button type="button" variant="destructive" size="icon" className="h-9 w-9 shrink-0" onClick={() => remove(idx)}>
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      ))}
+      {images.length === 0 && <p className="text-muted-foreground py-1">暂无图片，点击右上方添加</p>}
+    </div>
+  );
+}
+
+export { ImageZoom, ImageUpload, ImageAdd };

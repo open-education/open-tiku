@@ -4,21 +4,21 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
 import type { PaperMeta, PaperMetaSearch } from "~/type/paper";
-import { StringConst, StringConstUtil, StringValidator } from "~/util/string";
+import { StringConst, StringConstUtil } from "~/util/string";
 import { TagShow } from "~/common/paper/tag";
 import { ExamQuestion } from "~/common/paper/question";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { NavLink } from "react-router";
-import { Button } from "antd";
 import Add from "~/paper/add";
+import { Button } from "~/components/ui/button";
 
 /// 试卷元数据
 
 // 试卷列表样式展示
 interface ExamPaperProps {
   papers: PaperMeta[];
-  metaSearch: PaperMetaSearch;
+  metaSearch?: PaperMetaSearch;
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
@@ -172,7 +172,7 @@ function ExamPaperMeta({
           </div>
 
           <div>
-            <Button variant="outlined" onClick={handleEdit}>
+            <Button variant="outline" onClick={handleEdit}>
               编辑
             </Button>
           </div>

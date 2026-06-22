@@ -112,6 +112,7 @@ export default function Edit(props: any) {
     questionTypeId: 0,
     remark: "",
     title: "",
+    originalName: "",
   });
 
   // 首页页面的值用于展示和提交
@@ -185,6 +186,7 @@ export default function Edit(props: any) {
       questionTypeId: questionTypeVal,
       remark: remarkVal,
       title: titleVal,
+      originalName: "",
     };
   };
 

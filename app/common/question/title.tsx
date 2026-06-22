@@ -32,7 +32,7 @@ function TitleShow({ no = 0, id = 0, title, comment, images = [] }: TitleShowPro
           {images.map((imageName) => {
             return (
               <div key={imageName} className="col-span-1">
-                <ImageZoom imageName={imageName} />
+                <ImageZoom imageName={imageName} className="h-full w-auto max-w-full object-contain" />
               </div>
             );
           })}

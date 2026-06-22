@@ -44,8 +44,9 @@ export interface PaperQuestion {
   genId: string; // 前端生成的标识
   order: number; // 小题序号
   stem: string; // 题干
-  images: string[]; // 图片
-  options: QuestionOption[]; // 选项
+  images?: string[]; // 图片
+  optionsLayout?: number; // 选项布局
+  options?: QuestionOption[]; // 选项
   answer: string; // 答案
   analysis: Content; // 分析
   score: number; // 分数

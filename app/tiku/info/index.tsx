@@ -55,7 +55,7 @@ export default function Info(props: any) {
       <Divider size="small" variant="dashed" style={{ borderColor: "#7cb305" }} dashed />
 
       {/* 题目标注和图片位置 */}
-      {<CommonTitle title={questionInfo.baseInfo.title} comment={questionInfo.baseInfo.comment} images={questionInfo.baseInfo.images} />}
+      {<CommonTitle title={questionInfo.baseInfo.title} comment={questionInfo.baseInfo.comment || ""} images={questionInfo.baseInfo.images} />}
 
       {/* 选项 */}
       {questionInfo.baseInfo.options && questionInfo.baseInfo.options.length > 0 && (

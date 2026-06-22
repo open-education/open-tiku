@@ -21,8 +21,9 @@ import { ExamPaperMeta } from "~/common/paper/meta";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { SimpleAlert } from "~/common/alert";
-import { ImageUpload } from "~/common/image";
+import { ImageAdd, ImageUpload } from "~/common/image";
 import { useTextbooks } from "~/util/fetcher";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 
 /// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑
 /// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
@@ -61,10 +62,8 @@ const defaultQuestionInfo = (order: number): PaperQuestion => ({
     content: "",
   },
   score: 0,
-  options: [],
   id: 0,
   groupId: 0,
-  images: [],
   paperId: 0,
   answer: "",
 });
@@ -205,16 +204,16 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
           ...g,
           questions: g.questions.map((q) => {
             if (q.genId !== questionId) return q;
-            // 计算新选项的 label (A, B, C, D, E...)
-            const newLabel = String.fromCharCode(65 + q.options.length);
-
+            const newLabel = String.fromCharCode(65 + (q.options?.length || 0));
             const newOption: QuestionOption = {
               label: newLabel,
-              content: "", // 初始为空内容
-              order: q.options.length, // 顺序基于当前选项数量
-              images: [], // 如果有需要可以添加
+              content: "",
+              order: q.options?.length || 0, // 通常 order 从 0 开始，你也可以用 q.options.length
             };
-            return { ...q, options: [...q.options, newOption] };
+            return {
+              ...q,
+              options: [...(q.options || []), newOption],
+            };
           }),
         };
       }),
@@ -230,7 +229,7 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
           ...g,
           questions: g.questions.map((q) => {
             if (q.genId !== questionId) return q;
-            const newOptions = [...q.options];
+            const newOptions = [...(q.options || [])];
             newOptions[index] = value;
             return { ...q, options: newOptions };
           }),
@@ -253,7 +252,7 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
             if (q.genId !== questionId) return q;
 
             // 删除当前索引及其后面的所有选项
-            const newOptions = q.options.slice(0, index);
+            const newOptions = (q.options || []).slice(0, index);
 
             return { ...q, options: newOptions };
           }),
@@ -597,7 +596,8 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
         </Button>
       </div>
 
-      {/* 题干 */}
+      {/* 题干部分 */}
+
       <div className="space-y-1">
         <Label>题干</Label>
         <Textarea
@@ -608,45 +608,114 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
         />
       </div>
 
+      {/* 图片列表 */}
+      <ImageAdd
+        name="题干图片"
+        images={question.images || []}
+        add={() => {
+          // 添加图片即是在图片后面追加一个空地址
+          onUpdate("images", [...(question.images || []), ""]);
+        }}
+        update={(idx, val) => {
+          const newImages = [...(question.images || [])];
+          newImages[idx] = val;
+          onUpdate("images", newImages);
+        }}
+        remove={(idx) => {
+          // 移除下标对应的图片标识
+          const newImages = [...(question.images || [])];
+          const filtered = newImages.filter((_, index) => index !== idx);
+          onUpdate("images", filtered);
+        }}
+      />
+
       {/* 选项 - 默认不显示，用户点击添加才出现 */}
-      {question.options.length > 0 && (
+      {(question.options || []).length > 0 && (
         <div className="space-y-1">
-          <Label>选项</Label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {question.options.map((opt, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <span className="w-5 text-muted-foreground">{StringConst.optionLabels[idx]}.</span>
-                <Input
+          {/* 布局切换 */}
+          <div className="flex items-center gap-6 bg-muted/30 rounded-lg p-2 px-4 w-fit">
+            <span>选项布局</span>
+            <RadioGroup
+              value={question.optionsLayout ?? 1}
+              onValueChange={(val) => onUpdate("optionsLayout", Number(val))}
+              className="flex gap-4 w-fit"
+            >
+              {StringConst.selectLayoutList.map(({ id, value, label }) => (
+                <div key={id} className="flex items-center gap-2">
+                  <RadioGroupItem value={value} id={id} />
+                  <Label htmlFor={id}>{label}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
+
+          {/* 选项列表 */}
+          <div className="space-y-4">
+            {(question.options || []).map((opt, optIdx) => (
+              <div key={optIdx} className="bg-muted/10 border rounded-xl p-5 space-y-3 relative transition-all hover:border-primary/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                      {opt.label}
+                    </div>
+                    <span className="text-muted-foreground">选项 {optIdx + 1}</span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:text-destructive h-8 px-2"
+                    onClick={() => {
+                      onRemoveOption(optIdx);
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+                <Textarea
                   value={opt.content}
                   onChange={(e) => {
-                    const newOpt: QuestionOption = {
-                      label: opt.label,
-                      content: e.target.value,
-                      images: [], // todo 需要补充选项的图片
-                      order: opt.order,
-                    };
-                    onUpdateOption(idx, newOpt);
+                    onUpdateOption(optIdx, { ...opt, content: e.target.value });
                   }}
-                  placeholder={`选项 ${StringConst.optionLabels[idx]}`}
-                  className="flex-1"
+                  placeholder="输入选项内容"
+                  className="min-h-15 bg-background/60"
                 />
-                <Button variant="ghost" size="sm" onClick={() => onRemoveOption(idx)} className="h-6 w-6 p-0">
-                  <X className="h-3 w-3" />
-                </Button>
+                {/* 选项内图片 */}
+                <ImageAdd
+                  name="选项图片"
+                  images={opt.images || []}
+                  add={() => {
+                    // 原来图片的基础上追加一个空字符串代表图片
+                    onUpdateOption(optIdx, {
+                      ...opt,
+                      images: [...(opt.images || []), ""],
+                    });
+                  }}
+                  update={(idx, val) => {
+                    // 原来图片的基础上添加当前图片值
+                    const newImages = [...(opt.images || [])];
+                    newImages[idx] = val;
+                    onUpdateOption(optIdx, { ...opt, images: newImages });
+                  }}
+                  remove={(idx) => {
+                    // 移除现有图片中当前索引的图片
+                    onUpdateOption(optIdx, {
+                      ...opt,
+                      images: (opt.images || []).filter((_, i) => i !== idx),
+                    });
+                  }}
+                />
               </div>
             ))}
-          </div>
-          {question.options.length < 6 && (
-            <Button variant="outline" size="sm" onClick={onAddOption} className="mt-1">
-              <Plus className="mr-1 h-3 w-3" />
-              添加选项
+            <Button type="button" variant="outline" className="w-full border-dashed h-11 gap-2" onClick={onAddOption}>
+              <Plus className="w-4 h-4" /> 添加选项
             </Button>
-          )}
+          </div>
         </div>
       )}
 
       {/* 添加选项按钮 - 仅在无选项时显示 */}
-      {question.options.length === 0 && (
+      {(question.options || []).length === 0 && (
         <Button variant="outline" size="sm" onClick={onAddOption}>
           <Plus className="mr-1 h-3 w-3" />
           添加选项(选择题/多选题)
@@ -671,14 +740,36 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
         <Textarea
           value={question.analysis.content}
           onChange={(e) => {
-            const newAnalysis: Content = {
-              content: e.target.value,
-              images: [], // 图片以后再补充
-            };
-            onUpdate("analysis", newAnalysis);
+            onUpdate("analysis", { ...question.analysis, content: e.target.value });
           }}
           placeholder="从 Markdown 中复制解析内容粘贴到这里..."
           className="min-h-12.5"
+        />
+
+        {/* 解析图片 */}
+        <ImageAdd
+          name="解析图片"
+          images={question.analysis.images || []}
+          add={() => {
+            // 原来图片的基础上追加一个空字符串代表图片
+            onUpdate("analysis", {
+              ...question.analysis,
+              images: [...(question.analysis.images || []), ""],
+            });
+          }}
+          update={(idx, val) => {
+            // 原来图片的基础上添加当前图片值
+            const newImages = [...(question.analysis.images || [])];
+            newImages[idx] = val;
+            onUpdate("analysis", { ...question.analysis, images: newImages });
+          }}
+          remove={(idx) => {
+            // 移除现有图片中当前索引的图片
+            onUpdate("analysis", {
+              ...question.analysis,
+              images: (question.analysis.images || []).filter((_, i) => i !== idx),
+            });
+          }}
         />
       </div>
     </div>

@@ -7,7 +7,7 @@ import { Label } from "~/components/ui/label";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
-import { FileText, Settings2, ListChecks, Brain, Wand2, Footprints, MessageSquare, ImagePlus, Trash2, Plus, BookOpen } from "lucide-react";
+import { FileText, Settings2, ListChecks, Brain, Wand2, Footprints, MessageSquare, Trash2, Plus, BookOpen } from "lucide-react";
 import type { Content, CreateQuestionReq, QuestionInfoResp, QuestionOption, QuestionSearch } from "~/type/question";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
 import { Watermark } from "~/common/watermark";
@@ -23,7 +23,7 @@ import { toast } from "sonner";
 import { QuestionInfo } from "~/common/question/info";
 import { httpClient } from "~/util/http";
 import { createTextbookPathDict } from "~/util/textbook-dict";
-import { ImageUpload } from "~/common/image";
+import { ImageAdd, ImageUpload } from "~/common/image";
 
 /// 题目添加和编辑
 
@@ -545,40 +545,21 @@ export default function Add({
                 </div>
 
                 {/* 图片列表 */}
-                <div className="mt-3 space-y-2 bg-muted/20 rounded-xl p-4 border border-dashed border-border/60">
-                  <div className="flex items-center justify-between">
-                    <Label className="flex items-center gap-1">
-                      <ImagePlus className="w-4 h-4" /> 题干图片
-                    </Label>
-                    <Button type="button" variant="ghost" size="sm" className="h-8 gap-1" onClick={() => addImageToField("images", "")}>
-                      <Plus className="w-4 h-4" /> 添加
-                    </Button>
-                  </div>
-                  {((addReq.images || []) as string[]).map((url, idx) => (
-                    <div key={idx} className="flex items-center gap-2 mt-2">
-                      <Input
-                        value={url}
-                        onChange={(e) => {
-                          const newImages = [...(addReq.images || [])];
-                          newImages[idx] = e.target.value;
-                          updateAddReq("images", newImages);
-                        }}
-                        placeholder="输入图片标识"
-                        className="h-9 bg-background"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="h-9 w-9 shrink-0"
-                        onClick={() => removeImageFromField("images", idx)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  {((addReq.images || []) as string[]).length === 0 && <p className="text-muted-foreground py-1">暂无图片，点击上方添加</p>}
-                </div>
+                <ImageAdd
+                  name="题干图片"
+                  images={addReq.images || []}
+                  add={() => {
+                    addImageToField("images", "");
+                  }}
+                  update={(idx, val) => {
+                    const newImages = [...(addReq.images || [])];
+                    newImages[idx] = val;
+                    updateAddReq("images", newImages);
+                  }}
+                  remove={(idx) => {
+                    removeImageFromField("images", idx);
+                  }}
+                />
               </CardContent>
             </Card>
 
@@ -636,57 +617,31 @@ export default function Add({
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
+
                         <Textarea
                           value={opt.content}
                           onChange={(e) => updateOption(optIdx, "content", e.target.value)}
                           placeholder="输入选项内容"
                           className="min-h-15 bg-background/60"
                         />
+
                         {/* 选项内图片 */}
-                        <div className="pl-1 space-y-1.5">
-                          <Label className="text-muted-foreground">选项图片</Label>
-                          {(opt.images || []).map((imgUrl, imgIdx) => (
-                            <div key={imgIdx} className="flex items-center gap-2">
-                              <Input
-                                value={imgUrl}
-                                onChange={(e) => {
-                                  const newImages = [...(opt.images || [])];
-                                  newImages[imgIdx] = e.target.value;
-                                  updateOption(optIdx, "images", newImages);
-                                }}
-                                placeholder="输入图片标识"
-                                className="h-8 bg-background/60 text-sm"
-                              />
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="icon"
-                                className="h-8 w-8 shrink-0"
-                                onClick={() => {
-                                  const newImages = (opt.images || []).filter((_, i) => i !== imgIdx);
-                                  updateOption(optIdx, "images", newImages);
-                                }}
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          ))}
-                          <Button
-                            type="button"
-                            variant="link"
-                            size="sm"
-                            className="h-auto p-0 text-xs"
-                            onClick={() => {
-                              const url = prompt("输入图片标识");
-                              if (url !== null) {
-                                const newImages = [...(opt.images || []), url];
-                                updateOption(optIdx, "images", newImages);
-                              }
-                            }}
-                          >
-                            + 添加图片
-                          </Button>
-                        </div>
+                        <ImageAdd
+                          name="选项图片"
+                          images={opt.images || []}
+                          add={() => {
+                            updateOption(optIdx, "images", [...(opt.images || []), ""]);
+                          }}
+                          update={(idx, val) => {
+                            const newImages = [...(opt.images || [])];
+                            newImages[idx] = val;
+                            updateOption(optIdx, "images", newImages);
+                          }}
+                          remove={(idx) => {
+                            const newImages = (opt.images || []).filter((_, i) => i !== idx);
+                            updateOption(optIdx, "images", newImages);
+                          }}
+                        />
                       </div>
                     ))}
                     <Button type="button" variant="outline" className="w-full border-dashed h-11 gap-2" onClick={addOption}>
@@ -748,40 +703,22 @@ export default function Add({
                   className="min-h-20"
                 />
 
-                <div className="mt-3 bg-muted/20 rounded-xl p-4 border border-dashed border-border/60 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="flex items-center gap-1">
-                      <ImagePlus className="w-4 h-4" /> 分析图片
-                    </Label>
-                    <Button type="button" variant="ghost" size="sm" className="h-8 gap-1" onClick={() => addImageToField("analysis.images", "")}>
-                      <Plus className="w-4 h-4" /> 添加
-                    </Button>
-                  </div>
-                  {((addReq.analysis?.images as string[]) || []).map((url, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <Input
-                        value={url}
-                        onChange={(e) => {
-                          const current = (addReq.analysis?.images as string[]) || [];
-                          const newImages = [...current];
-                          newImages[idx] = e.target.value;
-                          updateContent("analysis", "images", newImages);
-                        }}
-                        className="h-9 bg-background"
-                        placeholder="输入图片标识"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="h-9 w-9 shrink-0"
-                        onClick={() => removeImageFromField("analysis.images", idx)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                <ImageAdd
+                  name="分析图片"
+                  images={addReq.analysis?.images || []}
+                  add={() => {
+                    addImageToField("analysis.images", "");
+                  }}
+                  update={(idx, val) => {
+                    const current = (addReq.analysis?.images as string[]) || [];
+                    const newImages = [...current];
+                    newImages[idx] = val;
+                    updateContent("analysis", "images", newImages);
+                  }}
+                  remove={(idx) => {
+                    removeImageFromField("analysis.images", idx);
+                  }}
+                />
               </CardContent>
             </Card>
 
@@ -802,40 +739,22 @@ export default function Add({
                   className="min-h-20"
                 />
 
-                <div className="mt-3 bg-muted/20 rounded-xl p-4 border border-dashed border-border/60 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="flex items-center gap-1">
-                      <ImagePlus className="w-4 h-4" /> 过程图片
-                    </Label>
-                    <Button type="button" variant="ghost" size="sm" className="h-8 gap-1" onClick={() => addImageToField("process.images", "")}>
-                      <Plus className="w-4 h-4" /> 添加
-                    </Button>
-                  </div>
-                  {((addReq.process?.images as string[]) || []).map((url, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <Input
-                        value={url}
-                        onChange={(e) => {
-                          const current = (addReq.process?.images as string[]) || [];
-                          const newImages = [...current];
-                          newImages[idx] = e.target.value;
-                          updateContent("process", "images", newImages);
-                        }}
-                        className="h-9 bg-background"
-                        placeholder="输入图片标识"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="h-9 w-9 shrink-0"
-                        onClick={() => removeImageFromField("process.images", idx)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                <ImageAdd
+                  name="过程图片"
+                  images={addReq.process?.images || []}
+                  add={() => {
+                    addImageToField("process.images", "");
+                  }}
+                  update={(idx, val) => {
+                    const current = (addReq.process?.images as string[]) || [];
+                    const newImages = [...current];
+                    newImages[idx] = val;
+                    updateContent("process", "images", newImages);
+                  }}
+                  remove={(idx) => {
+                    removeImageFromField("process.images", idx);
+                  }}
+                />
               </CardContent>
             </Card>
 

@@ -166,7 +166,7 @@ export default function Index(props: any) {
 
             {/* 标题 */}
             <div className="mt-2.5">
-              {<CommonTitle id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment} images={questionInfo.images} />}
+              {<CommonTitle id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment || ""} images={questionInfo.images} />}
             </div>
 
             {/* 选项内容 */}

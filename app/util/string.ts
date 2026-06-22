@@ -100,9 +100,9 @@ export const StringConst = {
   ],
   // 选项布局
   selectLayoutList: [
-    { id: "select_layout_list_1", value: 1, label: "展示一行" },
-    { id: "select_layout_list_2", value: 2, label: "展示一列" },
-    { id: "select_layout_list_3", value: 3, label: "展示两列" },
+    { id: "select_layout_list_1", value: 1, label: "展示一列" },
+    { id: "select_layout_list_2", value: 2, label: "展示两列" },
+    { id: "select_layout_list_3", value: 3, label: "展示四列" },
   ],
 };
 
