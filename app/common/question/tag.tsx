@@ -193,7 +193,7 @@ function OperateTags({
       .get<QuestionInfoResp>(`/question/info/${questionId}`)
       .then((res) => {
         setSheetTitle("编辑详情");
-        setSheetDesc("编辑时 章节/考点 不修改则空值不关心");
+        setSheetDesc("编辑题目信息");
         setSheetContent(
           <Add
             questionSearch={questionSearch}

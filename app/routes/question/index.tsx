@@ -44,7 +44,7 @@ export default function Home() {
   const [questionSearch, setQuestionSearch] = useState<QuestionSearch>({
     twoLevelId: 0,
     fiveLevelId: selectNavProps.relatedId > 0 ? selectNavProps.relatedId : 0,
-    fiveLevelSelectKeys: [],
+    fiveLevelSelectKeys: selectNavProps.selectedKeys || [],
     eightId: 0,
     eightLevelSelectKeys: [],
     typeId: 0,
@@ -97,7 +97,7 @@ export default function Home() {
   // 添加题目
   const handleAdd = () => {
     setSheetTitle("添加题目");
-    setSheetDesc("");
+    setSheetDesc("通常只有标题是必填项, 比如纯粹的填空简答题等");
     setSheetContent(
       <Add questionSearch={questionSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
     );

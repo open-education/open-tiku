@@ -13,7 +13,7 @@ interface SimpleSheetProps {
 function SimpleSheet({ openSheet, setOpenSheet, sheetTitle, sheetDesc, sheetContent }: SimpleSheetProps) {
   return (
     <Sheet open={openSheet} onOpenChange={setOpenSheet}>
-      <SheetContent className="w-[80vw]! max-w-[80vw]! sm:w-[70vw]! md:w-[80vw]! lg:w-[80vw]! overflow-y-auto">
+      <SheetContent className="w-[90vw]! max-w-[90vw]! sm:w-[70vw]! md:w-[80vw]! lg:w-[90vw]! overflow-y-auto">
         <SheetHeader>
           <SheetTitle>{sheetTitle}</SheetTitle>
           {sheetDesc && <SheetDescription>{sheetDesc}</SheetDescription>}

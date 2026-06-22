@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { QuestionInfo } from "~/common/question/info";
 import { httpClient } from "~/util/http";
 import { createTextbookPathDict } from "~/util/textbook-dict";
+import { ImageUpload } from "~/common/image";
 
 /// 题目添加和编辑
 
@@ -56,6 +57,7 @@ export default function Add({
       contentPlain: "",
       comment: "",
       difficultyLevel: 1.0,
+      status: 0,
     },
     extraInfo: {},
   },
@@ -63,7 +65,6 @@ export default function Add({
   setSheetDesc,
   setSheetContent,
 }: AddProps) {
-  console.log("questionSearch: ", questionSearch);
   // 初始化数据状态管理
   const initAddDefaultReq = useMemo(() => {
     // infoResp 为详情传递过来的完整信息, 优先级最高
@@ -80,6 +81,7 @@ export default function Add({
       difficultyLevel: 1.0,
       optionsLayout: 1,
       source: "",
+      status: 0,
     };
 
     // questionSearch 为列表页传递过来的数据, 可能选也可能为空
@@ -234,7 +236,7 @@ export default function Add({
   const handleAddSubmit = (status: number) => {
     // 检查必填参数是否为空
     if (addReq.questionCateId <= 0) {
-      toast.error(<div className="text-red-700">题型类型不能为空</div>, {
+      toast.error(<div className="text-red-700">题型不能为空</div>, {
         duration: Infinity,
         action: {
           label: "关闭",
@@ -244,7 +246,7 @@ export default function Add({
       return;
     }
     if (addReq.questionTypeId <= 0) {
-      toast.error(<div className="text-red-700">题目类型不能为空</div>, {
+      toast.error(<div className="text-red-700">类型不能为空</div>, {
         duration: Infinity,
         action: {
           label: "关闭",
@@ -293,8 +295,10 @@ export default function Add({
 
     if (status == 0) {
       setDrafing(true);
+      addReq.status = 0;
     } else {
       setApproving(true);
+      addReq.status = 1;
     }
 
     // 添加题目成功并预览详情, 未提交的题目只能在 我的题目 中可见
@@ -325,8 +329,7 @@ export default function Add({
   return (
     <div className="text-sm pl-4 pr-4 pb-4">
       <div className="text-xs">
-        <div>1. 题目需要借助其它 ai 工具转为 markdown 源格式文档后使用</div>
-        <div>2. 如果你的 markdwon 源格式文档符合题目标准格式, 直接粘贴到指定区域会尝试解析出题目的各个部分并填充到对应的表单中</div>
+        <div>1. 图片标识请使用右上角的 上传图片 工具上传图片后获得</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -362,9 +365,15 @@ export default function Add({
           <SimpleAlert title="题型类型获取失败" message={questionCatesErr.message} />
         </div>
       )}
+
       <div className="mt-3 mb-3">
         <Separator />
       </div>
+
+      <div>
+        <ImageUpload />
+      </div>
+
       <div>
         <ResizablePanelGroup orientation="horizontal">
           <ResizablePanel defaultSize="50%">
@@ -513,7 +522,7 @@ export default function Add({
               <Separator />
               <CardContent>
                 <div className="space-y-2">
-                  <Label htmlFor="title" className="text-sm font-medium">
+                  <Label htmlFor="title">
                     题干内容 <span className="text-destructive">*</span>
                   </Label>
                   <Textarea
@@ -525,9 +534,7 @@ export default function Add({
                   />
                 </div>
                 <div className="space-y-2 mt-3">
-                  <Label htmlFor="comment" className="text-sm font-medium">
-                    补充说明
-                  </Label>
+                  <Label htmlFor="comment">补充说明</Label>
                   <Textarea
                     id="comment"
                     className="min-h-15 resize-y"
@@ -540,7 +547,7 @@ export default function Add({
                 {/* 图片列表 */}
                 <div className="mt-3 space-y-2 bg-muted/20 rounded-xl p-4 border border-dashed border-border/60">
                   <div className="flex items-center justify-between">
-                    <Label className="text-sm font-medium flex items-center gap-1">
+                    <Label className="flex items-center gap-1">
                       <ImagePlus className="w-4 h-4" /> 题干图片
                     </Label>
                     <Button type="button" variant="ghost" size="sm" className="h-8 gap-1" onClick={() => addImageToField("images", "")}>
@@ -556,7 +563,7 @@ export default function Add({
                           newImages[idx] = e.target.value;
                           updateAddReq("images", newImages);
                         }}
-                        placeholder="输入图片 URL"
+                        placeholder="输入图片标识"
                         className="h-9 bg-background"
                       />
                       <Button
@@ -570,7 +577,7 @@ export default function Add({
                       </Button>
                     </div>
                   ))}
-                  {((addReq.images || []) as string[]).length === 0 && <p className="text-xs text-muted-foreground py-1">暂无图片，点击上方添加</p>}
+                  {((addReq.images || []) as string[]).length === 0 && <p className="text-muted-foreground py-1">暂无图片，点击上方添加</p>}
                 </div>
               </CardContent>
             </Card>
@@ -592,7 +599,7 @@ export default function Add({
                 <CardContent>
                   {/* 布局切换 */}
                   <div className="flex items-center gap-6 bg-muted/30 rounded-lg p-2 px-4 w-fit">
-                    <span className="text-sm font-medium">选项布局</span>
+                    <span>选项布局</span>
                     <RadioGroup
                       value={addReq.optionsLayout}
                       onValueChange={(val) => updateAddReq("optionsLayout", val)}
@@ -617,7 +624,7 @@ export default function Add({
                             <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
                               {opt.label}
                             </div>
-                            <span className="text-xs text-muted-foreground">选项 {optIdx + 1}</span>
+                            <span className="text-muted-foreground">选项 {optIdx + 1}</span>
                           </div>
                           <Button
                             type="button"
@@ -637,7 +644,7 @@ export default function Add({
                         />
                         {/* 选项内图片 */}
                         <div className="pl-1 space-y-1.5">
-                          <Label className="text-xs text-muted-foreground">选项图片</Label>
+                          <Label className="text-muted-foreground">选项图片</Label>
                           {(opt.images || []).map((imgUrl, imgIdx) => (
                             <div key={imgIdx} className="flex items-center gap-2">
                               <Input
@@ -647,7 +654,7 @@ export default function Add({
                                   newImages[imgIdx] = e.target.value;
                                   updateOption(optIdx, "images", newImages);
                                 }}
-                                placeholder="图片 URL"
+                                placeholder="输入图片标识"
                                 className="h-8 bg-background/60 text-sm"
                               />
                               <Button
@@ -670,7 +677,7 @@ export default function Add({
                             size="sm"
                             className="h-auto p-0 text-xs"
                             onClick={() => {
-                              const url = prompt("请输入图片 URL：");
+                              const url = prompt("输入图片标识");
                               if (url !== null) {
                                 const newImages = [...(opt.images || []), url];
                                 updateOption(optIdx, "images", newImages);
@@ -701,9 +708,7 @@ export default function Add({
               <Separator />
               <CardContent>
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="answer" className="text-sm font-medium">
-                    参考答案
-                  </Label>
+                  <Label htmlFor="answer">参考答案</Label>
                   <Textarea
                     id="answer"
                     className="min-h-17.5"
@@ -714,9 +719,7 @@ export default function Add({
                 </div>
 
                 <div className="mt-3 space-y-2 md:col-span-2">
-                  <Label htmlFor="knowledge" className="text-sm font-medium">
-                    涉及知识点
-                  </Label>
+                  <Label htmlFor="knowledge">涉及知识点</Label>
                   <Textarea
                     id="knowledge"
                     className="min-h-17.5"
@@ -747,7 +750,7 @@ export default function Add({
 
                 <div className="mt-3 bg-muted/20 rounded-xl p-4 border border-dashed border-border/60 space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label className="text-sm font-medium flex items-center gap-1">
+                    <Label className="flex items-center gap-1">
                       <ImagePlus className="w-4 h-4" /> 分析图片
                     </Label>
                     <Button type="button" variant="ghost" size="sm" className="h-8 gap-1" onClick={() => addImageToField("analysis.images", "")}>
@@ -765,7 +768,7 @@ export default function Add({
                           updateContent("analysis", "images", newImages);
                         }}
                         className="h-9 bg-background"
-                        placeholder="图片 URL"
+                        placeholder="输入图片标识"
                       />
                       <Button
                         type="button"
@@ -801,7 +804,7 @@ export default function Add({
 
                 <div className="mt-3 bg-muted/20 rounded-xl p-4 border border-dashed border-border/60 space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label className="text-sm font-medium flex items-center gap-1">
+                    <Label className="flex items-center gap-1">
                       <ImagePlus className="w-4 h-4" /> 过程图片
                     </Label>
                     <Button type="button" variant="ghost" size="sm" className="h-8 gap-1" onClick={() => addImageToField("process.images", "")}>
@@ -819,7 +822,7 @@ export default function Add({
                           updateContent("process", "images", newImages);
                         }}
                         className="h-9 bg-background"
-                        placeholder="图片 URL"
+                        placeholder="输入图片标识"
                       />
                       <Button
                         type="button"
@@ -849,9 +852,7 @@ export default function Add({
               <CardContent>
                 {(addReq.steps || []).map((step, idx) => (
                   <div key={idx} className="flex items-start gap-3 bg-muted/10 rounded-lg p-4 border border-border/40">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0 mt-1">
-                      {step.id}
-                    </div>
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 shrink-0 mt-1">{step.id}</div>
                     <Textarea
                       value={step.content}
                       onChange={(e) => updateStep(idx, e.target.value)}
@@ -897,7 +898,7 @@ export default function Add({
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize="50%">
             <Watermark className="h-full w-full border bg-slate-50">
-              <div className="">
+              <div className="pt-3">
                 <QuestionInfo
                   questionTypeDict={questionTypeDict}
                   questionTagDict={questionTagDict}

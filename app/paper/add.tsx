@@ -21,6 +21,7 @@ import { ExamPaperMeta } from "~/common/paper/meta";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { SimpleAlert } from "~/common/alert";
+import { ImageUpload } from "~/common/image";
 
 /// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑
 /// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
@@ -328,9 +329,10 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
   return (
     <div className="text-sm pl-4 pr-4 pb-4">
       <div className="text-xs">
-        <p>1. 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜</p>
-        <p>2. 但个人使用比如 DeepSeek 几乎是完全免费的, 因此需要个人借助其它 ai 平台将试卷题目转化为 markdown 格式后拷贝过来上传</p>
-        <p>3. 如果试卷有统一的格式和排版, 后续支持将整个文档粘贴进来后一次性解析出所有的题目</p>
+        <div>1. 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜</div>
+        <div>2. 但个人使用比如 DeepSeek 几乎是完全免费的, 因此需要个人借助其它 ai 平台将试卷题目转化为 markdown 格式后拷贝过来上传</div>
+        <div>3. 如果试卷有统一的格式和排版, 后续支持将整个文档粘贴进来后一次性解析出所有的题目</div>
+        <div>4. 图片标识请使用右上角的 上传图片 工具上传图片后获得</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -345,6 +347,10 @@ export default function Add({ textbooks, metaSearch, setSheetTitle, setSheetDesc
       {addWarnInfo}
 
       <Separator className="mt-3 mb-3" />
+
+      <div>
+        <ImageUpload />
+      </div>
 
       <div className="mb-6">
         <ResizablePanelGroup orientation="horizontal">

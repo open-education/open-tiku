@@ -205,6 +205,7 @@ export default function Add(props: any) {
         title: currentInfo.title,
         difficultyLevel: currentInfo.difficultyLevel,
         originalName: "",
+        status: 0, // 旧版本全是草稿中
       };
       if (currentInfo.sourceId && currentInfo.sourceId > 0) {
         uploadReq.sourceId = currentInfo.sourceId;

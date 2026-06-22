@@ -16,18 +16,31 @@ class HttpClient {
     return this.handleResponse(response);
   };
 
-  post = async <T = any>(path: string, data: any, options?: RequestInit): Promise<T> => {
+  post = async <T = any>(path: string, data: any, options?: RequestInit, fileUpload?: boolean): Promise<T> => {
     const url = this.buildUrl(path);
-    const reqBody = JSON.stringify(data);
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.headers,
-      },
-      body: reqBody,
-      ...options,
-    });
+
+    // 文件上传不需要处理默认头和请求体
+    const reqBody = fileUpload
+      ? {
+          method: "POST",
+          headers: {
+            ...options?.headers,
+          },
+          body: data,
+          ...options,
+        }
+      : {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...options?.headers,
+          },
+          body: JSON.stringify(data),
+          ...options,
+        };
+
+    const response = await fetch(url, reqBody);
+
     return this.handleResponse(response);
   };
 

@@ -63,6 +63,7 @@ export interface CreateQuestionReq {
   process?: Content; // 解题过程
   steps?: Step[]; // 解题步骤提示
   remark?: string; // 解题备注, 比如易错题型等
+  status: number; // 题目状态
 }
 
 // 题目基本信息返回
@@ -74,6 +75,7 @@ export interface QuestionBaseInfoResp {
   authorId?: number;
   originalName: string;
   source?: string;
+  status: number;
   title: string;
   contentPlain: string;
   comment?: string;
