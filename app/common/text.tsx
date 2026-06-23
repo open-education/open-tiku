@@ -39,7 +39,7 @@ function ParseQuestion({ typeList = [], tagList = [], onSuccess }: ParseQuestion
       .post<CreateQuestionReq>("/text/question/snippet", req)
       .then((addReq) => {
         if (addReq.title.trim.length > 0) {
-          setResult({ success: true, message: "解析" });
+          setResult({ success: true, message: "解析完成" });
           onSuccess?.(addReq); // 如果有回调函数则回调
         } else {
           setResult({ success: false, message: "解析完成, 但是题干都为空, 请确认粘贴的内容符合规范" });

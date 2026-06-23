@@ -16,7 +16,7 @@ export interface ToolItem {
   content: React.ReactNode;
 }
 
-export interface FloatingToolsProps {
+export interface QuickToolListProps {
   // 配置需要展示的组件列表
   tools: ToolItem[];
   /** 默认激活的工具 ID，默认第一个 */
@@ -51,7 +51,7 @@ export interface FloatingToolsProps {
  * </div>
  * @returns
  */
-export function QuickToolList({ tools = [], defaultToolId, panelClassName, panelWidth = "w-100" }: FloatingToolsProps) {
+export function QuickToolList({ tools = [], defaultToolId, panelClassName, panelWidth = "w-100" }: QuickToolListProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [activeToolId, setActiveToolId] = React.useState(defaultToolId ?? tools[0]?.id ?? "");
 
