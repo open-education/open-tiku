@@ -67,7 +67,7 @@ function ExamPaper({ papers, metaSearch, setOpenSheet, setSheetTitle, setSheetDe
           key={paper.id}
           className="group flex flex-col cursor-pointer hover:border-primary/30 hover:shadow-md transition-all duration-150"
           onClick={() => {
-            handleClickCard(paper.id);
+            handleClickCard(paper.id || 0);
           }}
         >
           <CardContent className="px-4 py-3.5 flex flex-col h-full">

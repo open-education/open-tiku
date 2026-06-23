@@ -53,7 +53,12 @@ function ExamQuestion(props: ExamQuestionProps) {
 
       {/* 答案扩展区域（卡片 + 高度动画） */}
       <div
-        className={cn("overflow-hidden transition-all duration-300 ease-in-out", isAnswerExpanded ? "max-h-125 opacity-100" : "max-h-0 opacity-0")}
+        className={cn(
+          "transition-all duration-300 ease-in-out",
+          isAnswerExpanded
+            ? "max-h-80 overflow-y-auto opacity-100" // 限制高度 + 允许滚动
+            : "max-h-0 overflow-hidden opacity-0", // 折叠时完全隐藏
+        )}
       >
         <div className="p-4 bg-muted/50 border border-border/50 space-y-3">
           {/* 答案行 */}

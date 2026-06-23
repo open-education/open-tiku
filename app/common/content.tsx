@@ -5,8 +5,6 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import remarkMath from "remark-math";
-import rehypeSanitize from "rehype-sanitize";
-import { allowSchema } from "~/util/schema";
 import { table } from "~/common/table";
 
 /// 简单的 markdown 内容
@@ -24,7 +22,7 @@ function SimpleFullContent(props: SimpleFullContentProps) {
       {StringValidator.isNonEmpty(content) && (
         <Markdown
           remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]}
-          rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}
+          rehypePlugins={[rehypeRaw, [rehypeKatex, { output: "html" }]]}
           components={table}
         >
           {content}

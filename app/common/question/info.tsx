@@ -119,9 +119,9 @@ function QuestionInfo({ questionTypeDict, questionTagDict, infoResp }: QuestionI
                   </div>
                   {/* 步骤内容 */}
                   <div className="pt-1.5 pb-1 px-4 bg-gray-50/50 dark:bg-gray-900/30 rounded-lg border border-gray-100 dark:border-gray-800 flex-1 hover:bg-gray-100/50 dark:hover:bg-gray-800/30 transition-colors">
-                    <p className=" text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <div className=" text-gray-700 dark:text-gray-300 leading-relaxed">
                       <SimpleFullContent content={step.content} />
-                    </p>
+                    </div>
                   </div>
                 </div>
               ))}
