@@ -21,9 +21,10 @@ import { ExamPaperMeta } from "~/common/paper/meta";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { SimpleAlert } from "~/common/alert";
-import { ImageAdd, ImageUpload } from "~/common/image";
+import { ImageAdd } from "~/common/image";
 import { useTextbooks } from "~/util/fetcher";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { FileUpload } from "~/common/file";
 
 /// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑
 /// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
@@ -118,7 +119,6 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
   const updatePaperMeta = (key: keyof PaperMeta, value: string | number) => {
     setPaper((prev) => ({ ...prev, [key]: value }));
   };
-  console.log("paper: ", paper);
 
   const [addWarnInfo, setAddWarnInfo] = useState<React.ReactNode>("");
 
@@ -341,7 +341,7 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
   return (
     <div className="text-sm pl-4 pr-4 pb-4">
       <div className="text-xs">
-        <div>1. 图片标识请使用右上角的 上传图片 工具上传图片后获得</div>
+        <div>1. 图片标识请使用右上角的 上传文件 工具上传图片后获得</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -358,7 +358,7 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
       <Separator className="mt-3 mb-3" />
 
       <div>
-        <ImageUpload />
+        <FileUpload isImage={true} />
       </div>
 
       <div className="mb-6">

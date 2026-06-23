@@ -5,6 +5,7 @@ import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import type { PaperListReq, PaperListResp, PaperMeta, PaperMetaSearch } from "~/type/paper";
 import { StringConst, StringValidator } from "~/util/string";
 import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from "~/type/question";
+import type { TaskListReq, TaskListResp } from "~/type/task";
 
 /// 使用 SWR 缓存查询组件
 /// https://swr.vercel.app/
@@ -42,7 +43,7 @@ export function usePaperList(search: PaperMetaSearch, pageNo: number) {
   // 生成 SWR 的 key（只有 relatedId > 0 时才发起请求，否则为 null）
   const key = req.relatedId > 0 ? JSON.stringify(req) : null;
 
-  return useSWR(key, () => httpClient.post<PaperListResp>("/paper/list", req), {
+  return useSWR<PaperListResp>(key, () => httpClient.post<PaperListResp>("/paper/list", req), {
     keepPreviousData: true, // 分页切换时保留旧数据，体验更好
   });
 }
@@ -84,7 +85,7 @@ export function useQuestionList(search: QuestionSearch, pageNo: number) {
 
   // 生成 SWR 的 key（只有 relatedId > 0 时才发起请求，否则为 null）
   const key = req.questionCateId > 0 ? JSON.stringify(req) : null;
-  return useSWR(key, () => httpClient.post<QuestionListResp>("/question/list", req), {
+  return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>("/question/list", req), {
     keepPreviousData: true, // 分页切换时保留旧数据，体验更好
   });
 }
@@ -98,5 +99,14 @@ export function useSimilarList(questionId: number, eightId: number, pageNo: numb
     pageSize: StringConst.pageSize,
   };
 
-  return useSWR({ url: "/question/similar", data: req }, ({ url, data }) => httpClient.post(url, data));
+  return useSWR<QuestionListResp>({ url: "/question/similar", data: req }, ({ url, data }: { url: string; data: QuestionSimilarListReq }) =>
+    httpClient.post<QuestionListResp>(url, data),
+  );
+}
+
+// 题目上传任务列表
+export function useTaskList(req: TaskListReq) {
+  return useSWR<TaskListResp>({ url: "/task/list", data: req }, ({ url, data }: { url: string; data: TaskListReq }) =>
+    httpClient.post<TaskListResp>(url, data),
+  );
 }

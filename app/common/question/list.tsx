@@ -2,8 +2,8 @@ import type { QuestionBaseInfoResp, QuestionListResp, QuestionSearch } from "~/t
 import type { TextbookOtherDict } from "~/type/textbook";
 import { OperateTags, TagShow } from "~/common/question/tag";
 import { DictUtil } from "~/util/object";
-import { TitleShow } from "~/common/question/title";
-import { MultiOptionShow } from "~/common/question/select";
+import { TitleShow } from "~/common/title";
+import { MultiOptionShow } from "~/common/select";
 
 /// 题库题目列表展示
 

@@ -1,109 +1,61 @@
-import { Col, Row, Image } from "antd";
-import Markdown from "react-markdown";
-import rehypeKatex from "rehype-katex";
-import remarkMath from "remark-math";
 import type { QuestionOption } from "~/type/question";
+import { SimpleFullContent } from "~/common/content";
 import { StringValidator } from "~/util/string";
+import { ImageZoom } from "~/common/image";
+import { cn } from "~/lib/utils";
 
-// 选择题的一个展示样式
-interface SingleSelectProps {
-  label: string;
-  content: string;
-  images?: string[];
-}
-function SingleSelect(props: SingleSelectProps) {
-  return (
-    <Row gutter={[10, 10]} align={"middle"}>
-      <Col span={0.5}>{props.label}.</Col>
-      <Col span={23.5}>
-        {/* 一般来说内容和图片不会同时出现, 如果存在再重新设计样式 */}
-        {StringValidator.isNonEmpty(props.content) && (
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {props.content}
-          </Markdown>
-        )}
-        {/* 图片, 目前先不处理标签和图片同时存在的情况 */}
-        {props.images?.map((imageName) => {
-          return (
-            <div key={imageName} style={{ width: 200, height: 200, overflow: "hidden" }}>
-              <Image width="100%" height="100%" style={{ objectFit: "cover" }} alt="basic" src={`/images/${imageName}`} />
-            </div>
-          );
-        })}
-      </Col>
-    </Row>
-  );
-}
+/// 选择题选项样式--试卷和题库均使用后续移动到父级
 
-interface OptionProps {
-  optionsLayout: number;
+interface MultiOptionShowProps {
+  optionsLayout: number; // 1, 2, 3
   options: QuestionOption[];
 }
 
-// 选择题样式
-export function CommonSelect(props: OptionProps) {
-  const showSelectVal: number = props.optionsLayout ?? 1;
+const gridColsMap: Record<number, string> = {
+  1: "grid-cols-1", // 展示1列
+  2: "grid-cols-2", // 展示两列
+  3: "grid-cols-4", // 展示4列
+};
 
-  if (showSelectVal === 1) {
-    return (
-      <Row gutter={[10, 10]} align={"middle"}>
-        {props.options?.map((item) => {
-          return (
-            <Col span={6} key={item.label}>
-              <SingleSelect label={item.label} content={item.content} images={item.images} />
-            </Col>
-          );
-        })}
-      </Row>
-    );
-  } else if (showSelectVal === 2) {
-    return (
-      <Row gutter={[10, 10]} align={"middle"}>
-        {props.options?.map((item) => {
-          return (
-            <Col span={24} key={item.label}>
-              <SingleSelect label={item.label} content={item.content} images={item.images} />
-            </Col>
-          );
-        })}
-      </Row>
-    );
-  } else {
-    // 将数组分成两部分, 5各选项的如果后续需要再调整样式, 5个选项一般选择一列的样式应该是最好的
-    const options: QuestionOption[] = props.options ?? [];
-    if (options.length === 0) {
-      return "";
-    }
+function MultiOptionShow({ optionsLayout = 4, options }: MultiOptionShowProps) {
+  const validLayout = [1, 2, 3].includes(optionsLayout) ? optionsLayout : 1;
+  const gridClass = gridColsMap[validLayout] || "grid-cols-4";
 
-    const mid = Math.floor(options.length / 2);
-    const firstHalf = options.slice(0, mid);
-    const secondHalf = options.slice(mid);
+  const isImageMode = options.every((opt) => opt.images && opt.images.length > 0);
 
-    return (
-      <Row gutter={[10, 10]} align={"middle"}>
-        <Col span={24}>
-          <Row gutter={[10, 10]} align={"middle"}>
-            {firstHalf.map((item) => {
-              return (
-                <Col span={12} key={item.label}>
-                  <SingleSelect label={item.label} content={item.content} images={item.images} />
-                </Col>
-              );
-            })}
-          </Row>
-        </Col>
-        <Col span={24}>
-          <Row gutter={[10, 10]} align={"middle"}>
-            {secondHalf.map((item) => {
-              return (
-                <Col span={12} key={item.label}>
-                  <SingleSelect label={item.label} content={item.content} images={item.images} />
-                </Col>
-              );
-            })}
-          </Row>
-        </Col>
-      </Row>
-    );
-  }
+  return (
+    <div className={cn("grid gap-4", gridClass)}>
+      {options.map((option) => {
+        const imageUrl = option.images?.[0];
+
+        return (
+          <div key={option.label} className={cn("flex flex-row items-stretch", "bg-card rounded-lg", isImageMode ? "h-48" : "")}>
+            {/* 左栏：标签（固定宽度，垂直居中） */}
+            <div className={cn("shrink-0 text-foreground self-center", "w-6", "flex items-center justify-start")}>{option.label}.</div>
+
+            {/* 右栏：内容（flex-1 占剩余宽度，内部左对齐） */}
+            <div className="flex-1 flex items-center min-w-0 h-full">
+              {isImageMode ? (
+                // 图片模式：图片容器左对齐，图片高度填满，宽度自适应，并限制最大宽度
+                <div className="w-full h-full flex items-center justify-start overflow-hidden">
+                  {imageUrl ? (
+                    <ImageZoom imageName={imageUrl} className="h-full w-auto max-w-full object-contain" />
+                  ) : (
+                    <span className="text-muted-foreground text-sm">无图片</span>
+                  )}
+                </div>
+              ) : (
+                // 文字模式：内容左对齐，自动换行
+                <span className={cn("wrap-break-word w-full text-left")}>
+                  {StringValidator.isNonEmpty(option.content) && <SimpleFullContent content={option.content} />}
+                </span>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
+
+export { MultiOptionShow };

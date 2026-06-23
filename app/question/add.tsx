@@ -23,7 +23,8 @@ import { toast } from "sonner";
 import { QuestionInfo } from "~/common/question/info";
 import { httpClient } from "~/util/http";
 import { createTextbookPathDict } from "~/util/textbook-dict";
-import { ImageAdd, ImageUpload } from "~/common/image";
+import { ImageAdd } from "~/common/image";
+import { FileUpload } from "~/common/file";
 
 /// 题目添加和编辑
 
@@ -330,7 +331,7 @@ export default function Add({
   return (
     <div className="text-sm pl-4 pr-4 pb-4">
       <div className="text-xs">
-        <div>1. 图片标识请使用右上角的 上传图片 工具上传图片后获得</div>
+        <div>1. 图片标识请使用右上角的 上传文件 工具上传图片后获得</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -372,7 +373,7 @@ export default function Add({
       </div>
 
       <div>
-        <ImageUpload />
+        <FileUpload isImage={true} />
       </div>
 
       <div>

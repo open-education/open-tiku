@@ -5,8 +5,8 @@ import { Lightbulb, CheckCircle2, Layers, AlertCircle } from "lucide-react";
 import type { QuestionInfoResp } from "~/type/question";
 import { SimpleFullContent } from "~/common/content";
 import { TagShow } from "~/common/question/tag";
-import { TitleShow } from "~/common/question/title";
-import { MultiOptionShow } from "~/common/question/select";
+import { TitleShow } from "~/common/title";
+import { MultiOptionShow } from "~/common/select";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { DictUtil } from "~/util/object";
 

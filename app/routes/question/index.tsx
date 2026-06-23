@@ -20,6 +20,7 @@ import { ArrayUtil } from "~/util/object";
 import { QuestionListShow } from "~/common/question/list";
 import Add from "~/question/add";
 import "katex/dist/katex.min.css";
+import { TaskAdd, TaskListShow } from "~/question/task";
 
 /// 题目首页
 
@@ -95,12 +96,30 @@ export default function Home() {
   const [sheetContent, setSheetContent] = useState<React.ReactNode>("");
 
   // 添加题目
-  const handleAdd = () => {
+  const handleQuestionAdd = () => {
     setSheetTitle("添加题目");
     setSheetDesc("通常只有标题是必填项, 比如纯粹的填空简答题等");
     setSheetContent(
       <Add questionSearch={questionSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
     );
+    setOpenSheet(true);
+  };
+
+  // 添加任务
+  const handleTaskAdd = () => {
+    setSheetTitle("上传题目");
+    setSheetDesc("注意上传模板约定");
+    setSheetContent(
+      <TaskAdd questionSearch={questionSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
+    );
+    setOpenSheet(true);
+  };
+
+  // 查看任务
+  const handleTaskList = () => {
+    setSheetTitle("任务列表");
+    setSheetDesc("任务执行周期大概每5分钟一次, 如果任务异常请联系管理员");
+    setSheetContent(<TaskListShow questionSearch={questionSearch} />);
     setOpenSheet(true);
   };
 
@@ -204,13 +223,13 @@ export default function Home() {
           <div className="col-span-1">操作:</div>
           <div className="col-span-9">
             <div className="flex flex-wrap gap-1">
-              <Button variant="outline" onClick={handleAdd}>
+              <Button variant="outline" onClick={handleQuestionAdd}>
                 添加题目
               </Button>
-              <Button variant="outline" onClick={() => {}}>
+              <Button variant="outline" onClick={handleTaskAdd}>
                 上传题目
               </Button>
-              <Button variant="outline" onClick={() => {}}>
+              <Button variant="outline" onClick={handleTaskList}>
                 查看任务
               </Button>
             </div>

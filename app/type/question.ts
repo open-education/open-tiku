@@ -18,31 +18,6 @@ export interface Step {
   content: string; // 内容
 }
 
-// 题目基本信息详情
-export interface QuestionBaseInfo {
-  id: number;
-  questionCateId: number;
-  sourceId?: number;
-  questionTypeId: number;
-  questionTagIds?: number[];
-  originalName: string;
-  source?: string;
-  authorId?: number;
-  title: string;
-  contentPlain: string;
-  comment: string;
-  difficultyLevel: number;
-  images?: string[];
-  options?: QuestionOption[];
-  optionsLayout?: number;
-  answer?: string;
-  knowledge?: string;
-  analysis?: Content;
-  process?: Content;
-  steps?: Step[];
-  remark?: string;
-}
-
 // 创建题目请求
 export interface CreateQuestionReq {
   id?: number; // 更新时需要主键, 新增时不能传递这个key

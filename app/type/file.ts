@@ -1,5 +1,5 @@
-export interface DeleteImageReq {
-  id?: number;
+export interface DeleteFileReq {
+  isImage: boolean;
   filename: string;
 }
 

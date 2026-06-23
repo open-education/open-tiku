@@ -6,5 +6,4 @@ export default [
     route("paper", "routes/paper/index.tsx"),
     route("question", "routes/question/index.tsx"),
   ]),
-  route("/tiku", "routes/tiku/index.tsx", [route(":textbookId", "routes/tiku/list.tsx"), route(":textbookId/similar", "routes/tiku/similar.tsx")]),
 ] satisfies RouteConfig;
