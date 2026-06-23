@@ -108,7 +108,7 @@ function SimilarQuestionListShow({ questionTypeDict, questionTagDict, listResp }
     <>
       {listResp.list?.map((questionInfo) => {
         return (
-          <div key={questionInfo.id} className="mt-4 pt-3 bg-white">
+          <div key={questionInfo.id} className="bg-white pt-4">
             {/* 题干选项等部分 */}
             <SingleQuestionCommonPart questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} questionInfo={questionInfo} />
           </div>

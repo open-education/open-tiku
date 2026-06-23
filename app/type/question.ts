@@ -45,6 +45,7 @@ export interface QuestionBaseInfo {
 
 // 创建题目请求
 export interface CreateQuestionReq {
+  id?: number; // 更新时需要主键, 新增时不能传递这个key
   sourceId?: number; // 母题标识, 默认无
   questionCateId: number; // 题目分类标识
   questionTypeId: number; // 题目类型标识

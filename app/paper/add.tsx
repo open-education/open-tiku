@@ -39,7 +39,6 @@ const defaultPaperMeta: PaperMeta = {
   source: "",
   year: "",
   groups: [],
-  id: 0,
   status: 0,
   createdAt: "",
   updatedAt: "",
@@ -91,7 +90,7 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
   // 计算初始值, 编辑时也是更新这个初始化值
   const initialPaperMeta = useMemo(() => {
     // 如果是详情进来的则仅使用详情的数据
-    if (infoResp && infoResp.id > 0) {
+    if (infoResp && infoResp.id != null && infoResp.id > 0) {
       return { ...infoResp };
     }
 
@@ -299,7 +298,7 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
       return;
     }
 
-    if (!confirm("确定要保存试卷吗？")) {
+    if (!confirm(paper.id && paper.id > 0 ? "确定要更新试卷吗？" : "确定要新增试卷吗？")) {
       return;
     }
 
@@ -726,7 +725,14 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="space-y-1 sm:col-span-2">
           <Label>答案</Label>
-          <Input value={question.answer} onChange={(e) => onUpdate("answer", e.target.value)} placeholder="如: A 或 ABD 或 2 或 略" />
+          <Textarea
+            value={question.answer}
+            onChange={(e) => {
+              onUpdate("answer", e.target.value);
+            }}
+            placeholder="如: A 或 ABD 或 2 或 略"
+            className="min-h-12.5"
+          />
         </div>
         <div className="space-y-1">
           <Label>分值</Label>

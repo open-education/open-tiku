@@ -68,7 +68,7 @@ export default function Add({
   // 初始化数据状态管理
   const initAddDefaultReq = useMemo(() => {
     // infoResp 为详情传递过来的完整信息, 优先级最高
-    if (infoResp.baseInfo.id > 0) {
+    if (infoResp && infoResp.baseInfo.id > 0) {
       return { ...infoResp.baseInfo, ...infoResp.extraInfo };
     }
 
@@ -286,7 +286,8 @@ export default function Add({
       return;
     }
 
-    if (!confirm("确定要保存试卷吗？")) {
+    if (!confirm(addReq.id && addReq.id > 0 ? "确定要更新题目吗？" : "确定要新增题目吗？")) {
+      console.log("addReq: ", addReq);
       return;
     }
 

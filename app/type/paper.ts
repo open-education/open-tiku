@@ -4,7 +4,7 @@ import type { Content, QuestionOption } from "~/type/question";
 
 // 试卷主要信息
 export interface PaperMeta {
-  id: number; // 主键
+  id?: number; // 主键, 新增时不能传递该key
   relatedId: number; // 关联标识 考点或者章节等
   relatedName: string; // 关联标识名称
   tag: string; // 标签

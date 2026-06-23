@@ -231,7 +231,7 @@ function OperateTags({
     setSheetTitle("变式题列表");
     setSheetDesc("变式题暂不支持查看详情");
     setSheetContent(
-      <SimilarQuestionList questionTypeDict={questionTypeDict} questionTagDict={questionTypeDict} questionId={questionId} eightId={eightId} />,
+      <SimilarQuestionList questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} questionId={questionId} eightId={eightId} />,
     );
     setOpenSheet(true);
   };

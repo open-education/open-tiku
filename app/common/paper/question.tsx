@@ -25,7 +25,7 @@ function ExamQuestion(props: ExamQuestionProps) {
 
   // 生成题目选项
   const getQuestionOptions = (index: number, options: QuestionOption[]) => {
-    return <MultiOptionShow optionsLayout={1} options={options} />;
+    return <MultiOptionShow optionsLayout={question.optionsLayout || 1} options={options} />;
   };
 
   const [isAnswerExpanded, setIsAnswerExpanded] = useState(false);
