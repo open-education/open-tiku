@@ -1,3 +1,5 @@
+import type { TextbookOtherDict } from "./textbook";
+
 // 题目选项信息
 export interface QuestionOption {
   label: string; // A, B, C, D, E
@@ -117,4 +119,11 @@ export interface QuestionSearch {
   tagIds: number[]; // 题目标签
   id: number; // 题目主键
   sourceId?: number; // 母题标识, 添加变式题时需要传递
+}
+
+// 解析题目请求
+export interface QuestionSnippetReq {
+  typeList: TextbookOtherDict[];
+  tagList: TextbookOtherDict[];
+  content: string;
 }

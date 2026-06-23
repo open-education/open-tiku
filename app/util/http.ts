@@ -56,7 +56,7 @@ class HttpClient {
     }
     const apiResponse = (await response.json()) as ApiResponse<T>;
     if (apiResponse.code !== 200) {
-      throw new Error(`HTTP error! msg: ${apiResponse.msg}`);
+      throw new Error(`${apiResponse.msg}`);
     }
     return apiResponse.data as T;
   }

@@ -20,7 +20,6 @@ import { useLocation } from "react-router";
 import { SimpleAlert } from "~/common/alert";
 import { SimpleSheet } from "~/common/sheet";
 import { SimpleNoData } from "~/common/empty";
-import "katex/dist/katex.min.css";
 
 // 重新网页标题等
 export function meta({}: Route.MetaArgs) {

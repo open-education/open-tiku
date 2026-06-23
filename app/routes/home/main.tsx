@@ -2,6 +2,7 @@ import type { Route } from "./+types/main";
 import { Footer } from "~/home/footer";
 import { Header } from "~/home/header";
 import { Outlet } from "react-router";
+import "katex/dist/katex.min.css";
 
 /// 网站首页顶部和底部框架
 export function meta({}: Route.MetaArgs) {

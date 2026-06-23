@@ -19,7 +19,6 @@ import { SimpleNoData } from "~/common/empty";
 import { ArrayUtil } from "~/util/object";
 import { QuestionListShow } from "~/common/question/list";
 import Add from "~/question/add";
-import "katex/dist/katex.min.css";
 import { TaskAdd, TaskListShow } from "~/question/task";
 
 /// 题目首页

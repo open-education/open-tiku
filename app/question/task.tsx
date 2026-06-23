@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import type { TaskInfo, TaskListReq, TaskSaveReq } from "~/type/task";
+import type { TaskListReq, TaskSaveReq } from "~/type/task";
 import { Separator } from "~/components/ui/separator";
 import { FileUpload } from "~/common/file";
 import { ChapterDropdownNav } from "~/common/nav";
@@ -16,8 +16,9 @@ import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-import { CalendarDays, Clock, FileText, Mail, User } from "lucide-react";
+import { CalendarDays, Clock, FileImage, FileText, Mail, User } from "lucide-react";
 import { SimplePagination } from "~/common/page";
+import { QuickToolList } from "~/common/tool";
 
 /// 题目上传任务
 
@@ -139,7 +140,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
   return (
     <div className="space-y-6 pl-4 pr-4">
       <div className="text-xs">
-        <div>1. 文件标识请使用右上角的 上传文件 工具上传文件后获得</div>
+        <div>1. 文件标识请使用右上角的 快捷工具-上传文件 上传文件后获得</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -151,7 +152,21 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
       <Separator />
 
       <div>
-        <FileUpload isImage={false} />
+        <QuickToolList
+          tools={[
+            {
+              id: "tool-file-upload",
+              label: (
+                <div className="flex items-center gap-2">
+                  <FileImage className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-sm">上传文件</span>
+                </div>
+              ),
+              content: <FileUpload isImage={false} />,
+            },
+          ]}
+          defaultToolId="tool-file-upload"
+        />
       </div>
 
       {(isLoading || textbooksLoading || questionCatesLoading) && <Loading />}

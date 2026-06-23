@@ -7,7 +7,20 @@ import { Label } from "~/components/ui/label";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
-import { FileText, Settings2, ListChecks, Brain, Wand2, Footprints, MessageSquare, Trash2, Plus, BookOpen } from "lucide-react";
+import {
+  FileText,
+  Settings2,
+  ListChecks,
+  Brain,
+  Wand2,
+  Footprints,
+  MessageSquare,
+  Trash2,
+  Plus,
+  BookOpen,
+  FileImage,
+  NotebookPen,
+} from "lucide-react";
 import type { Content, CreateQuestionReq, QuestionInfoResp, QuestionOption, QuestionSearch } from "~/type/question";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
 import { Watermark } from "~/common/watermark";
@@ -24,7 +37,9 @@ import { QuestionInfo } from "~/common/question/info";
 import { httpClient } from "~/util/http";
 import { createTextbookPathDict } from "~/util/textbook-dict";
 import { ImageAdd } from "~/common/image";
+import { QuickToolList } from "~/common/tool";
 import { FileUpload } from "~/common/file";
+import { ParseQuestion } from "~/common/text";
 
 /// 题目添加和编辑
 
@@ -331,7 +346,8 @@ export default function Add({
   return (
     <div className="text-sm pl-4 pr-4 pb-4">
       <div className="text-xs">
-        <div>1. 图片标识请使用右上角的 上传文件 工具上传图片后获得</div>
+        <div>1. 图片标识请使用右上角的 快捷工具-上传文件 上传图片后获得</div>
+        <div>2. 符合 上传题目 模板的题目可以粘贴到 快捷工具-解析题目 进行解析后会自动填充至左边表单中</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -373,7 +389,31 @@ export default function Add({
       </div>
 
       <div>
-        <FileUpload isImage={true} />
+        <QuickToolList
+          tools={[
+            {
+              id: "tool-file-upload",
+              label: (
+                <div className="flex items-center gap-2">
+                  <FileImage className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-sm">上传文件</span>
+                </div>
+              ),
+              content: <FileUpload isImage={true} />,
+            },
+            {
+              id: "tool-text-parse",
+              label: (
+                <div className="flex items-center gap-2">
+                  <NotebookPen className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-sm">解析题目</span>
+                </div>
+              ),
+              content: <ParseQuestion typeList={questionTypes} tagList={questionTags} />,
+            },
+          ]}
+          defaultToolId="tool-file-upload"
+        />
       </div>
 
       <div>
