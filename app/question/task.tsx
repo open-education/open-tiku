@@ -19,6 +19,8 @@ import { Badge } from "~/components/ui/badge";
 import { CalendarDays, Clock, FileImage, FileText, Mail, User } from "lucide-react";
 import { SimplePagination } from "~/common/page";
 import { QuickToolList } from "~/common/tool";
+import { SimpleNoData } from "~/common/empty";
+import { useDelayedLoading } from "~/hooks/delayed-loading";
 
 /// 题目上传任务
 
@@ -247,7 +249,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
             <Input
               id="task-file-id"
               placeholder="文件标识, 右上角上传文件获得"
-              value={addReq.name}
+              value={addReq.url}
               onChange={(e) => {
                 updateAddReq("url", e.target.value);
               }}
@@ -263,7 +265,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
             <Input
               id="task-file-email"
               placeholder="邮箱地址"
-              value={addReq.name}
+              value={addReq.email}
               onChange={(e) => {
                 updateAddReq("email", e.target.value);
               }}
@@ -342,11 +344,11 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
     <div className="p-4">
       <Separator />
 
-      {(textbooksLoading || questionCatesLoading || listRespLoading) && <Loading />}
+      {useDelayedLoading(textbooksLoading || questionCatesLoading || listRespLoading) && <Loading />}
 
       {textbooksErr && <SimpleAlert title="导航信息获取失败" message={textbooksErr.message} />}
       {questionCatesErr && <SimpleAlert title="题型信息获取失败" message={questionCatesErr.message} />}
-      {questionCatesErr && <SimpleAlert title="任务列表获取失败" message={questionCatesErr.message} />}
+      {listRespErr && <SimpleAlert title="任务列表获取失败" message={listRespErr.message} />}
 
       <div className="flex flex-col gap-3 pt-4 pb-4">
         {/* 选择前5层级 */}
@@ -398,6 +400,8 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
 
       <Separator />
 
+      {listResp.total == 0 && <SimpleNoData desc="当前没有查询到任何历史任务" />}
+
       {listResp.list.map((task) => (
         <Card key={task.id} className="mt-3 transition-all duration-200 hover:shadow-lg hover:border-primary/10 flex flex-col border-border/60">
           <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
@@ -422,7 +426,7 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
             {task.result && (
               <div className="flex items-start gap-1.5 p-2 bg-muted/40 rounded-md border border-border/40">
                 <FileText size={14} className="shrink-0 mt-0.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground break-all line-clamp-2">结果：{task.result}</span>
+                <div className="text-xs text-muted-foreground break-all line-clamp-2">结果：{task.result}</div>
               </div>
             )}
 

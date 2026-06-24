@@ -88,15 +88,15 @@ export const StringConst = {
   optionLabels: ["A", "B", "C", "D", "E", "F"],
   // 题目难度系数配置
   difficultyLevelList: [
-    { id: "difficulty_level_list_1", value: "1.0", label: "1.0" },
-    { id: "difficulty_level_list_1_5", value: "1.5", label: "1.5" },
-    { id: "difficulty_level_list_2", value: "2.0", label: "2.0" },
-    { id: "difficulty_level_list_2_5", value: "2.5", label: "2.5" },
-    { id: "difficulty_level_list_3", value: "3.0", label: "3.0" },
-    { id: "difficulty_level_list_3_5", value: "3.5", label: "3.5" },
-    { id: "difficulty_level_list_4", value: "4.0", label: "4.0" },
-    { id: "difficulty_level_list_4_5", value: "4.5", label: "4.5" },
-    { id: "difficulty_level_list_5", value: "5.0", label: "5.0" },
+    { value: 1, label: "1" },
+    { value: 1.5, label: "1.5" },
+    { value: 2, label: "2" },
+    { value: 2.5, label: "2.5" },
+    { value: 3, label: "3" },
+    { value: 3.5, label: "3.5" },
+    { value: 4, label: "4" },
+    { value: 4.5, label: "4.5" },
+    { value: 5.0, label: "5" },
   ],
   // 选项布局
   selectLayoutList: [

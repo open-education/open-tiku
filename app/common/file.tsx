@@ -147,7 +147,14 @@ function FileUpload({ isImage }: FileUploadProps) {
             (uploading || deleting) && "cursor-not-allowed opacity-60",
           )}
         >
-          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" disabled={uploading || deleting} />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg, image/png, image/gif, .jpg, .jpeg, .png, .gif, text/markdown, .md"
+            onChange={handleFileChange}
+            className="hidden"
+            disabled={uploading || deleting}
+          />
           <div className="flex flex-col items-center gap-2">
             {uploading ? (
               <Loader2 className="h-8 w-8 animate-spin text-primary" />

@@ -20,6 +20,7 @@ import { useLocation } from "react-router";
 import { SimpleAlert } from "~/common/alert";
 import { SimpleSheet } from "~/common/sheet";
 import { SimpleNoData } from "~/common/empty";
+import { useDelayedLoading } from "~/hooks/delayed-loading";
 
 // 重新网页标题等
 export function meta({}: Route.MetaArgs) {
@@ -192,7 +193,7 @@ export default function Index() {
       )}
 
       {/* 加载中提示 */}
-      {(isLoading || paperListIsLoading || textbooksIdLoading) && <Loading />}
+      {useDelayedLoading(isLoading || paperListIsLoading || textbooksIdLoading) && <Loading />}
 
       {/* 试卷列表 */}
       <div className="mt-3">

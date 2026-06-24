@@ -117,7 +117,7 @@ export interface QuestionSearch {
   eightLevelSelectKeys: string[]; // 题目分类类表导航key集合
   typeId: number; // 题目类型
   tagIds: number[]; // 题目标签
-  id: number; // 题目主键
+  id?: number; // 题目主键
   sourceId?: number; // 母题标识, 添加变式题时需要传递
 }
 

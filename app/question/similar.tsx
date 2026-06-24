@@ -5,6 +5,7 @@ import { Loading } from "~/common/load";
 import { SimplePagination } from "~/common/page";
 import { SimilarQuestionListShow } from "~/common/question/list";
 import { Separator } from "~/components/ui/separator";
+import { useDelayedLoading } from "~/hooks/delayed-loading";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { useSimilarList } from "~/util/fetcher";
 import { StringConst } from "~/util/string";
@@ -34,7 +35,7 @@ export function SimilarQuestionList({ questionTypeDict, questionTagDict, questio
   } = useSimilarList(questionId, eightId, pageNo);
 
   return (
-    <div className="pl-4 pb-4 pr-4">
+    <div className="p-4 bg-gray-100">
       <div>
         <Separator />
       </div>
@@ -54,7 +55,7 @@ export function SimilarQuestionList({ questionTypeDict, questionTagDict, questio
       )}
 
       {/* 加载中提示 */}
-      {isLoading && <Loading />}
+      {useDelayedLoading(isLoading) && <Loading />}
 
       {/* 题目列表 */}
       <div className="text-sm">

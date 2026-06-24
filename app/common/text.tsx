@@ -1,7 +1,7 @@
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { Alert, AlertDescription } from "~/components/ui/alert";
-import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2, NotebookText } from "lucide-react";
 import { useState } from "react";
 import { cn } from "~/lib/utils";
 import type { TextbookOtherDict } from "~/type/textbook";
@@ -12,12 +12,13 @@ import type { CreateQuestionReq, QuestionSnippetReq } from "~/type/question";
 interface ParseQuestionProps {
   typeList: TextbookOtherDict[];
   tagList: TextbookOtherDict[];
-  onSuccess?: (val: CreateQuestionReq) => void; // 解析成功后回调, 回调的值为解析完成后的题目请求结构
+  onFill?: (val: CreateQuestionReq) => void; // 解析成功后回调, 回调的值为解析完成后的题目请求结构
 }
-function ParseQuestion({ typeList = [], tagList = [], onSuccess }: ParseQuestionProps) {
+function ParseQuestion({ typeList = [], tagList = [], onFill }: ParseQuestionProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [addReq, setAddReq] = useState<CreateQuestionReq | null>(null);
 
   const handleParse = () => {
     if (!input.trim()) {
@@ -37,10 +38,10 @@ function ParseQuestion({ typeList = [], tagList = [], onSuccess }: ParseQuestion
     // 尝试解析文本
     httpClient
       .post<CreateQuestionReq>("/text/question/snippet", req)
-      .then((addReq) => {
-        if (addReq.title.trim.length > 0) {
+      .then((res) => {
+        if (res.title.trim().length > 0) {
           setResult({ success: true, message: "解析完成" });
-          onSuccess?.(addReq); // 如果有回调函数则回调
+          setAddReq(res);
         } else {
           setResult({ success: false, message: "解析完成, 但是题干都为空, 请确认粘贴的内容符合规范" });
         }
@@ -71,18 +72,35 @@ function ParseQuestion({ typeList = [], tagList = [], onSuccess }: ParseQuestion
       </div>
 
       {/* 按钮 */}
-      <Button onClick={handleParse} disabled={isLoading || !input.trim()} variant={"outline"}>
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            解析中...
-          </>
-        ) : (
-          <>
-            <span>🔍 解析</span>
-          </>
-        )}
-      </Button>
+      <div className="flex gap-3">
+        <Button onClick={handleParse} disabled={isLoading || !input.trim()} variant={"outline"}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              解析中...
+            </>
+          ) : (
+            <>
+              <span>🔍 解析</span>
+            </>
+          )}
+        </Button>
+
+        <Button
+          variant={"secondary"}
+          disabled={!addReq || addReq.title.trim().length == 0}
+          onClick={() => {
+            if (!addReq) {
+              setResult({ success: false, message: "当前没有有效的题目信息可填充" });
+              return;
+            }
+            onFill?.(addReq);
+          }}
+        >
+          <NotebookText />
+          填充
+        </Button>
+      </div>
 
       {/* 结果反馈 */}
       {result && (

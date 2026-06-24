@@ -20,6 +20,7 @@ import { ArrayUtil } from "~/util/object";
 import { QuestionListShow } from "~/common/question/list";
 import Add from "~/question/add";
 import { TaskAdd, TaskListShow } from "~/question/task";
+import { useDelayedLoading } from "~/hooks/delayed-loading";
 
 /// 题目首页
 
@@ -49,7 +50,6 @@ export default function Home() {
     eightLevelSelectKeys: [],
     typeId: 0,
     tagIds: [],
-    id: 0,
   });
   const updateQuestionSearch = (key: keyof QuestionSearch, value: number | number[] | string[]) => {
     setQuestionSearch((prev) => ({ ...prev, [key]: value }));
@@ -183,7 +183,7 @@ export default function Home() {
           <div className="col-span-9">
             <TypeSelect
               options={questionTypes}
-              defaultValue={0}
+              value={0}
               onSelect={(val) => {
                 updateQuestionSearch("typeId", val);
               }}
@@ -196,7 +196,7 @@ export default function Home() {
           <div className="col-span-9">
             <MultiTagSelect
               options={questionTags}
-              defaultValue={[]}
+              value={[]}
               onChange={(val) => {
                 updateQuestionSearch("tagIds", val);
               }}
@@ -275,9 +275,9 @@ export default function Home() {
       )}
 
       {/* 相关加载中 */}
-      {(isLoading || textbooksLoading || questionTypesLoading || questionTagsLoading || questionCatesLoading || questionListRespLoading) && (
-        <Loading />
-      )}
+      {useDelayedLoading(
+        isLoading || textbooksLoading || questionTypesLoading || questionTagsLoading || questionCatesLoading || questionListRespLoading,
+      ) && <Loading />}
 
       {/* 题目列表 */}
       <div>

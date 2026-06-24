@@ -40,6 +40,7 @@ import { ImageAdd } from "~/common/image";
 import { QuickToolList } from "~/common/tool";
 import { FileUpload } from "~/common/file";
 import { ParseQuestion } from "~/common/text";
+import { useDelayedLoading } from "~/hooks/delayed-loading";
 
 /// 题目添加和编辑
 
@@ -85,7 +86,7 @@ export default function Add({
   const initAddDefaultReq = useMemo(() => {
     // infoResp 为详情传递过来的完整信息, 优先级最高
     if (infoResp && infoResp.baseInfo.id > 0) {
-      return { ...infoResp.baseInfo, ...infoResp.extraInfo };
+      return { ...infoResp.baseInfo, difficultyLevel: Number(infoResp.baseInfo.difficultyLevel), ...infoResp.extraInfo };
     }
 
     // 初始化部分默认值
@@ -151,6 +152,32 @@ export default function Add({
 
   // 是否是选择题, 列表页可能携带需要填充默认值
   const [isChoice, setIsChoice] = useState<boolean>(questionTypeDict[addReq.questionTypeId]?.isSelect);
+
+  // 解析工具填充覆盖现有值, 选择性填充
+  const replaceAddReq = (fillReq: CreateQuestionReq) => {
+    // 如果是选择题需要触发选中
+    setIsChoice(questionTypeDict[fillReq.questionTypeId]?.isSelect);
+
+    // 填充的字段如下赋值
+    setAddReq((prev) => ({
+      ...prev,
+      ["title"]: fillReq.title,
+      ["options"]: fillReq.options || [],
+      ["difficultyLevel"]: Number(fillReq.difficultyLevel),
+      ["questionTypeId"]: fillReq.questionTypeId,
+      ["questionTagIds"]: fillReq.questionTagIds || [],
+      ["knowledge"]: fillReq.knowledge || "",
+      ["answer"]: fillReq.answer || "",
+      ["analysis"]: fillReq.analysis || {
+        content: "",
+        images: [],
+      },
+      ["process"]: fillReq.process || {
+        content: "",
+        images: [],
+      },
+    }));
+  };
 
   // 按钮提交状态
   const [drafing, setDrafing] = useState<boolean>(false);
@@ -303,7 +330,6 @@ export default function Add({
     }
 
     if (!confirm(addReq.id && addReq.id > 0 ? "确定要更新题目吗？" : "确定要新增题目吗？")) {
-      console.log("addReq: ", addReq);
       return;
     }
 
@@ -347,7 +373,7 @@ export default function Add({
     <div className="text-sm pl-4 pr-4 pb-4">
       <div className="text-xs">
         <div>1. 图片标识请使用右上角的 快捷工具-上传文件 上传图片后获得</div>
-        <div>2. 符合 上传题目 模板的题目可以粘贴到 快捷工具-解析题目 进行解析后会自动填充至左边表单中</div>
+        <div>2. 符合 上传题目 模板的题目可以粘贴到 快捷工具-解析题目 进行解析后点击 填充 会自动填充至左边表单中</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -358,11 +384,14 @@ export default function Add({
           {approving ? "提交审核中..." : "提交审核"}
         </Button>
       </div>
+
       {/* 警告信息 */}
       {addWarnInfo}
+
       {/* 加载中信息 */}
-      {(isLoading || textbooksLoading || questionTypesLoading || questionTagsLoading || questionCatesLoading) && <Loading />}
+      {useDelayedLoading(isLoading || textbooksLoading || questionTypesLoading || questionTagsLoading || questionCatesLoading) && <Loading />}
       {/* 相关错误信息 */}
+
       {textbooksErr && (
         <div className="mt-3">
           <SimpleAlert title="学段/年级列表获取失败" message={textbooksErr.message} />
@@ -409,7 +438,7 @@ export default function Add({
                   <span className="font-medium text-sm">解析题目</span>
                 </div>
               ),
-              content: <ParseQuestion typeList={questionTypes} tagList={questionTags} />,
+              content: <ParseQuestion typeList={questionTypes} tagList={questionTags} onFill={(req) => replaceAddReq(req)} />,
             },
           ]}
           defaultToolId="tool-file-upload"
@@ -484,7 +513,7 @@ export default function Add({
                     <div className="col-span-9">
                       <TypeSelect
                         options={questionTypes}
-                        defaultValue={addReq.questionTypeId}
+                        value={addReq.questionTypeId}
                         onSelect={(val) => {
                           updateAddReq("questionTypeId", val);
                           setIsChoice(questionTypeDict[val]?.isSelect);
@@ -498,7 +527,7 @@ export default function Add({
                     <div className="col-span-9">
                       <MultiTagSelect
                         options={questionTags}
-                        defaultValue={addReq.questionTagIds ?? []}
+                        value={addReq.questionTagIds ?? []}
                         onChange={(val) => updateAddReq("questionTagIds", val)}
                       />
                     </div>
@@ -533,19 +562,18 @@ export default function Add({
                       难度:<span className="text-destructive">*</span>
                     </div>
                     <div className="col-span-9">
-                      <RadioGroup
-                        value={addReq.difficultyLevel}
-                        onValueChange={(val) => updateAddReq("difficultyLevel", val)}
-                        defaultValue={addReq.difficultyLevel}
-                        className="flex gap-4 w-fit"
-                      >
-                        {StringConst.difficultyLevelList.map(({ id, value, label }) => (
-                          <div key={id} className="flex items-center gap-2">
-                            <RadioGroupItem value={value} id={id} />
-                            <Label htmlFor={id}>{label}</Label>
-                          </div>
+                      <div className="flex flex-wrap gap-2">
+                        {StringConst.difficultyLevelList.map(({ value: optionValue, label }) => (
+                          <Button
+                            key={optionValue}
+                            type="button"
+                            variant={addReq.difficultyLevel === optionValue ? "default" : "outline"}
+                            onClick={() => updateAddReq("difficultyLevel", optionValue)}
+                          >
+                            {label}
+                          </Button>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
                   </div>
                 </div>

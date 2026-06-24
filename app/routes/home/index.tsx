@@ -13,6 +13,7 @@ import { NavLink } from "react-router";
 import { useLatestPapers, useTextbooks } from "~/util/fetcher";
 import type { Textbook } from "~/type/textbook";
 import { SimpleSheet } from "~/common/sheet";
+import { useDelayedLoading } from "~/hooks/delayed-loading";
 
 // 默认首页
 export default function Index() {
@@ -107,6 +108,9 @@ export default function Index() {
     </div>
   );
 
+  // 首页加载中样式
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   // Sheet相关操作变量
   const [openSheet, setOpenSheet] = useState<boolean>(false);
   const [sheetTitle, setSheetTitle] = useState<string>("");
@@ -116,7 +120,7 @@ export default function Index() {
   return (
     <div>
       {/* 加载中提示 */}
-      {textbooksIsLoading || (latestIsLoading && <Loading />)}
+      {useDelayedLoading(isLoading || textbooksIsLoading || latestIsLoading) && <Loading />}
 
       {/* 统计总数*/}
       <div className="ml-4 mr-4 mt-3">
@@ -143,6 +147,7 @@ export default function Index() {
           setSheetTitle={setSheetTitle}
           setSheetDesc={setSheetDesc}
           setSheetContent={setSheetContent}
+          setLoading={setIsLoading}
         />
       </div>
 

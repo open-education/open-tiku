@@ -36,7 +36,7 @@ function ExamQuestion(props: ExamQuestionProps) {
   };
 
   return (
-    <div className="text-sm">
+    <div className="text-sm mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60">
       {/* 题目主体 */}
       <div className="pb-2">
         <div>{getQuestionTitle(index, question.stem, question.images || [])}</div>

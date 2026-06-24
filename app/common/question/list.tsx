@@ -38,7 +38,10 @@ function QuestionListShow({
     <>
       {listResp.list?.map((questionInfo) => {
         return (
-          <div key={questionInfo.id} className="mt-4 p-3 bg-white">
+          <div
+            key={questionInfo.id}
+            className="mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
+          >
             {/* 题干选项等部分 */}
             <SingleQuestionCommonPart questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} questionInfo={questionInfo} />
 
@@ -108,7 +111,10 @@ function SimilarQuestionListShow({ questionTypeDict, questionTagDict, listResp }
     <>
       {listResp.list?.map((questionInfo) => {
         return (
-          <div key={questionInfo.id} className="bg-white pt-4">
+          <div
+            key={questionInfo.id}
+            className="mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
+          >
             {/* 题干选项等部分 */}
             <SingleQuestionCommonPart questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} questionInfo={questionInfo} />
           </div>

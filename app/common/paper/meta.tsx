@@ -163,7 +163,7 @@ function ExamPaperMeta({
   };
 
   return (
-    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4">
+    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-gray-100">
       {/* 编辑模式查看详情时才有 */}
       {!isPreview && (
         <>

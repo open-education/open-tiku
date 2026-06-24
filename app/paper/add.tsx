@@ -26,6 +26,8 @@ import { useTextbooks } from "~/util/fetcher";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { FileUpload } from "~/common/file";
 import { QuickToolList } from "~/common/tool";
+import { useDelayedLoading } from "~/hooks/delayed-loading";
+import { Loading } from "~/common/load";
 
 /// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑
 /// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
@@ -125,9 +127,6 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
 
   // 获取前5层导航信息
   const { data: textbooks = [], isLoading: textbooksIdLoading, error: textbooksErr } = useTextbooks(5);
-  if (textbooksErr) {
-    setAddWarnInfo(<SimpleAlert title="获取试卷详情失败" message={textbooksErr.message} />);
-  }
 
   // ---- 大题操作 ----
   // 追加一个默认题型默认值
@@ -357,6 +356,10 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
       {addWarnInfo}
 
       <Separator className="mt-3 mb-3" />
+
+      {textbooksErr && <SimpleAlert title="获取导航失败" message={textbooksErr.message} />}
+
+      {useDelayedLoading(textbooksIdLoading) && <Loading />}
 
       <div>
         <QuickToolList

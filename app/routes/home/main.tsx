@@ -24,7 +24,7 @@ export default function Main() {
       <Header />
 
       {/* 替换网站内容 */}
-      <div className="min-h-200">
+      <div className="min-h-screen">
         <Outlet />
       </div>
 
