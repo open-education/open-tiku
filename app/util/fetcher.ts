@@ -79,7 +79,7 @@ export function useQuestionList(search: QuestionSearch, pageNo: number) {
   if (search.tagIds && search.tagIds.length > 0) {
     req.tagIds = search.tagIds;
   }
-  if (search.id > 0) {
+  if (search.id && search.id > 0) {
     req.ids = [search.id];
   }
 
