@@ -2,6 +2,7 @@ import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import path from "path";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
@@ -15,5 +16,10 @@ export default defineConfig({
     port: 5173,
     // 允许通过这些域名访问开发服务器
     allowedHosts: ["tiku.test"],
+  },
+  resolve: {
+    alias: {
+      "~": path.resolve(__dirname, "./app"),
+    },
   },
 });

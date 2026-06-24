@@ -3,7 +3,8 @@ import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration }
 import type { Route } from "./+types/root";
 import "./app.css";
 import React from "react";
-import { Spin } from "antd";
+import { Toaster } from "~/components/ui/sonner";
+import { InitLoading } from "~/common/load";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -29,6 +30,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        {/* toast 提示位置顶部居中 */}
+        <Toaster position="top-center" />
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -38,7 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 // SPA 模式只能在根路由添加加载中的提示
 export function HydrateFallback() {
-  return <Spin description="Loading..." />;
+  return <InitLoading />;
 }
 
 export default function App() {

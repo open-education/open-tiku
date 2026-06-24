@@ -1,5 +1,10 @@
-import { route, type RouteConfig } from "@react-router/dev/routes";
+import { index, route, type RouteConfig } from "@react-router/dev/routes";
 
 export default [
-  route("/", "routes/tiku/index.tsx", [route(":textbookId", "routes/tiku/list.tsx"), route(":textbookId/similar", "routes/tiku/similar.tsx")]),
+  route("/", "routes/home/main.tsx", [
+    index("routes/home/index.tsx"),
+    route("paper", "routes/paper/index.tsx"),
+    route("question", "routes/question/index.tsx"),
+    route("user", "routes/user/index.tsx"),
+  ]),
 ] satisfies RouteConfig;

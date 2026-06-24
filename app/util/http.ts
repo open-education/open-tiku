@@ -7,29 +7,42 @@ class HttpClient {
     this.baseURL = baseURL;
   }
 
-  async get<T = any>(path: string, options?: RequestInit): Promise<T> {
+  get = async <T = any>(path: string, options?: RequestInit): Promise<T> => {
     const url = this.buildUrl(path);
     const response = await fetch(url, {
       method: "GET",
       ...options,
     });
     return this.handleResponse(response);
-  }
+  };
 
-  async post<T = any>(path: string, data: any, options?: RequestInit): Promise<T> {
+  post = async <T = any>(path: string, data: any, options?: RequestInit, fileUpload?: boolean): Promise<T> => {
     const url = this.buildUrl(path);
-    const reqBody = JSON.stringify(data);
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.headers,
-      },
-      body: reqBody,
-      ...options,
-    });
+
+    // 文件上传不需要处理默认头和请求体
+    const reqBody = fileUpload
+      ? {
+          method: "POST",
+          headers: {
+            ...options?.headers,
+          },
+          body: data,
+          ...options,
+        }
+      : {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...options?.headers,
+          },
+          body: JSON.stringify(data),
+          ...options,
+        };
+
+    const response = await fetch(url, reqBody);
+
     return this.handleResponse(response);
-  }
+  };
 
   private buildUrl(path: string): string {
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;
@@ -43,7 +56,7 @@ class HttpClient {
     }
     const apiResponse = (await response.json()) as ApiResponse<T>;
     if (apiResponse.code !== 200) {
-      throw new Error(`HTTP error! msg: ${apiResponse.msg}`);
+      throw new Error(`${apiResponse.msg}`);
     }
     return apiResponse.data as T;
   }

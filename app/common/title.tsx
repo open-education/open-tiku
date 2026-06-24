@@ -1,65 +1,45 @@
-import { Col, Flex, Row, Image } from "antd";
-import Markdown from "react-markdown";
-import rehypeKatex from "rehype-katex";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
-import remarkMath from "remark-math";
-import rehypeSanitize from "rehype-sanitize";
 import { StringValidator } from "~/util/string";
-import { allowSchema } from "~/util/schema";
-import { table } from "~/component/table";
+import { SimpleFullContent } from "~/common/content";
+import { ImageZoom } from "~/common/image";
 
-interface TitleProps {
-  no?: number; // 显示题号-一般试卷用
+/// 标题设计--试卷和题库均使用后续移动到父级
+
+interface TitleShowProps {
+  no?: number; // 试卷显示题号
   id?: number; // 显示题目id-普通列表用
   title: string;
   comment: string;
   images?: string[];
 }
 
-// 标题展示通用样式
-export function CommonTitle(props: TitleProps) {
-  // 存在有效题号时展示题号
-  const showNo = props.no ? `${props.no}&#46; ` : "";
-  const showId = props.id ? `ID: [${props.id}] ` : "";
+function TitleShow({ no = 0, id = 0, title, comment, images = [] }: TitleShowProps) {
+  // 试卷和题目显示前缀
+  const content = no > 0 ? `${no}&#46; ${title}` : `**ID[${id}].** ${title}`;
 
   return (
-    <Row gutter={[10, 10]}>
-      <Col span={24}>
-        {StringValidator.isNonEmpty(props.title) && (
-          <Markdown
-            remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]}
-            rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, allowSchema]]}
-            components={table}
-          >
-            {`${showNo}${showId} ${props.title}`}
-          </Markdown>
-        )}
-      </Col>
-      {/* 标注 */}
-      {StringValidator.isNonEmpty(props.comment) && (
-        <Col span={24} className="text-[10px] italic text-blue-950">
-          <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {props.comment}
-          </Markdown>
-        </Col>
+    <div>
+      {/* 题干 */}
+      {StringValidator.isNonEmpty(title) && (
+        <div>
+          <SimpleFullContent content={content} />
+        </div>
       )}
-
-      {/* 如果有图片 */}
-      {props.images && props.images.length > 0 && (
-        <Col span={24}>
-          <Flex gap="small" wrap>
-            {props.images.map((imageName) => {
-              return (
-                <div key={imageName} style={{ width: 200, height: 200, overflow: "hidden" }}>
-                  <Image width="100%" height="100%" style={{ objectFit: "cover" }} alt="basic" src={`/images/${imageName}`} />
-                </div>
-              );
-            })}
-          </Flex>
-        </Col>
+      {/* 标记 */}
+      {StringValidator.isNonEmpty(comment) && <div className="mt-3">{comment}</div>}
+      {/* 图片 */}
+      {images.length > 0 && (
+        <div className="grid grid-cols-4 gap-4 items-center mt-3">
+          {images.map((imageName) => {
+            return (
+              <div key={imageName} className="col-span-1">
+                <ImageZoom imageName={imageName} className="h-full w-auto max-w-full object-contain" />
+              </div>
+            );
+          })}
+        </div>
       )}
-    </Row>
+    </div>
   );
 }
+
+export { TitleShow };

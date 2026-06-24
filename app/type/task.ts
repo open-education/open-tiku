@@ -1,11 +1,11 @@
 // 任务上传请求
 export interface TaskSaveReq {
   questionCateId: number;
-  taskType: number;
+  taskType: number; // 任务类型 1 题目上传
   name: string;
   url: string;
   email: string;
-  textbookId: number;
+  textbookId: number; // 目前在第2层上, 跟题型标签一个维度
 }
 
 // 任务列表请求
