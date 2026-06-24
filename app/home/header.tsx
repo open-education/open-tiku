@@ -1,6 +1,9 @@
-import { FileText } from "lucide-react";
+import { CheckLine, FileQuestionMark, LogOutIcon, ScrollText, UserIcon } from "lucide-react";
 import { NavLink } from "react-router";
 import { Button } from "~/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "~/components/ui/popover";
+import { Login } from "~/user/login";
 
 /// 网站头部导航
 
@@ -38,9 +41,61 @@ function Header() {
 
         {/* Auth */}
         <div className="flex items-center gap-2 shrink-0">
-          <Button variant="ghost" size="sm">
-            登录
-          </Button>
+          {/* 未登录显示登录按钮 */}
+          <div>
+            <Popover>
+              <PopoverTrigger render={<Button variant="ghost">登录</Button>}></PopoverTrigger>
+              <PopoverContent align="start">
+                <PopoverHeader>
+                  <PopoverTitle>账号登录</PopoverTitle>
+                  <PopoverDescription>为了隐私安全不支持注册, 也不收集除昵称外的任何信息, 作为用户也不要提供任何真实信息</PopoverDescription>
+                </PopoverHeader>
+                <Login />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* 登录后显示我管理的内容 */}
+          <div className="flex items-center gap-2 shrink-0">
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <div className="gap-3">
+                    <Button variant="ghost">zhangguangxun1</Button>
+                  </div>
+                }
+              />
+              <DropdownMenuContent>
+                <DropdownMenuItem>
+                  <UserIcon />
+                  <NavLink to={"user"}>我的学生</NavLink>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <FileQuestionMark />
+                  <NavLink to={"user"}>我的题目</NavLink>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <ScrollText />
+                  <NavLink to={"user"}>我的试卷</NavLink>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <CheckLine />
+                  <NavLink to={"user"}>我的审核</NavLink>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive">
+                  <LogOutIcon />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button variant="ghost">
+              <NavLink to={"user"}>
+                <span className="text-blue-500">个人中心</span>
+              </NavLink>
+            </Button>
+          </div>
         </div>
       </div>
     </header>
