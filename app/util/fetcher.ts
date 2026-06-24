@@ -30,7 +30,7 @@ export function usePaperList(search: PaperMetaSearch, pageNo: number) {
   if (StringValidator.isNonEmpty(search.tag)) {
     req.tag = search.tag;
   }
-  if (StringValidator.isNonEmpty(search.year) && search.year !== "不选") {
+  if (StringValidator.isNonEmpty(search.year)) {
     req.year = search.year;
   }
   if (StringValidator.isNonEmpty(search.grade) && search.grade !== "不选") {
