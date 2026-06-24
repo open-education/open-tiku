@@ -59,7 +59,7 @@ const defaultPaperMeta: PaperMeta = {
 
 const defaultQuestionInfo = (order: number): PaperQuestion => ({
   genId: generateId(),
-  order,
+  orderNum: order,
   stem: "",
   analysis: {
     content: "",
@@ -424,14 +424,24 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
                 <div className="grid grid-cols-10 gap-1 items-center">
                   <div className="col-span-1">年份:</div>
                   <div className="col-span-9">
-                    <YearSelect value={paper.year ?? ""} onValueChange={(val) => updatePaperMeta("year", val ?? "")} placeholder="选择年份" />
+                    <YearSelect
+                      value={paper.year ?? ""}
+                      onValueChange={(val) => {
+                        updatePaperMeta("year", val ?? "");
+                      }}
+                      placeholder="选择年份"
+                    />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-10 gap-1 items-center">
                   <div className="col-span-1">年级:</div>
                   <div className="col-span-9">
-                    <GradeSelect value={paper.grade ?? ""} onValueChange={(val) => updatePaperMeta("grade", val ?? "")} placeholder="选择年级" />
+                    <GradeSelect
+                      value={paper.grade ?? ""}
+                      onValueChange={(val) => updatePaperMeta("grade", !val || val === "不选" ? "" : val)}
+                      placeholder="选择年级"
+                    />
                   </div>
                 </div>
 
@@ -440,7 +450,7 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
                   <div className="col-span-9">
                     <SemesterSelect
                       value={paper.semester ?? ""}
-                      onValueChange={(val) => updatePaperMeta("semester", val ?? "")}
+                      onValueChange={(val) => updatePaperMeta("semester", !val || val === "不选" ? "" : val)}
                       placeholder="选择学期"
                     />
                   </div>
@@ -460,7 +470,7 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
                       type="number"
                       value={paper.score}
                       onChange={(e) => {
-                        updatePaperMeta("score", e.target.value);
+                        updatePaperMeta("score", Number(e.target.value));
                       }}
                       className="text-sm"
                     />
@@ -607,7 +617,7 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
     <div className="border rounded-lg p-4 space-y-3 bg-white">
       {/* 题号 + 删除 */}
       <div className="flex items-center justify-between">
-        <span className="text-muted-foreground">{question.order}. 小题</span>
+        <span className="text-muted-foreground">{question.orderNum}. 小题</span>
         <Button variant="ghost" size="sm" onClick={onRemove} className="h-6 w-6 p-0">
           <X className="h-4 w-4" />
         </Button>

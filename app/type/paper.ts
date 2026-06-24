@@ -42,7 +42,7 @@ export interface PaperQuestion {
   paperId: number; // 试卷标识
   groupId: number; // 分组标识
   genId: string; // 前端生成的标识
-  order: number; // 小题序号
+  orderNum: number; // 小题序号
   stem: string; // 题干
   images?: string[]; // 图片
   optionsLayout?: number; // 选项布局

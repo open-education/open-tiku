@@ -19,8 +19,8 @@ function ExamQuestion(props: ExamQuestionProps) {
   const { index, question } = props;
 
   // 生成题目标题
-  const getQuestionTitle = (index: number, stem: string, images: string[]) => {
-    return <TitleShow no={index + 1} title={stem} comment={""} images={images} />;
+  const getQuestionTitle = (orderNum: number, stem: string, images: string[]) => {
+    return <TitleShow no={orderNum} title={stem} comment={""} images={images} />;
   };
 
   // 生成题目选项
@@ -39,7 +39,7 @@ function ExamQuestion(props: ExamQuestionProps) {
     <div className="text-sm mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60">
       {/* 题目主体 */}
       <div className="pb-2">
-        <div>{getQuestionTitle(index, question.stem, question.images || [])}</div>
+        <div>{getQuestionTitle(question.orderNum, question.stem, question.images || [])}</div>
         <div className="mt-2.5">{getQuestionOptions(index, question.options || [])}</div>
       </div>
 
