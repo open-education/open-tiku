@@ -183,7 +183,7 @@ export default function Home() {
           <div className="col-span-9">
             <TypeSelect
               options={questionTypes}
-              value={0}
+              value={questionSearch.typeId}
               onSelect={(val) => {
                 updateQuestionSearch("typeId", val);
               }}
@@ -196,7 +196,7 @@ export default function Home() {
           <div className="col-span-9">
             <MultiTagSelect
               options={questionTags}
-              value={[]}
+              value={questionSearch.tagIds}
               onChange={(val) => {
                 updateQuestionSearch("tagIds", val);
               }}
