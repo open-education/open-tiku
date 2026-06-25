@@ -1,4 +1,4 @@
-import { CheckLine, FileQuestionMark, LogOutIcon, Menu, ScrollText, UserIcon, Home, BookOpen, FileText, Settings, X } from "lucide-react";
+import { FileQuestionMark, LogOutIcon, Menu, ScrollText, Home, BookOpen, FileText, CheckCheck, Settings } from "lucide-react";
 import { useState } from "react";
 import { NavLink } from "react-router";
 import { Button } from "~/components/ui/button";
@@ -15,6 +15,38 @@ function Header() {
 
   // 模拟用户名（实际从你的状态中获取）
   const username = "zhangguangxun1";
+
+  // 用户中心配置
+  const userItems = [
+    {
+      id: 1,
+      label: "我的题目",
+      icon: <FileQuestionMark />,
+      url: "/user/question",
+      role: "",
+    },
+    {
+      id: 2,
+      label: "我的试卷",
+      icon: <ScrollText />,
+      url: "/user/paper",
+      role: "",
+    },
+    {
+      id: 3,
+      label: "我的审核",
+      icon: <CheckCheck />,
+      url: "/user/review",
+      role: "",
+    },
+    {
+      id: 4,
+      label: "系统设置",
+      icon: <Settings />,
+      url: "/user/setting",
+      role: "",
+    },
+  ];
 
   const closeSheet = () => setSheetOpen(false);
   const openSheet = () => setSheetOpen(true);
@@ -60,9 +92,8 @@ function Header() {
             }
           />
           <SheetContent side="left" className="w-72 p-0 flex flex-col bg-background">
-            {/* ====== 美化后的侧边栏内容 ====== */}
             <div className="flex flex-col h-full">
-              {/* 顶部用户信息 + 关闭按钮 */}
+              {/* 顶部用户信息 */}
               <div className="flex items-center justify-between p-4 border-b">
                 <div className="flex items-center gap-3">
                   {/* 用昵称首字符作为头像 */}
@@ -119,38 +150,20 @@ function Header() {
               {/* 底部辅助功能 */}
               {isLogin && (
                 <div className="border-t p-4 space-y-1">
-                  <NavLink
-                    to="user/students"
-                    onClick={closeSheet}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-accent transition-colors"
-                  >
-                    <UserIcon className="h-5 w-5" />
-                    我的学生
-                  </NavLink>
-                  <NavLink
-                    to="user/questions"
-                    onClick={closeSheet}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-accent transition-colors"
-                  >
-                    <FileQuestionMark className="h-5 w-5" />
-                    我的题目
-                  </NavLink>
-                  <NavLink
-                    to="user/papers"
-                    onClick={closeSheet}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-accent transition-colors"
-                  >
-                    <ScrollText className="h-5 w-5" />
-                    我的试卷
-                  </NavLink>
-                  <NavLink
-                    to="user/reviews"
-                    onClick={closeSheet}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-accent transition-colors"
-                  >
-                    <CheckLine className="h-5 w-5" />
-                    我的审核
-                  </NavLink>
+                  {userItems.map(({ id, label, icon, url }) => {
+                    return (
+                      <NavLink
+                        key={id}
+                        to={url}
+                        onClick={closeSheet}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-accent transition-colors"
+                      >
+                        {icon}
+                        {label}
+                      </NavLink>
+                    );
+                  })}
+
                   <button
                     onClick={() => {
                       // 退出登录逻辑
@@ -182,33 +195,23 @@ function Header() {
                     }
                   />
                   <DropdownMenuContent>
-                    <DropdownMenuItem>
-                      <UserIcon />
-                      <NavLink to={"user/students"}>我的学生</NavLink>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <FileQuestionMark />
-                      <NavLink to={"user/questions"}>我的题目</NavLink>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <ScrollText />
-                      <NavLink to={"user/papers"}>我的试卷</NavLink>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <CheckLine />
-                      <NavLink to={"user/reviews"}>我的审核</NavLink>
-                    </DropdownMenuItem>
+                    {userItems.map(({ id, label, icon, url }) => {
+                      return (
+                        <DropdownMenuItem key={id}>
+                          {icon}
+                          <NavLink to={url}>{label}</NavLink>
+                        </DropdownMenuItem>
+                      );
+                    })}
+
                     <DropdownMenuSeparator />
+
                     <DropdownMenuItem variant="destructive">
                       <LogOutIcon />
                       Log out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                {/* 可选的个人中心按钮，如有需要可保留 */}
-                <Button variant="ghost" className="hidden lg:inline-flex">
-                  <NavLink to={"user"}>个人中心</NavLink>
-                </Button>
               </div>
 
               {/* 移动端：显示头像按钮，点击打开Sheet */}

@@ -84,6 +84,7 @@ export interface QuestionListReq {
   questionCateId: number;
   questionTypeId?: number;
   ids?: number[];
+  status?: number; // 题目状态, 我的题目能看全部状态
   titleVal?: string;
   tagIds?: number[];
   pageNo: number;
@@ -119,6 +120,7 @@ export interface QuestionSearch {
   tagIds: number[]; // 题目标签
   id?: number; // 题目主键
   sourceId?: number; // 母题标识, 添加变式题时需要传递
+  status?: number; // 题目状态
 }
 
 // 解析题目请求
@@ -126,4 +128,17 @@ export interface QuestionSnippetReq {
   typeList: TextbookOtherDict[];
   tagList: TextbookOtherDict[];
   content: string;
+}
+
+// 题目搜索页面
+export interface QuestionPageSourceProps {
+  // 页面来源 list: 普通的搜索列表 myQuestion: 我的题目, 只有查看和编辑 myReview: 我的审核 只有查看
+  source: "list" | "myQuestion" | "myReview";
+}
+
+// 题目审核
+export interface ApproveReq {
+  id: number;
+  status: number; // 审核状态
+  rejectReason: string; // 拒绝原因
 }

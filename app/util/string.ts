@@ -104,6 +104,13 @@ export const StringConst = {
     { id: "select_layout_list_2", value: 2, label: "展示两列" },
     { id: "select_layout_list_3", value: 3, label: "展示四列" },
   ],
+  // 题目审核状态
+  questionStatusList: [
+    { id: 1, value: 0, label: "草稿中" },
+    { id: 2, value: 1, label: "待审核" },
+    { id: 3, value: 2, label: "已发布" },
+    { id: 4, value: 3, label: "已拒绝" },
+  ],
 };
 
 // 字符串常量工具

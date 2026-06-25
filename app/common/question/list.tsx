@@ -1,4 +1,4 @@
-import type { QuestionBaseInfoResp, QuestionListResp, QuestionSearch } from "~/type/question";
+import type { QuestionBaseInfoResp, QuestionListResp, QuestionPageSourceProps, QuestionSearch } from "~/type/question";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { OperateTags, TagShow } from "~/common/question/tag";
 import { DictUtil } from "~/util/object";
@@ -9,6 +9,7 @@ import { MultiOptionShow } from "~/common/select";
 
 // 普通列表展示, 需要查看详情等操作
 interface QuestionListShowProps {
+  pageSource: QuestionPageSourceProps;
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
   listResp: QuestionListResp;
@@ -24,6 +25,7 @@ interface QuestionListShowProps {
   setLoading?: (value: boolean) => void;
 }
 function QuestionListShow({
+  pageSource,
   questionTypeDict,
   questionTagDict,
   listResp,
@@ -48,10 +50,12 @@ function QuestionListShow({
             {/* 题目其它标签, 比如查看答案, 关联题目等 */}
             <div className="flex gap-2 justify-end">
               <OperateTags
+                pageSource={pageSource}
                 questionTypeDict={questionTypeDict}
                 questionTagDict={questionTagDict}
                 questionId={questionInfo.id}
                 eightId={questionInfo.questionCateId}
+                status={questionInfo.status}
                 questionSearch={questionSearch}
                 setOpenSheet={setOpenSheet}
                 setSheetTitle={setSheetTitle}
