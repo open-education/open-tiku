@@ -16,7 +16,7 @@ export function meta({}: Route.MetaArgs) {
 export default function Index() {
   return (
     <div>
-      <div>我的页面</div>
+      <div>暂无</div>
     </div>
   );
 }

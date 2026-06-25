@@ -514,7 +514,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger
         render={
-          <Button variant="outline" className="justify-between">
+          <Button variant="outline" className="w-full justify-between">
             <span className="truncate">{getDisplayText()}</span>
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>

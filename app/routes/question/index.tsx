@@ -126,10 +126,10 @@ export default function Home() {
     <div className="p-3">
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
-        {/* 选择前5层级 */}
-        <div className="grid grid-cols-10 gap-1 items-center">
-          <div className="col-span-1">章节/考点:</div>
-          <div className="col-span-9">
+        {/* 1. 章节/考点 */}
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">章节/考点:</div>
+          <div className="flex-1 min-w-0">
             <ChapterDropdownNav
               textbooks={textbooks}
               onSelect={(selectedItems: Textbook[]) => {
@@ -138,7 +138,6 @@ export default function Home() {
                   updateQuestionSearch("fiveLevelSelectKeys", []);
                   return;
                 }
-
                 const current: Textbook = selectedItems[selectedItems.length - 1];
                 updateQuestionSearch("fiveLevelId", current.id);
                 updateQuestionSearch(
@@ -152,10 +151,10 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 根据前5层级选择后3层级 */}
-        <div className="grid grid-cols-10 gap-4 items-center">
-          <div className="col-span-1">题型:</div>
-          <div className="col-span-9">
+        {/* 2. 题型 */}
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">题型:</div>
+          <div className="flex-1 min-w-0">
             <ChapterDropdownNav
               textbooks={questionCates}
               onSelect={(selectedItems: Textbook[]) => {
@@ -164,7 +163,6 @@ export default function Home() {
                   updateQuestionSearch("eightLevelSelectKeys", []);
                   return;
                 }
-
                 const current: Textbook = selectedItems[selectedItems.length - 1];
                 updateQuestionSearch("eightId", current.id);
                 updateQuestionSearch(
@@ -178,9 +176,10 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-10 gap-4 items-center">
-          <div className="col-span-1">类型:</div>
-          <div className="col-span-9">
+        {/* 3. 类型 */}
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">类型:</div>
+          <div className="flex-1 min-w-0">
             <TypeSelect
               options={questionTypes}
               value={questionSearch.typeId}
@@ -191,9 +190,10 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-10 gap-4 items-center">
-          <div className="col-span-1">标签:</div>
-          <div className="col-span-9">
+        {/* 4. 标签 */}
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">标签:</div>
+          <div className="flex-1 min-w-0">
             <MultiTagSelect
               options={questionTags}
               value={questionSearch.tagIds}
@@ -204,23 +204,25 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-10 gap-4 items-center">
-          <div className="col-span-1">ID:</div>
-          <div className="col-span-9">
+        {/* 5. ID */}
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">ID:</div>
+          <div className="flex-1 min-w-0">
             <Input
               type="number"
               value={questionSearch.id}
               onChange={(e) => {
                 updateQuestionSearch("id", Number(e.target.value));
               }}
-              className="text-sm w-1/4"
+              className="text-sm w-full md:w-1/3" // 移动端全宽，PC端1/3宽度
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-10 gap-1 items-center">
-          <div className="col-span-1">操作:</div>
-          <div className="col-span-9">
+        {/* 6. 操作按钮 */}
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">操作:</div>
+          <div className="flex-1 min-w-0">
             <div className="flex flex-wrap gap-1">
               <Button variant="outline" onClick={handleQuestionAdd}>
                 添加题目

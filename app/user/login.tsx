@@ -29,7 +29,7 @@ export function Login() {
                 <Button variant="outline" type="button">
                   Login with GitHub
                 </Button>
-                <FieldDescription className="text-center">普通账号目前支持 QQ 扫码, GitHub 账号登录</FieldDescription>
+                <FieldDescription className="text-center">支持 QQ 扫码, GitHub 账号登录</FieldDescription>
               </Field>
             </FieldGroup>
           </form>

@@ -103,9 +103,9 @@ export default function Index() {
     <div className="m-3">
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
-        <div className="grid grid-cols-10 gap-1 items-center">
-          <div className="col-span-1">学段/考点:</div>
-          <div className="col-span-9">
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">学段/考点:</div>
+          <div className="flex-1 min-w-0">
             <ChapterDropdownNav
               textbooks={textbooks}
               onSelect={(selectedItems: Textbook[]) => {
@@ -130,9 +130,9 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="grid grid-cols-10 gap-1 items-center">
-          <div className="col-span-1">标签:</div>
-          <div className="col-span-9">
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">标签:</div>
+          <div className="flex-1 min-w-0">
             <TagSelect
               options={StringConst.examTags}
               defaultValue={metaSearch.tag}
@@ -143,33 +143,35 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="grid grid-cols-10 gap-4 items-center">
-          <div className="col-span-1">年份:</div>
-          <div className="col-span-9">
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">年份:</div>
+          <div className="flex-1 min-w-0">
             <YearSelect value={metaSearch.year} onValueChange={(val) => updateSearchMeta("year", val ?? "")} placeholder="选择年份" />
           </div>
         </div>
 
-        <div className="grid grid-cols-10 gap-4 items-center">
-          <div className="col-span-1">年级:</div>
-          <div className="col-span-9">
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">年级:</div>
+          <div className="flex-1 min-w-0">
             <GradeSelect value={metaSearch.grade} onValueChange={(val) => updateSearchMeta("grade", val ?? "")} placeholder="选择年级" />
           </div>
         </div>
 
-        <div className="grid grid-cols-10 gap-4 items-center">
-          <div className="col-span-1">学期:</div>
-          <div className="col-span-9">
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">学期:</div>
+          <div className="flex-1 min-w-0">
             <SemesterSelect value={metaSearch.semester} onValueChange={(val) => updateSearchMeta("semester", val ?? "")} placeholder="选择学期" />
           </div>
         </div>
 
-        <div className="grid grid-cols-10 gap-4 items-center">
-          <div className="col-span-1">操作:</div>
-          <div className="col-span-9 flex flex-wrap gap-2">
-            <Button variant="outline" onClick={addExamSheet}>
-              添加试卷
-            </Button>
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">操作:</div>
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap gap-1">
+              <Button variant="outline" onClick={addExamSheet}>
+                添加试卷
+              </Button>
+            </div>
           </div>
         </div>
       </div>
