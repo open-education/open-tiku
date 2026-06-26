@@ -54,7 +54,7 @@ export default function Index() {
 
   // 点击添加按钮,  新增需要默认值
   const handleAdd = () => {
-    setAddReq({ ...addReq, itemValue: "", sortOrder: 0, isSelect: false });
+    setAddReq({ ...addReq, id: 0, itemValue: "", sortOrder: 0, isSelect: false });
     setDialogOpen(true);
   };
 
