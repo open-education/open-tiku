@@ -100,7 +100,7 @@ export default function Index() {
   };
 
   return (
-    <div className="m-3">
+    <div className="px-4 pt-3 sm:px-16 sm:pt-4">
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">

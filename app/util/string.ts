@@ -113,6 +113,11 @@ export const StringConst = {
     { id: 3, value: QuestionStatus.Published, label: "已发布" },
     { id: 4, value: QuestionStatus.Rejected, label: "已拒绝" },
   ],
+  // 题目类型列表
+  questionOtherDictList: [
+    { id: 1, value: "question_type", label: "题型" },
+    { id: 2, value: "question_tag", label: "标签" },
+  ],
 };
 
 // 字符串常量工具

@@ -75,6 +75,8 @@ export default function Add({
       comment: "",
       difficultyLevel: 1.0,
       status: 0,
+      createdAt: "",
+      updatedAt: "",
     },
     extraInfo: {},
   },

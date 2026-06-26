@@ -118,7 +118,7 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
   };
 
   return (
-    <div className="p-3">
+    <div className="px-4 pt-3 sm:px-16 sm:pt-4">
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
         {/* 章节/考点 */}

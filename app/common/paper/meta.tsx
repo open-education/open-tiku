@@ -94,7 +94,7 @@ function ExamPaper({ papers, metaSearch, setOpenSheet, setSheetTitle, setSheetDe
 // 首页试卷头
 function ExamPaperHeader() {
   return (
-    <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center justify-between mb-8">
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           <FileText size={14} className="text-muted-foreground" />

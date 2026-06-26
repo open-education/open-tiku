@@ -117,6 +117,31 @@ function StatusSelect({ defaultValue = 0, onSelect }: StatusSelectProps) {
   );
 }
 
+// 题目类型选择题
+interface OtherDictSelectProps {
+  defaultValue?: string;
+  onSelect: (val: string) => void;
+}
+function OtherDictSelect({ defaultValue, onSelect }: OtherDictSelectProps) {
+  const handleSelect = (val: string) => {
+    // 点击相同项时取消选中（行为可选）
+    if (defaultValue === val) {
+      return;
+    }
+    onSelect(val);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {StringConst.questionOtherDictList.map(({ id, value, label }) => (
+        <Button key={id} variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
+          {label}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
 // 列表详情等标签展示
 // 题目类型标签
 // 题目本身的标签
@@ -469,4 +494,4 @@ function OperateTags({
   return renderButtons(pageSource.source);
 }
 
-export { TypeSelect, MultiTagSelect, StatusSelect, TagShow, OperateTags };
+export { TypeSelect, MultiTagSelect, StatusSelect, OtherDictSelect, TagShow, OperateTags };

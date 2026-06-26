@@ -123,12 +123,12 @@ export default function Index() {
       {useDelayedLoading(isLoading || textbooksIsLoading || latestIsLoading) && <Loading />}
 
       {/* 统计总数*/}
-      <div className="ml-4 mr-4 mt-3">
+      <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
         <CountStats />
       </div>
 
       {/* 关键导航 */}
-      <div className="ml-4 mr-4 mt-3">
+      <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
         <ChapterExpandNav
           textbooks={textbooks}
           onSelectionChange={(selection, selectedTextbooks) => {
@@ -139,7 +139,7 @@ export default function Index() {
       </div>
 
       {/* 精选试卷 */}
-      <div className="ml-4 mr-4 mt-3">
+      <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
         <ExamPaperHeader />
         <ExamPaper
           papers={latestPapers}
@@ -152,17 +152,17 @@ export default function Index() {
       </div>
 
       {/* 统计面板 */}
-      <div className="ml-4 mr-4 mt-3">
+      <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
         <Board />
       </div>
 
       {/* 网站碎碎念 */}
-      <div className="ml-4 mr-4 mt-3">
+      <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
         <Note />
       </div>
 
       {/* 成为教师 */}
-      <div className="mt-3">
+      <div>
         <Teacher />
       </div>
 
