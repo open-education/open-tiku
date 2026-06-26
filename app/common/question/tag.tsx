@@ -22,6 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { QuestionStatus } from "~/util/enum";
 
 /// 题目题目相关标签选择器
 
@@ -293,7 +294,7 @@ function OperateTags({
     });
     const req: ApproveReq = {
       id: questionId,
-      status: 1,
+      status: QuestionStatus.Pending,
       rejectReason: "",
     };
     httpClient
@@ -322,7 +323,7 @@ function OperateTags({
   const [approveRes, setApproveRes] = useState<{ success: boolean; loading: boolean; message: string } | null>(null);
   const [approveReq, setApproveReq] = useState<ApproveReq>({
     id: questionId,
-    status: 0,
+    status: QuestionStatus.Drafing,
     rejectReason: "",
   });
   const updateApproveReq = (key: keyof ApproveReq, value: number | string) => {
@@ -368,7 +369,7 @@ function OperateTags({
 
     // 提交审核
     // 我的题目页面状态为草稿中才会出现提交审核
-    if (source === "myQuestion" && status === 0) {
+    if (source === "myQuestion" && status === QuestionStatus.Drafing) {
       buttons.push(
         <Dialog>
           <DialogTrigger render={<Button variant="link">提交审核</Button>} />
@@ -391,7 +392,7 @@ function OperateTags({
 
     // 审核题目
     // 我的审核页面状态为待审核的数据才会出现审核按钮
-    if (source === "myReview" && status === 1) {
+    if (source === "myReview" && status === QuestionStatus.Pending) {
       buttons.push(
         <Dialog>
           <DialogTrigger render={<Button variant="link">题目审核</Button>} />
