@@ -32,20 +32,6 @@ function Header() {
       url: "/user/paper",
       role: "",
     },
-    {
-      id: 3,
-      label: "我的审核",
-      icon: <CheckCheck />,
-      url: "/user/review",
-      role: "",
-    },
-    {
-      id: 4,
-      label: "系统设置",
-      icon: <Settings />,
-      url: "/user/setting",
-      role: "",
-    },
   ];
 
   const closeSheet = () => setSheetOpen(false);
