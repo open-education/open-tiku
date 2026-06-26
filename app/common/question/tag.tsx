@@ -1,13 +1,28 @@
-import { useState } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import type { QuestionInfoResp, QuestionSearch } from "~/type/question";
+import type { ApproveReq, QuestionInfoResp, QuestionPageSourceProps, QuestionSearch } from "~/type/question";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
 import { QuestionInfo } from "~/common/question/info";
 import { SimilarQuestionList } from "~/question/similar";
 import Add from "~/question/add";
 import { toast } from "sonner";
+import { StringConst } from "~/util/string";
+import { useState } from "react";
+import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "~/components/ui/popover";
+import { Textarea } from "~/components/ui/textarea";
+import { Separator } from "~/components/ui/separator";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { QuestionStatus } from "~/util/enum";
 
 /// 题目题目相关标签选择器
 
@@ -77,21 +92,74 @@ function MultiTagSelect({ options, value = [], onChange }: MultiTagSelectProps) 
   );
 }
 
+// 题目状态选择器
+interface StatusSelectProps {
+  defaultValue?: number;
+  onSelect: (val: number) => void;
+}
+function StatusSelect({ defaultValue = 0, onSelect }: StatusSelectProps) {
+  const handleSelect = (val: number) => {
+    // 点击相同项时取消选中（行为可选）
+    if (defaultValue === val) {
+      return;
+    }
+    onSelect(val);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {StringConst.questionStatusList.map(({ id, value, label }) => (
+        <Button key={id} variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
+          {label}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
+// 题目类型选择题
+interface OtherDictSelectProps {
+  defaultValue?: string;
+  onSelect: (val: string) => void;
+}
+function OtherDictSelect({ defaultValue, onSelect }: OtherDictSelectProps) {
+  const handleSelect = (val: string) => {
+    // 点击相同项时取消选中（行为可选）
+    if (defaultValue === val) {
+      return;
+    }
+    onSelect(val);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {StringConst.questionOtherDictList.map(({ id, value, label }) => (
+        <Button key={id} variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
+          {label}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
 // 列表详情等标签展示
 // 题目类型标签
 // 题目本身的标签
 // 难度标签
+// 题目状态标签
 interface TagShowProps {
+  pageSource: QuestionPageSourceProps;
   typeValue: string;
   tagNames: string[];
   difficultyLevelValue: number;
+  status: number;
 }
-function TagShow({ typeValue, tagNames, difficultyLevelValue }: TagShowProps) {
+function TagShow({ pageSource, typeValue, tagNames, difficultyLevelValue, status }: TagShowProps) {
   // 生成标签列表
   const getBadges = () => {
     // 题目类型
     const typeNode: React.ReactNode = (
-      <Badge variant={"outline"} key={typeValue}>
+      <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300" key={typeValue}>
         {typeValue}
       </Badge>
     );
@@ -99,7 +167,7 @@ function TagShow({ typeValue, tagNames, difficultyLevelValue }: TagShowProps) {
     // 题目标签
     const tagNode = tagNames.map((val) => {
       return (
-        <Badge variant={"outline"} key={val}>
+        <Badge className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300" key={val}>
           {val}
         </Badge>
       );
@@ -107,16 +175,27 @@ function TagShow({ typeValue, tagNames, difficultyLevelValue }: TagShowProps) {
 
     // 难度
     const difficultyNode = (
-      <Badge variant={"outline"} key={difficultyLevelValue}>
+      <Badge className="bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300" key={difficultyLevelValue}>
         {difficultyLevelValue}
       </Badge>
     );
+
+    // 我的审核和题目需要展示题目状态
+    const statusDesc =
+      pageSource.source !== "list" ? (
+        <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300" key={status}>
+          {StringConst.questionStatusList[status].label || "草稿中"}
+        </Badge>
+      ) : (
+        ""
+      );
 
     return (
       <>
         {typeNode}
         {tagNode}
         {difficultyNode}
+        {statusDesc}
       </>
     );
   };
@@ -126,8 +205,10 @@ function TagShow({ typeValue, tagNames, difficultyLevelValue }: TagShowProps) {
 
 // 查看题目详情编辑等标签操作
 interface OperateTagsProps {
+  pageSource: QuestionPageSourceProps;
   questionId: number; // 题目主键
   eightId: number; // 第8层题型标识
+  status: number; // 题目状态
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
   questionSearch: QuestionSearch;
@@ -142,8 +223,10 @@ interface OperateTagsProps {
   setLoading?: (value: boolean) => void;
 }
 function OperateTags({
+  pageSource,
   questionId,
   eightId,
+  status,
   questionTypeDict,
   questionTagDict,
   questionSearch,
@@ -161,7 +244,9 @@ function OperateTags({
       .get<QuestionInfoResp>(`/question/info/${questionId}`)
       .then((res) => {
         setSheetTitle("查看详情");
-        setSheetContent(<QuestionInfo questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} infoResp={res} />);
+        setSheetContent(
+          <QuestionInfo pageSource={pageSource} questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} infoResp={res} />,
+        );
         setOpenSheet(true);
       })
       .catch((err) => {
@@ -214,7 +299,7 @@ function OperateTags({
   };
 
   // 查看变式题列表
-  const handleSimiarList = () => {
+  const handleSimilarList = () => {
     setSheetTitle("变式题列表");
     setSheetDesc("变式题暂不支持查看详情");
     setSheetContent(
@@ -223,22 +308,190 @@ function OperateTags({
     setOpenSheet(true);
   };
 
-  return (
-    <>
-      <Button variant={"link"} onClick={handleViewInfo}>
+  // 提交审核
+  const [submitApproveRes, setSubmitApproveRes] = useState<{ success: boolean; loading: boolean; message: string } | null>(null);
+  const handleSubmitApprove = () => {
+    setLoading?.(true);
+    setSubmitApproveRes({
+      success: false,
+      loading: true,
+      message: "",
+    });
+    const req: ApproveReq = {
+      id: questionId,
+      status: QuestionStatus.Pending,
+      rejectReason: "",
+    };
+    httpClient
+      .post("/edit/status", req)
+      .then((res) => {
+        setSubmitApproveRes({
+          success: true,
+          loading: false,
+          message: "审核通过",
+        });
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">`提交审核操作出错: ${err.message}`</div>);
+        setSubmitApproveRes({
+          success: false,
+          loading: false,
+          message: `审核出错: ${err.message}`,
+        });
+      })
+      .finally(() => {
+        setLoading?.(false);
+      });
+  };
+
+  // 审核题目
+  const [approveRes, setApproveRes] = useState<{ success: boolean; loading: boolean; message: string } | null>(null);
+  const [approveReq, setApproveReq] = useState<ApproveReq>({
+    id: questionId,
+    status: QuestionStatus.Drafing,
+    rejectReason: "",
+  });
+  const updateApproveReq = (key: keyof ApproveReq, value: number | string) => {
+    setApproveReq((prev) => ({ ...prev, [key]: value }));
+  };
+  const handleApprove = () => {
+    setLoading?.(true);
+    setApproveRes({
+      success: false,
+      loading: true,
+      message: "",
+    });
+    httpClient
+      .post("/edit/status", approveReq)
+      .then((res) => {
+        setApproveRes({
+          success: true,
+          loading: false,
+          message: "审核通过",
+        });
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">`审核操作出错: ${err.message}`</div>);
+        setApproveRes({
+          success: false,
+          loading: false,
+          message: `审核出错: ${err.message}`,
+        });
+      })
+      .finally(() => {
+        setLoading?.(false);
+      });
+  };
+
+  // 题目标签按钮处理
+  const renderButtons = (source: string) => {
+    // 详情按钮-所有地方均有
+    const buttons = [
+      <Button key="detail" variant="link" onClick={handleViewInfo}>
         详情
-      </Button>
-      <Button variant={"link"} onClick={handleEditInfo}>
-        编辑
-      </Button>
-      <Button variant={"link"} onClick={handleSimilarAdd}>
-        添加变式题
-      </Button>
-      <Button variant={"link"} onClick={handleSimiarList}>
+      </Button>,
+    ];
+
+    // 提交审核
+    // 我的题目页面状态为草稿中才会出现提交审核
+    if (source === "myQuestion" && status === QuestionStatus.Drafing) {
+      buttons.push(
+        <Dialog>
+          <DialogTrigger render={<Button variant="link">提交审核</Button>} />
+          <DialogContent className="sm:max-w-sm">
+            <DialogHeader>
+              <DialogTitle>提交审核</DialogTitle>
+              <DialogDescription>请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
+            </DialogHeader>
+            <div className="mt-3 text-blue-500">{submitApproveRes?.success ? "提交成功" : submitApproveRes?.message}</div>
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline">Cancel</Button>} />
+              <Button onClick={handleSubmitApprove} disabled={submitApproveRes?.loading}>
+                {submitApproveRes?.loading ? "提交审核中" : "提交审核"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>,
+      );
+    }
+
+    // 审核题目
+    // 我的审核页面状态为待审核的数据才会出现审核按钮
+    if (source === "myReview" && status === QuestionStatus.Pending) {
+      buttons.push(
+        <Dialog>
+          <DialogTrigger render={<Button variant="link">题目审核</Button>} />
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>题目审核</DialogTitle>
+              <DialogDescription>请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
+            </DialogHeader>
+            <div>
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                  <div className="md:w-24 shrink-0 font-medium">审核状态:</div>
+                  <div className="flex-1 min-w-0">
+                    <StatusSelect defaultValue={approveReq.status} onSelect={(val) => updateApproveReq("status", val)} />
+                  </div>
+                </div>
+                <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                  <div className="md:w-24 shrink-0 font-medium">拒绝理由:</div>
+                  <div className="flex-1 min-w-0">
+                    <Textarea
+                      value={approveReq.rejectReason}
+                      onChange={(e) => updateApproveReq("rejectReason", e.target.value)}
+                      placeholder="拒绝时需要说明拒绝原因"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3">
+                <Separator />
+              </div>
+
+              <div className="mt-3 text-blue-500">{approveRes?.success ? "审核成功" : approveRes?.message}</div>
+            </div>
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline">Cancel</Button>} />
+              <Button onClick={handleApprove} disabled={approveRes?.loading}>
+                {approveRes?.loading ? "审核中" : "审核"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>,
+      );
+    }
+
+    // 编辑, 审核不能编辑别人的信息, 更不能自己编辑自己审核
+    if (pageSource.source !== "myReview") {
+      buttons.push(
+        <Button key="edit" variant="link" onClick={handleEditInfo}>
+          编辑
+        </Button>,
+      );
+    }
+
+    // 添加变式题只有普通页面可以操作
+    if (source === "list") {
+      buttons.push(
+        <Button key="add" variant="link" onClick={handleSimilarAdd}>
+          添加变式题
+        </Button>,
+      );
+    }
+
+    // 查看变式题, 均可以查看
+    buttons.push(
+      <Button key="list" variant="link" onClick={handleSimilarList}>
         查看变式题
-      </Button>
-    </>
-  );
+      </Button>,
+    );
+
+    return buttons;
+  };
+
+  return renderButtons(pageSource.source);
 }
 
-export { TypeSelect, MultiTagSelect, TagShow, OperateTags };
+export { TypeSelect, MultiTagSelect, StatusSelect, OtherDictSelect, TagShow, OperateTags };

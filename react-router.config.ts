@@ -11,4 +11,7 @@ export default {
     v8_trailingSlashAwareDataRequests: true,
     v8_viteEnvironmentApi: true,
   },
+  async prerender() {
+    return ["/"];
+  },
 } satisfies Config;

@@ -1,3 +1,5 @@
+import { QuestionStatus } from "./enum";
+
 // 字符串验证工具类
 export const StringValidator = {
   // 检查是否为非空字符串
@@ -103,6 +105,18 @@ export const StringConst = {
     { id: "select_layout_list_1", value: 1, label: "展示一列" },
     { id: "select_layout_list_2", value: 2, label: "展示两列" },
     { id: "select_layout_list_3", value: 3, label: "展示四列" },
+  ],
+  // 题目审核状态
+  questionStatusList: [
+    { id: 1, value: QuestionStatus.Drafing, label: "草稿中" },
+    { id: 2, value: QuestionStatus.Pending, label: "待审核" },
+    { id: 3, value: QuestionStatus.Published, label: "已发布" },
+    { id: 4, value: QuestionStatus.Rejected, label: "已拒绝" },
+  ],
+  // 题目类型列表
+  questionOtherDictList: [
+    { id: 1, value: "question_type", label: "题型" },
+    { id: 2, value: "question_tag", label: "标签" },
   ],
 };
 

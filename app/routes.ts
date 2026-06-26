@@ -2,9 +2,30 @@ import { index, route, type RouteConfig } from "@react-router/dev/routes";
 
 export default [
   route("/", "routes/home/main.tsx", [
+    // 网站布局
     index("routes/home/index.tsx"),
+
+    // 试卷
     route("paper", "routes/paper/index.tsx"),
+
+    // 题目库
     route("question", "routes/question/index.tsx"),
-    route("user", "routes/user/index.tsx"),
+
+    // 用户中心
+    route("user", "routes/user/main.tsx", [
+      // 用户中心布局
+      index("routes/user/index.tsx"),
+
+      // 系统设置
+      route("setting/dict", "routes/user/setting/dict.tsx"),
+      route("setting/textbook", "routes/user/setting/textbook.tsx"),
+
+      // 我的题目和审核
+      route("question", "routes/user/question/index.tsx"),
+      route("question/review", "routes/user/question/review.tsx"),
+
+      // 我的试卷和审核
+      route("paper", "routes/user/paper/index.tsx"),
+    ]),
   ]),
 ] satisfies RouteConfig;

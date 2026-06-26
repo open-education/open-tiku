@@ -2,35 +2,51 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { Lightbulb, CheckCircle2, Layers, AlertCircle } from "lucide-react";
-import type { QuestionInfoResp } from "~/type/question";
+import type { QuestionInfoResp, QuestionPageSourceProps } from "~/type/question";
 import { SimpleFullContent } from "~/common/content";
 import { TagShow } from "~/common/question/tag";
 import { TitleShow } from "~/common/title";
 import { MultiOptionShow } from "~/common/select";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { DictUtil } from "~/util/object";
+import { SimpleAlert } from "../alert";
+import { QuestionStatus } from "~/util/enum";
 
 // 题目详情样式-预览和详情均使用该样式
 interface QuestionInfoProps {
+  pageSource: QuestionPageSourceProps;
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
   infoResp: QuestionInfoResp;
 }
-function QuestionInfo({ questionTypeDict, questionTagDict, infoResp }: QuestionInfoProps) {
+function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp }: QuestionInfoProps) {
   // 有详情返回时优先详情返回, 否则理解为预览数据
   const { baseInfo, extraInfo } = infoResp;
 
   return (
     <div className="space-y-4 pl-4 pb-4 pr-4">
+      {/* 我的题目审核如果被拒绝要显示拒绝原因, 修改后重新提交审核 */}
+      {baseInfo.status === QuestionStatus.Rejected && <SimpleAlert title="你的题目审核被拒绝" message={baseInfo.rejectReason || ""} />}
+
+      {/* 来源和备注, 只展示存在的信息 */}
+      <div className="flex flex-col gap-1 border p-4">
+        <div>创建时间: {baseInfo.createdAt}</div>
+        {baseInfo.originalName && <div>原创者昵称: {baseInfo.originalName}</div>}
+        <div>更新时间: {baseInfo.updatedAt}</div>
+        {baseInfo.approveAt && <div>审核时间: {baseInfo.approveAt}</div>}
+      </div>
+
       {/* 题目 */}
       <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
         <CardContent className="space-y-6">
           {/* 标签 */}
           <div className="flex gap-3 items-center w-full">
             <TagShow
+              pageSource={pageSource}
               typeValue={DictUtil.getQuestionTypeName(baseInfo.questionTypeId, questionTypeDict)}
               tagNames={DictUtil.getQuestionTagNames(baseInfo.questionTagIds ?? [], questionTagDict)}
               difficultyLevelValue={baseInfo.difficultyLevel}
+              status={baseInfo.status}
             />
           </div>
 

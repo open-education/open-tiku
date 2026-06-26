@@ -75,6 +75,8 @@ export default function Add({
       comment: "",
       difficultyLevel: 1.0,
       status: 0,
+      createdAt: "",
+      updatedAt: "",
     },
     extraInfo: {},
   },
@@ -353,7 +355,9 @@ export default function Add({
           .then((res) => {
             setSheetTitle("题目详情");
             setSheetDesc("当前仅是预览状态, 需管理员审核通过后题目方可被搜索展示");
-            setSheetContent(<QuestionInfo questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} infoResp={res} />);
+            setSheetContent(
+              <QuestionInfo pageSource={{ source: "list" }} questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} infoResp={res} />,
+            );
           })
           .catch((err) => {
             setAddWarnInfo(<SimpleAlert title="查询题目详情失败" message={err.message} />);
@@ -889,6 +893,7 @@ export default function Add({
             <Watermark className="h-full w-full border bg-slate-50">
               <div className="pt-3">
                 <QuestionInfo
+                  pageSource={{ source: "list" }}
                   questionTypeDict={questionTypeDict}
                   questionTagDict={questionTagDict}
                   infoResp={{ baseInfo: { id: 0, contentPlain: "", ...addReq }, extraInfo: { ...addReq } }}

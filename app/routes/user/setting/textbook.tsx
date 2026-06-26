@@ -1,7 +1,7 @@
 export default function Index() {
   return (
     <div>
-      <div>个人中心首页默认内容</div>
+      <div>章节考点</div>
     </div>
   );
 }

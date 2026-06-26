@@ -59,7 +59,12 @@ export function SimilarQuestionList({ questionTypeDict, questionTagDict, questio
 
       {/* 题目列表 */}
       <div className="text-sm">
-        <SimilarQuestionListShow questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} listResp={listResp} />
+        <SimilarQuestionListShow
+          pageSource={{ source: "list" }}
+          questionTypeDict={questionTypeDict}
+          questionTagDict={questionTagDict}
+          listResp={listResp}
+        />
       </div>
 
       {/* 分页 */}
