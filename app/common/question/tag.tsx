@@ -122,16 +122,18 @@ function StatusSelect({ defaultValue = 0, onSelect }: StatusSelectProps) {
 // 难度标签
 // 题目状态标签
 interface TagShowProps {
+  pageSource: QuestionPageSourceProps;
   typeValue: string;
   tagNames: string[];
   difficultyLevelValue: number;
+  status: number;
 }
-function TagShow({ typeValue, tagNames, difficultyLevelValue }: TagShowProps) {
+function TagShow({ pageSource, typeValue, tagNames, difficultyLevelValue, status }: TagShowProps) {
   // 生成标签列表
   const getBadges = () => {
     // 题目类型
     const typeNode: React.ReactNode = (
-      <Badge variant={"outline"} key={typeValue}>
+      <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300" key={typeValue}>
         {typeValue}
       </Badge>
     );
@@ -139,7 +141,7 @@ function TagShow({ typeValue, tagNames, difficultyLevelValue }: TagShowProps) {
     // 题目标签
     const tagNode = tagNames.map((val) => {
       return (
-        <Badge variant={"outline"} key={val}>
+        <Badge className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300" key={val}>
           {val}
         </Badge>
       );
@@ -147,16 +149,27 @@ function TagShow({ typeValue, tagNames, difficultyLevelValue }: TagShowProps) {
 
     // 难度
     const difficultyNode = (
-      <Badge variant={"outline"} key={difficultyLevelValue}>
+      <Badge className="bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300" key={difficultyLevelValue}>
         {difficultyLevelValue}
       </Badge>
     );
+
+    // 我的审核和题目需要展示题目状态
+    const statusDesc =
+      pageSource.source !== "list" ? (
+        <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300" key={status}>
+          {StringConst.questionStatusList[status].label || "草稿中"}
+        </Badge>
+      ) : (
+        ""
+      );
 
     return (
       <>
         {typeNode}
         {tagNode}
         {difficultyNode}
+        {statusDesc}
       </>
     );
   };
@@ -205,7 +218,9 @@ function OperateTags({
       .get<QuestionInfoResp>(`/question/info/${questionId}`)
       .then((res) => {
         setSheetTitle("查看详情");
-        setSheetContent(<QuestionInfo questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} infoResp={res} />);
+        setSheetContent(
+          <QuestionInfo pageSource={pageSource} questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} infoResp={res} />,
+        );
         setOpenSheet(true);
       })
       .catch((err) => {
@@ -342,20 +357,19 @@ function OperateTags({
       });
   };
 
-  // 审核只有 详情和审核
-  // 我的题目没有 添加变式题
-  // 普通全部都有
+  // 题目标签按钮处理
   const renderButtons = (source: string) => {
-    const common = [
+    // 详情按钮-所有地方均有
+    const buttons = [
       <Button key="detail" variant="link" onClick={handleViewInfo}>
         详情
       </Button>,
     ];
 
+    // 提交审核
     // 我的题目页面状态为草稿中才会出现提交审核
     if (source === "myQuestion" && status === 0) {
-      return [
-        ...common,
+      buttons.push(
         <Dialog>
           <DialogTrigger render={<Button variant="link">提交审核</Button>} />
           <DialogContent className="sm:max-w-sm">
@@ -372,13 +386,13 @@ function OperateTags({
             </DialogFooter>
           </DialogContent>
         </Dialog>,
-      ];
+      );
     }
 
+    // 审核题目
     // 我的审核页面状态为待审核的数据才会出现审核按钮
     if (source === "myReview" && status === 1) {
-      return [
-        ...common,
+      buttons.push(
         <Dialog>
           <DialogTrigger render={<Button variant="link">题目审核</Button>} />
           <DialogContent>
@@ -420,16 +434,19 @@ function OperateTags({
             </DialogFooter>
           </DialogContent>
         </Dialog>,
-      ];
+      );
     }
 
-    const buttons = [
-      ...common,
-      <Button key="edit" variant="link" onClick={handleEditInfo}>
-        编辑
-      </Button>,
-    ];
+    // 编辑, 审核不能编辑别人的信息, 更不能自己编辑自己审核
+    if (pageSource.source !== "myReview") {
+      buttons.push(
+        <Button key="edit" variant="link" onClick={handleEditInfo}>
+          编辑
+        </Button>,
+      );
+    }
 
+    // 添加变式题只有普通页面可以操作
     if (source === "list") {
       buttons.push(
         <Button key="add" variant="link" onClick={handleSimilarAdd}>
@@ -438,6 +455,7 @@ function OperateTags({
       );
     }
 
+    // 查看变式题, 均可以查看
     buttons.push(
       <Button key="list" variant="link" onClick={handleSimilarList}>
         查看变式题

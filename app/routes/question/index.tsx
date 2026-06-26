@@ -6,7 +6,10 @@ import { QuestionSearchPage } from "~/common/question/search";
 /// 题目首页
 
 export function meta({}: Route.MetaArgs) {
-  return [{ title: "题目库" }, { name: "description", content: "教材章节, 知识点题库" }];
+  return [
+    { title: "题目库" },
+    { name: "description", content: "对中小学教材按章节、考点进行分类，精选各学科、各类型的原创题目，整理、解析或归类已有的题目。" },
+  ];
 }
 
 // 题目相关后续操作都在这个路由内完成

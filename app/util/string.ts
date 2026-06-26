@@ -1,3 +1,5 @@
+import { QuestionStatus } from "./enum";
+
 // 字符串验证工具类
 export const StringValidator = {
   // 检查是否为非空字符串
@@ -106,10 +108,10 @@ export const StringConst = {
   ],
   // 题目审核状态
   questionStatusList: [
-    { id: 1, value: 0, label: "草稿中" },
-    { id: 2, value: 1, label: "待审核" },
-    { id: 3, value: 2, label: "已发布" },
-    { id: 4, value: 3, label: "已拒绝" },
+    { id: 1, value: QuestionStatus.Drafing, label: "草稿中" },
+    { id: 2, value: QuestionStatus.Pending, label: "待审核" },
+    { id: 3, value: QuestionStatus.Published, label: "已发布" },
+    { id: 4, value: QuestionStatus.Rejected, label: "已拒绝" },
   ],
 };
 

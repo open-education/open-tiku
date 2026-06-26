@@ -45,7 +45,12 @@ function QuestionListShow({
             className="mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
           >
             {/* 题干选项等部分 */}
-            <SingleQuestionCommonPart questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} questionInfo={questionInfo} />
+            <SingleQuestionCommonPart
+              pageSource={pageSource}
+              questionTypeDict={questionTypeDict}
+              questionTagDict={questionTagDict}
+              questionInfo={questionInfo}
+            />
 
             {/* 题目其它标签, 比如查看答案, 关联题目等 */}
             <div className="flex gap-2 justify-end">
@@ -73,19 +78,22 @@ function QuestionListShow({
 
 // 题目标题选项等公共部分展示
 interface SingleQuestionCommonPartProps {
+  pageSource: QuestionPageSourceProps;
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
   questionInfo: QuestionBaseInfoResp;
 }
-function SingleQuestionCommonPart({ questionTypeDict, questionTagDict, questionInfo }: SingleQuestionCommonPartProps) {
+function SingleQuestionCommonPart({ pageSource, questionTypeDict, questionTagDict, questionInfo }: SingleQuestionCommonPartProps) {
   return (
     <>
       {/* 标签 */}
       <div className="flex gap-3 items-center w-full">
         <TagShow
+          pageSource={pageSource}
           typeValue={DictUtil.getQuestionTypeName(questionInfo.questionTypeId, questionTypeDict)}
           tagNames={DictUtil.getQuestionTagNames(questionInfo.questionTagIds ?? [], questionTagDict)}
           difficultyLevelValue={questionInfo.difficultyLevel}
+          status={questionInfo.status}
         />
       </div>
 
@@ -106,11 +114,12 @@ function SingleQuestionCommonPart({ questionTypeDict, questionTagDict, questionI
 
 // 变式题列表展示, 不关心展示详情了, 因为这部分题目跟普通列表的题目是重复的, 仅仅展示有哪些变式题列表
 interface SimilarQuestionListShowProps {
+  pageSource: QuestionPageSourceProps;
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
   listResp: QuestionListResp;
 }
-function SimilarQuestionListShow({ questionTypeDict, questionTagDict, listResp }: SimilarQuestionListShowProps) {
+function SimilarQuestionListShow({ pageSource, questionTypeDict, questionTagDict, listResp }: SimilarQuestionListShowProps) {
   return (
     <>
       {listResp.list?.map((questionInfo) => {
@@ -120,7 +129,12 @@ function SimilarQuestionListShow({ questionTypeDict, questionTagDict, listResp }
             className="mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
           >
             {/* 题干选项等部分 */}
-            <SingleQuestionCommonPart questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} questionInfo={questionInfo} />
+            <SingleQuestionCommonPart
+              pageSource={pageSource}
+              questionTypeDict={questionTypeDict}
+              questionTagDict={questionTagDict}
+              questionInfo={questionInfo}
+            />
           </div>
         );
       })}

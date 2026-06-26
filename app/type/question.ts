@@ -62,6 +62,10 @@ export interface QuestionBaseInfoResp {
   options?: QuestionOption[];
   optionsLayout?: number;
   steps?: Step[];
+  rejectReason?: string; // 拒绝原因
+  approveAt?: string; // 审核时间
+  createdAt: string; // 创建时间
+  updatedAt: string; // 更新时间
 }
 
 // 题目其它信息返回
