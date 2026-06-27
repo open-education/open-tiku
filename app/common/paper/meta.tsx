@@ -73,9 +73,9 @@ function ExamPaper({ papers, metaSearch, setOpenSheet, setSheetTitle, setSheetDe
           <CardContent className="px-4 py-3.5 flex flex-col h-full">
             <div className="flex items-start justify-between gap-2 mb-2.5 text-sm">
               <Badge className={cn("text-sm", StringConstUtil.getExamTagClass(paper.tag))}>{paper.tag}</Badge>
-              {paper.year && <span className="text-muted-foreground shrink-0">{paper.year}</span>}
-              {paper.grade && <span className="text-muted-foreground">{paper.grade}</span>}
-              {paper.semester && <span className="text-muted-foreground">{paper.semester}</span>}
+              {paper.year && <Badge className="text-sm bg-sky-50 text-sky-700 border-sky-100">{paper.year}</Badge>}
+              {paper.grade && <Badge className="text-sm bg-sky-50 text-sky-700 border-sky-100">{paper.grade}</Badge>}
+              {paper.semester && <Badge className="text-sm bg-sky-50 text-sky-700 border-sky-100">{paper.semester}</Badge>}
             </div>
             <p className="text-base leading-snug mb-auto line-clamp-2 group-hover:text-primary transition-colors">{paper.title}</p>
             <Separator className="mt-3 mb-2.5" />

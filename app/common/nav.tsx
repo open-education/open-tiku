@@ -276,19 +276,25 @@ function LevelExt(props: LevelExtProps) {
               </svg>
             )}
           </span>
-          <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">{keyDesc}</span>
+          <span className="text-sm text-muted-foreground font-medium whitespace-nowrap">{keyDesc}</span>
         </div>
 
         {/* Option pills */}
         <div className="flex flex-wrap gap-2 flex-1">
           {options.length > 0 ? (
             options.map((opt) => (
-              <Button key={opt.key} variant={selectedKey === opt.key ? "default" : "outline"} onClick={() => onSelect(opt)} disabled={!enabled}>
+              <Button
+                key={opt.key}
+                className="text-sm"
+                variant={selectedKey === opt.key ? "default" : "outline"}
+                onClick={() => onSelect(opt)}
+                disabled={!enabled}
+              >
                 {opt.label}
               </Button>
             ))
           ) : (
-            <span className="text-xs text-muted-foreground/40 mt-1.5 italic">{enabled ? "暂无选项" : "请先完成上一步"}</span>
+            <span className="text-sm text-muted-foreground/40 mt-1.5 italic">{enabled ? "暂无选项" : "请先完成上一步"}</span>
           )}
         </div>
       </div>
@@ -520,7 +526,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
           </Button>
         }
       />
-      <DropdownMenuContent className="min-w-50 max-h-100 overflow-y-auto p-1">
+      <DropdownMenuContent className="min-w-50 max-h-150 overflow-y-auto p-1">
         <DropdownMenuGroup>
           <DropdownMenuLabel>选择学段</DropdownMenuLabel>
           <DropdownMenuSeparator />

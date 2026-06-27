@@ -85,7 +85,7 @@ function TagShow({ relatedName, tag, year, grade, semester }: TagShowProps) {
 
     return tags.map((val, index) => {
       return (
-        <Badge key={index} className="text-sm">
+        <Badge key={index} className="text-sm bg-sky-50 text-sky-700 border-sky-100">
           {val}
         </Badge>
       );
