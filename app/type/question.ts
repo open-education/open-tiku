@@ -146,3 +146,8 @@ export interface ApproveReq {
   status: number; // 审核状态
   rejectReason: string; // 拒绝原因
 }
+
+// 题目删除
+export interface DeleteReq {
+  id: number;
+}

@@ -1,6 +1,6 @@
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import type { ApproveReq, QuestionInfoResp, QuestionPageSourceProps, QuestionSearch } from "~/type/question";
+import type { ApproveReq, DeleteReq, QuestionInfoResp, QuestionPageSourceProps, QuestionSearch } from "~/type/question";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
 import { QuestionInfo } from "~/common/question/info";
@@ -389,6 +389,40 @@ function OperateTags({
       });
   };
 
+  // 删除题目
+  const [deleteRes, setDeleteRes] = useState<{ success: boolean; loading: boolean; message: string } | null>(null);
+  const handleDelete = () => {
+    setLoading?.(true);
+    setDeleteRes({
+      success: false,
+      loading: true,
+      message: "",
+    });
+    const req: DeleteReq = {
+      id: questionId,
+    };
+    httpClient
+      .post("/question/delete", req)
+      .then((res) => {
+        setDeleteRes({
+          success: true,
+          loading: false,
+          message: "删除成功",
+        });
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">`删除题目出错: ${err.message}`</div>);
+        setDeleteRes({
+          success: false,
+          loading: false,
+          message: `删除出错: ${err.message}`,
+        });
+      })
+      .finally(() => {
+        setLoading?.(false);
+      });
+  };
+
   // 题目标签按钮处理
   const renderButtons = (source: string) => {
     // 详情按钮-所有地方均有
@@ -481,7 +515,7 @@ function OperateTags({
     // 添加变式题只有普通页面可以操作
     if (source === "list") {
       buttons.push(
-        <Button key="add" variant="link" onClick={handleSimilarAdd}>
+        <Button key="similar" variant="link" onClick={handleSimilarAdd}>
           添加变式题
         </Button>,
       );
@@ -493,6 +527,28 @@ function OperateTags({
         查看变式题
       </Button>,
     );
+
+    // 我的题目可以删除题目
+    if (source === "myQuestion") {
+      buttons.push(
+        <Dialog>
+          <DialogTrigger render={<Button variant="link">删除</Button>} />
+          <DialogContent className="sm:max-w-sm">
+            <DialogHeader>
+              <DialogTitle>删除题目</DialogTitle>
+              <DialogDescription>题目删除后不可恢复, 如果不确定, 可以保留等后续确认后再删除</DialogDescription>
+            </DialogHeader>
+            <div className="mt-3 text-blue-500">{deleteRes?.success ? "删除成功" : deleteRes?.message}</div>
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline">Cancel</Button>} />
+              <Button onClick={handleDelete} disabled={deleteRes?.loading}>
+                {deleteRes?.loading ? "删除中" : "删除"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>,
+      );
+    }
 
     return buttons;
   };
