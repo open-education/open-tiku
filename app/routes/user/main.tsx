@@ -1,29 +1,10 @@
+import { NavLink, Outlet } from "react-router";
 import type { Route } from "./+types/main";
-import { BookA, BookOpenText, CheckCheck, ChevronRight, ChevronsUpDown, FileQuestionMark, House, LogOut, ScrollText, Settings } from "lucide-react";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarProvider,
-  SidebarTrigger,
-  useSidebar,
-} from "~/components/ui/sidebar";
-import { Separator } from "~/components/ui/separator";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "~/components/ui/breadcrumb";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { NavLink, Outlet, useLocation } from "react-router";
+import { BookA, BookOpenText, CheckCheck, ChevronDown, FileQuestionMark, Menu, Settings, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { cn } from "~/lib/utils";
+import { Badge } from "~/components/ui/badge";
+import { ScrollArea } from "~/components/ui/scroll-area";
 import { Button } from "~/components/ui/button";
 
 // 个人中心首页
@@ -44,299 +25,186 @@ interface NavItem {
   id: string;
   label: string;
   icon: React.ElementType;
-  url: string; // 这个路径仅仅是记录匹配当前选中的位置, 不做跳转
+  href: string;
+  badge?: number;
   children?: NavItem[];
 }
 
-const defaultItems: NavItem[] = [
+const navigationItems: NavItem[] = [
   {
     id: "settings",
     label: "系统设置",
     icon: Settings,
-    url: "/user/setting",
+    href: "",
     children: [
-      { id: "setting-textbook", label: "章节/考点", icon: BookOpenText, url: "/user/setting/textbook" },
-      { id: "setting-dict", label: "通用字典", icon: BookA, url: "/user/setting/dict" },
+      { id: "setting-textbook", label: "章节/考点", icon: BookOpenText, href: "/user/setting/textbook" },
+      { id: "setting-dict", label: "通用字典", icon: BookA, href: "/user/setting/dict" },
     ],
   },
   {
     id: "questions",
     label: "题目",
     icon: FileQuestionMark,
-    url: "/user/question",
+    href: "",
     children: [
       {
         id: "myQuestion",
         label: "我的题目",
         icon: FileQuestionMark,
-        url: "/user/question/my",
+        href: "/user/question/my",
       },
       {
         id: "myReview",
         label: "我的审核",
         icon: CheckCheck,
-        url: "/user/question/review",
+        href: "/user/question/review",
       },
     ],
   },
 ];
 
-// 快速得到面包屑条的字典
-const defaultBreadcrumbMap: Record<string, string[]> = {
-  "/user/setting/textbook": ["系统设置", "章节/考点"],
-  "/user/setting/dict": ["系统设置", "通用字典"],
-  "/user/question/my": ["题目", "我的题目"],
-  "/user/question/review": ["题目", "我的审核"],
-};
-
 // 个人中心布局首页
 export default function Index() {
-  const location = useLocation();
-  const pathname = location.pathname;
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [expandedNavItems, setExpandedNavItems] = useState<Set<string>>(new Set([]));
 
-  // 计算当前前2级地址信息 /user/setting/dict -> /user/setting
-  const curUrl = pathname.split("/").slice(0, 3).join("/");
+  // 检测是否为桌面端
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 768); // md 断点
+    };
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
 
-  return (
-    <SidebarProvider>
-      {/* 左侧菜单 */}
-      <Sidebar collapsible="icon">
-        <SidebarHeader>
-          <UserHeader />
-        </SidebarHeader>
+  // 切换导航项展开/收起（仅用于有子菜单的项）
+  const toggleNavExpand = (id: string) => {
+    setExpandedNavItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
-        <SidebarContent>
-          <UserSidebarMenu items={defaultItems} curUrl={curUrl} />
-        </SidebarContent>
+  // 关闭移动端菜单
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
-        <SidebarFooter>
-          <UserFooter />
-        </SidebarFooter>
-      </Sidebar>
+  // 递归渲染导航项
+  const renderNavItem = (item: NavItem, depth = 0) => {
+    const hasChildren = !!item.children?.length;
+    const isExpanded = expandedNavItems.has(item.id);
 
-      {/* 内容体 */}
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            {/* 展开收起侧边栏 */}
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-6" />
-            {/* 面包屑 */}
-            <UserBreadcrumb labels={defaultBreadcrumbMap[pathname] || []} />
-          </div>
-        </header>
-
-        {/* 业务内容 */}
-        <div className="text-base px-4 pt-3 sm:px-16 sm:pt-4 min-h-screen flex-1 bg-muted/50 md:min-h-minflex">
-          <Outlet />
+    if (hasChildren) {
+      return (
+        <div key={item.id} className="w-full">
+          <button
+            onClick={() => toggleNavExpand(item.id)}
+            className={cn(
+              "flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium transition-all",
+              "hover:bg-accent hover:text-accent-foreground",
+              "text-muted-foreground",
+              depth > 0 && "pl-8",
+            )}
+          >
+            <item.icon className="h-4.5 w-4.5 shrink-0" />
+            <span className="flex-1 text-left">{item.label}</span>
+            {item.badge && (
+              <Badge variant="secondary" className="ml-auto text-xs">
+                {item.badge}
+              </Badge>
+            )}
+            <ChevronDown className={cn("h-4 w-4 transition-transform", isExpanded && "rotate-180")} />
+          </button>
+          {isExpanded && <div className="mt-0.5 space-y-0.5">{item.children!.map((child) => renderNavItem(child, depth + 1))}</div>}
         </div>
-      </SidebarInset>
-    </SidebarProvider>
-  );
-}
+      );
+    }
 
-// 用户中心头布局
-function UserHeader() {
-  const { isMobile } = useSidebar();
+    // 叶子节点：使用 NavLink
+    return (
+      <NavLink
+        key={item.id}
+        to={item.href}
+        onClick={closeMobileMenu}
+        className={({ isActive }) =>
+          cn(
+            "flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium transition-all",
+            "hover:bg-accent hover:text-accent-foreground",
+            isActive ? "bg-primary/10 text-primary shadow-sm" : "text-muted-foreground",
+            depth > 0 && "pl-8",
+          )
+        }
+      >
+        <item.icon className="h-4.5 w-4.5 shrink-0" />
+        <span className="flex-1 text-left">{item.label}</span>
+        {item.badge && (
+          <Badge variant="secondary" className="ml-auto text-xs">
+            {item.badge}
+          </Badge>
+        )}
+      </NavLink>
+    );
+  };
 
-  // 快捷跳转回网站主页
-  const items: NavItem[] = [
-    {
-      id: "home",
-      label: "首页",
-      icon: House,
-      url: "/",
-    },
-    {
-      id: "question",
-      label: "题目库",
-      icon: FileQuestionMark,
-      url: "/question",
-    },
-    {
-      id: "paper",
-      label: "精选试卷",
-      icon: ScrollText,
-      url: "/paper",
-    },
-  ];
+  const navContent = <nav className="flex flex-col gap-1 p-3">{navigationItems.map((item) => renderNavItem(item))}</nav>;
 
-  return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <House className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate text-base font-bold">个人中心</span>
-                </div>
-                <ChevronsUpDown className="ml-auto" />
-              </SidebarMenuButton>
-            }
-          />
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            align="start"
-            side={isMobile ? "bottom" : "right"}
-            sideOffset={4}
-          >
-            {/* 用普通 div 替代 DropdownMenuLabel，避免 Base UI 的组上下文要求 */}
-            <div className="text-sm text-muted-foreground px-2 py-1.5">开放题目</div>
-
-            {items.map((info) => {
-              return (
-                <NavLink to={info.url}>
-                  <DropdownMenuItem key={info.id} className="gap-2 p-2 text-sm">
-                    <div className="flex size-6 items-center justify-center rounded-md border">
-                      <info.icon className="size-3.5 shrink-0" />
-                    </div>
-                    {info.label}
-                  </DropdownMenuItem>
-                </NavLink>
-              );
-            })}
-            <DropdownMenuSeparator />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  );
-}
-
-// 用户中心侧边栏菜单
-interface UserSidebarMenuProps {
-  curUrl: string;
-  items: NavItem[];
-}
-function UserSidebarMenu({ items, curUrl }: UserSidebarMenuProps) {
-  return (
-    <SidebarGroup>
-      <SidebarGroupLabel className="text-base font-medium">平台</SidebarGroupLabel>
-      <SidebarMenu>
-        {items.map((item) => (
-          <Collapsible
-            key={item.label}
-            defaultOpen={item.url === curUrl}
-            className="group/collapsible"
-            render={
-              <SidebarMenuItem>
-                <CollapsibleTrigger
-                  render={
-                    <SidebarMenuButton tooltip={item.label}>
-                      {item.icon && <item.icon />}
-                      <span className="text-sm">{item.label}</span>
-                      <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                    </SidebarMenuButton>
-                  }
-                />
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    <nav className="hidden md:flex items-center gap-1 flex-1">
-                      {item.children?.map((subItem) => (
-                        <SidebarMenuSubItem key={subItem.id}>
-                          <SidebarMenuSubButton
-                            render={
-                              <NavLink to={subItem.url}>
-                                {({ isActive }) => (
-                                  <Button className="text-sm" variant={isActive ? "default" : "link"}>
-                                    {subItem.label}
-                                  </Button>
-                                )}
-                              </NavLink>
-                            }
-                          />
-                        </SidebarMenuSubItem>
-                      ))}
-                    </nav>
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </SidebarMenuItem>
-            }
-          />
-        ))}
-      </SidebarMenu>
-    </SidebarGroup>
-  );
-}
-
-// 用户中心底部用户信息
-function UserFooter() {
-  const { isMobile } = useSidebar();
-
-  return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarFallback className="rounded-lg">{Array.from("zhangguangxun1")[0].toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">zhangguangxun1</span>
-                </div>
-                <ChevronsUpDown className="ml-auto size-4" />
-              </SidebarMenuButton>
-            }
-          />
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          >
-            {/* 用普通 div 替代 DropdownMenuLabel，避免 Base UI 的组上下文要求 */}
-            <div className="text-xs text-muted-foreground px-2 py-1.5">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarFallback className="rounded-lg">{Array.from("zhangguangxun1")[0].toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">zhangguangxun1</span>
-                </div>
-              </div>
-            </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  );
-}
-
-// 菜单选择面包屑
-interface UserBreadcrumbProps {
-  labels: string[];
-}
-function UserBreadcrumb({ labels }: UserBreadcrumbProps) {
-  if (labels.length <= 0) {
-    return null;
+  // ----- 桌面端布局 -----
+  if (isDesktop) {
+    return (
+      <div className="flex h-full min-h-[calc(100vh-var(--header-height,58px))] text-base">
+        <aside className="flex w-64 flex-col border bg-background/95">
+          <ScrollArea className="flex-1">
+            <div className="py-2">{navContent}</div>
+          </ScrollArea>
+        </aside>
+        <main className="flex-1 overflow-auto bg-muted/30">
+          <div className="mx-auto">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    );
   }
 
+  // ----- 移动端布局 -----
   return (
-    <Breadcrumb>
-      <BreadcrumbList>
-        {labels.map((label, index) => {
-          const isLast = index === labels.length - 1;
-          return (
-            <>
-              <BreadcrumbItem className={!isLast ? "hidden md:block" : ""}>
-                {isLast ? <BreadcrumbPage>{label}</BreadcrumbPage> : <BreadcrumbLink href="#">{label}</BreadcrumbLink>}
-              </BreadcrumbItem>
-              {!isLast && <BreadcrumbSeparator className="hidden md:block" />}
-            </>
-          );
-        })}
-      </BreadcrumbList>
-    </Breadcrumb>
+    <div className="flex flex-col h-full min-h-[calc(100vh-var(--header-height,58px))] text-base">
+      {/* 顶部导航栏（汉堡按钮 + 标题） */}
+      <div className="sticky top-0 z-20 border bg-background/95 backdrop-blur-sm">
+        <div className="flex items-center gap-3 px-4 py-2.5">
+          <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+          <span className="text-sm font-semibold">导航</span>
+        </div>
+        {/* 展开的菜单（推动内容下移） */}
+        <div
+          className={cn(
+            "overflow-hidden transition-all duration-300 ease-in-out",
+            isMobileMenuOpen ? "max-h-[70vh] opacity-100" : "max-h-0 opacity-0",
+          )}
+        >
+          <ScrollArea className="max-h-[calc(70vh-56px)]">
+            <div className="px-2 py-1">{navContent}</div>
+          </ScrollArea>
+        </div>
+      </div>
+
+      {/* 内容区域 */}
+      <main className="flex-1 overflow-auto bg-muted/30">
+        <div className="mx-auto">
+          <Outlet />
+        </div>
+      </main>
+
+      {/* 遮罩层（点击关闭） */}
+      {isMobileMenuOpen && <div className="fixed inset-0 z-10 bg-black/20 backdrop-blur-sm" onClick={closeMobileMenu} />}
+    </div>
   );
 }

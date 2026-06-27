@@ -44,9 +44,8 @@ function Header() {
   const closeSheet = () => setSheetOpen(false);
   const openSheet = () => setSheetOpen(true);
 
-  // 不固定网站Header sticky top-0 z-50
   return (
-    <header className="border-b border-border bg-background/95 backdrop-blur-sm px-2 sm:px-4">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm px-2 sm:px-4">
       <div className="h-14 flex items-center justify-between gap-2 sm:gap-6">
         {/* Logo */}
         <NavLink to={"/"}>
@@ -193,7 +192,9 @@ function Header() {
                       return (
                         <DropdownMenuItem key={id}>
                           {icon}
-                          <NavLink to={url}>{label}</NavLink>
+                          <NavLink to={url} className="text-sm">
+                            {label}
+                          </NavLink>
                         </DropdownMenuItem>
                       );
                     })}
