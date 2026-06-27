@@ -1,4 +1,4 @@
-import { FileQuestionMark, LogOutIcon, Menu, ScrollText, Home, BookOpen, FileText, CheckCheck, Settings } from "lucide-react";
+import { FileQuestionMark, LogOutIcon, Menu, ScrollText, Home, BookOpen, FileText, UserRound } from "lucide-react";
 import { useState } from "react";
 import { NavLink } from "react-router";
 import { Button } from "~/components/ui/button";
@@ -20,16 +20,23 @@ function Header() {
   const userItems = [
     {
       id: 1,
-      label: "我的题目",
-      icon: <FileQuestionMark />,
-      url: "/user/question",
+      label: "个人中心",
+      icon: <UserRound />,
+      url: "/user",
       role: "",
     },
     {
       id: 2,
+      label: "我的题目",
+      icon: <FileQuestionMark />,
+      url: "/user/question/my",
+      role: "",
+    },
+    {
+      id: 3,
       label: "我的试卷",
       icon: <ScrollText />,
-      url: "/user/paper",
+      url: "/user/paper/my",
       role: "",
     },
   ];
@@ -185,7 +192,9 @@ function Header() {
                       return (
                         <DropdownMenuItem key={id}>
                           {icon}
-                          <NavLink to={url}>{label}</NavLink>
+                          <NavLink to={url} className="text-sm">
+                            {label}
+                          </NavLink>
                         </DropdownMenuItem>
                       );
                     })}

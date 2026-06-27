@@ -13,8 +13,8 @@ function SimpleNoData({ desc }: SimpleNoDataProps) {
         <EmptyMedia variant="icon">
           <NotepadTextDashed />
         </EmptyMedia>
-        <EmptyTitle>No Data</EmptyTitle>
-        <EmptyDescription>{desc}</EmptyDescription>
+        <EmptyTitle className="text-base">No Data</EmptyTitle>
+        <EmptyDescription className="text-sm">{desc}</EmptyDescription>
       </EmptyHeader>
     </Empty>
   );

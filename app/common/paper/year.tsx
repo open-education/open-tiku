@@ -37,11 +37,11 @@ function YearSelect({
   return (
     <Select value={currentValue} onValueChange={handleValueChange} disabled={disabled}>
       <SelectTrigger className={className}>
-        <SelectValue placeholder={placeholder} />
+        <SelectValue className="text-sm" placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         {years.map((year) => (
-          <SelectItem key={year} value={year.toString()}>
+          <SelectItem key={year} value={year.toString()} className="text-sm">
             {year}
           </SelectItem>
         ))}

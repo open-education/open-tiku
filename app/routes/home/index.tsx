@@ -78,26 +78,26 @@ export default function Index() {
   const actions = (
     <div className="flex flex-wrap items-center justify-end gap-4">
       <div className="flex flex-wrap gap-2.5">
-        <Button className="w-32" variant="outline" size="lg">
+        <Button className="w-32 text-sm" variant="outline" size="lg">
           <Upload size={14} />
           <NavLink to={""} state={{ selectNavProps }}>
             上传视频
           </NavLink>
         </Button>
-        <Button className="w-32" variant="outline" size="lg">
+        <Button className="w-32 text-sm" variant="outline" size="lg">
           <Upload size={14} />
           <NavLink to={"paper"} state={{ selectNavProps }}>
             上传试卷
           </NavLink>
         </Button>
-        <Button className="w-32" variant="outline" size="lg">
+        <Button className="w-32 text-sm" variant="outline" size="lg">
           <Upload size={14} />
           <NavLink to={"question"} state={{ selectNavProps }}>
             上传题目
           </NavLink>
         </Button>
 
-        <Button className="w-32" variant="default" size="lg">
+        <Button className="w-32 text-sm" variant="default" size="lg">
           <GraduationCap size={14} />
           <NavLink to={""} state={{ selectNavProps }}>
             开始练题

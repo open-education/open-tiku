@@ -54,7 +54,7 @@ function ParseQuestion({ typeList = [], tagList = [], onFill }: ParseQuestionPro
     <div className="w-full space-y-5 p-4 border bg-muted/30">
       {/* 头部 */}
       <div className="space-y-1">
-        <p className="text-muted-foreground leading-relaxed">
+        <p className="text-sm text-muted-foreground leading-relaxed">
           将符合模板要求的 Markdown 源格式题目粘贴至下方，点击解析后看题目自动填充是否符合预期。
         </p>
       </div>
@@ -66,14 +66,14 @@ function ParseQuestion({ typeList = [], tagList = [], onFill }: ParseQuestionPro
           value={input}
           onChange={(e) => setInput(e.target.value)}
           rows={6}
-          className="resize-y min-h-60 bg-background shadow-sm transition-shadow focus-visible:ring-2 focus-visible:ring-primary/50"
+          className="text-sm md:text-sm resize-y min-h-60 bg-background shadow-sm transition-shadow focus-visible:ring-2 focus-visible:ring-primary/50"
           disabled={isLoading}
         />
       </div>
 
       {/* 按钮 */}
       <div className="flex gap-3">
-        <Button onClick={handleParse} disabled={isLoading || !input.trim()} variant={"outline"}>
+        <Button className="text-sm md:text-sm" onClick={handleParse} disabled={isLoading || !input.trim()} variant={"outline"}>
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -88,6 +88,7 @@ function ParseQuestion({ typeList = [], tagList = [], onFill }: ParseQuestionPro
 
         <Button
           variant={"secondary"}
+          className="text-sm md:text-sm"
           disabled={!addReq || addReq.title.trim().length == 0}
           onClick={() => {
             if (!addReq) {

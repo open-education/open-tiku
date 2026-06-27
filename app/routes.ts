@@ -21,11 +21,11 @@ export default [
       route("setting/textbook", "routes/user/setting/textbook.tsx"),
 
       // 我的题目和审核
-      route("question", "routes/user/question/index.tsx"),
+      route("question/my", "routes/user/question/index.tsx"),
       route("question/review", "routes/user/question/review.tsx"),
 
       // 我的试卷和审核
-      route("paper", "routes/user/paper/index.tsx"),
+      route("paper/my", "routes/user/paper/index.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;

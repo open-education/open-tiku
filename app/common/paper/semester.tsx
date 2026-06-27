@@ -53,11 +53,11 @@ function SemesterSelect({ value, onValueChange, placeholder = "选择学期", cl
   return (
     <Select value={currentValue} onValueChange={handleValueChange} disabled={disabled}>
       <SelectTrigger className={className}>
-        <SelectValue placeholder={placeholder} />
+        <SelectValue className="text-sm" placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         {semesters.map((semester) => (
-          <SelectItem key={semester} value={semester.toString()}>
+          <SelectItem key={semester} value={semester.toString()} className="text-sm">
             {semester}
           </SelectItem>
         ))}

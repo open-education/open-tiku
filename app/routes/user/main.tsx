@@ -51,7 +51,7 @@ const navigationItems: NavItem[] = [
         id: "myQuestion",
         label: "我的题目",
         icon: FileQuestionMark,
-        href: "/user/question",
+        href: "/user/question/my",
       },
       {
         id: "myReview",
@@ -157,7 +157,7 @@ export default function Index() {
   // ----- 桌面端布局 -----
   if (isDesktop) {
     return (
-      <div className="flex h-full min-h-[calc(100vh-var(--header-height,58px))]">
+      <div className="flex h-full min-h-[calc(100vh-var(--header-height,58px))] text-base">
         <aside className="flex w-64 flex-col border bg-background/95">
           <ScrollArea className="flex-1">
             <div className="py-2">{navContent}</div>
@@ -174,7 +174,7 @@ export default function Index() {
 
   // ----- 移动端布局 -----
   return (
-    <div className="flex flex-col h-full min-h-[calc(100vh-var(--header-height,58px))]">
+    <div className="flex flex-col h-full min-h-[calc(100vh-var(--header-height,58px))] text-base">
       {/* 顶部导航栏（汉堡按钮 + 标题） */}
       <div className="sticky top-0 z-20 border bg-background/95 backdrop-blur-sm">
         <div className="flex items-center gap-3 px-4 py-2.5">

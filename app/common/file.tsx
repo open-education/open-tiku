@@ -210,13 +210,13 @@ function FileUpload({ isImage }: FileUploadProps) {
         {/* 底部：图片地址 */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-medium text-muted-foreground">📍 文件标识</label>
+            <label className="text-sm font-medium text-muted-foreground">📍 文件标识</label>
             {originalFileName && fileSize && <span className="text-xs text-muted-foreground/60">{originalFileName}</span>}
           </div>
           <Input value={originalFileName || "未选择文件"} readOnly className={cn("text-sm h-9", !originalFileName && "text-muted-foreground/50")} />
 
           <div className="flex items-center justify-between">
-            <label className="text-xs font-medium text-muted-foreground">📍 文件名称</label>
+            <label className="text-sm font-medium text-muted-foreground">📍 文件名称</label>
             {fileId && fileSize && <span className="text-xs text-muted-foreground/60">{fileSize}</span>}
           </div>
           <Input value={fileId || "未选择文件"} readOnly className={cn("text-sm h-9", !fileId && "text-muted-foreground/50")} />

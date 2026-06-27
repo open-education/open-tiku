@@ -49,7 +49,7 @@ function TypeSelect({ options, value = 0, onSelect }: TypeSelectProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {options.map((option) => (
-        <Button key={option.id} variant={value === option.id ? "default" : "outline"} onClick={() => handleSelect(option.id)}>
+        <Button key={option.id} className="text-sm" variant={value === option.id ? "default" : "outline"} onClick={() => handleSelect(option.id)}>
           {option.itemValue}
         </Button>
       ))}
@@ -83,7 +83,13 @@ function MultiTagSelect({ options, value = [], onChange }: MultiTagSelectProps) 
       {options.map((option) => {
         const isSelected = value.includes(option.id);
         return (
-          <Button key={option.id} type="button" variant={isSelected ? "default" : "outline"} onClick={() => handleToggle(option.id)}>
+          <Button
+            key={option.id}
+            className="text-sm"
+            type="button"
+            variant={isSelected ? "default" : "outline"}
+            onClick={() => handleToggle(option.id)}
+          >
             {option.itemValue}
           </Button>
         );
@@ -109,7 +115,7 @@ function StatusSelect({ defaultValue = 0, onSelect }: StatusSelectProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {StringConst.questionStatusList.map(({ id, value, label }) => (
-        <Button key={id} variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
+        <Button key={id} className="text-sm" variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
           {label}
         </Button>
       ))}
@@ -134,7 +140,7 @@ function OtherDictSelect({ defaultValue, onSelect }: OtherDictSelectProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {StringConst.questionOtherDictList.map(({ id, value, label }) => (
-        <Button key={id} variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
+        <Button key={id} className="text-sm" variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
           {label}
         </Button>
       ))}
@@ -159,7 +165,7 @@ function TagShow({ pageSource, typeValue, tagNames, difficultyLevelValue, status
   const getBadges = () => {
     // 题目类型
     const typeNode: React.ReactNode = (
-      <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300" key={typeValue}>
+      <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 text-sm" key={typeValue}>
         {typeValue}
       </Badge>
     );
@@ -167,7 +173,7 @@ function TagShow({ pageSource, typeValue, tagNames, difficultyLevelValue, status
     // 题目标签
     const tagNode = tagNames.map((val) => {
       return (
-        <Badge className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300" key={val}>
+        <Badge className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300 text-sm" key={val}>
           {val}
         </Badge>
       );
@@ -175,7 +181,7 @@ function TagShow({ pageSource, typeValue, tagNames, difficultyLevelValue, status
 
     // 难度
     const difficultyNode = (
-      <Badge className="bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300" key={difficultyLevelValue}>
+      <Badge className="bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300 text-sm" key={difficultyLevelValue}>
         {difficultyLevelValue}
       </Badge>
     );
@@ -183,7 +189,7 @@ function TagShow({ pageSource, typeValue, tagNames, difficultyLevelValue, status
     // 我的审核和题目需要展示题目状态
     const statusDesc =
       pageSource.source !== "list" ? (
-        <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300" key={status}>
+        <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 text-sm" key={status}>
           {StringConst.questionStatusList[status].label || "草稿中"}
         </Badge>
       ) : (

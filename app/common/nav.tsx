@@ -276,19 +276,25 @@ function LevelExt(props: LevelExtProps) {
               </svg>
             )}
           </span>
-          <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">{keyDesc}</span>
+          <span className="text-sm text-muted-foreground font-medium whitespace-nowrap">{keyDesc}</span>
         </div>
 
         {/* Option pills */}
         <div className="flex flex-wrap gap-2 flex-1">
           {options.length > 0 ? (
             options.map((opt) => (
-              <Button key={opt.key} variant={selectedKey === opt.key ? "default" : "outline"} onClick={() => onSelect(opt)} disabled={!enabled}>
+              <Button
+                key={opt.key}
+                className="text-sm"
+                variant={selectedKey === opt.key ? "default" : "outline"}
+                onClick={() => onSelect(opt)}
+                disabled={!enabled}
+              >
                 {opt.label}
               </Button>
             ))
           ) : (
-            <span className="text-xs text-muted-foreground/40 mt-1.5 italic">{enabled ? "暂无选项" : "请先完成上一步"}</span>
+            <span className="text-sm text-muted-foreground/40 mt-1.5 italic">{enabled ? "暂无选项" : "请先完成上一步"}</span>
           )}
         </div>
       </div>
@@ -445,7 +451,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
                 className={cn("flex items-center justify-between cursor-pointer", isNodeSelected(item.key) && "bg-accent text-accent-foreground")}
                 onClick={() => handleSelect(item)}
               >
-                <span>{item.label}</span>
+                <span className="text-sm">{item.label}</span>
                 {isNodeSelected(item.key) && <Check className="ml-2 h-4 w-4" />}
               </DropdownMenuItem>
             ))}
@@ -464,13 +470,13 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
               return (
                 <DropdownMenuSub key={item.key}>
                   <DropdownMenuSubTrigger className={cn("flex items-center justify-between w-full cursor-pointer", isInPath && "bg-accent/50")}>
-                    <span className="flex-1">{item.label}</span>
+                    <span className="flex-1 text-sm">{item.label}</span>
                     {isSelected && <Check className="ml-2 h-4 w-4" />}
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent className="min-w-50 p-1">
                     <DropdownMenuGroup>
                       <DropdownMenuItem className="flex items-center justify-between cursor-pointer" onClick={() => handleSelect(item)}>
-                        <span>选择 {item.label}</span>
+                        <span className="text-sm">选择 {item.label}</span>
                         {isSelected && <Check className="ml-2 h-4 w-4" />}
                       </DropdownMenuItem>
                       {item.children && item.children.length > 0 && (
@@ -490,7 +496,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
                   className={cn("flex items-center justify-between cursor-pointer", isSelected && "bg-accent text-accent-foreground")}
                   onClick={() => handleSelect(item)}
                 >
-                  <span>{item.label}</span>
+                  <span className="text-sm">{item.label}</span>
                   {isSelected && <Check className="ml-2 h-4 w-4" />}
                 </DropdownMenuItem>
               );
@@ -515,12 +521,12 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
       <DropdownMenuTrigger
         render={
           <Button variant="outline" className="w-full sm:w-auto justify-between">
-            <span className="truncate">{getDisplayText()}</span>
+            <span className="truncate text-sm">{getDisplayText()}</span>
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         }
       />
-      <DropdownMenuContent className="min-w-50 max-h-100 overflow-y-auto p-1">
+      <DropdownMenuContent className="min-w-50 max-h-150 overflow-y-auto p-1">
         <DropdownMenuGroup>
           <DropdownMenuLabel>选择学段</DropdownMenuLabel>
           <DropdownMenuSeparator />

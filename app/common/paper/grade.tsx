@@ -27,11 +27,11 @@ function GradeSelect({ value, onValueChange, placeholder = "选择年份", class
   return (
     <Select value={currentValue} onValueChange={handleValueChange} disabled={disabled}>
       <SelectTrigger className={className}>
-        <SelectValue placeholder={placeholder} />
+        <SelectValue className="text-sm" placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         {grades.map((grade) => (
-          <SelectItem key={grade} value={grade.toString()}>
+          <SelectItem key={grade} value={grade.toString()} className="text-sm">
             {grade}
           </SelectItem>
         ))}

@@ -98,22 +98,27 @@ function ImageAdd({ name, images = [], add, update, remove }: ImageAddProps) {
   return (
     <div className="mt-3 bg-muted/20 rounded-xl p-4 border border-dashed border-border/60 space-y-2">
       <div className="flex items-center justify-between">
-        <Label className="flex items-center gap-1">
+        <Label className="flex items-center gap-1 text-sm">
           <ImagePlus className="w-4 h-4" /> {name}
         </Label>
-        <Button type="button" variant="ghost" size="sm" className="h-8 gap-1" onClick={add}>
+        <Button type="button" variant="ghost" className="h-8 gap-1 text-sm" onClick={add}>
           <Plus className="w-4 h-4" /> 添加
         </Button>
       </div>
       {images.map((url, idx) => (
         <div key={idx} className="flex items-center gap-2">
-          <Input value={url} onChange={(e) => update(idx, e.target.value)} className="h-9 bg-background" placeholder="输入图片标识" />
+          <Input
+            value={url}
+            onChange={(e) => update(idx, e.target.value)}
+            className="h-9 bg-background text-sm md:text-sm"
+            placeholder="输入图片标识"
+          />
           <Button type="button" variant="destructive" size="icon" className="h-9 w-9 shrink-0" onClick={() => remove(idx)}>
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
       ))}
-      {images.length === 0 && <p className="text-muted-foreground py-1">暂无图片，点击右上方添加</p>}
+      {images.length === 0 && <p className="text-sm text-muted-foreground py-1">暂无图片，点击右上方添加</p>}
     </div>
   );
 }
