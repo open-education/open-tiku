@@ -168,7 +168,7 @@ export default function Index() {
           <div className="md:w-24 shrink-0 font-medium">操作:</div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap gap-1">
-              <Button variant="outline" onClick={addExamSheet}>
+              <Button variant="outline" onClick={addExamSheet} className="text-sm">
                 添加试卷
               </Button>
             </div>

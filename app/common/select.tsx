@@ -29,7 +29,7 @@ function MultiOptionShow({ optionsLayout = 4, options }: MultiOptionShowProps) {
         const imageUrl = option.images?.[0];
 
         return (
-          <div key={option.label} className={cn("flex flex-row items-stretch", "bg-card rounded-lg", isImageMode ? "h-48" : "")}>
+          <div key={option.label} className={cn("flex flex-row items-stretch", "bg-card rounded-lg text-base", isImageMode ? "h-48" : "")}>
             {/* 左栏：标签（固定宽度，垂直居中） */}
             <div className={cn("shrink-0 text-foreground self-center", "w-6", "flex items-center justify-start")}>{option.label}.</div>
 

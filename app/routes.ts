@@ -10,22 +10,22 @@ export default [
 
     // 题目库
     route("question", "routes/question/index.tsx"),
+  ]),
 
-    // 用户中心
-    route("user", "routes/user/main.tsx", [
-      // 用户中心布局
-      index("routes/user/index.tsx"),
+  // 用户中心使用单独的布局
+  route("user", "routes/user/main.tsx", [
+    // 用户中心布局
+    index("routes/user/index.tsx"),
 
-      // 系统设置
-      route("setting/dict", "routes/user/setting/dict.tsx"),
-      route("setting/textbook", "routes/user/setting/textbook.tsx"),
+    // 系统设置
+    route("setting/dict", "routes/user/setting/dict.tsx"),
+    route("setting/textbook", "routes/user/setting/textbook.tsx"),
 
-      // 我的题目和审核
-      route("question", "routes/user/question/index.tsx"),
-      route("question/review", "routes/user/question/review.tsx"),
+    // 我的题目和审核
+    route("question/my", "routes/user/question/index.tsx"),
+    route("question/review", "routes/user/question/review.tsx"),
 
-      // 我的试卷和审核
-      route("paper", "routes/user/paper/index.tsx"),
-    ]),
+    // 我的试卷和审核
+    route("paper/my", "routes/user/paper/index.tsx"),
   ]),
 ] satisfies RouteConfig;

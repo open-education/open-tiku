@@ -1,4 +1,4 @@
-import { FileQuestionMark, LogOutIcon, Menu, ScrollText, Home, BookOpen, FileText, CheckCheck, Settings } from "lucide-react";
+import { FileQuestionMark, LogOutIcon, Menu, ScrollText, Home, BookOpen, FileText, UserRound } from "lucide-react";
 import { useState } from "react";
 import { NavLink } from "react-router";
 import { Button } from "~/components/ui/button";
@@ -20,16 +20,23 @@ function Header() {
   const userItems = [
     {
       id: 1,
-      label: "我的题目",
-      icon: <FileQuestionMark />,
-      url: "/user/question",
+      label: "个人中心",
+      icon: <UserRound />,
+      url: "/user",
       role: "",
     },
     {
       id: 2,
+      label: "我的题目",
+      icon: <FileQuestionMark />,
+      url: "/user/question/my",
+      role: "",
+    },
+    {
+      id: 3,
       label: "我的试卷",
       icon: <ScrollText />,
-      url: "/user/paper",
+      url: "/user/paper/my",
       role: "",
     },
   ];
@@ -37,8 +44,9 @@ function Header() {
   const closeSheet = () => setSheetOpen(false);
   const openSheet = () => setSheetOpen(true);
 
+  // 不固定网站Header sticky top-0 z-50
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm px-2 sm:px-4">
+    <header className="border-b border-border bg-background/95 backdrop-blur-sm px-2 sm:px-4">
       <div className="h-14 flex items-center justify-between gap-2 sm:gap-6">
         {/* Logo */}
         <NavLink to={"/"}>

@@ -15,8 +15,8 @@ function SimpleSheet({ openSheet, setOpenSheet, sheetTitle, sheetDesc, sheetCont
     <Sheet open={openSheet} onOpenChange={setOpenSheet}>
       <SheetContent className="w-[90vw]! max-w-[90vw]! sm:w-[70vw]! md:w-[80vw]! lg:w-[90vw]! overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{sheetTitle}</SheetTitle>
-          {sheetDesc && <SheetDescription>{sheetDesc}</SheetDescription>}
+          <SheetTitle className="text-base font-bold">{sheetTitle}</SheetTitle>
+          {sheetDesc && <SheetDescription className="text-sm">{sheetDesc}</SheetDescription>}
         </SheetHeader>
         {sheetContent}
       </SheetContent>

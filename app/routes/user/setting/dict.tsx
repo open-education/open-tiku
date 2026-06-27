@@ -137,15 +137,15 @@ export default function Index() {
     <div className="px-4 pt-3 sm:px-16 sm:pt-4">
       <Card className="w-full">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle className="font-medium">其它字典管理</CardTitle>
-          <Button onClick={handleAdd} variant="secondary">
+          <CardTitle className="text-base font-medium">其它字典管理</CardTitle>
+          <Button className="text-sm" onClick={handleAdd} variant="secondary">
             <Plus className="mr-2 h-4 w-4" />
             新增
           </Button>
         </CardHeader>
         <CardContent>
           {/* 搜索选项 */}
-          <div>
+          <div className="text-base">
             <div className="flex flex-col gap-3">
               {/* 章节/考点 */}
               <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
@@ -193,12 +193,12 @@ export default function Index() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>类型</TableHead>
-                  <TableHead>名称</TableHead>
-                  <TableHead>顺序</TableHead>
-                  <TableHead>是否为选择题</TableHead>
-                  <TableHead>操作</TableHead>
+                  <TableHead className="text-sm">ID</TableHead>
+                  <TableHead className="text-sm">类型</TableHead>
+                  <TableHead className="text-sm">名称</TableHead>
+                  <TableHead className="text-sm">顺序</TableHead>
+                  <TableHead className="text-sm">是否为选择题</TableHead>
+                  <TableHead className="text-sm">操作</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -216,19 +216,51 @@ export default function Index() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-106.25">
           <DialogHeader>
-            <DialogTitle>{addReq.id > 0 ? "编辑" : "添加"}</DialogTitle>
+            <DialogTitle className="text-base font-medium">{addReq.id > 0 ? "编辑" : "添加"}</DialogTitle>
           </DialogHeader>
-          <EditOtherDict addReq={addReq} updateAddReq={updateAddReq} />
+          <div className="space-y-4 py-2">
+            {/* 名称 */}
+            <div className="space-y-1">
+              <label className="text-sm leading-none">字典名称</label>
+              <Input
+                className="text-sm md:text-sm"
+                value={addReq.itemValue}
+                onChange={(e) => updateAddReq("itemValue", e.target.value)}
+                placeholder="例如 选择题"
+              />
+            </div>
+
+            {/* 顺序 */}
+            <div className="space-y-1">
+              <label className="text-sm leading-none">顺序</label>
+              <Input
+                className="text-sm md:text-sm"
+                type="number"
+                min="0"
+                value={addReq.sortOrder}
+                onChange={(e) => updateAddReq("sortOrder", Number(e.target.value))}
+              />
+            </div>
+
+            {/* 是否为选择题 */}
+            <div className="flex flex-row items-center justify-between rounded-lg border p-3">
+              <div className="space-y-0.5">
+                <label className="text-sm">是否为选择题</label>
+              </div>
+              <Switch checked={addReq.isSelect} onCheckedChange={(val) => updateAddReq("isSelect", val)} />
+            </div>
+          </div>
           <DialogFooter>
             <Button
               variant="outline"
+              className="text-sm"
               onClick={() => {
                 setDialogOpen(false);
               }}
             >
               取消
             </Button>
-            <Button onClick={handleSubmit} disabled={processIng}>
+            <Button className="text-sm" onClick={handleSubmit} disabled={processIng}>
               {addReq.id > 0 ? (processIng ? "更新中..." : "更新") : processIng ? "保存中..." : "保存"}
             </Button>
           </DialogFooter>
@@ -249,18 +281,18 @@ function OtherDictListShow({ list, onEdit, onDelete }: OtherDictListShowProps) {
     <>
       {list.length === 0 ? (
         <TableRow>
-          <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+          <TableCell colSpan={6} className="h-24 text-center text-muted-foreground text-sm">
             暂无数据，点击 新增 添加
           </TableCell>
         </TableRow>
       ) : (
         list.map((item) => (
           <TableRow key={item.id}>
-            <TableCell>{item.id}</TableCell>
-            <TableCell>{item.typeCode === "question_type" ? "题型" : "标签"}</TableCell>
-            <TableCell>{item.itemValue}</TableCell>
-            <TableCell>{item.sortOrder}</TableCell>
-            <TableCell>{item.isSelect ? "是" : "否"}</TableCell>
+            <TableCell className="text-sm">{item.id}</TableCell>
+            <TableCell className="text-sm">{item.typeCode === "question_type" ? "题型" : "标签"}</TableCell>
+            <TableCell className="text-sm">{item.itemValue}</TableCell>
+            <TableCell className="text-sm">{item.sortOrder}</TableCell>
+            <TableCell className="text-sm">{item.isSelect ? "是" : "否"}</TableCell>
             <TableCell>
               <Button variant="ghost" size="icon" onClick={() => onEdit(item)} className="h-8 w-8">
                 <Pencil className="h-4 w-4" />
@@ -273,36 +305,5 @@ function OtherDictListShow({ list, onEdit, onDelete }: OtherDictListShowProps) {
         ))
       )}
     </>
-  );
-}
-
-// 编辑信息对话框, 需要每次都初始化为当前的正确值
-interface EditOtherDictProps {
-  addReq: TextbookOtherDict;
-  updateAddReq: (key: keyof TextbookOtherDict, value: number | string | boolean) => void;
-}
-function EditOtherDict({ addReq, updateAddReq }: EditOtherDictProps) {
-  return (
-    <div className="space-y-4 py-2">
-      {/* 名称 */}
-      <div className="space-y-1">
-        <label className="text-sm font-medium leading-none">字典名称</label>
-        <Input value={addReq.itemValue} onChange={(e) => updateAddReq("itemValue", e.target.value)} placeholder="例如 选择题" />
-      </div>
-
-      {/* 顺序 */}
-      <div className="space-y-1">
-        <label className="text-sm font-medium leading-none">顺序</label>
-        <Input type="number" min="0" value={addReq.sortOrder} onChange={(e) => updateAddReq("sortOrder", Number(e.target.value))} />
-      </div>
-
-      {/* 是否为选择题 */}
-      <div className="flex flex-row items-center justify-between rounded-lg border p-3">
-        <div className="space-y-0.5">
-          <label className="text-base font-medium">是否为选择题</label>
-        </div>
-        <Switch checked={addReq.isSelect} onCheckedChange={(val) => updateAddReq("isSelect", val)} />
-      </div>
-    </div>
   );
 }

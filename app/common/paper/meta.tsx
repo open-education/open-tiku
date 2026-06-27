@@ -71,15 +71,15 @@ function ExamPaper({ papers, metaSearch, setOpenSheet, setSheetTitle, setSheetDe
           }}
         >
           <CardContent className="px-4 py-3.5 flex flex-col h-full">
-            <div className="flex items-start justify-between gap-2 mb-2.5">
-              <Badge className={cn("", StringConstUtil.getExamTagClass(paper.tag))}>{paper.tag}</Badge>
+            <div className="flex items-start justify-between gap-2 mb-2.5 text-sm">
+              <Badge className={cn("text-sm", StringConstUtil.getExamTagClass(paper.tag))}>{paper.tag}</Badge>
               {paper.year && <span className="text-muted-foreground shrink-0">{paper.year}</span>}
               {paper.grade && <span className="text-muted-foreground">{paper.grade}</span>}
               {paper.semester && <span className="text-muted-foreground">{paper.semester}</span>}
             </div>
-            <p className="text-sm leading-snug mb-auto line-clamp-2 group-hover:text-primary transition-colors">{paper.title}</p>
+            <p className="text-base leading-snug mb-auto line-clamp-2 group-hover:text-primary transition-colors">{paper.title}</p>
             <Separator className="mt-3 mb-2.5" />
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">{paper.authorName}</span>
               <span className="text-muted-foreground">{paper.createdAt}</span>
               <span className="text-muted-foreground">{paper.count} 题</span>
@@ -145,7 +145,7 @@ function ExamPaperMeta({
     const groupName = subTitle
       ? `${StringConst.groupNumberMap[index]}、${typeName} (${subTitle})`
       : `${StringConst.groupNumberMap[index]}、${typeName}`;
-    return <div className="text-sm">{groupName}</div>;
+    return <div className="text-base">{groupName}</div>;
   };
 
   const handleEdit = () => {
@@ -172,7 +172,7 @@ function ExamPaperMeta({
           </div>
 
           <div>
-            <Button variant="outline" onClick={handleEdit}>
+            <Button variant="outline" className="text-sm" onClick={handleEdit}>
               编辑
             </Button>
           </div>
@@ -184,7 +184,7 @@ function ExamPaperMeta({
       </div>
 
       {/* 来源和备注, 只展示存在的信息 */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 text-sm">
         {paperMeta.score > 0 && <div>分数: {paperMeta.score}</div>}
         {paperMeta.authorName && (
           <div>
@@ -211,7 +211,7 @@ function ExamPaperMeta({
       </div>
 
       {/* 标题 */}
-      <div className="text-base font-bold text-center">{paperMeta.title}</div>
+      <div className="text-lg font-bold text-center">{paperMeta.title}</div>
 
       {/* 试卷内容 */}
       {paperMeta.groups?.map((group, idx) => {

@@ -29,7 +29,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp 
       {baseInfo.status === QuestionStatus.Rejected && <SimpleAlert title="你的题目审核被拒绝" message={baseInfo.rejectReason || ""} />}
 
       {/* 来源和备注, 只展示存在的信息 */}
-      <div className="flex flex-col gap-1 border p-4">
+      <div className="text-sm flex flex-col gap-1 border p-4">
         <div>创建时间: {baseInfo.createdAt}</div>
         {baseInfo.originalName && <div>原创者昵称: {baseInfo.originalName}</div>}
         <div>更新时间: {baseInfo.updatedAt}</div>
@@ -64,12 +64,12 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp 
           <div>
             <div className="flex items-center gap-2 text-muted-foreground mb-3">
               <Layers className="w-4 h-4" />
-              <span>涉及知识点</span>
+              <span className="text-base">涉及知识点</span>
             </div>
             <div className="flex flex-wrap gap-2 pl-1">
               <Badge
                 variant="outline"
-                className="px-4 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-300 border-0 shadow-sm"
+                className="text-sm px-4 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-300 border-0 shadow-sm"
               >
                 {extraInfo.knowledge ?? ""}
               </Badge>
@@ -82,7 +82,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp 
       <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
         <CardContent className="space-y-6">
           {/* 参考答案 - 带图标高亮 */}
-          <div className="text-sm flex items-start gap-4 p-4 bg-emerald-50/60 dark:bg-emerald-950/30 rounded-lg border border-emerald-200/60 dark:border-emerald-800/40">
+          <div className="text-base flex items-start gap-4 p-4 bg-emerald-50/60 dark:bg-emerald-950/30 rounded-lg border border-emerald-200/60 dark:border-emerald-800/40">
             <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
             <div>
               <h4 className="font-semibold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider mb-1">参考答案</h4>
@@ -95,7 +95,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp 
           <Separator className="bg-gray-100 dark:bg-gray-800" />
 
           {/* 解题分析 - 左侧强调边框 */}
-          <div className="text-sm border-l-4 border-l-sky-400 pl-4 py-1 bg-sky-50/30 dark:bg-sky-950/20 rounded-r-lg">
+          <div className="text-base border-l-4 border-l-sky-400 pl-4 py-1 bg-sky-50/30 dark:bg-sky-950/20 rounded-r-lg">
             <div className="flex items-center gap-2 text-sky-700 dark:text-sky-300 mb-1">
               <Lightbulb className="w-4 h-4" />
               <span>解题分析</span>
@@ -106,7 +106,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp 
           </div>
 
           {/* 解题过程 */}
-          <div className="text-sm border-l-4 border-l-sky-400 pl-4 py-1 bg-sky-50/30 dark:bg-sky-950/20 rounded-r-lg">
+          <div className="text-base border-l-4 border-l-sky-400 pl-4 py-1 bg-sky-50/30 dark:bg-sky-950/20 rounded-r-lg">
             <div className="flex items-center gap-2 text-sky-700 dark:text-sky-300 mb-1">
               <Lightbulb className="w-4 h-4" />
               <span>解题过程</span>
@@ -117,7 +117,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp 
           </div>
 
           {/* 解题过程 - 时间线步骤 */}
-          <div className="text-sm">
+          <div className="text-base">
             <h4 className=" text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2">
               <span className="w-6 h-0.5 bg-gray-300 dark:bg-gray-600"></span>
               推演步骤
@@ -147,7 +147,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp 
           <Separator className="bg-gray-100 dark:bg-gray-800" />
 
           {/* 备注 - 警告/提示风格 */}
-          <div className="text-sm flex items-start gap-3 p-4 bg-amber-50/60 dark:bg-amber-950/30 rounded-lg border border-amber-200/50 dark:border-amber-800/40">
+          <div className="text-base flex items-start gap-3 p-4 bg-amber-50/60 dark:bg-amber-950/30 rounded-lg border border-amber-200/50 dark:border-amber-800/40">
             <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
             <div>
               <h4 className="text-amber-700 dark:text-amber-300 uppercase tracking-wider mb-0.5">易错备注</h4>

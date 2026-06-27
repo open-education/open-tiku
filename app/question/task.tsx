@@ -140,13 +140,13 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
   };
 
   return (
-    <div className="space-y-6 pl-4 pr-4">
-      <div className="text-xs">
+    <div className="text-base space-y-6 pl-4 pr-4">
+      <div className="text-sm">
         <div>1. 文件标识请使用右上角的 快捷工具-上传文件 上传文件后获得</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <Button variant="default" onClick={handleAddTask}>
+        <Button variant="default" className="text-sm" onClick={handleAddTask}>
           保存任务
         </Button>
       </div>
@@ -232,6 +232,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
           <div className="col-span-9">
             <Input
               id="task-file-name"
+              className="text-sm md:text-sm"
               placeholder="例如 题型S-1-1-1 有理数的概念.md"
               value={addReq.name}
               onChange={(e) => {
@@ -248,6 +249,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
           <div className="col-span-9">
             <Input
               id="task-file-id"
+              className="text-sm md:text-sm"
               placeholder="文件标识, 右上角上传文件获得"
               value={addReq.url}
               onChange={(e) => {
@@ -264,6 +266,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
           <div className="col-span-9">
             <Input
               id="task-file-email"
+              className="text-sm md:text-sm"
               placeholder="邮箱地址"
               value={addReq.email}
               onChange={(e) => {
@@ -341,7 +344,7 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
   } = useTaskList(listReq);
 
   return (
-    <div className="p-4">
+    <div className="p-4 text-base">
       <Separator />
 
       {useDelayedLoading(textbooksLoading || questionCatesLoading || listRespLoading) && <Loading />}
@@ -406,7 +409,7 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
         <Card key={task.id} className="mt-3 transition-all duration-200 hover:shadow-lg hover:border-primary/10 flex flex-col border-border/60">
           <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-semibold leading-6 line-clamp-1 pr-2">{task.name}</CardTitle>
-            <Badge className={`${getStatusBadgeClasses(task.status)} shrink-0 border font-normal`}>{task.statusDesc}</Badge>
+            <Badge className={`${getStatusBadgeClasses(task.status)} shrink-0 border text-sm font-normal`}>{task.statusDesc}</Badge>
           </CardHeader>
 
           <CardContent className="flex-1 flex flex-col gap-3 text-sm">
@@ -426,12 +429,12 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
             {task.result && (
               <div className="flex items-start gap-1.5 p-2 bg-muted/40 rounded-md border border-border/40">
                 <FileText size={14} className="shrink-0 mt-0.5 text-muted-foreground" />
-                <div className="text-xs text-muted-foreground break-all line-clamp-2">结果：{task.result}</div>
+                <div className="text-sm text-muted-foreground break-all line-clamp-2">结果：{task.result}</div>
               </div>
             )}
 
             {/* 时间戳 - 置于底部 */}
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-1.5 mt-1 border-t border-border/40 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1.5 mt-1 border-t border-border/40 text-sm text-muted-foreground">
               <div className="flex items-center gap-1.5">
                 <CalendarDays size={13} />
                 <span>创建：{task.createdAt}</span>

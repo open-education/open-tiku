@@ -219,7 +219,7 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
               onChange={(e) => {
                 updateQuestionSearch("id", Number(e.target.value));
               }}
-              className="text-sm w-full md:w-1/3" // 移动端全宽，PC端1/3宽度
+              className="text-sm md:text-sm w-full md:w-1/3" // 移动端全宽，PC端1/3宽度
             />
           </div>
         </div>
@@ -230,13 +230,13 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
             <div className="md:w-24 shrink-0 font-medium">操作:</div>
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap gap-1">
-                <Button variant="outline" onClick={handleQuestionAdd}>
+                <Button variant="outline" className="text-sm" onClick={handleQuestionAdd}>
                   添加题目
                 </Button>
-                <Button variant="outline" onClick={handleTaskAdd}>
+                <Button variant="outline" className="text-sm" onClick={handleTaskAdd}>
                   上传题目
                 </Button>
-                <Button variant="outline" onClick={handleTaskList}>
+                <Button variant="outline" className="text-sm" onClick={handleTaskList}>
                   查看任务
                 </Button>
               </div>

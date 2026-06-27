@@ -19,7 +19,7 @@ export function meta({}: Route.MetaArgs) {
 // 其它页面后续替换只保留静态的头和底
 export default function Main() {
   return (
-    <div className="text-foreground text-sm bg-gray-100">
+    <div className="text-foreground bg-gray-100">
       {/* 网站首页头部 */}
       <Header />
 

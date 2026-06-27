@@ -66,12 +66,12 @@ export function QuickToolList({ tools = [], defaultToolId, panelClassName, panel
         {isOpen ? (
           <>
             <X className="h-5 w-5" />
-            <span>收起工具</span>
+            <span className="text-sm">收起工具</span>
           </>
         ) : (
           <>
             <Wrench className="h-5 w-5" />
-            <span>快捷工具</span>
+            <span className="text-sm">快捷工具</span>
           </>
         )}
       </Button>

@@ -17,7 +17,7 @@ function TitleShow({ no = 0, id = 0, title, comment, images = [] }: TitleShowPro
   const content = no > 0 ? `${no}&#46; ${title}` : `**ID[${id}].** ${title}`;
 
   return (
-    <div>
+    <div className="text-base">
       {/* 题干 */}
       {StringValidator.isNonEmpty(title) && (
         <div>

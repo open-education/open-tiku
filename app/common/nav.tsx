@@ -445,7 +445,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
                 className={cn("flex items-center justify-between cursor-pointer", isNodeSelected(item.key) && "bg-accent text-accent-foreground")}
                 onClick={() => handleSelect(item)}
               >
-                <span>{item.label}</span>
+                <span className="text-sm">{item.label}</span>
                 {isNodeSelected(item.key) && <Check className="ml-2 h-4 w-4" />}
               </DropdownMenuItem>
             ))}
@@ -464,13 +464,13 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
               return (
                 <DropdownMenuSub key={item.key}>
                   <DropdownMenuSubTrigger className={cn("flex items-center justify-between w-full cursor-pointer", isInPath && "bg-accent/50")}>
-                    <span className="flex-1">{item.label}</span>
+                    <span className="flex-1 text-sm">{item.label}</span>
                     {isSelected && <Check className="ml-2 h-4 w-4" />}
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent className="min-w-50 p-1">
                     <DropdownMenuGroup>
                       <DropdownMenuItem className="flex items-center justify-between cursor-pointer" onClick={() => handleSelect(item)}>
-                        <span>选择 {item.label}</span>
+                        <span className="text-sm">选择 {item.label}</span>
                         {isSelected && <Check className="ml-2 h-4 w-4" />}
                       </DropdownMenuItem>
                       {item.children && item.children.length > 0 && (
@@ -490,7 +490,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
                   className={cn("flex items-center justify-between cursor-pointer", isSelected && "bg-accent text-accent-foreground")}
                   onClick={() => handleSelect(item)}
                 >
-                  <span>{item.label}</span>
+                  <span className="text-sm">{item.label}</span>
                   {isSelected && <Check className="ml-2 h-4 w-4" />}
                 </DropdownMenuItem>
               );
@@ -515,7 +515,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
       <DropdownMenuTrigger
         render={
           <Button variant="outline" className="w-full sm:w-auto justify-between">
-            <span className="truncate">{getDisplayText()}</span>
+            <span className="truncate text-sm">{getDisplayText()}</span>
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         }

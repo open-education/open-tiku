@@ -36,7 +36,12 @@ function TagSelect({ options, defaultValue = "", onSelect, variant = "outline" }
     <div className={"flex flex-wrap gap-2"}>
       {options.map((option) => {
         return (
-          <Button key={option} variant={selected && selected === option ? "default" : variant} onClick={() => handleSelect(option)}>
+          <Button
+            key={option}
+            variant={selected && selected === option ? "default" : variant}
+            className="text-sm"
+            onClick={() => handleSelect(option)}
+          >
             {option}
           </Button>
         );
@@ -79,7 +84,11 @@ function TagShow({ relatedName, tag, year, grade, semester }: TagShowProps) {
     }
 
     return tags.map((val, index) => {
-      return <Badge key={index}>{val}</Badge>;
+      return (
+        <Badge key={index} className="text-sm">
+          {val}
+        </Badge>
+      );
     });
   };
 
