@@ -6,6 +6,7 @@ import type { PaperListReq, PaperListResp, PaperMeta, PaperMetaSearch } from "~/
 import { StringConst, StringValidator } from "~/util/string";
 import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from "~/type/question";
 import type { TaskListReq, TaskListResp } from "~/type/task";
+import type { ChapterKnowledgeIdsReq, QuestionCateResp } from "~/type/question-cate";
 
 /// 使用 SWR 缓存查询组件
 /// https://swr.vercel.app/
@@ -48,7 +49,7 @@ export function usePaperList(search: PaperMetaSearch, pageNo: number) {
   });
 }
 
-// 教材/考点题型列表-第5层标识
+// 教材/考点题型列表-第5层标识同时获取题型列表
 export function useQuestionCates(fiveLevelId: number) {
   const key = fiveLevelId > 0 ? `/textbook/list/${fiveLevelId}/children` : null;
   return useSWRImmutable<Textbook[]>(key, httpClient.get);
@@ -102,14 +103,43 @@ export function useSimilarList(questionId: number, eightId: number, pageNo: numb
     pageSize: StringConst.pageSize,
   };
 
-  return useSWR<QuestionListResp>({ url: "/question/similar", data: req }, ({ url, data }: { url: string; data: QuestionSimilarListReq }) =>
-    httpClient.post<QuestionListResp>(url, data),
-  );
+  const key = JSON.stringify(req);
+  return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>("/question/similar", req));
 }
 
 // 题目上传任务列表
 export function useTaskList(req: TaskListReq) {
-  return useSWR<TaskListResp>({ url: "/task/list", data: req }, ({ url, data }: { url: string; data: TaskListReq }) =>
-    httpClient.post<TaskListResp>(url, data),
-  );
+  return useSWR<TaskListResp>(JSON.stringify(req), () => httpClient.post<TaskListResp>("/task/list", req));
+}
+
+// 用户中心导航菜单维护 - 获取指定深度的父级标识获取子菜单列表, 不包括题型
+export function useTextbookLevel(parentId: number = 0) {
+  const key = parentId > 0 ? `/textbook/list/${parentId}/level` : null;
+  return useSWRImmutable<Textbook[]>(key, httpClient.get);
+}
+
+// 通过第7层标识获取题型列表
+export function useQuestionCateList(senenLevelId: number) {
+  const key = senenLevelId > 0 ? `/question-cate/list/${senenLevelId}` : null;
+  return useSWRImmutable<QuestionCateResp[]>(key, httpClient.get);
+}
+
+// 通过知识点获取绑定的章节列表
+export function useQuestionChaptes(sevenLevelId: number) {
+  const req: ChapterKnowledgeIdsReq = {
+    ids: [sevenLevelId],
+  };
+
+  const key = sevenLevelId > 0 ? JSON.stringify(req) : null;
+  return useSWR<Textbook[]>(key, () => httpClient.post<Textbook[]>("/chapter-knowledge/chapter", req));
+}
+
+// 通过章节获取绑定的知识点列表
+export function useQuestionKnowledges(sevenLevelId: number) {
+  const req: ChapterKnowledgeIdsReq = {
+    ids: [sevenLevelId],
+  };
+
+  const key = sevenLevelId > 0 ? JSON.stringify(req) : null;
+  return useSWR<Textbook[]>(key, () => httpClient.post<Textbook[]>("/chapter-knowledge/knowledge", req));
 }

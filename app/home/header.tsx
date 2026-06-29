@@ -45,7 +45,7 @@ function Header() {
   const openSheet = () => setSheetOpen(true);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm px-2 sm:px-4">
+    <header className="sticky top-0 z-50 h-14 border-b border-border bg-background/95 backdrop-blur-sm px-2 sm:px-4">
       <div className="h-14 flex items-center justify-between gap-2 sm:gap-6">
         {/* Logo */}
         <NavLink to={"/"}>

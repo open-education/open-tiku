@@ -1,4 +1,4 @@
-import { ArrowRight, FileText } from "lucide-react";
+import { ArrowRight, FileText, SquarePen } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
@@ -173,6 +173,7 @@ function ExamPaperMeta({
 
           <div>
             <Button variant="outline" className="text-sm" onClick={handleEdit}>
+              <SquarePen className="mr-2 h-4 w-4" />
               编辑
             </Button>
           </div>

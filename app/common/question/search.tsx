@@ -19,6 +19,7 @@ import { SimpleSheet } from "~/common/sheet";
 import Add from "~/question/add";
 import { TaskAdd, TaskListShow } from "~/question/task";
 import { Button } from "~/components/ui/button";
+import { Plus, Upload, View } from "lucide-react";
 
 // 题目搜索页面
 interface QuestionSearchProps {
@@ -78,6 +79,7 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
     data: questionListResp = { list: [], pageNo: pageNo, pageSize: StringConst.pageSize, total: 0 },
     isLoading: questionListRespLoading,
     error: questionListRespErr,
+    mutate: questionListRespMutate,
   } = useQuestionList(questionSearch, pageNo);
 
   // 页面加载中
@@ -231,12 +233,15 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap gap-1">
                 <Button variant="outline" className="text-sm" onClick={handleQuestionAdd}>
+                  <Plus className="mr-2 h-4 w-4" />
                   添加题目
                 </Button>
                 <Button variant="outline" className="text-sm" onClick={handleTaskAdd}>
+                  <Upload className="mr-2 h-4 w-4" />
                   上传题目
                 </Button>
                 <Button variant="outline" className="text-sm" onClick={handleTaskList}>
+                  <View className="mr-2 h-4 w-4" />
                   查看任务
                 </Button>
               </div>
@@ -296,6 +301,7 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
           questionTagDict={questionTagDict}
           listResp={questionListResp}
           questionSearch={questionSearch}
+          questionListRespMutate={questionListRespMutate}
           setOpenSheet={setOpenSheet}
           setSheetTitle={setSheetTitle}
           setSheetDesc={setSheetDesc}

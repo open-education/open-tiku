@@ -4,6 +4,7 @@ export interface Textbook {
   parentId: number;
   label: string;
   key: string;
+  pathType: string;
   sortOrder: number;
   pathDepth: number;
   tableName?: string;
@@ -26,4 +27,14 @@ export interface TextbookOption {
   value: string;
   raw: Textbook;
   children?: TextbookOption[];
+}
+
+// 菜单导航请求
+export interface CreateTextbookReq {
+  id?: number;
+  parentId?: number;
+  label: string;
+  pathType?: string;
+  sortOrder: number;
+  pathDepth?: number;
 }

@@ -1,4 +1,4 @@
-import { AlertCircleIcon } from "lucide-react";
+import { AlertTriangleIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 
 /// 提示信息
@@ -10,7 +10,7 @@ interface SimpleAlertProps {
 function SimpleAlert({ title, message }: SimpleAlertProps) {
   return (
     <Alert variant="destructive">
-      <AlertCircleIcon />
+      <AlertTriangleIcon />
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription>{message}</AlertDescription>
     </Alert>

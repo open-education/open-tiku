@@ -4,7 +4,7 @@ import { Button } from "~/components/ui/button";
 
 function Footer() {
   return (
-    <footer className="border-t border-border pl-4 pr-4">
+    <footer className="h-14 border-t border-border pl-4 pr-4">
       <div className="py-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-2">
           <div className="w-5 h-5 rounded bg-primary flex items-center justify-center shrink-0">

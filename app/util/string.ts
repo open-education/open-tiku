@@ -118,6 +118,18 @@ export const StringConst = {
     { id: 1, value: "question_type", label: "题型" },
     { id: 2, value: "question_tag", label: "标签" },
   ],
+  // 菜单路径类型
+  textbookPathTypes: [
+    { id: 1, value: "common", label: "公共" },
+    { id: 2, value: "chapter", label: "章节" },
+    { id: 3, value: "knowledge", label: "考点" },
+  ],
+  // 菜单路径名称
+  textbookPathTypeNames: new Map<string, string>([
+    ["common", "公共"],
+    ["chapter", "章节"],
+    ["knowledge", "考点"],
+  ]),
 };
 
 // 字符串常量工具

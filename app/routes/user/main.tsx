@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from "react-router";
 import type { Route } from "./+types/main";
-import { BookA, BookOpenText, CheckCheck, ChevronDown, FileQuestionMark, Menu, Settings, X } from "lucide-react";
+import { BookA, BookOpenText, CheckCheck, ChevronDown, FileQuestionMark, ListFilter, Menu, Settings, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 import { Badge } from "~/components/ui/badge";
@@ -38,6 +38,7 @@ const navigationItems: NavItem[] = [
     href: "",
     children: [
       { id: "setting-textbook", label: "章节/考点", icon: BookOpenText, href: "/user/setting/textbook" },
+      { id: "setting-cate", label: "关联题型", icon: ListFilter, href: "/user/setting/cate" },
       { id: "setting-dict", label: "通用字典", icon: BookA, href: "/user/setting/dict" },
     ],
   },
@@ -157,7 +158,7 @@ export default function Index() {
   // ----- 桌面端布局 -----
   if (isDesktop) {
     return (
-      <div className="flex h-full min-h-[calc(100vh-var(--header-height,58px))] text-base">
+      <div className="flex h-full text-base">
         <aside className="flex w-64 flex-col border bg-background/95">
           <ScrollArea className="flex-1">
             <div className="py-2">{navContent}</div>
@@ -174,7 +175,7 @@ export default function Index() {
 
   // ----- 移动端布局 -----
   return (
-    <div className="flex flex-col h-full min-h-[calc(100vh-var(--header-height,58px))] text-base">
+    <div className="flex flex-col h-full text-base">
       {/* 顶部导航栏（汉堡按钮 + 标题） */}
       <div className="sticky top-0 z-20 border bg-background/95 backdrop-blur-sm">
         <div className="flex items-center gap-3 px-4 py-2.5">

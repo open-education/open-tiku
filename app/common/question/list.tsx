@@ -4,6 +4,7 @@ import { OperateTags, TagShow } from "~/common/question/tag";
 import { DictUtil } from "~/util/object";
 import { TitleShow } from "~/common/title";
 import { MultiOptionShow } from "~/common/select";
+import type { KeyedMutator } from "swr";
 
 /// 题库题目列表展示
 
@@ -14,6 +15,7 @@ interface QuestionListShowProps {
   questionTagDict: Record<number, TextbookOtherDict>;
   listResp: QuestionListResp;
   questionSearch: QuestionSearch;
+  questionListRespMutate: KeyedMutator<QuestionListResp>; // 审核删除等操作需要重置列表接口重新请求数据
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
@@ -30,6 +32,7 @@ function QuestionListShow({
   questionTagDict,
   listResp,
   questionSearch,
+  questionListRespMutate,
   setOpenSheet,
   setSheetTitle,
   setSheetDesc,
@@ -62,6 +65,7 @@ function QuestionListShow({
                 eightId={questionInfo.questionCateId}
                 status={questionInfo.status}
                 questionSearch={questionSearch}
+                questionListRespMutate={questionListRespMutate}
                 setOpenSheet={setOpenSheet}
                 setSheetTitle={setSheetTitle}
                 setSheetDesc={setSheetDesc}

@@ -469,8 +469,10 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
             if (hasChildren && depth < maxDepth - 1) {
               return (
                 <DropdownMenuSub key={item.key}>
-                  <DropdownMenuSubTrigger className={cn("flex items-center justify-between w-full cursor-pointer", isInPath && "bg-accent/50")}>
-                    <span className="flex-1 text-sm">{item.label}</span>
+                  <DropdownMenuSubTrigger
+                    className={cn("flex items-center justify-between cursor-pointer min-w-50 whitespace-nowrap", isInPath && "bg-accent/50")}
+                  >
+                    <span className="text-sm">{item.label}</span>
                     {isSelected && <Check className="ml-2 h-4 w-4" />}
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent className="min-w-50 p-1">
@@ -528,7 +530,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
       />
       <DropdownMenuContent className="min-w-50 max-h-150 overflow-y-auto p-1">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>选择学段</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-sm">选择学段</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {renderMenuItems(textbooks, 0)}
         </DropdownMenuGroup>
