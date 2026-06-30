@@ -15,11 +15,12 @@ import { StringConst } from "~/util/string";
 interface SimilarQuestionListProps {
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
   questionId: number;
   eightId: number;
 }
 
-export function SimilarQuestionList({ questionTypeDict, questionTagDict, questionId, eightId }: SimilarQuestionListProps) {
+export function SimilarQuestionList({ questionTypeDict, questionTagDict, questionDimensionDict, questionId, eightId }: SimilarQuestionListProps) {
   const [pageNo, setPageNo] = useState<number>(1);
 
   // 标签和题型暂时不支持查询
@@ -63,6 +64,7 @@ export function SimilarQuestionList({ questionTypeDict, questionTagDict, questio
           pageSource={{ source: "list" }}
           questionTypeDict={questionTypeDict}
           questionTagDict={questionTagDict}
+          questionDimensionDict={questionDimensionDict}
           listResp={listResp}
         />
       </div>

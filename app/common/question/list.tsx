@@ -4,6 +4,7 @@ import { OperateTags, TagShow } from "~/common/question/tag";
 import { DictUtil } from "~/util/object";
 import { TitleShow } from "~/common/title";
 import { MultiOptionShow } from "~/common/select";
+import type { KeyedMutator } from "swr";
 
 /// 题库题目列表展示
 
@@ -12,8 +13,10 @@ interface QuestionListShowProps {
   pageSource: QuestionPageSourceProps;
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
   listResp: QuestionListResp;
   questionSearch: QuestionSearch;
+  questionListRespMutate: KeyedMutator<QuestionListResp>; // 审核删除等操作需要重置列表接口重新请求数据
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
@@ -28,8 +31,10 @@ function QuestionListShow({
   pageSource,
   questionTypeDict,
   questionTagDict,
+  questionDimensionDict,
   listResp,
   questionSearch,
+  questionListRespMutate,
   setOpenSheet,
   setSheetTitle,
   setSheetDesc,
@@ -49,6 +54,7 @@ function QuestionListShow({
               pageSource={pageSource}
               questionTypeDict={questionTypeDict}
               questionTagDict={questionTagDict}
+              questionDimensionDict={questionDimensionDict}
               questionInfo={questionInfo}
             />
 
@@ -58,10 +64,12 @@ function QuestionListShow({
                 pageSource={pageSource}
                 questionTypeDict={questionTypeDict}
                 questionTagDict={questionTagDict}
+                questionDimensionDict={questionDimensionDict}
                 questionId={questionInfo.id}
                 eightId={questionInfo.questionCateId}
                 status={questionInfo.status}
                 questionSearch={questionSearch}
+                questionListRespMutate={questionListRespMutate}
                 setOpenSheet={setOpenSheet}
                 setSheetTitle={setSheetTitle}
                 setSheetDesc={setSheetDesc}
@@ -81,9 +89,16 @@ interface SingleQuestionCommonPartProps {
   pageSource: QuestionPageSourceProps;
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
   questionInfo: QuestionBaseInfoResp;
 }
-function SingleQuestionCommonPart({ pageSource, questionTypeDict, questionTagDict, questionInfo }: SingleQuestionCommonPartProps) {
+function SingleQuestionCommonPart({
+  pageSource,
+  questionTypeDict,
+  questionTagDict,
+  questionDimensionDict,
+  questionInfo,
+}: SingleQuestionCommonPartProps) {
   return (
     <>
       {/* 标签 */}
@@ -91,7 +106,8 @@ function SingleQuestionCommonPart({ pageSource, questionTypeDict, questionTagDic
         <TagShow
           pageSource={pageSource}
           typeValue={DictUtil.getQuestionTypeName(questionInfo.questionTypeId, questionTypeDict)}
-          tagNames={DictUtil.getQuestionTagNames(questionInfo.questionTagIds ?? [], questionTagDict)}
+          tagNames={DictUtil.getQuestionTagNames(questionInfo.questionTagIds || [], questionTagDict)}
+          dimensionNames={DictUtil.getQuestionDimensionNames(questionInfo.questionDimensionIds || [], questionDimensionDict)}
           difficultyLevelValue={questionInfo.difficultyLevel}
           status={questionInfo.status}
         />
@@ -117,9 +133,10 @@ interface SimilarQuestionListShowProps {
   pageSource: QuestionPageSourceProps;
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
   listResp: QuestionListResp;
 }
-function SimilarQuestionListShow({ pageSource, questionTypeDict, questionTagDict, listResp }: SimilarQuestionListShowProps) {
+function SimilarQuestionListShow({ pageSource, questionTypeDict, questionTagDict, questionDimensionDict, listResp }: SimilarQuestionListShowProps) {
   return (
     <>
       {listResp.list?.map((questionInfo) => {
@@ -133,6 +150,7 @@ function SimilarQuestionListShow({ pageSource, questionTypeDict, questionTagDict
               pageSource={pageSource}
               questionTypeDict={questionTypeDict}
               questionTagDict={questionTagDict}
+              questionDimensionDict={questionDimensionDict}
               questionInfo={questionInfo}
             />
           </div>

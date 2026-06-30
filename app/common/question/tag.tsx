@@ -1,6 +1,6 @@
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import type { ApproveReq, DeleteReq, QuestionInfoResp, QuestionPageSourceProps, QuestionSearch } from "~/type/question";
+import type { ApproveReq, DeleteReq, QuestionInfoResp, QuestionListResp, QuestionPageSourceProps, QuestionSearch } from "~/type/question";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
 import { QuestionInfo } from "~/common/question/info";
@@ -9,7 +9,6 @@ import Add from "~/question/add";
 import { toast } from "sonner";
 import { StringConst } from "~/util/string";
 import { useState } from "react";
-import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "~/components/ui/popover";
 import { Textarea } from "~/components/ui/textarea";
 import { Separator } from "~/components/ui/separator";
 import {
@@ -23,6 +22,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { QuestionStatus } from "~/util/enum";
+import type { KeyedMutator } from "swr";
 
 /// 题目题目相关标签选择器
 
@@ -157,10 +157,11 @@ interface TagShowProps {
   pageSource: QuestionPageSourceProps;
   typeValue: string;
   tagNames: string[];
+  dimensionNames: string[];
   difficultyLevelValue: number;
   status: number;
 }
-function TagShow({ pageSource, typeValue, tagNames, difficultyLevelValue, status }: TagShowProps) {
+function TagShow({ pageSource, typeValue, tagNames, dimensionNames, difficultyLevelValue, status }: TagShowProps) {
   // 生成标签列表
   const getBadges = () => {
     // 题目类型
@@ -174,6 +175,15 @@ function TagShow({ pageSource, typeValue, tagNames, difficultyLevelValue, status
     const tagNode = tagNames.map((val) => {
       return (
         <Badge className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300 text-sm" key={val}>
+          {val}
+        </Badge>
+      );
+    });
+
+    // 核心素养
+    const dimensionNode = dimensionNames.map((val) => {
+      return (
+        <Badge className="bg-green-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300 text-sm" key={val}>
           {val}
         </Badge>
       );
@@ -200,6 +210,7 @@ function TagShow({ pageSource, typeValue, tagNames, difficultyLevelValue, status
       <>
         {typeNode}
         {tagNode}
+        {dimensionNode}
         {difficultyNode}
         {statusDesc}
       </>
@@ -217,7 +228,9 @@ interface OperateTagsProps {
   status: number; // 题目状态
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
   questionSearch: QuestionSearch;
+  questionListRespMutate: KeyedMutator<QuestionListResp>;
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
@@ -235,7 +248,9 @@ function OperateTags({
   status,
   questionTypeDict,
   questionTagDict,
+  questionDimensionDict,
   questionSearch,
+  questionListRespMutate,
   setOpenSheet,
   setSheetTitle,
   setSheetDesc,
@@ -251,7 +266,13 @@ function OperateTags({
       .then((res) => {
         setSheetTitle("查看详情");
         setSheetContent(
-          <QuestionInfo pageSource={pageSource} questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} infoResp={res} />,
+          <QuestionInfo
+            pageSource={pageSource}
+            questionTypeDict={questionTypeDict}
+            questionTagDict={questionTagDict}
+            questionDimensionDict={questionDimensionDict}
+            infoResp={res}
+          />,
         );
         setOpenSheet(true);
       })
@@ -309,7 +330,13 @@ function OperateTags({
     setSheetTitle("变式题列表");
     setSheetDesc("变式题暂不支持查看详情");
     setSheetContent(
-      <SimilarQuestionList questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} questionId={questionId} eightId={eightId} />,
+      <SimilarQuestionList
+        questionTypeDict={questionTypeDict}
+        questionTagDict={questionTagDict}
+        questionDimensionDict={questionDimensionDict}
+        questionId={questionId}
+        eightId={eightId}
+      />,
     );
     setOpenSheet(true);
   };
@@ -336,6 +363,7 @@ function OperateTags({
           loading: false,
           message: "审核通过",
         });
+        questionListRespMutate();
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">`提交审核操作出错: ${err.message}`</div>);
@@ -375,6 +403,7 @@ function OperateTags({
           loading: false,
           message: "审核通过",
         });
+        questionListRespMutate();
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">`审核操作出错: ${err.message}`</div>);
@@ -409,6 +438,7 @@ function OperateTags({
           loading: false,
           message: "删除成功",
         });
+        questionListRespMutate();
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">`删除题目出错: ${err.message}`</div>);
@@ -436,17 +466,23 @@ function OperateTags({
     // 我的题目页面状态为草稿中才会出现提交审核
     if (source === "myQuestion" && status === QuestionStatus.Drafing) {
       buttons.push(
-        <Dialog>
+        <Dialog key="myQuestionSubmit">
           <DialogTrigger render={<Button variant="link">提交审核</Button>} />
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
-              <DialogTitle>提交审核</DialogTitle>
-              <DialogDescription>请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
+              <DialogTitle className="text-base font-bold">提交审核</DialogTitle>
+              <DialogDescription className="text-sm">请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
             </DialogHeader>
-            <div className="mt-3 text-blue-500">{submitApproveRes?.success ? "提交成功" : submitApproveRes?.message}</div>
+            <div className="mt-3 text-sm text-blue-500">{submitApproveRes?.success ? "提交成功" : submitApproveRes?.message}</div>
             <DialogFooter>
-              <DialogClose render={<Button variant="outline">Cancel</Button>} />
-              <Button onClick={handleSubmitApprove} disabled={submitApproveRes?.loading}>
+              <DialogClose
+                render={
+                  <Button variant="outline" className="text-sm">
+                    Cancel
+                  </Button>
+                }
+              />
+              <Button className="text-sm" onClick={handleSubmitApprove} disabled={submitApproveRes?.loading}>
                 {submitApproveRes?.loading ? "提交审核中" : "提交审核"}
               </Button>
             </DialogFooter>
@@ -459,14 +495,14 @@ function OperateTags({
     // 我的审核页面状态为待审核的数据才会出现审核按钮
     if (source === "myReview" && status === QuestionStatus.Pending) {
       buttons.push(
-        <Dialog>
+        <Dialog key="myReviewApprove">
           <DialogTrigger render={<Button variant="link">题目审核</Button>} />
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>题目审核</DialogTitle>
-              <DialogDescription>请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
+              <DialogTitle className="text-base font-bold">题目审核</DialogTitle>
+              <DialogDescription className="text-sm">请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
             </DialogHeader>
-            <div>
+            <div className="text-sm">
               <div className="flex flex-col gap-3">
                 <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
                   <div className="md:w-24 shrink-0 font-medium">审核状态:</div>
@@ -479,6 +515,7 @@ function OperateTags({
                   <div className="flex-1 min-w-0">
                     <Textarea
                       value={approveReq.rejectReason}
+                      className="text-sm md:text-sm"
                       onChange={(e) => updateApproveReq("rejectReason", e.target.value)}
                       placeholder="拒绝时需要说明拒绝原因"
                     />
@@ -490,11 +527,17 @@ function OperateTags({
                 <Separator />
               </div>
 
-              <div className="mt-3 text-blue-500">{approveRes?.success ? "审核成功" : approveRes?.message}</div>
+              <div className="mt-3 text-sm text-blue-500">{approveRes?.success ? "审核成功" : approveRes?.message}</div>
             </div>
             <DialogFooter>
-              <DialogClose render={<Button variant="outline">Cancel</Button>} />
-              <Button onClick={handleApprove} disabled={approveRes?.loading}>
+              <DialogClose
+                render={
+                  <Button variant="outline" className="text-sm">
+                    Cancel
+                  </Button>
+                }
+              />
+              <Button className="text-sm" onClick={handleApprove} disabled={approveRes?.loading}>
                 {approveRes?.loading ? "审核中" : "审核"}
               </Button>
             </DialogFooter>
@@ -531,17 +574,23 @@ function OperateTags({
     // 我的题目可以删除题目
     if (source === "myQuestion") {
       buttons.push(
-        <Dialog>
+        <Dialog key="myQuestionDelete">
           <DialogTrigger render={<Button variant="link">删除</Button>} />
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
-              <DialogTitle>删除题目</DialogTitle>
-              <DialogDescription>题目删除后不可恢复, 如果不确定, 可以保留等后续确认后再删除</DialogDescription>
+              <DialogTitle className="text-base font-bold">删除题目</DialogTitle>
+              <DialogDescription className="text-sm">题目删除后不可恢复, 如果不确定, 可以保留等后续确认后再删除</DialogDescription>
             </DialogHeader>
-            <div className="mt-3 text-blue-500">{deleteRes?.success ? "删除成功" : deleteRes?.message}</div>
+            <div className="mt-3 text-sm text-blue-500">{deleteRes?.success ? "删除成功" : deleteRes?.message}</div>
             <DialogFooter>
-              <DialogClose render={<Button variant="outline">Cancel</Button>} />
-              <Button onClick={handleDelete} disabled={deleteRes?.loading}>
+              <DialogClose
+                render={
+                  <Button variant="outline" className="text-sm">
+                    Cancel
+                  </Button>
+                }
+              />
+              <Button className="text-sm" onClick={handleDelete} disabled={deleteRes?.loading}>
                 {deleteRes?.loading ? "删除中" : "删除"}
               </Button>
             </DialogFooter>

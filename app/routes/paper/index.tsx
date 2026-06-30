@@ -21,6 +21,7 @@ import { SimpleAlert } from "~/common/alert";
 import { SimpleSheet } from "~/common/sheet";
 import { SimpleNoData } from "~/common/empty";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
+import { Plus } from "lucide-react";
 
 // 重新网页标题等
 export function meta({}: Route.MetaArgs) {
@@ -169,6 +170,7 @@ export default function Index() {
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap gap-1">
               <Button variant="outline" onClick={addExamSheet} className="text-sm">
+                <Plus className="mr-2 h-4 w-4" />
                 添加试卷
               </Button>
             </div>

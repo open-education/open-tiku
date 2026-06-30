@@ -14,7 +14,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
 import type { PaperGroup, PaperMeta, PaperMetaSearch, PaperQuestion } from "~/type/paper";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { FileImage, Plus, Trash2, X } from "lucide-react";
+import { FileImage, Plus, Send, Trash2, X } from "lucide-react";
 import { Label } from "~/components/ui/label";
 import type { Content, QuestionOption } from "~/type/question";
 import { ExamPaperMeta } from "~/common/paper/meta";
@@ -346,9 +346,11 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
 
       <div className="mt-3 flex flex-wrap gap-2">
         <Button variant="default" className="text-sm" onClick={() => handleAddPaper(0)} disabled={drafing}>
+          <Send className="mr-2 h-4 w-4" />
           {drafing ? "存为草稿中..." : "存为草稿"}
         </Button>
         <Button variant="outline" className="text-sm" onClick={() => handleAddPaper(1)} disabled={approving}>
+          <Send className="mr-2 h-4 w-4" />
           {approving ? "提交审核中..." : "提交审核"}
         </Button>
       </div>

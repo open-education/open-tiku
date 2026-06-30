@@ -308,10 +308,11 @@ interface ChapterDropdownNavProps {
   defaultSelectedKeys?: string[];
   placeholder?: string;
   maxDepth?: number;
+  longText?: boolean; // 是否是长文本, 长文本只显示最后一项
 }
 // 下拉菜单样式的导航-适用于搜索一类的列表也
 function ChapterDropdownNav(props: ChapterDropdownNavProps) {
-  const { textbooks, onSelect, defaultSelectedKeys = [], placeholder = "请选择学段", maxDepth = 5 } = props;
+  const { textbooks, onSelect, defaultSelectedKeys = [], placeholder = "请选择学段", maxDepth = 5, longText = false } = props;
 
   const [selectedPath, setSelectedPath] = useState<Textbook[]>([]);
   const [open, setOpen] = useState(false);
@@ -469,8 +470,10 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
             if (hasChildren && depth < maxDepth - 1) {
               return (
                 <DropdownMenuSub key={item.key}>
-                  <DropdownMenuSubTrigger className={cn("flex items-center justify-between w-full cursor-pointer", isInPath && "bg-accent/50")}>
-                    <span className="flex-1 text-sm">{item.label}</span>
+                  <DropdownMenuSubTrigger
+                    className={cn("flex items-center justify-between cursor-pointer min-w-50 whitespace-nowrap", isInPath && "bg-accent/50")}
+                  >
+                    <span className="text-sm">{item.label}</span>
                     {isSelected && <Check className="ml-2 h-4 w-4" />}
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent className="min-w-50 p-1">
@@ -513,7 +516,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
     if (selectedPath.length === 0) {
       return placeholder;
     }
-    return selectedPath.map((item) => item.label).join(" / ");
+    return longText ? selectedPath[selectedPath.length - 1].label : selectedPath.map((item) => item.label).join(" / ");
   }, [selectedPath, placeholder]);
 
   return (
@@ -528,7 +531,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
       />
       <DropdownMenuContent className="min-w-50 max-h-150 overflow-y-auto p-1">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>选择学段</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-sm">选择学段</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {renderMenuItems(textbooks, 0)}
         </DropdownMenuGroup>

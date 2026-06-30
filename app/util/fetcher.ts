@@ -6,6 +6,7 @@ import type { PaperListReq, PaperListResp, PaperMeta, PaperMetaSearch } from "~/
 import { StringConst, StringValidator } from "~/util/string";
 import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from "~/type/question";
 import type { TaskListReq, TaskListResp } from "~/type/task";
+import type { ChapterKnowledgeResp, QuestionCateResp } from "~/type/question-cate";
 
 /// 使用 SWR 缓存查询组件
 /// https://swr.vercel.app/
@@ -48,7 +49,7 @@ export function usePaperList(search: PaperMetaSearch, pageNo: number) {
   });
 }
 
-// 教材/考点题型列表-第5层标识
+// 教材/考点题型列表-第5层标识同时获取题型列表
 export function useQuestionCates(fiveLevelId: number) {
   const key = fiveLevelId > 0 ? `/textbook/list/${fiveLevelId}/children` : null;
   return useSWRImmutable<Textbook[]>(key, httpClient.get);
@@ -85,6 +86,9 @@ export function useQuestionList(search: QuestionSearch, pageNo: number) {
   if (search.status !== undefined) {
     req.status = search.status;
   }
+  if (search.dimensionIds && search.dimensionIds.length > 0) {
+    req.dimensionIds = search.dimensionIds;
+  }
 
   // 生成 SWR 的 key（只有 relatedId > 0 时才发起请求，否则为 null）
   const key = req.questionCateId > 0 ? JSON.stringify(req) : null;
@@ -102,14 +106,35 @@ export function useSimilarList(questionId: number, eightId: number, pageNo: numb
     pageSize: StringConst.pageSize,
   };
 
-  return useSWR<QuestionListResp>({ url: "/question/similar", data: req }, ({ url, data }: { url: string; data: QuestionSimilarListReq }) =>
-    httpClient.post<QuestionListResp>(url, data),
-  );
+  const key = JSON.stringify(req);
+  return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>("/question/similar", req));
 }
 
 // 题目上传任务列表
 export function useTaskList(req: TaskListReq) {
-  return useSWR<TaskListResp>({ url: "/task/list", data: req }, ({ url, data }: { url: string; data: TaskListReq }) =>
-    httpClient.post<TaskListResp>(url, data),
-  );
+  return useSWR<TaskListResp>(JSON.stringify(req), () => httpClient.post<TaskListResp>("/task/list", req));
+}
+
+// 题目其它通用字典获取
+export function useQuestionOtherDicts(twoLevelId: number, typeCode: string) {
+  const key = twoLevelId > 0 && StringValidator.isNonEmpty(typeCode) ? `/other/dict/list/${twoLevelId}/${typeCode}` : null;
+  return useSWRImmutable<TextbookOtherDict[]>(key, httpClient.get);
+}
+
+// 用户中心导航菜单维护 - 获取指定深度的父级标识获取子菜单列表
+export function useTextbookLevel(parentId: number = 0) {
+  const key = parentId > 0 ? `/textbook/list/${parentId}/level` : null;
+  return useSWRImmutable<Textbook[]>(key, httpClient.get);
+}
+
+// 通过章节或者考点拉去关联关系
+export function useChapterKnowledgeList(sevenLevelId: number) {
+  const key = sevenLevelId > 0 ? `/chapter-knowledge/list/${sevenLevelId}` : null;
+  return useSWRImmutable<ChapterKnowledgeResp[]>(key, httpClient.get);
+}
+
+// 获取题型列表
+export function useQuestionCateList(relatedId: number) {
+  const key = relatedId > 0 ? `/question-cate/list/${relatedId}` : null;
+  return useSWRImmutable<QuestionCateResp[]>(key, httpClient.get);
 }

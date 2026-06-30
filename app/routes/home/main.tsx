@@ -19,12 +19,12 @@ export function meta({}: Route.MetaArgs) {
 // 其它页面后续替换只保留静态的头和底
 export default function Main() {
   return (
-    <div className="text-foreground bg-gray-100">
+    <div className="text-foreground bg-gray-100 min-h-screen flex flex-col">
       {/* 网站首页头部 */}
       <Header />
 
       {/* 替换网站内容 */}
-      <div className="min-h-screen">
+      <div className="flex-1 overflow-auto">
         <Outlet />
       </div>
 
