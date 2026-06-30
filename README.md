@@ -16,7 +16,7 @@
 
 ##### 1. 安装依赖
 
-现在前端基本都需要运行在 [Node.js](https://nodejs.org/en/download/) 之上，开发环境如果没有 `Node` 则先安装 `Node` 环境
+现在前端基本都需要运行在 [Node.js](https://nodejs.org/en/download/) 之上，开发环境如果没有 `Node` 则先安装 `Node` 环境, 后运行下面命令安装依赖
 
 ```bash
 pnpm install
@@ -27,7 +27,7 @@ pnpm install
 开发环境 Caddyfile 配置, 安装自己系统的规范添加如下内容即可，本地不需要 https 域名证书指定 80 端口访问或者自行适配即可
 
 ```bash
-[zhangguangxun@b760m open-tiku-api]$ cat /etc/caddy/conf.d/tiku
+[zhangguangxun@b760m open-tiku]$ cat /etc/caddy/conf.d/tiku
 tiku.test:80 {
     encode zstd gzip
 
@@ -44,7 +44,7 @@ tiku.test:80 {
 本地域名解析
 
 ```bash
-[zhangguangxun@b760m open-tiku-api]$ cat /etc/hosts
+[zhangguangxun@b760m open-tiku]$ cat /etc/hosts
 # Static table lookup for hostnames.
 # See hosts(5) for details.
 127.0.0.1        localhost
@@ -52,7 +52,7 @@ tiku.test:80 {
 
 # add tiku domain
 127.0.0.1 tiku.test
-[zhangguangxun@b760m open-tiku-api]$
+[zhangguangxun@b760m open-tiku]$
 ```
 
 开发环境的端口配置在文件 `vite.config.ts` 中自行调整
@@ -78,7 +78,7 @@ VITE_API_BASE_URL=/api
 运行命令例如
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 #### 格式化
@@ -99,7 +99,7 @@ Prettier: Print Width 用户空间设置 150 个字符宽度, 现在显示器都
 
 #### 构建
 
-运行项目脚本, 线上编译为 `SPA` 模式运行, 不再依赖 `Node` 服务; 构建后在 `target` 目录中生成 `tgz` 格式的压缩包, 目前的部署方式是将该包上传至 `github` 项目 [Releases](https://github.com/open-education/open-tiku-backend/releases) 中, 部署时使用自己生成的版本号即可
+运行项目脚本, 线上编译为 `SPA` 模式运行, 不再依赖 `Node` 服务; 构建后在 `target` 目录中生成 `tgz` 格式的压缩包, 目前的部署方式是将该包上传至 `github` 项目 [Releases](https://github.com/open-education/open-tiku/releases) 中, 部署时使用自己生成的版本号即可
 
 ```bash
 sh build.sh
@@ -109,7 +109,7 @@ sh build.sh
 
 #### 部署
 
-登录到部署机器, 部署脚本 `deploy.sh` 首次部署需要手动拷贝至线上机器, 然后运行待部署的版本号, 部署时会将构建完毕的静态文件拷贝至 `caddy` 静态资源目录 `/var/www/open-tiku-backend` 中, 需要登录用户有 `sudo` 权限
+登录到部署机器, 部署脚本 `deploy.sh` 首次部署需要手动拷贝至线上机器, 然后运行待部署的版本号, 部署时会将构建完毕的静态文件拷贝至 `caddy` 静态资源目录 `/var/www/open-tiku` 中, 需要登录用户有 `sudo` 权限
 
 ```bash
 sh deploy.sh -v v0.0.1-beta
@@ -124,7 +124,7 @@ sh deploy.sh -v v0.0.1-beta
 开发根据自己的情况创建类似的软链接即可, 实际存储目录调整为自己的机器路径
 
 ```bash
-[zhangguangxun@b760m open-tiku-backend]$ cd public/
+[zhangguangxun@b760m open-tiku]$ cd public/
 [zhangguangxun@b760m public]$ ls -ahl
 total 24K
 drwxr-xr-x 1 zhangguangxun zhangguangxun  44 Jun  3 19:30 .
@@ -138,9 +138,9 @@ lrwxrwxrwx 1 zhangguangxun zhangguangxun  20 Jun  3 19:29 images -> /var/www/met
 线上现有的配置如下, 线上路径固定, 如果机器有变化等请按需要调整即可, 首次部署时已创建, 后续部署时通常无需再处理
 
 ```bash
-zhangguangxun@VM-0-4-debian:/var/www/open-tiku-backend$ pwd
-/var/www/open-tiku-backend
-zhangguangxun@VM-0-4-debian:/var/www/open-tiku-backend$ ls -al
+zhangguangxun@VM-0-4-debian:/var/www/open-tiku$ pwd
+/var/www/open-tiku
+zhangguangxun@VM-0-4-debian:/var/www/open-tiku$ ls -al
 total 40
 drwxr-xr-x 3 root root  4096 Jun  3 15:51 .
 drwxr-xr-x 5 root root  4096 Jun  3 15:47 ..
@@ -149,7 +149,7 @@ drwxr-xr-x 2 root root 12288 Jun  3 14:39 assets
 lrwxrwxrwx 1 root root    19 Jun  3 15:51 files -> /var/www/meta/files
 lrwxrwxrwx 1 root root    20 Jun  3 15:51 images -> /var/www/meta/images
 -rw-r--r-- 1 root root  2239 Jun  3 14:39 index.html
-zhangguangxun@VM-0-4-debian:/var/www/open-tiku-backend$
+zhangguangxun@VM-0-4-debian:/var/www/open-tiku$
 ```
 
 线上的 `Caddyfile` 文件内容请参考项目根目录中的 `Caddfile` 文件内容, 首次部署时自己配置或者直接拷贝类似内容
