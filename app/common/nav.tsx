@@ -19,7 +19,6 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Check, ChevronDown } from "lucide-react";
 import { StringConst } from "~/util/string";
-import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 
 // 章节导航选择
 // 前5层级标识
