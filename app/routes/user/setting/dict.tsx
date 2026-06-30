@@ -13,8 +13,8 @@ import { Switch } from "~/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
-import { useQuestionTags, useQuestionTypes, useTextbooks } from "~/util/fetcher";
-import { StringValidator } from "~/util/string";
+import { useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
+import { StringConst, StringValidator } from "~/util/string";
 import { toast } from "sonner";
 import { httpClient } from "~/util/http";
 
@@ -39,18 +39,11 @@ export default function Index() {
   const [processIng, setProcessIng] = useState<boolean>(false);
 
   const {
-    data: questionTypes = [],
-    isLoading: questionTypesLoading,
-    error: questionTypesErr,
-    mutate: questionTypesMutate,
-  } = useQuestionTypes(addReq.typeCode === "question_type" ? addReq.textbookId : 0);
-
-  const {
-    data: questionTags = [],
-    isLoading: questionTagsLoading,
-    error: questionTagsErr,
-    mutate: questionTagsMutate,
-  } = useQuestionTags(addReq.typeCode === "question_tag" ? addReq.textbookId : 0);
+    data: otherDicts = [],
+    isLoading: otherDictsLoading,
+    error: otherDictsErr,
+    mutate: otherDictsMutate,
+  } = useQuestionOtherDicts(addReq.textbookId, addReq.typeCode);
 
   // 点击添加按钮,  新增需要默认值
   const handleAdd = () => {
@@ -97,6 +90,8 @@ export default function Index() {
       return;
     }
 
+    setProcessIng(true);
+
     httpClient
       .post("other/dict/add", addReq)
       .then((res) => {
@@ -104,11 +99,7 @@ export default function Index() {
         setAddReq({ ...addReq, id: 0, itemValue: "", sortOrder: 0, isSelect: false });
         setDialogOpen(false);
         // 同时要重新刷新字典列表
-        if (addReq.typeCode === "question_type") {
-          questionTypesMutate();
-        } else {
-          questionTagsMutate();
-        }
+        otherDictsMutate();
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">{err.message}</div>, {
@@ -119,7 +110,9 @@ export default function Index() {
           },
         });
       })
-      .finally(() => {});
+      .finally(() => {
+        setProcessIng(false);
+      });
   };
 
   // 删除数据
@@ -182,11 +175,10 @@ export default function Index() {
 
           {/* 错误提示 */}
           {textbooksErr && <SimpleAlert title="科目获取失败" message={textbooksErr.message} />}
-          {questionTypesErr && <SimpleAlert title="题型获取失败" message={questionTypesErr.message} />}
-          {questionTagsErr && <SimpleAlert title="标签获取失败" message={questionTagsErr.message} />}
+          {otherDictsErr && <SimpleAlert title="字典信息获取失败" message={otherDictsErr.message} />}
 
           {/* 加载中 */}
-          {useDelayedLoading(textbooksLoading || questionTypesLoading || questionTagsLoading) && <Loading />}
+          {useDelayedLoading(textbooksLoading || otherDictsLoading) && <Loading />}
 
           {/* 表格 */}
           <div className="mt-3">
@@ -202,11 +194,7 @@ export default function Index() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <OtherDictListShow
-                  list={addReq.typeCode === "question_type" ? questionTypes : addReq.typeCode === "question_tag" ? questionTags : []}
-                  onEdit={(val) => handleEdit(val)}
-                  onDelete={(id) => handleDelete(id)}
-                />
+                <OtherDictListShow list={otherDicts} onEdit={(val) => handleEdit(val)} onDelete={(id) => handleDelete(id)} />
               </TableBody>
             </Table>
           </div>
@@ -289,7 +277,7 @@ function OtherDictListShow({ list, onEdit, onDelete }: OtherDictListShowProps) {
         list.map((item) => (
           <TableRow key={item.id}>
             <TableCell className="text-sm">{item.id}</TableCell>
-            <TableCell className="text-sm">{item.typeCode === "question_type" ? "题型" : "标签"}</TableCell>
+            <TableCell className="text-sm">{StringConst.questionOtherDictNames.get(item.typeCode) || ""}</TableCell>
             <TableCell className="text-sm">{item.itemValue}</TableCell>
             <TableCell className="text-sm">{item.sortOrder}</TableCell>
             <TableCell className="text-sm">{item.isSelect ? "是" : "否"}</TableCell>

@@ -117,7 +117,13 @@ export const StringConst = {
   questionOtherDictList: [
     { id: 1, value: "question_type", label: "题型" },
     { id: 2, value: "question_tag", label: "标签" },
+    { id: 3, value: "question_dimension", label: "核心素养" },
   ],
+  questionOtherDictNames: new Map<string, string>([
+    ["question_type", "题型"],
+    ["question_tag", "标签"],
+    ["question_dimension", "核心素养"],
+  ]),
   // 菜单路径类型
   textbookPathTypes: [
     { id: 1, value: "common", label: "公共" },

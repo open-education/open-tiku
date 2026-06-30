@@ -19,13 +19,7 @@
 现在前端基本都需要运行在 [Node.js](https://nodejs.org/en/download/) 之上，开发环境如果没有 `Node` 则先安装 `Node` 环境
 
 ```bash
-npm install
-```
-
-或者
-
-```bash
-npm i
+pnpm install
 ```
 
 ##### 2. 配置 caddy 代理

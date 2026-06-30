@@ -18,6 +18,7 @@ export default [
 
       // 系统设置
       route("setting/textbook", "routes/user/setting/textbook.tsx"),
+      route("setting/ck", "routes/user/setting/ck.tsx"),
       route("setting/cate", "routes/user/setting/cate.tsx"),
       route("setting/dict", "routes/user/setting/dict.tsx"),
 

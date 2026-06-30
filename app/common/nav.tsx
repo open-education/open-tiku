@@ -19,6 +19,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Check, ChevronDown } from "lucide-react";
 import { StringConst } from "~/util/string";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 
 // 章节导航选择
 // 前5层级标识
@@ -308,10 +309,11 @@ interface ChapterDropdownNavProps {
   defaultSelectedKeys?: string[];
   placeholder?: string;
   maxDepth?: number;
+  longText?: boolean; // 是否是长文本, 长文本只显示最后一项
 }
 // 下拉菜单样式的导航-适用于搜索一类的列表也
 function ChapterDropdownNav(props: ChapterDropdownNavProps) {
-  const { textbooks, onSelect, defaultSelectedKeys = [], placeholder = "请选择学段", maxDepth = 5 } = props;
+  const { textbooks, onSelect, defaultSelectedKeys = [], placeholder = "请选择学段", maxDepth = 5, longText = false } = props;
 
   const [selectedPath, setSelectedPath] = useState<Textbook[]>([]);
   const [open, setOpen] = useState(false);
@@ -515,7 +517,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
     if (selectedPath.length === 0) {
       return placeholder;
     }
-    return selectedPath.map((item) => item.label).join(" / ");
+    return longText ? selectedPath[selectedPath.length - 1].label : selectedPath.map((item) => item.label).join(" / ");
   }, [selectedPath, placeholder]);
 
   return (

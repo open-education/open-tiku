@@ -12,8 +12,8 @@ echo "开始打包: $PROJECT_NAME"
 echo "======================"
 
 # 检查 Node.js
-if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
-    echo "错误: Node.js 或 npm 未安装"
+if ! command -v node >/dev/null 2>&1 || ! command -v pnpm >/dev/null 2>&1; then
+    echo "错误: Node.js 或 pnpm 未安装"
     exit 1
 fi
 
@@ -29,15 +29,15 @@ rm -rf "$BUILD_DIR" "$TARGET_DIR"
 # 安装依赖
 echo "安装依赖..."
 if [ -f "package-lock.json" ]; then
-    npm ci || npm install
+    pnpm ci || pnpm install
 else
-    npm install
+    pnpm install
 fi
 
 # 构建项目
 echo "构建项目..."
 export NODE_ENV=production
-if ! npm run build; then
+if ! pnpm build; then
     echo "错误: 构建失败"
     exit 1
 fi

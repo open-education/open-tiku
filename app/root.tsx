@@ -30,6 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+
         {/* toast 提示位置顶部居中 */}
         <Toaster position="top-center" />
         <ScrollRestoration />

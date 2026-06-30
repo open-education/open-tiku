@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from "react-router";
 import type { Route } from "./+types/main";
-import { BookA, BookOpenText, CheckCheck, ChevronDown, FileQuestionMark, ListFilter, Menu, Settings, X } from "lucide-react";
+import { BookA, BookOpenText, CheckCheck, ChevronDown, FileQuestionMark, Link, Menu, Settings, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 import { Badge } from "~/components/ui/badge";
@@ -38,7 +38,7 @@ const navigationItems: NavItem[] = [
     href: "",
     children: [
       { id: "setting-textbook", label: "章节/考点", icon: BookOpenText, href: "/user/setting/textbook" },
-      { id: "setting-cate", label: "关联题型", icon: ListFilter, href: "/user/setting/cate" },
+      { id: "setting-ck", label: "挂载题型", icon: Link, href: "/user/setting/ck" },
       { id: "setting-dict", label: "通用字典", icon: BookA, href: "/user/setting/dict" },
     ],
   },

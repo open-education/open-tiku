@@ -15,13 +15,21 @@ export interface CreateQuestionCateReq {
   sortOrder: number;
 }
 
-// 获取章节/考点列表
-export interface ChapterKnowledgeIdsReq {
-  ids: number[];
+// 创建关联关系
+export interface CreateChapterKnowledgeReq {
+  chapterId: number;
+  knowledgeId: number;
 }
 
 // 解除关联关系
 export interface RemoveChapterKnowledgeReq {
+  chapterId: number;
+  knowledgeId: number;
+}
+
+// 关联关系
+export interface ChapterKnowledgeResp {
+  id: number;
   chapterId: number;
   knowledgeId: number;
 }
