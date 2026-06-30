@@ -116,12 +116,6 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
   const [removeWarnInfo, setRemoveWarnInfo] = useState<React.ReactNode>("");
   const [removeSuccess, setRemoveSuccess] = useState<boolean>(false);
 
-  const handleRemove = () => {
-    setRemoveWarnInfo("");
-    setRemoveSuccess(false);
-    setRemoveDialogOpen(true);
-  };
-
   const handleSubmitRemove = (item: QuestionCateResp) => {
     setRemoveWarnInfo("");
     setRemoveSuccess(false);
@@ -195,12 +189,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
                       <AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
                         <AlertDialogTrigger
                           render={
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleRemove()}
-                              className="h-8 w-8 text-destructive hover:text-destructive"
-                            >
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           }

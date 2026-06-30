@@ -30,7 +30,7 @@ import { ChapterDropdownNav } from "~/common/nav";
 import { MultiTagSelect, TypeSelect } from "~/common/question/tag";
 import { StringConst, StringValidator } from "~/util/string";
 import { ArrayUtil } from "~/util/object";
-import { useQuestionCates, useQuestionTags, useQuestionTypes, useTextbooks } from "~/util/fetcher";
+import { useQuestionCates, useQuestionOtherDicts, useQuestionTags, useQuestionTypes, useTextbooks } from "~/util/fetcher";
 import { SimpleAlert } from "~/common/alert";
 import { Loading } from "~/common/load";
 import { toast } from "sonner";
@@ -61,6 +61,7 @@ export default function Add({
     eightId: 0,
     typeId: 0,
     tagIds: [],
+    dimensionIds: [],
     id: 0,
     fiveLevelSelectKeys: [],
     eightLevelSelectKeys: [],
@@ -144,11 +145,18 @@ export default function Add({
   }, [fiveLevelId]);
 
   // 查询题目类型和标签
-  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionTypes(twoLevelId);
+  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionOtherDicts(twoLevelId, "question_type");
   const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, "id"), [questionTypes]);
 
-  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionTags(twoLevelId);
+  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionOtherDicts(twoLevelId, "question_tag");
   const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
+
+  const {
+    data: questionDimensions = [],
+    isLoading: questionDimensionsLoading,
+    error: questionDimensionsErr,
+  } = useQuestionOtherDicts(twoLevelId, "question_dimension");
+  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
@@ -357,7 +365,13 @@ export default function Add({
             setSheetTitle("题目详情");
             setSheetDesc("当前仅是预览状态, 需管理员审核通过后题目方可被搜索展示");
             setSheetContent(
-              <QuestionInfo pageSource={{ source: "list" }} questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} infoResp={res} />,
+              <QuestionInfo
+                pageSource={{ source: "list" }}
+                questionTypeDict={questionTypeDict}
+                questionTagDict={questionTagDict}
+                questionDimensionDict={questionDimensionDict}
+                infoResp={res}
+              />,
             );
           })
           .catch((err) => {
@@ -396,7 +410,9 @@ export default function Add({
       {addWarnInfo}
 
       {/* 加载中信息 */}
-      {useDelayedLoading(isLoading || textbooksLoading || questionTypesLoading || questionTagsLoading || questionCatesLoading) && <Loading />}
+      {useDelayedLoading(
+        isLoading || textbooksLoading || questionTypesLoading || questionTagsLoading || questionCatesLoading || questionDimensionsLoading,
+      ) && <Loading />}
       {/* 相关错误信息 */}
 
       {textbooksErr && (
@@ -417,6 +433,11 @@ export default function Add({
       {questionCatesErr && (
         <div className="mt-3">
           <SimpleAlert title="题型类型获取失败" message={questionCatesErr.message} />
+        </div>
+      )}
+      {questionDimensionsErr && (
+        <div className="mt-3">
+          <SimpleAlert title="核心素养获取失败" message={questionDimensionsErr.message} />
         </div>
       )}
 
@@ -536,6 +557,17 @@ export default function Add({
                         options={questionTags}
                         value={addReq.questionTagIds ?? []}
                         onChange={(val) => updateAddReq("questionTagIds", val)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-10 gap-4 items-center">
+                    <div className="col-span-2">核心素养:</div>
+                    <div className="col-span-8">
+                      <MultiTagSelect
+                        options={questionDimensions}
+                        value={addReq.questionDimensionIds ?? []}
+                        onChange={(val) => updateAddReq("questionDimensionIds", val)}
                       />
                     </div>
                   </div>
@@ -909,6 +941,7 @@ export default function Add({
                   pageSource={{ source: "list" }}
                   questionTypeDict={questionTypeDict}
                   questionTagDict={questionTagDict}
+                  questionDimensionDict={questionDimensionDict}
                   infoResp={{
                     baseInfo: {
                       id: 0,

@@ -13,6 +13,7 @@ interface QuestionListShowProps {
   pageSource: QuestionPageSourceProps;
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
   listResp: QuestionListResp;
   questionSearch: QuestionSearch;
   questionListRespMutate: KeyedMutator<QuestionListResp>; // 审核删除等操作需要重置列表接口重新请求数据
@@ -30,6 +31,7 @@ function QuestionListShow({
   pageSource,
   questionTypeDict,
   questionTagDict,
+  questionDimensionDict,
   listResp,
   questionSearch,
   questionListRespMutate,
@@ -52,6 +54,7 @@ function QuestionListShow({
               pageSource={pageSource}
               questionTypeDict={questionTypeDict}
               questionTagDict={questionTagDict}
+              questionDimensionDict={questionDimensionDict}
               questionInfo={questionInfo}
             />
 
@@ -61,6 +64,7 @@ function QuestionListShow({
                 pageSource={pageSource}
                 questionTypeDict={questionTypeDict}
                 questionTagDict={questionTagDict}
+                questionDimensionDict={questionDimensionDict}
                 questionId={questionInfo.id}
                 eightId={questionInfo.questionCateId}
                 status={questionInfo.status}
@@ -85,9 +89,16 @@ interface SingleQuestionCommonPartProps {
   pageSource: QuestionPageSourceProps;
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
   questionInfo: QuestionBaseInfoResp;
 }
-function SingleQuestionCommonPart({ pageSource, questionTypeDict, questionTagDict, questionInfo }: SingleQuestionCommonPartProps) {
+function SingleQuestionCommonPart({
+  pageSource,
+  questionTypeDict,
+  questionTagDict,
+  questionDimensionDict,
+  questionInfo,
+}: SingleQuestionCommonPartProps) {
   return (
     <>
       {/* 标签 */}
@@ -95,7 +106,8 @@ function SingleQuestionCommonPart({ pageSource, questionTypeDict, questionTagDic
         <TagShow
           pageSource={pageSource}
           typeValue={DictUtil.getQuestionTypeName(questionInfo.questionTypeId, questionTypeDict)}
-          tagNames={DictUtil.getQuestionTagNames(questionInfo.questionTagIds ?? [], questionTagDict)}
+          tagNames={DictUtil.getQuestionTagNames(questionInfo.questionTagIds || [], questionTagDict)}
+          dimensionNames={DictUtil.getQuestionDimensionNames(questionInfo.questionDimensionIds || [], questionDimensionDict)}
           difficultyLevelValue={questionInfo.difficultyLevel}
           status={questionInfo.status}
         />
@@ -121,9 +133,10 @@ interface SimilarQuestionListShowProps {
   pageSource: QuestionPageSourceProps;
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
   listResp: QuestionListResp;
 }
-function SimilarQuestionListShow({ pageSource, questionTypeDict, questionTagDict, listResp }: SimilarQuestionListShowProps) {
+function SimilarQuestionListShow({ pageSource, questionTypeDict, questionTagDict, questionDimensionDict, listResp }: SimilarQuestionListShowProps) {
   return (
     <>
       {listResp.list?.map((questionInfo) => {
@@ -137,6 +150,7 @@ function SimilarQuestionListShow({ pageSource, questionTypeDict, questionTagDict
               pageSource={pageSource}
               questionTypeDict={questionTypeDict}
               questionTagDict={questionTagDict}
+              questionDimensionDict={questionDimensionDict}
               questionInfo={questionInfo}
             />
           </div>

@@ -3,7 +3,7 @@ import { ChapterDropdownNav, type SelectNavProps } from "~/common/nav";
 import { MultiTagSelect, StatusSelect, TypeSelect } from "~/common/question/tag";
 import type { QuestionPageSourceProps, QuestionSearch } from "~/type/question";
 import type { Textbook } from "~/type/textbook";
-import { useQuestionCates, useQuestionList, useQuestionTags, useQuestionTypes, useTextbooks } from "~/util/fetcher";
+import { useQuestionCates, useQuestionList, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
 import { useEffect, useMemo, useState } from "react";
 import { createTextbookPathDict } from "~/util/textbook-dict";
 import { ArrayUtil } from "~/util/object";
@@ -44,6 +44,7 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
     eightLevelSelectKeys: [],
     typeId: 0,
     tagIds: [],
+    dimensionIds: [],
     // 我的题目和审核默认查询草稿中的数据
     ...(pageSource.source !== "list" ? { status: 0 } : {}),
   });
@@ -64,11 +65,26 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
   }, [questionSearch.fiveLevelId, pathMap]);
 
   // 查询题目类型和标签
-  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionTypes(questionSearch.twoLevelId);
+  const {
+    data: questionTypes = [],
+    isLoading: questionTypesLoading,
+    error: questionTypesErr,
+  } = useQuestionOtherDicts(questionSearch.twoLevelId, "question_type");
   const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, "id"), [questionTypes]);
 
-  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionTags(questionSearch.twoLevelId);
+  const {
+    data: questionTags = [],
+    isLoading: questionTagsLoading,
+    error: questionTagsErr,
+  } = useQuestionOtherDicts(questionSearch.twoLevelId, "question_tag");
   const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
+
+  const {
+    data: questionDimensions = [],
+    isLoading: questionDimensionsLoading,
+    error: questionDimensionsErr,
+  } = useQuestionOtherDicts(questionSearch.twoLevelId, "question_dimension");
+  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(questionSearch.fiveLevelId);
@@ -201,6 +217,20 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
           </div>
         </div>
 
+        {/* 核心素养 */}
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">核心素养:</div>
+          <div className="flex-1 min-w-0">
+            <MultiTagSelect
+              options={questionDimensions}
+              value={questionSearch.dimensionIds}
+              onChange={(val) => {
+                updateQuestionSearch("dimensionIds", val);
+              }}
+            />
+          </div>
+        </div>
+
         {/* 我的题目和审核可以自己选择状态 */}
         {pageSource.source !== "list" && (
           <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
@@ -287,10 +317,21 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
           <SimpleAlert title="题目列表获取失败" message={questionListRespErr.message} />
         </div>
       )}
+      {questionDimensionsErr && (
+        <div className="mt-3">
+          <SimpleAlert title="核心素养获取失败" message={questionDimensionsErr.message} />
+        </div>
+      )}
 
       {/* 相关加载中 */}
       {useDelayedLoading(
-        isLoading || textbooksLoading || questionTypesLoading || questionTagsLoading || questionCatesLoading || questionListRespLoading,
+        isLoading ||
+          textbooksLoading ||
+          questionTypesLoading ||
+          questionTagsLoading ||
+          questionCatesLoading ||
+          questionListRespLoading ||
+          questionDimensionsLoading,
       ) && <Loading />}
 
       {/* 题目列表 */}
@@ -299,6 +340,7 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
           pageSource={pageSource}
           questionTypeDict={questionTypeDict}
           questionTagDict={questionTagDict}
+          questionDimensionDict={questionDimensionDict}
           listResp={questionListResp}
           questionSearch={questionSearch}
           questionListRespMutate={questionListRespMutate}

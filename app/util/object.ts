@@ -33,4 +33,8 @@ export const DictUtil = {
   getQuestionTagNames: (tagIds: number[], dict: Record<number, TextbookOtherDict>): string[] => {
     return tagIds.map((id) => dict[id]?.itemValue).filter((name): name is string => name !== undefined);
   },
+
+  getQuestionDimensionNames: (dimensionIds: number[], dict: Record<number, TextbookOtherDict>): string[] => {
+    return dimensionIds.map((id) => dict[id]?.itemValue).filter((name): name is string => name !== undefined);
+  },
 };

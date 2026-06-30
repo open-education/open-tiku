@@ -17,9 +17,10 @@ interface QuestionInfoProps {
   pageSource: QuestionPageSourceProps;
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
   infoResp: QuestionInfoResp;
 }
-function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp }: QuestionInfoProps) {
+function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionDimensionDict, infoResp }: QuestionInfoProps) {
   // 有详情返回时优先详情返回, 否则理解为预览数据
   const { baseInfo, extraInfo } = infoResp;
 
@@ -44,7 +45,8 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp 
             <TagShow
               pageSource={pageSource}
               typeValue={DictUtil.getQuestionTypeName(baseInfo.questionTypeId, questionTypeDict)}
-              tagNames={DictUtil.getQuestionTagNames(baseInfo.questionTagIds ?? [], questionTagDict)}
+              tagNames={DictUtil.getQuestionTagNames(baseInfo.questionTagIds || [], questionTagDict)}
+              dimensionNames={DictUtil.getQuestionDimensionNames(baseInfo.questionDimensionIds || [], questionDimensionDict)}
               difficultyLevelValue={baseInfo.difficultyLevel}
               status={baseInfo.status}
             />
@@ -86,9 +88,9 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp 
             <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
             <div>
               <h4 className="font-semibold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider mb-1">参考答案</h4>
-              <p className=" text-emerald-700 dark:text-emerald-300">
+              <div className=" text-emerald-700 dark:text-emerald-300">
                 <SimpleFullContent content={extraInfo.answer ?? ""} />
-              </p>
+              </div>
             </div>
           </div>
 
@@ -100,9 +102,9 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp 
               <Lightbulb className="w-4 h-4" />
               <span>解题分析</span>
             </div>
-            <p className="leading-relaxed text-gray-700 dark:text-gray-300">
+            <div className="leading-relaxed text-gray-700 dark:text-gray-300">
               <SimpleFullContent content={extraInfo.analysis?.content ?? ""} />
-            </p>
+            </div>
           </div>
 
           {/* 解题过程 */}
@@ -111,9 +113,9 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp 
               <Lightbulb className="w-4 h-4" />
               <span>解题过程</span>
             </div>
-            <p className="leading-relaxed text-gray-700 dark:text-gray-300">
+            <div className="leading-relaxed text-gray-700 dark:text-gray-300">
               <SimpleFullContent content={extraInfo.process?.content ?? ""} />
-            </p>
+            </div>
           </div>
 
           {/* 解题过程 - 时间线步骤 */}
@@ -151,9 +153,9 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, infoResp 
             <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
             <div>
               <h4 className="text-amber-700 dark:text-amber-300 uppercase tracking-wider mb-0.5">易错备注</h4>
-              <p className="text-amber-800/80 dark:text-amber-300/80 leading-relaxed">
+              <div className="text-amber-800/80 dark:text-amber-300/80 leading-relaxed">
                 <SimpleFullContent content={extraInfo.remark ?? ""} />
-              </p>
+              </div>
             </div>
           </div>
         </CardContent>

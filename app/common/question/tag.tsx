@@ -157,10 +157,11 @@ interface TagShowProps {
   pageSource: QuestionPageSourceProps;
   typeValue: string;
   tagNames: string[];
+  dimensionNames: string[];
   difficultyLevelValue: number;
   status: number;
 }
-function TagShow({ pageSource, typeValue, tagNames, difficultyLevelValue, status }: TagShowProps) {
+function TagShow({ pageSource, typeValue, tagNames, dimensionNames, difficultyLevelValue, status }: TagShowProps) {
   // 生成标签列表
   const getBadges = () => {
     // 题目类型
@@ -174,6 +175,15 @@ function TagShow({ pageSource, typeValue, tagNames, difficultyLevelValue, status
     const tagNode = tagNames.map((val) => {
       return (
         <Badge className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300 text-sm" key={val}>
+          {val}
+        </Badge>
+      );
+    });
+
+    // 核心素养
+    const dimensionNode = dimensionNames.map((val) => {
+      return (
+        <Badge className="bg-green-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300 text-sm" key={val}>
           {val}
         </Badge>
       );
@@ -200,6 +210,7 @@ function TagShow({ pageSource, typeValue, tagNames, difficultyLevelValue, status
       <>
         {typeNode}
         {tagNode}
+        {dimensionNode}
         {difficultyNode}
         {statusDesc}
       </>
@@ -217,6 +228,7 @@ interface OperateTagsProps {
   status: number; // 题目状态
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
   questionSearch: QuestionSearch;
   questionListRespMutate: KeyedMutator<QuestionListResp>;
 
@@ -236,6 +248,7 @@ function OperateTags({
   status,
   questionTypeDict,
   questionTagDict,
+  questionDimensionDict,
   questionSearch,
   questionListRespMutate,
   setOpenSheet,
@@ -253,7 +266,13 @@ function OperateTags({
       .then((res) => {
         setSheetTitle("查看详情");
         setSheetContent(
-          <QuestionInfo pageSource={pageSource} questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} infoResp={res} />,
+          <QuestionInfo
+            pageSource={pageSource}
+            questionTypeDict={questionTypeDict}
+            questionTagDict={questionTagDict}
+            questionDimensionDict={questionDimensionDict}
+            infoResp={res}
+          />,
         );
         setOpenSheet(true);
       })
@@ -311,7 +330,13 @@ function OperateTags({
     setSheetTitle("变式题列表");
     setSheetDesc("变式题暂不支持查看详情");
     setSheetContent(
-      <SimilarQuestionList questionTypeDict={questionTypeDict} questionTagDict={questionTagDict} questionId={questionId} eightId={eightId} />,
+      <SimilarQuestionList
+        questionTypeDict={questionTypeDict}
+        questionTagDict={questionTagDict}
+        questionDimensionDict={questionDimensionDict}
+        questionId={questionId}
+        eightId={eightId}
+      />,
     );
     setOpenSheet(true);
   };
@@ -441,7 +466,7 @@ function OperateTags({
     // 我的题目页面状态为草稿中才会出现提交审核
     if (source === "myQuestion" && status === QuestionStatus.Drafing) {
       buttons.push(
-        <Dialog>
+        <Dialog key="myQuestionSubmit">
           <DialogTrigger render={<Button variant="link">提交审核</Button>} />
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
@@ -470,7 +495,7 @@ function OperateTags({
     // 我的审核页面状态为待审核的数据才会出现审核按钮
     if (source === "myReview" && status === QuestionStatus.Pending) {
       buttons.push(
-        <Dialog>
+        <Dialog key="myReviewApprove">
           <DialogTrigger render={<Button variant="link">题目审核</Button>} />
           <DialogContent>
             <DialogHeader>
@@ -549,7 +574,7 @@ function OperateTags({
     // 我的题目可以删除题目
     if (source === "myQuestion") {
       buttons.push(
-        <Dialog>
+        <Dialog key="myQuestionDelete">
           <DialogTrigger render={<Button variant="link">删除</Button>} />
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
