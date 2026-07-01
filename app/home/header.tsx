@@ -1,20 +1,24 @@
-import { FileQuestionMark, LogOutIcon, Menu, ScrollText, Home, BookOpen, FileText, UserRound } from "lucide-react";
+import { FileQuestionMark, LogOutIcon, Menu, ScrollText, Home, BookOpen, FileText, UserRound, UserKey } from "lucide-react";
 import { useState } from "react";
 import { NavLink } from "react-router";
 import { Button } from "~/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "~/components/ui/popover";
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet";
+import type { UserInfoResp } from "~/type/user";
 import { Login } from "~/user/login";
 
 /// 网站头部导航
 
-function Header() {
-  const [isLogin, setIsLogin] = useState<boolean>(true);
+interface HeaderProps {
+  currentUser?: UserInfoResp | null;
+}
+function Header({ currentUser }: HeaderProps) {
+  const [isLogin, setIsLogin] = useState<boolean>((currentUser && currentUser?.userId > 0) || false);
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  // 模拟用户名（实际从你的状态中获取）
-  const username = "zhangguangxun1";
+  // 实际从你的状态中获取
+  const username = currentUser?.email || currentUser?.username || "";
 
   // 用户中心配置
   const userItems = [
@@ -220,11 +224,20 @@ function Header() {
             <div>
               {/* 未登录显示登录按钮 - 所有屏幕均显示，但移动端可能更紧凑 */}
               <Popover>
-                <PopoverTrigger render={<Button variant="ghost">登录</Button>} />
+                <PopoverTrigger
+                  render={
+                    <Button variant="ghost" className="text-sm">
+                      <UserKey />
+                      账户登录
+                    </Button>
+                  }
+                />
                 <PopoverContent align="start">
                   <PopoverHeader>
-                    <PopoverTitle>账号登录</PopoverTitle>
-                    <PopoverDescription>为了隐私安全不支持注册, 也不收集除昵称外的任何信息, 作为用户也不要提供任何真实信息</PopoverDescription>
+                    <PopoverTitle className="text-base font-bold">账号登录</PopoverTitle>
+                    <PopoverDescription className="text-sm">
+                      为了隐私安全不支持注册, 也不收集除昵称外的任何信息, 作为用户也不要提供任何真实信息; 因此也不提供账户注册.
+                    </PopoverDescription>
                   </PopoverHeader>
                   <Login />
                 </PopoverContent>
