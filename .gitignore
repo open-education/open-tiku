@@ -15,6 +15,3 @@ target
 # ignore public images and files
 public/files
 public/images
-
-# npm 运行生成的 lock 不提交
-package.json

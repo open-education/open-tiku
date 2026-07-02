@@ -8,9 +8,12 @@ import { Input } from "~/components/ui/input";
 export function Login() {
   const [isRedirecting, setIsRedirecting] = useState(false);
 
+  // 认证登录重定向地址
+  const githubRedirectUrl = import.meta.env.VITE_GITHUB_CALLBACK_URL;
+
   const handleLogin = () => {
     setIsRedirecting(true);
-    window.location.href = "https://github.com/login/oauth/authorize?client_id=Iv23liQIRQ4ry6RxTelg";
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=Iv23liIsMUEOMyDagK0H&redirect_uri=${encodeURIComponent(githubRedirectUrl)}`;
   };
 
   return (
@@ -48,12 +51,9 @@ export function Login() {
               <FieldSeparator className="text-sm">Or continue with</FieldSeparator>
 
               <Field>
-                <Button variant="outline" type="button" className="w-full text-sm" onClick={handleLogin} disabled={isRedirecting}>
+                <Button variant="secondary" className="w-full text-sm" onClick={handleLogin} disabled={isRedirecting}>
                   {isRedirecting ? (
-                    <>
-                      <span className="mr-2 h-4 w-4 animate-spin border border-current border-t-transparent" />
-                      跳转中...
-                    </>
+                    "跳转中..."
                   ) : (
                     <>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
