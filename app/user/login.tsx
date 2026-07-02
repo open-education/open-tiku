@@ -51,7 +51,7 @@ export function Login() {
               <FieldSeparator className="text-sm">Or continue with</FieldSeparator>
 
               <Field>
-                <Button variant="secondary" className="w-full text-sm" onClick={handleLogin} disabled={isRedirecting}>
+                <Button variant="secondary" className="w-full text-sm justify-start" onClick={handleLogin} disabled={isRedirecting}>
                   {isRedirecting ? (
                     "跳转中..."
                   ) : (

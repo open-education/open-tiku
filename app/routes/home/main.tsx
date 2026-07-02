@@ -2,9 +2,9 @@ import type { Route } from "./+types/main";
 import { Footer } from "~/home/footer";
 import { Header } from "~/home/header";
 import { Outlet, useNavigate } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { httpClient } from "~/util/http";
-import type { ExchangeTokenReq, UserInfoResp, UserLoginReq } from "~/type/user";
+import type { UserInfoResp } from "~/type/user";
 import { toast } from "sonner";
 import "katex/dist/katex.min.css";
 
