@@ -101,7 +101,7 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
     isLoading: questionListRespLoading,
     error: questionListRespErr,
     mutate: questionListRespMutate,
-  } = useQuestionList(questionSearch, pageNo);
+  } = useQuestionList(pageSource.source, questionSearch, pageNo);
 
   // 页面加载中
   const [isLoading, setIsLoading] = useState<boolean>(false);

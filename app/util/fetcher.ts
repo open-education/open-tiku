@@ -68,8 +68,9 @@ export function useQuestionTags(twoLevelId: number) {
 }
 
 // 题目列表
-export function useQuestionList(search: QuestionSearch, pageNo: number) {
+export function useQuestionList(source: string, search: QuestionSearch, pageNo: number) {
   const req: QuestionListReq = {
+    source,
     questionCateId: search.eightId,
     pageNo: pageNo,
     pageSize: StringConst.pageSize,

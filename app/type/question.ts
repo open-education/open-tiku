@@ -87,6 +87,7 @@ export interface QuestionInfoResp {
 
 // 题目列表请求
 export interface QuestionListReq {
+  source: string;
   questionCateId: number;
   questionTypeId?: number;
   ids?: number[];
