@@ -1,7 +1,7 @@
 import type { Route } from "./+types/main";
 import { Footer } from "~/home/footer";
 import { Header } from "~/home/header";
-import { Outlet } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { httpClient } from "~/util/http";
 import type { ExchangeTokenReq, UserInfoResp, UserLoginReq } from "~/type/user";
@@ -22,57 +22,49 @@ export function meta({}: Route.MetaArgs) {
 // 首页样式后续根据需要调整, 需要将所有请求封装进入组件挂载时请求
 // 其它页面后续替换只保留静态的头和底
 export default function Main() {
-  const [currentUser, setCurrentUser] = useState<UserInfoResp | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // 1. 检测 URL 中是否有 Hash 参数, 此时是换取登录 token
-    const hash = window.location.hash;
-    const params = new URLSearchParams(hash.substring(1)); // 去掉 #
-    const tempToken = params.get("temp_token");
-    if (tempToken) {
-      const tempReq: ExchangeTokenReq = {
-        tempToken,
-      };
+    const params = new URLSearchParams(window.location.search);
+    const tempToken = params.get("token");
 
-      // 换取登录 token
+    const clearAuth = () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.dispatchEvent(new Event("user-update"));
+    };
+
+    if (tempToken) {
+      // 临时换票流程
       httpClient
-        .post<string>("/user/exchange", tempReq)
-        .then((tempRes) => {
-          // 实际登录
-          const loginReq: UserLoginReq = {
-            token: tempRes,
-          };
-          httpClient
-            .post<UserInfoResp>("/user/login", loginReq)
-            .then((res) => {
-              // 登录成功 记录 token 到 localStorage
-              localStorage.setItem("token", tempRes);
-              // 清除 URL 中的 Hash（防止刷新页面重复使用令牌）
-              window.history.replaceState(null, "", window.location.pathname);
-              setCurrentUser(res);
-            })
-            .catch((loginErr) => {
-              toast.error(<div className="text-red-700">{loginErr.message}</div>);
-              localStorage.removeItem("token");
-            });
+        .post<string>("/user/exchange", { tempToken })
+        .then((realToken) => httpClient.post<UserInfoResp>("/user/login", { token: realToken }).then((userInfo) => ({ realToken, userInfo })))
+        .then(({ realToken, userInfo }) => {
+          localStorage.setItem("token", realToken);
+          localStorage.setItem("user", JSON.stringify(userInfo));
+          window.history.replaceState(null, "", window.location.pathname);
+          window.dispatchEvent(new Event("user-update"));
+          navigate("/", { replace: true }); // 登录成功跳转
         })
         .catch((err) => {
-          toast.error(<div className="text-red-700">{err.message}</div>);
+          toast.error(err.message);
+          clearAuth();
         });
     } else {
-      // 如果本地有存储 token 尝试请求看是否还在生效中
-      const loginToken = localStorage.getItem("token");
-      console.log("loginToken: ", loginToken);
-      if (loginToken) {
+      // 静默登录：检查本地 token 是否有效
+      const token = localStorage.getItem("token");
+      if (token) {
         httpClient
-          .get(`/user/info/${loginToken}`)
-          .then((res) => {
-            setCurrentUser(res);
+          .get<UserInfoResp>(`/user/info/${token}`)
+          .then((userInfo) => {
+            localStorage.setItem("user", JSON.stringify(userInfo));
+            window.dispatchEvent(new Event("user-update"));
           })
-          .catch((err) => {
-            toast.error(<div className="text-red-700">{err.message}</div>);
-            localStorage.removeItem("token");
+          .catch(() => {
+            clearAuth(); // token 失效，清除
           });
+      } else {
+        clearAuth(); // 无 token，确保 user 为空
       }
     }
   }, []);
@@ -80,7 +72,7 @@ export default function Main() {
   return (
     <div className="text-foreground bg-gray-100 min-h-screen flex flex-col">
       {/* 网站首页头部 */}
-      <Header currentUser={currentUser} />
+      <Header />
 
       {/* 替换网站内容 */}
       <div className="flex-1 overflow-auto">

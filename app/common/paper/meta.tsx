@@ -12,6 +12,8 @@ import { toast } from "sonner";
 import { NavLink } from "react-router";
 import Add from "~/paper/add";
 import { Button } from "~/components/ui/button";
+import type { UserInfoResp } from "~/type/user";
+import { useUser } from "~/hooks/useUser";
 
 /// 试卷元数据
 
@@ -140,6 +142,9 @@ function ExamPaperMeta({
   setSheetDesc,
   setSheetContent,
 }: ExamPaperMetaProps) {
+  // 获取用户信息
+  const currentUser: UserInfoResp | null = useUser();
+
   // 生成题型样式
   const getGroupName = (index: number, typeName: string, subTitle: string) => {
     const groupName = subTitle
@@ -172,10 +177,12 @@ function ExamPaperMeta({
           </div>
 
           <div>
-            <Button variant="outline" className="text-sm" onClick={handleEdit}>
-              <SquarePen className="mr-2 h-4 w-4" />
-              编辑
-            </Button>
+            {currentUser && (
+              <Button variant="outline" className="text-sm" onClick={handleEdit}>
+                <SquarePen className="mr-2 h-4 w-4" />
+                编辑
+              </Button>
+            )}
           </div>
         </>
       )}

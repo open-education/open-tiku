@@ -22,6 +22,8 @@ import { SimpleSheet } from "~/common/sheet";
 import { SimpleNoData } from "~/common/empty";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Plus } from "lucide-react";
+import type { UserInfoResp } from "~/type/user";
+import { useUser } from "~/hooks/useUser";
 
 // 重新网页标题等
 export function meta({}: Route.MetaArgs) {
@@ -41,6 +43,9 @@ const defaultMetaSearch: PaperMetaSearch = {
 
 // 试卷管理首页
 export default function Index() {
+  // 获取用户信息
+  const currentUser: UserInfoResp | null = useUser();
+
   const location = useLocation();
   // 首页可能传递过来已经选择好的导航级联信息keys列表
   const selectNavProps: SelectNavProps = location.state?.selectNavProps ?? {};
@@ -169,10 +174,12 @@ export default function Index() {
           <div className="md:w-24 shrink-0 font-medium">操作:</div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap gap-1">
-              <Button variant="outline" onClick={addExamSheet} className="text-sm">
-                <Plus className="mr-2 h-4 w-4" />
-                添加试卷
-              </Button>
+              {currentUser && (
+                <Button variant="outline" onClick={addExamSheet} className="text-sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  添加试卷
+                </Button>
+              )}
             </div>
           </div>
         </div>

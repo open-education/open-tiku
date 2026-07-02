@@ -23,6 +23,8 @@ import {
 } from "~/components/ui/dialog";
 import { QuestionStatus } from "~/util/enum";
 import type { KeyedMutator } from "swr";
+import type { UserInfoResp } from "~/type/user";
+import { useUser } from "~/hooks/useUser";
 
 /// 题目题目相关标签选择器
 
@@ -455,6 +457,9 @@ function OperateTags({
 
   // 题目标签按钮处理
   const renderButtons = (source: string) => {
+    // 获取用户信息
+    const currentUser: UserInfoResp | null = useUser();
+
     // 详情按钮-所有地方均有
     const buttons = [
       <Button key="detail" variant="link" onClick={handleViewInfo}>
@@ -464,7 +469,7 @@ function OperateTags({
 
     // 提交审核
     // 我的题目页面状态为草稿中才会出现提交审核
-    if (source === "myQuestion" && status === QuestionStatus.Drafing) {
+    if (currentUser && source === "myQuestion" && status === QuestionStatus.Drafing) {
       buttons.push(
         <Dialog key="myQuestionSubmit">
           <DialogTrigger render={<Button variant="link">提交审核</Button>} />
@@ -493,7 +498,7 @@ function OperateTags({
 
     // 审核题目
     // 我的审核页面状态为待审核的数据才会出现审核按钮
-    if (source === "myReview" && status === QuestionStatus.Pending) {
+    if (currentUser && source === "myReview" && status === QuestionStatus.Pending) {
       buttons.push(
         <Dialog key="myReviewApprove">
           <DialogTrigger render={<Button variant="link">题目审核</Button>} />
@@ -547,7 +552,7 @@ function OperateTags({
     }
 
     // 编辑, 审核不能编辑别人的信息, 更不能自己编辑自己审核
-    if (pageSource.source !== "myReview") {
+    if (currentUser && pageSource.source !== "myReview") {
       buttons.push(
         <Button key="edit" variant="link" onClick={handleEditInfo}>
           编辑
@@ -556,7 +561,7 @@ function OperateTags({
     }
 
     // 添加变式题只有普通页面可以操作
-    if (source === "list") {
+    if (currentUser && source === "list") {
       buttons.push(
         <Button key="similar" variant="link" onClick={handleSimilarAdd}>
           添加变式题

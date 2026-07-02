@@ -5,16 +5,18 @@ import { Button } from "~/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "~/components/ui/popover";
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet";
+import { useUser } from "~/hooks/useUser";
 import type { UserInfoResp } from "~/type/user";
 import { Login } from "~/user/login";
+import { httpClient } from "~/util/http";
 
 /// 网站头部导航
 
-interface HeaderProps {
-  currentUser?: UserInfoResp | null;
-}
-function Header({ currentUser }: HeaderProps) {
-  const [isLogin, setIsLogin] = useState<boolean>((currentUser && currentUser?.userId > 0) || false);
+function Header() {
+  // 获取用户信息
+  const currentUser: UserInfoResp | null = useUser();
+
+  const isLogin = currentUser && currentUser?.userId > 0;
   const [sheetOpen, setSheetOpen] = useState(false);
 
   // 实际从你的状态中获取
@@ -47,6 +49,23 @@ function Header({ currentUser }: HeaderProps) {
 
   const closeSheet = () => setSheetOpen(false);
   const openSheet = () => setSheetOpen(true);
+
+  // 退出登录
+  const handleLogout = () => {
+    httpClient
+      .get<boolean>("/user/logout")
+      .then(() => {
+        window.dispatchEvent(new Event("user-update"));
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/";
+      });
+  };
 
   return (
     <header className="sticky top-0 z-50 h-14 border-b border-border bg-background/95 backdrop-blur-sm px-2 sm:px-4">
@@ -205,7 +224,7 @@ function Header({ currentUser }: HeaderProps) {
 
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem variant="destructive">
+                    <DropdownMenuItem variant="destructive" onClick={handleLogout}>
                       <LogOutIcon />
                       Log out
                     </DropdownMenuItem>
