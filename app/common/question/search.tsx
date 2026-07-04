@@ -20,6 +20,8 @@ import Add from "~/question/add";
 import { TaskAdd, TaskListShow } from "~/question/task";
 import { Button } from "~/components/ui/button";
 import { Plus, Upload, View } from "lucide-react";
+import type { UserInfoResp } from "~/type/user";
+import { useUser } from "~/hooks/useUser";
 
 // 题目搜索页面
 interface QuestionSearchProps {
@@ -28,6 +30,9 @@ interface QuestionSearchProps {
 }
 
 function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps) {
+  // 获取用户信息
+  const currentUser: UserInfoResp | null = useUser();
+
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
   // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
@@ -96,7 +101,7 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
     isLoading: questionListRespLoading,
     error: questionListRespErr,
     mutate: questionListRespMutate,
-  } = useQuestionList(questionSearch, pageNo);
+  } = useQuestionList(pageSource.source, questionSearch, pageNo);
 
   // 页面加载中
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -262,14 +267,18 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
             <div className="md:w-24 shrink-0 font-medium">操作:</div>
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap gap-1">
-                <Button variant="outline" className="text-sm" onClick={handleQuestionAdd}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  添加题目
-                </Button>
-                <Button variant="outline" className="text-sm" onClick={handleTaskAdd}>
-                  <Upload className="mr-2 h-4 w-4" />
-                  上传题目
-                </Button>
+                {currentUser && (
+                  <>
+                    <Button variant="outline" className="text-sm" onClick={handleQuestionAdd}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      添加题目
+                    </Button>
+                    <Button variant="outline" className="text-sm" onClick={handleTaskAdd}>
+                      <Upload className="mr-2 h-4 w-4" />
+                      上传题目
+                    </Button>
+                  </>
+                )}
                 <Button variant="outline" className="text-sm" onClick={handleTaskList}>
                   <View className="mr-2 h-4 w-4" />
                   查看任务

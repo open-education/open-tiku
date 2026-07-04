@@ -55,21 +55,10 @@ export function useQuestionCates(fiveLevelId: number) {
   return useSWRImmutable<Textbook[]>(key, httpClient.get);
 }
 
-// 题目类型列表-第2层标识
-export function useQuestionTypes(twoLevelId: number) {
-  const key = twoLevelId > 0 ? `/other/dict/list/${twoLevelId}/question_type` : null;
-  return useSWRImmutable<TextbookOtherDict[]>(key, httpClient.get);
-}
-
-// 题目标签列表-第2层标识
-export function useQuestionTags(twoLevelId: number) {
-  const key = twoLevelId > 0 ? `/other/dict/list/${twoLevelId}/question_tag` : null;
-  return useSWRImmutable<TextbookOtherDict[]>(key, httpClient.get);
-}
-
 // 题目列表
-export function useQuestionList(search: QuestionSearch, pageNo: number) {
+export function useQuestionList(source: string, search: QuestionSearch, pageNo: number) {
   const req: QuestionListReq = {
+    source,
     questionCateId: search.eightId,
     pageNo: pageNo,
     pageSize: StringConst.pageSize,

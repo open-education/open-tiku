@@ -1,4 +1,4 @@
-import { QuestionStatus } from "./enum";
+import { QuestionStatus } from "~/util/enum";
 
 // 字符串验证工具类
 export const StringValidator = {

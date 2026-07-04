@@ -53,6 +53,7 @@ export interface QuestionBaseInfoResp {
   questionTagIds?: number[];
   questionDimensionIds?: number[];
   authorId?: number;
+  authorName?: string;
   originalName: string;
   source?: string;
   status: number;
@@ -87,6 +88,7 @@ export interface QuestionInfoResp {
 
 // 题目列表请求
 export interface QuestionListReq {
+  source: string;
   questionCateId: number;
   questionTypeId?: number;
   ids?: number[];

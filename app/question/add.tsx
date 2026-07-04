@@ -30,7 +30,7 @@ import { ChapterDropdownNav } from "~/common/nav";
 import { MultiTagSelect, TypeSelect } from "~/common/question/tag";
 import { StringConst, StringValidator } from "~/util/string";
 import { ArrayUtil } from "~/util/object";
-import { useQuestionCates, useQuestionOtherDicts, useQuestionTags, useQuestionTypes, useTextbooks } from "~/util/fetcher";
+import { useQuestionCates, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
 import { SimpleAlert } from "~/common/alert";
 import { Loading } from "~/common/load";
 import { toast } from "sonner";
@@ -573,7 +573,7 @@ export default function Add({
                   </div>
 
                   <div className="grid grid-cols-10 gap-4 items-center">
-                    <div className="col-span-2">原创者:</div>
+                    <div className="col-span-2">创作者:</div>
                     <div className="col-span-8">
                       <Input
                         id="originalName"

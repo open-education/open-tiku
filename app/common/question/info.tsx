@@ -27,12 +27,16 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionD
   return (
     <div className="space-y-4 pl-4 pb-4 pr-4">
       {/* 我的题目审核如果被拒绝要显示拒绝原因, 修改后重新提交审核 */}
-      {baseInfo.status === QuestionStatus.Rejected && <SimpleAlert title="你的题目审核被拒绝" message={baseInfo.rejectReason || ""} />}
+      {baseInfo.status === QuestionStatus.Rejected && (
+        <SimpleAlert title="你的题目审核被拒绝, 请按拒绝原因修改后重新提交审核" message={baseInfo.rejectReason || ""} />
+      )}
 
       {/* 来源和备注, 只展示存在的信息 */}
-      <div className="text-sm flex flex-col gap-1 border p-4">
+      <div className="text-xs flex flex-col gap-1 border p-4">
         <div>创建时间: {baseInfo.createdAt}</div>
-        {baseInfo.originalName && <div>原创者昵称: {baseInfo.originalName}</div>}
+        <div>作者昵称: {baseInfo.authorName || ""}</div>
+        {baseInfo.originalName && <div>创作者昵称: {baseInfo.originalName}</div>}
+        {baseInfo.source && <div>来源: {baseInfo.source}</div>}
         <div>更新时间: {baseInfo.updatedAt}</div>
         {baseInfo.approveAt && <div>审核时间: {baseInfo.approveAt}</div>}
       </div>

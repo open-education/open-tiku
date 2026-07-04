@@ -98,11 +98,11 @@ export default function Index() {
   const [dailogContent, setDailogContent] = useState<React.ReactNode>("");
 
   // 添加菜单
-  const handleAdd = (levelName: string, pathDepth: number, mutateCallback: KeyedMutator<Textbook[]>, parentId?: number) => {
+  const handleAdd = (levelName: string, pathDepth: number, path: string, mutateCallback: KeyedMutator<Textbook[]>, parentId?: number) => {
     setDailogOpen(true);
     setDailogTitle("添加菜单");
     setDailogDesc(`追加 ${levelName} 的子菜单`);
-    setDailogContent(<Add parentId={parentId} pathDepth={pathDepth} onClose={setDailogOpen} mutateCallback={mutateCallback} />);
+    setDailogContent(<Add parentId={parentId} pathDepth={pathDepth} path={path} onClose={setDailogOpen} mutateCallback={mutateCallback} />);
   };
 
   // 编辑菜单
@@ -167,7 +167,7 @@ export default function Index() {
             }}
             onEdit={(item) => handleEdit(firstLevelName, 1, item, firstLevelsMutate)}
             onDelete={(item) => handleDelete(firstLevelName, item, firstLevelsMutate)}
-            onAdd={() => handleAdd(firstLevelName, 1, firstLevelsMutate)}
+            onAdd={() => handleAdd(firstLevelName, 1, "", firstLevelsMutate)}
           />
         </div>
 
@@ -191,7 +191,7 @@ export default function Index() {
             }}
             onEdit={(item) => handleEdit(secondLevelName, 2, item, secondLevelsMutate, secondLevelParentId)}
             onDelete={(item) => handleDelete(secondLevelName, item, secondLevelsMutate)}
-            onAdd={() => handleAdd(secondLevelName, 2, secondLevelsMutate, secondLevelParentId)}
+            onAdd={() => handleAdd(secondLevelName, 2, `${secondLevelParentId}`, secondLevelsMutate, secondLevelParentId)}
           />
         </div>
 
@@ -214,7 +214,7 @@ export default function Index() {
             }}
             onEdit={(item) => handleEdit(thirdLevelName, 3, item, thirdLevelsMutate, thirdLevelParentId)}
             onDelete={(item) => handleDelete(thirdLevelName, item, thirdLevelsMutate)}
-            onAdd={() => handleAdd(thirdLevelName, 3, thirdLevelsMutate, thirdLevelParentId)}
+            onAdd={() => handleAdd(thirdLevelName, 3, `${secondLevelParentId}/${thirdLevelParentId}`, thirdLevelsMutate, thirdLevelParentId)}
           />
         </div>
 
@@ -236,7 +236,15 @@ export default function Index() {
             }}
             onEdit={(item) => handleEdit(forthLevelName, 4, item, forthLevelsMutate, forthLevelParentId)}
             onDelete={(item) => handleDelete(forthLevelName, item, forthLevelsMutate)}
-            onAdd={() => handleAdd(forthLevelName, 4, forthLevelsMutate, forthLevelParentId)}
+            onAdd={() =>
+              handleAdd(
+                forthLevelName,
+                4,
+                `${secondLevelParentId}/${thirdLevelParentId}/${forthLevelParentId}`,
+                forthLevelsMutate,
+                forthLevelParentId,
+              )
+            }
           />
         </div>
 
@@ -257,7 +265,15 @@ export default function Index() {
             }}
             onEdit={(item) => handleEdit(fifthLevelName, 5, item, fifthLevelsMutate, fifthLevelParentId)}
             onDelete={(item) => handleDelete(fifthLevelName, item, fifthLevelsMutate)}
-            onAdd={() => handleAdd(fifthLevelName, 5, fifthLevelsMutate, fifthLevelParentId)}
+            onAdd={() =>
+              handleAdd(
+                fifthLevelName,
+                5,
+                `${secondLevelParentId}/${thirdLevelParentId}/${forthLevelParentId}/${fifthLevelParentId}`,
+                fifthLevelsMutate,
+                fifthLevelParentId,
+              )
+            }
           />
         </div>
 
@@ -275,7 +291,15 @@ export default function Index() {
             }}
             onEdit={(item) => handleEdit(sixthLevelName, 6, item, sixthLevelsMutate, sixthLevelParentId)}
             onDelete={(item) => handleDelete(sixthLevelName, item, sixthLevelsMutate)}
-            onAdd={() => handleAdd(sixthLevelName, 6, sixthLevelsMutate, sixthLevelParentId)}
+            onAdd={() =>
+              handleAdd(
+                sixthLevelName,
+                6,
+                `${secondLevelParentId}/${thirdLevelParentId}/${forthLevelParentId}/${fifthLevelParentId}/${sixthLevelParentId}`,
+                sixthLevelsMutate,
+                sixthLevelParentId,
+              )
+            }
           />
         </div>
 
@@ -289,7 +313,15 @@ export default function Index() {
             onClear={(id) => {}}
             onEdit={(item) => handleEdit(seventhLevelName, 7, item, seventhLevelsMutate, seventhLevelParentId)}
             onDelete={(item) => handleDelete(seventhLevelName, item, seventhLevelsMutate)}
-            onAdd={() => handleAdd(seventhLevelName, 7, seventhLevelsMutate, seventhLevelParentId)}
+            onAdd={() =>
+              handleAdd(
+                seventhLevelName,
+                7,
+                `${secondLevelParentId}/${thirdLevelParentId}/${forthLevelParentId}/${fifthLevelParentId}/${sixthLevelParentId}/${seventhLevelParentId}`,
+                seventhLevelsMutate,
+                seventhLevelParentId,
+              )
+            }
           />
         </div>
       </div>
@@ -430,11 +462,12 @@ function Item({ isSelected = false, item, onViewList, onEdit, onDelete }: ItemPr
 interface AddProps {
   parentId?: number; // 父级标识, 第一级不传
   pathDepth: number; // 深度
+  path?: string; // 记录根节点至当前节点的父路径
   item?: Textbook; // 现有菜单值
   onClose: (val: boolean) => void; // 取消暂时什么都不做
   mutateCallback?: KeyedMutator<Textbook[]>; // 操作完毕后是否需要请求回调刷新缓存
 }
-function Add({ parentId, pathDepth, item, onClose, mutateCallback }: AddProps) {
+function Add({ parentId, pathDepth, path = "", item, onClose, mutateCallback }: AddProps) {
   // 添加和编辑请求
   const defaultAddReq: CreateTextbookReq = item
     ? { ...item }
@@ -442,6 +475,7 @@ function Add({ parentId, pathDepth, item, onClose, mutateCallback }: AddProps) {
         label: "",
         sortOrder: 1,
         pathDepth,
+        path,
       };
   const [addReq, setAddReq] = useState<CreateTextbookReq>(defaultAddReq);
   const updateAddReq = (key: keyof CreateTextbookReq, val: string | number) => {

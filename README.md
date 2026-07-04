@@ -16,7 +16,7 @@
 
 ##### 1. 安装依赖
 
-现在前端基本都需要运行在 [Node.js](https://nodejs.org/en/download/) 之上，开发环境如果没有 `Node` 则先安装 `Node` 环境, 后运行下面命令安装依赖
+现在前端基本都需要运行在 [Node.js](https://nodejs.org/en/download/) 之上，开发环境如果没有 `Node` 则先安装 `Node` 环境后运行下面命令安装依赖
 
 ```bash
 pnpm install
@@ -152,4 +152,4 @@ lrwxrwxrwx 1 root root    20 Jun  3 15:51 images -> /var/www/meta/images
 zhangguangxun@VM-0-4-debian:/var/www/open-tiku$
 ```
 
-线上的 `Caddyfile` 文件内容请参考项目根目录中的 `Caddfile` 文件内容, 首次部署时自己配置或者直接拷贝类似内容
+线上的 `Caddyfile` 文件内容请参考项目根目录中的 `Caddyfile` 文件内容, 首次部署时自己配置或者直接拷贝类似内容

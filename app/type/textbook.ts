@@ -7,6 +7,7 @@ export interface Textbook {
   pathType: string;
   sortOrder: number;
   pathDepth: number;
+  path: string;
   tableName?: string;
   children?: Textbook[];
 }
@@ -37,4 +38,5 @@ export interface CreateTextbookReq {
   pathType?: string;
   sortOrder: number;
   pathDepth?: number;
+  path: string;
 }
