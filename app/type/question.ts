@@ -53,6 +53,7 @@ export interface QuestionBaseInfoResp {
   questionTagIds?: number[];
   questionDimensionIds?: number[];
   authorId?: number;
+  authorName?: string;
   originalName: string;
   source?: string;
   status: number;

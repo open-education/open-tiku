@@ -279,7 +279,7 @@ function OperateTags({
         setOpenSheet(true);
       })
       .catch((err) => {
-        toast.error(<div className="text-red-700">`查询题目详情出错: ${err.message}`</div>);
+        toast.error(<div className="text-red-700">查询题目详情出错: {err.message}</div>);
       })
       .finally(() => {
         setLoading?.(false);
@@ -307,7 +307,7 @@ function OperateTags({
         setOpenSheet(true);
       })
       .catch((err) => {
-        toast.error(<div className="text-red-700">`编辑查询题目详情出错: ${err.message}`</div>);
+        toast.error(<div className="text-red-700">编辑查询题目详情出错: {err.message}</div>);
       })
       .finally(() => {
         setLoading?.(false);
@@ -368,7 +368,7 @@ function OperateTags({
         questionListRespMutate();
       })
       .catch((err) => {
-        toast.error(<div className="text-red-700">`提交审核操作出错: ${err.message}`</div>);
+        toast.error(<div className="text-red-700">提交审核操作出错: {err.message}</div>);
         setSubmitApproveRes({
           success: false,
           loading: false,
@@ -408,7 +408,7 @@ function OperateTags({
         questionListRespMutate();
       })
       .catch((err) => {
-        toast.error(<div className="text-red-700">`审核操作出错: ${err.message}`</div>);
+        toast.error(<div className="text-red-700">审核操作出错: {err.message}</div>);
         setApproveRes({
           success: false,
           loading: false,
@@ -443,7 +443,7 @@ function OperateTags({
         questionListRespMutate();
       })
       .catch((err) => {
-        toast.error(<div className="text-red-700">`删除题目出错: ${err.message}`</div>);
+        toast.error(<div className="text-red-700">删除题目出错: {err.message}</div>);
         setDeleteRes({
           success: false,
           loading: false,
@@ -501,7 +501,7 @@ function OperateTags({
     if (currentUser && source === "myReview" && status === QuestionStatus.Pending) {
       buttons.push(
         <Dialog key="myReviewApprove">
-          <DialogTrigger render={<Button variant="link">题目审核</Button>} />
+          <DialogTrigger render={<Button variant="link">审核</Button>} />
           <DialogContent>
             <DialogHeader>
               <DialogTitle className="text-base font-bold">题目审核</DialogTitle>

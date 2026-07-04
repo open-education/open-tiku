@@ -14,7 +14,7 @@ interface TitleShowProps {
 
 function TitleShow({ no = 0, id = 0, title, comment, images = [] }: TitleShowProps) {
   // 试卷和题目显示前缀
-  const content = no > 0 ? `${no}&#46; ${title}` : `**ID[${id}].** ${title}`;
+  const content = no > 0 ? `${no}&#46; ${title}` : id > 0 ? `**ID[${id}].** ${title}` : "";
 
   return (
     <div className="text-base">
