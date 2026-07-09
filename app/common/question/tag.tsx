@@ -7,7 +7,7 @@ import { QuestionInfo } from "~/common/question/info";
 import { SimilarQuestionList } from "~/question/similar";
 import Add from "~/question/add";
 import { toast } from "sonner";
-import { StringConst } from "~/util/string";
+import { StringConst, StringUtil } from "~/util/string";
 import { useState } from "react";
 import { Textarea } from "~/components/ui/textarea";
 import { Separator } from "~/components/ui/separator";
@@ -267,6 +267,7 @@ function OperateTags({
       .get<QuestionInfoResp>(`/question/info/${questionId}`)
       .then((res) => {
         setSheetTitle("查看详情");
+        setSheetDesc("");
         setSheetContent(
           <QuestionInfo
             pageSource={pageSource}
@@ -314,10 +315,23 @@ function OperateTags({
       });
   };
 
+  // 添加课本原题
+  const handleOriginalTextbookAdd = () => {
+    // 将当前题目主键作为变式题的父题标识
+    const similarSearch = { sourceId: questionId, similarType: StringConst.questionSimilarTypeOriginal, ...questionSearch };
+
+    setSheetTitle("添加课本原题");
+    setSheetDesc("题目需要借助其它 ai 工具转为 markdown 源格式文档后使用");
+    setSheetContent(
+      <Add questionSearch={similarSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
+    );
+    setOpenSheet(true);
+  };
+
   // 添加变式题
   const handleSimilarAdd = () => {
     // 变式题将当前题目主键作为变式题的父题标识
-    const similarSearch = { sourceId: questionId, ...questionSearch };
+    const similarSearch = { sourceId: questionId, similarType: StringConst.questionSimilarTypeDefault, ...questionSearch };
 
     setSheetTitle("添加变式题");
     setSheetDesc("题目需要借助其它 ai 工具转为 markdown 源格式文档后使用");
@@ -325,6 +339,47 @@ function OperateTags({
       <Add questionSearch={similarSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
     );
     setOpenSheet(true);
+  };
+
+  // 查看变式题列表
+  const handleOriginalTextbook = () => {
+    setLoading?.(true);
+
+    // 通过题目关联关系获取到详情标识
+    httpClient
+      .post<number | null>("question/original", { id: questionId })
+      .then((res) => {
+        if (!res || res == 0) {
+          toast.info(<div className="text-blue-700">没有找到课本原题, 只有母题才关联课本原题</div>);
+          return;
+        }
+
+        httpClient
+          .get<QuestionInfoResp>(`/question/info/${res}`)
+          .then((res) => {
+            setSheetTitle("查看 课本原题 详情");
+            setSheetDesc("");
+            setSheetContent(
+              <QuestionInfo
+                pageSource={pageSource}
+                questionTypeDict={questionTypeDict}
+                questionTagDict={questionTagDict}
+                questionDimensionDict={questionDimensionDict}
+                infoResp={res}
+              />,
+            );
+            setOpenSheet(true);
+          })
+          .catch((err) => {
+            toast.error(<div className="text-red-700">查询题目详情出错: {err.message}</div>);
+          });
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">查询课本原题出错: {err.message}</div>);
+      })
+      .finally(() => {
+        setLoading?.(false);
+      });
   };
 
   // 查看变式题列表
@@ -563,6 +618,9 @@ function OperateTags({
     // 添加变式题只有普通页面可以操作
     if (currentUser && source === "list") {
       buttons.push(
+        <Button key="originalTextbook" variant="link" onClick={handleOriginalTextbookAdd}>
+          添加课本原题
+        </Button>,
         <Button key="similar" variant="link" onClick={handleSimilarAdd}>
           添加变式题
         </Button>,
@@ -571,7 +629,10 @@ function OperateTags({
 
     // 查看变式题, 均可以查看
     buttons.push(
-      <Button key="list" variant="link" onClick={handleSimilarList}>
+      <Button key="originalTextbookInfo" variant="link" onClick={handleOriginalTextbook}>
+        查看课本原题
+      </Button>,
+      <Button key="similarList" variant="link" onClick={handleSimilarList}>
         查看变式题
       </Button>,
     );

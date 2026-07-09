@@ -24,6 +24,7 @@ export interface Step {
 export interface CreateQuestionReq {
   id?: number; // 更新时需要主键, 新增时不能传递这个key
   sourceId?: number; // 母题标识, 默认无
+  questionSimilarType?: number; // 变式题分类
   questionCateId: number; // 题目分类标识
   questionTypeId: number; // 题目类型标识
   questionTagIds?: number[]; // 题目标签
@@ -130,6 +131,7 @@ export interface QuestionSearch {
   dimensionIds: number[]; //核心素养
   id?: number; // 题目主键
   sourceId?: number; // 母题标识, 添加变式题时需要传递
+  similarType?: number; // 变式题分类 1 是变式题 2 课本原题
   status?: number; // 题目状态
 }
 
