@@ -119,6 +119,9 @@ export default function Add({
       // 此时为变式题母题标识id
       initAddDefault.sourceId = questionSearch.sourceId;
     }
+    if (questionSearch.similarType && questionSearch.similarType > 0) {
+      initAddDefault.questionSimilarType = questionSearch.similarType;
+    }
 
     return initAddDefault;
   }, []);
