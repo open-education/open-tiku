@@ -3,14 +3,14 @@ import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
-import type { PaperMeta, PaperMetaSearch } from "~/type/paper";
+import type { PaperTopMeta, PaperTopMetaSearch } from "~/type/paper";
 import { StringConst, StringConstUtil } from "~/util/string";
 import { TagShow } from "~/common/paper/tag";
 import { ExamQuestion } from "~/common/paper/question";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { NavLink } from "react-router";
-import Add from "~/paper/add";
+import TopAdd from "~/paper/add";
 import { Button } from "~/components/ui/button";
 import type { UserInfoResp } from "~/type/user";
 import { useUser } from "~/hooks/useUser";
@@ -19,8 +19,8 @@ import { useUser } from "~/hooks/useUser";
 
 // 试卷列表样式展示
 interface ExamPaperProps {
-  papers: PaperMeta[];
-  metaSearch?: PaperMetaSearch;
+  papers: PaperTopMeta[];
+  metaSearch?: PaperTopMetaSearch;
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
@@ -38,7 +38,7 @@ function ExamPaper({ papers, metaSearch, setOpenSheet, setSheetTitle, setSheetDe
     setLoading?.(true);
 
     httpClient
-      .get<PaperMeta>(`/paper/info/${id}`)
+      .get<PaperTopMeta>(`/paper/info/${id}`)
       .then((res) => {
         // 查询成功后加载右侧 Sheet 详情信息
         setSheetTitle("查看详情");
@@ -117,8 +117,8 @@ function ExamPaperHeader() {
 
 // 试卷详情样式
 interface ExamPaperMetaProps {
-  paperMeta: PaperMeta;
-  metaSearch?: PaperMetaSearch;
+  paperMeta: PaperTopMeta;
+  metaSearch?: PaperTopMetaSearch;
   isPreview?: boolean;
 
   // 以下为 Sheet 操作方法和属性
@@ -157,7 +157,7 @@ function ExamPaperMeta({
     setSheetTitle?.("编辑试卷");
     setSheetDesc?.("当前为编辑试卷模式, 提交后会覆盖历史数据, 请谨慎操作");
     setSheetContent?.(
-      <Add
+      <TopAdd
         metaSearch={metaSearch}
         infoResp={paperMeta}
         setSheetTitle={setSheetTitle}

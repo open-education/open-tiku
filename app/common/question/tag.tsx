@@ -7,7 +7,7 @@ import { QuestionInfo } from "~/common/question/info";
 import { SimilarQuestionList } from "~/question/similar";
 import Add from "~/question/add";
 import { toast } from "sonner";
-import { StringConst, StringUtil } from "~/util/string";
+import { StringConst } from "~/util/string";
 import { useState } from "react";
 import { Textarea } from "~/components/ui/textarea";
 import { Separator } from "~/components/ui/separator";
@@ -25,6 +25,8 @@ import { QuestionStatus } from "~/util/enum";
 import type { KeyedMutator } from "swr";
 import type { UserInfoResp } from "~/type/user";
 import { useUser } from "~/hooks/useUser";
+import type { DifficultyLevelRange } from "~/type/paper";
+import { Slider } from "~/components/ui/slider";
 
 /// 题目题目相关标签选择器
 
@@ -671,4 +673,73 @@ function OperateTags({
   return renderButtons(pageSource.source);
 }
 
-export { TypeSelect, MultiTagSelect, StatusSelect, OtherDictSelect, TagShow, OperateTags };
+// 难度等级范围
+interface DifficultyLevelProps {
+  initialData?: DifficultyLevelRange;
+}
+function ShowDifficultyLevelRange({ initialData = { basic: 50, improve: 30, expand: 20 } }: DifficultyLevelProps) {
+  const [data, setData] = useState<DifficultyLevelRange>(initialData);
+
+  const update = (key: keyof DifficultyLevelRange, val: number) => {
+    const total = data.basic + data.improve + data.expand - data[key];
+    const remaining = 100 - val;
+
+    if (total === 0) {
+      setData({
+        basic: key === "basic" ? val : remaining / 2,
+        improve: key === "improve" ? val : remaining / 2,
+        expand: key === "expand" ? val : remaining / 2,
+      });
+    } else {
+      const ratio = remaining / total;
+      setData({
+        basic: key === "basic" ? val : Math.round(data.basic * ratio),
+        improve: key === "improve" ? val : Math.round(data.improve * ratio),
+        expand: key === "expand" ? val : Math.round(data.expand * ratio),
+      });
+    }
+  };
+
+  return (
+    <div className="border p-3 text-sm">
+      <div className=" space-y-4">
+        <div>
+          <div className="flex justify-between mb-1.5">
+            <span>
+              基础题 <span className="text-gray-400">(1 - 3)</span>
+            </span>
+            <span className="font-medium">{data.basic}%</span>
+          </div>
+          <Slider value={[data.basic]} onValueChange={(v) => update("basic", Array.isArray(v) ? v[0] : v)} max={100} step={1} />
+        </div>
+
+        <div>
+          <div className="flex justify-between mb-1.5">
+            <span>
+              提升题 <span className="text-gray-400">(3.5 - 4)</span>
+            </span>
+            <span className="font-medium">{data.improve}%</span>
+          </div>
+          <Slider value={[data.improve]} onValueChange={(v) => update("improve", Array.isArray(v) ? v[0] : v)} max={100} step={1} />
+        </div>
+
+        <div>
+          <div className="flex justify-between mb-1.5">
+            <span>
+              扩展题 <span className="text-gray-400">(4.5 - 5)</span>
+            </span>
+            <span className="font-medium">{data.expand}%</span>
+          </div>
+          <Slider value={[data.expand]} onValueChange={(v) => update("expand", Array.isArray(v) ? v[0] : v)} max={100} step={1} />
+        </div>
+      </div>
+
+      <div className="pt-2 border-t mt-2 flex justify-between">
+        <span>合计: {data.basic + data.improve + data.expand}%</span>
+        <span>难度 1 → 5</span>
+      </div>
+    </div>
+  );
+}
+
+export { TypeSelect, MultiTagSelect, StatusSelect, OtherDictSelect, TagShow, OperateTags, ShowDifficultyLevelRange };

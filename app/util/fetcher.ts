@@ -2,7 +2,7 @@ import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 import { httpClient } from "~/util/http";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
-import type { PaperListReq, PaperListResp, PaperMeta, PaperMetaSearch } from "~/type/paper";
+import type { PaperTopListReq, PaperTopListResp, PaperTopMeta, PaperTopMetaSearch } from "~/type/paper";
 import { StringConst, StringValidator } from "~/util/string";
 import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from "~/type/question";
 import type { TaskListReq, TaskListResp } from "~/type/task";
@@ -13,17 +13,27 @@ import type { ChapterKnowledgeResp, QuestionCateResp } from "~/type/question-cat
 
 // 导航-更新频率比较低, 只有强制刷新等才会重新请求
 export function useTextbooks(depth: number = 5) {
-  return useSWRImmutable<Textbook[]>(`/textbook/list/${depth}/all`, httpClient.get);
+  return useSWRImmutable<Textbook[]>(`/textbook/list/${depth}/all`, httpClient.get, {
+    errorRetryCount: 2, // 最多重试2次
+    errorRetryInterval: 10000, // 10秒间隔
+    revalidateOnFocus: false, // 不聚焦时重新验证
+    revalidateOnReconnect: false, // 不自动重连
+  });
 }
 
 // 最新试卷
 export function useLatestPapers(count: number = 6) {
-  return useSWRImmutable<PaperMeta[]>(`/paper/latest/${count}`, httpClient.get);
+  return useSWRImmutable<PaperTopMeta[]>(`/paper/latest/${count}`, httpClient.get, {
+    errorRetryCount: 2, // 最多重试2次
+    errorRetryInterval: 10000, // 10秒间隔
+    revalidateOnFocus: false, // 不聚焦时重新验证
+    revalidateOnReconnect: false, // 不自动重连
+  });
 }
 
 // 试卷列表
-export function usePaperList(search: PaperMetaSearch, pageNo: number) {
-  const req: PaperListReq = {
+export function usePaperList(search: PaperTopMetaSearch, pageNo: number) {
+  const req: PaperTopListReq = {
     relatedId: search.relatedId,
     pageNo: pageNo,
     pageSize: StringConst.pageSize,
@@ -44,7 +54,7 @@ export function usePaperList(search: PaperMetaSearch, pageNo: number) {
   // 生成 SWR 的 key（只有 relatedId > 0 时才发起请求，否则为 null）
   const key = req.relatedId > 0 ? JSON.stringify(req) : null;
 
-  return useSWR<PaperListResp>(key, () => httpClient.post<PaperListResp>("/paper/list", req), {
+  return useSWR<PaperTopListResp>(key, () => httpClient.post<PaperTopListResp>("/paper/list", req), {
     keepPreviousData: true, // 分页切换时保留旧数据，体验更好
   });
 }
