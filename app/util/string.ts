@@ -139,6 +139,11 @@ export const StringConst = {
   // 变式题分类
   questionSimilarTypeDefault: 1, // 变式题
   questionSimilarTypeOriginal: 2, // 课本原题
+  // 试卷类型
+  paperTypes: [
+    { value: 1, label: "精选试卷" },
+    { value: 2, label: "手动组卷" },
+  ],
 };
 
 // 字符串常量工具

@@ -8,7 +8,7 @@ import { ArrayUtil } from "~/util/object";
 import { createTextbookPathDict } from "~/util/textbook-dict";
 import { PaperGenConfig } from "~/paper/gen/config";
 import { Button } from "~/components/ui/button";
-import { Send, Settings2 } from "lucide-react";
+import { Eye, Send, Settings2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { StringValidator } from "~/util/string";
@@ -78,8 +78,8 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
   // 搜索对象维护
   const [paperGenSearch, setPaperGenSearch] = useState<PaperGenSearch>({
     twoLevelId: 0,
-    fiveLevelId: 0,
-    fiveLevelSelectKeys: [],
+    fiveLevelId: metaSearch.relatedId > 0 ? metaSearch.relatedId : 0,
+    fiveLevelSelectKeys: metaSearch.selectedKeys ? metaSearch.selectedKeys : [],
     typeId: 0,
     tagIds: [],
     dimensionIds: [],
@@ -138,10 +138,6 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
 
   return (
     <div className="text-base pl-4 pr-4 pb-4">
-      <div className="text-sm">
-        <div>1. 图片标识请使用右上角的 快捷工具-上传文件 上传图片后获得</div>
-      </div>
-
       <div className="mt-3 flex flex-wrap gap-2">
         <Button variant="default" className="text-sm" onClick={() => {}} disabled={false}>
           <Send className="mr-2 h-4 w-4" />
@@ -202,7 +198,7 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
               <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
                 <div className="md:w-24 shrink-0 font-medium">题型:</div>
                 <div className="flex-1 min-w-0">
-                  <ChapterTreeCheckboxNav textbooks={questionCates} onSelect={(val) => {}} className="" />
+                  <ChapterTreeCheckboxNav textbooks={questionCates} onSelect={(val) => {}} />
                 </div>
               </div>
 
@@ -246,6 +242,16 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
                 <div className="md:w-24 shrink-0 font-medium">题型题量:</div>
                 <div className="flex-1 min-w-0">
                   <PaperGenConfig paperGenMetaList={paperGenMetaList} />
+                </div>
+              </div>
+
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                <div className="md:w-24 shrink-0 font-medium">操作:</div>
+                <div className="flex-1 min-w-0">
+                  <Button variant="outline" onClick={() => {}} className="text-sm">
+                    <Eye className="mr-2 h-4 w-4" />
+                    生成预览
+                  </Button>
                 </div>
               </div>
             </div>

@@ -39,6 +39,7 @@ const defaultMetaSearch: PaperTopMetaSearch = {
   grade: "",
   semester: "",
   selectedKeys: [],
+  paperType: 1,
 };
 
 // 试卷管理首页
@@ -104,7 +105,7 @@ export default function Index() {
 
   // 生成试卷
   const handlePapgerGenAdd = () => {
-    setSheetTitle("智能组卷");
+    setSheetTitle("手动组卷");
     setSheetDesc("根据你选择的条件进行自动组卷, 生成试卷后请回到列表查看和修改");
     setSheetContent(<GenAdd metaSearch={metaSearch} />);
     setOpenSheet(true);
@@ -172,6 +173,23 @@ export default function Index() {
           <div className="md:w-24 shrink-0 font-medium">学期:</div>
           <div className="flex-1 min-w-0">
             <SemesterSelect value={metaSearch.semester} onValueChange={(val) => updateSearchMeta("semester", val ?? "")} placeholder="选择学期" />
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">试卷类型:</div>
+          <div className="flex-1 min-w-0 flex flex-wrap gap-4">
+            {StringConst.paperTypes.map(({ value, label }) => (
+              <Button
+                key={value}
+                className="text-sm md:text-sm w-20 text-center"
+                type="button"
+                variant={metaSearch.paperType === value ? "default" : "outline"}
+                onClick={() => updateSearchMeta("paperType", value)}
+              >
+                {label}
+              </Button>
+            ))}
           </div>
         </div>
 

@@ -61,6 +61,7 @@ export interface PaperTopMetaSearch {
   year: string; // 年份
   grade: string; // 年级
   semester: string; // 学期
+  paperType: number; // 试卷类型
 }
 
 // 试卷列表请求
