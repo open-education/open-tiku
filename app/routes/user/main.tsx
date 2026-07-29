@@ -3,10 +3,9 @@ import type { Route } from "./+types/main";
 import { BookA, BookOpenText, CheckCheck, ChevronDown, FileQuestionMark, Link, Menu, Settings, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
-import { Badge } from "~/components/ui/badge";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Button } from "~/components/ui/button";
-import { useUser } from "~/hooks/useUser";
+import { useUser } from "~/hooks/use-user";
 
 // 个人中心首页
 
@@ -27,7 +26,6 @@ interface NavItem {
   label: string;
   icon: React.ElementType;
   href: string;
-  badge?: number;
   children?: NavItem[];
 }
 
@@ -119,11 +117,6 @@ export default function Index() {
           >
             <item.icon className="h-4.5 w-4.5 shrink-0" />
             <span className="flex-1 text-left">{item.label}</span>
-            {item.badge && (
-              <Badge variant="secondary" className="ml-auto text-xs">
-                {item.badge}
-              </Badge>
-            )}
             <ChevronDown className={cn("h-4 w-4 transition-transform", isExpanded && "rotate-180")} />
           </button>
           {isExpanded && <div className="mt-0.5 space-y-0.5">{item.children!.map((child) => renderNavItem(child, depth + 1))}</div>}
@@ -148,11 +141,6 @@ export default function Index() {
       >
         <item.icon className="h-4.5 w-4.5 shrink-0" />
         <span className="flex-1 text-left">{item.label}</span>
-        {item.badge && (
-          <Badge variant="secondary" className="ml-auto text-xs">
-            {item.badge}
-          </Badge>
-        )}
       </NavLink>
     );
   };

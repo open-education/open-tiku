@@ -10,10 +10,10 @@ import { ExamQuestion } from "~/common/paper/question";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { NavLink } from "react-router";
-import TopAdd from "~/paper/add";
+import TopAdd from "~/paper/top/add";
 import { Button } from "~/components/ui/button";
 import type { UserInfoResp } from "~/type/user";
-import { useUser } from "~/hooks/useUser";
+import { useUser } from "~/hooks/use-user";
 
 /// 试卷元数据
 

@@ -24,7 +24,7 @@ import {
 import { QuestionStatus } from "~/util/enum";
 import type { KeyedMutator } from "swr";
 import type { UserInfoResp } from "~/type/user";
-import { useUser } from "~/hooks/useUser";
+import { useUser } from "~/hooks/use-user";
 import type { DifficultyLevelRange } from "~/type/paper";
 import { Slider } from "~/components/ui/slider";
 

@@ -96,7 +96,7 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
     }
 
     const nodes = pathMap.get(paperGenSearch.fiveLevelId.toString()) ?? [];
-    const twoLevelId = nodes.length > 2 ? nodes[1].id : 0;
+    const twoLevelId = nodes.length >= 2 ? nodes[1].id : 0;
     updatePaperGenSearch("twoLevelId", twoLevelId);
   }, [paperGenSearch.fiveLevelId, pathMap]);
 

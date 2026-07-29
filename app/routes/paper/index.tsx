@@ -9,7 +9,7 @@ import { YearSelect } from "~/common/paper/year";
 import { Button } from "~/components/ui/button";
 import type { PaperTopMetaSearch } from "~/type/paper";
 import type { Textbook } from "~/type/textbook";
-import TopAdd from "~/paper/add";
+import TopAdd from "~/paper/top/add";
 import { StringConst, StringValidator } from "~/util/string";
 import { SimplePagination } from "~/common/page";
 import { Separator } from "~/components/ui/separator";
@@ -22,7 +22,7 @@ import { SimpleNoData } from "~/common/empty";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Plus } from "lucide-react";
 import type { UserInfoResp } from "~/type/user";
-import { useUser } from "~/hooks/useUser";
+import { useUser } from "~/hooks/use-user";
 import GenAdd from "~/paper/gen/add";
 
 // 重新网页标题等
