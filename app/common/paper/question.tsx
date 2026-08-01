@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { QuestionOption } from "~/type/question";
-import type { PaperTopQuestion } from "~/type/paper";
+import type { PaperQuestion } from "~/type/paper";
 import { SimpleFullContent } from "~/common/content";
 import { MultiOptionShow } from "~/common/select";
 import { TitleShow } from "~/common/title";
@@ -13,7 +13,7 @@ import { cn } from "~/lib/utils";
 // 题目样式
 interface ExamQuestionProps {
   index: number;
-  question: PaperTopQuestion;
+  question: PaperQuestion;
 }
 function ExamQuestion(props: ExamQuestionProps) {
   const { index, question } = props;

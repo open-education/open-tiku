@@ -144,6 +144,8 @@ export const StringConst = {
     { value: 1, label: "精选试卷" },
     { value: 2, label: "手动组卷" },
   ],
+  paperTypeTop: 1, // 精选试卷
+  paperTypesGen: 2, // 手动组卷
 };
 
 // 字符串常量工具

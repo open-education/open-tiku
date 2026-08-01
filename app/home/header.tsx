@@ -212,9 +212,7 @@ function Header() {
                 <PopoverContent align="start">
                   <PopoverHeader>
                     <PopoverTitle className="text-base font-bold">账号登录</PopoverTitle>
-                    <PopoverDescription className="text-sm">
-                      为了隐私安全不支持注册, 也不收集除昵称外的任何信息, 作为用户也不要提供任何真实信息; 因此也不提供账户注册.
-                    </PopoverDescription>
+                    <PopoverDescription className="text-sm">不支持注册, 也不收集除昵称外的任何信息, 用户也不要提供任何真实信息</PopoverDescription>
                   </PopoverHeader>
                   <Login />
                 </PopoverContent>

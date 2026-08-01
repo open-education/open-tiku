@@ -10,15 +10,15 @@ import { GradeSelect } from "~/common/paper/grade";
 import { SemesterSelect } from "~/common/paper/semester";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
-import type { PaperTopMeta } from "~/type/paper";
+import type { PaperMeta } from "~/type/paper";
 
 // 试卷基础配置
 
 interface PaperMetaConfProps {
   textbooks: Textbook[];
-  paper: PaperTopMeta;
+  paper: PaperMeta;
   defaultSelectedKeys: string[];
-  updatePaperMeta: (key: keyof PaperTopMeta, value: string | number) => void;
+  updatePaperMeta: (key: keyof PaperMeta, value: string | number) => void;
 }
 function PaperMetaConf({ textbooks = [], paper, defaultSelectedKeys = [], updatePaperMeta }: PaperMetaConfProps) {
   return (

@@ -552,27 +552,27 @@ interface SelectNavProps {
 }
 
 // 树形展开导航菜单
-interface TreeNode extends Textbook {
-  children?: TreeNode[];
+interface CheckboxTreeNode extends Textbook {
+  children?: CheckboxTreeNode[];
 }
 
 interface TreeCheckboxProps {
-  textbooks: TreeNode[];
-  onSelect?: (selectedItems: TreeNode[]) => void;
+  textbooks: CheckboxTreeNode[];
+  onSelect?: (selectedItems: CheckboxTreeNode[]) => void;
   defaultSelectedKeys?: string[];
   maxDepth?: number; // 保留，让使用者控制深度
 }
 
 // 树节点渲染函数 - 完全展开版本
 const renderTreeNodes = (
-  items: TreeNode[],
+  items: CheckboxTreeNode[],
   depth: number,
   maxDepth: number,
   selectedKeys: Set<string>,
   expandedKeys: Set<string>,
   onToggleExpand: (key: string) => void,
-  onToggleSelect: (node: TreeNode, checked: boolean) => void,
-  onSelectLeaf?: (node: TreeNode) => void,
+  onToggleSelect: (node: CheckboxTreeNode, checked: boolean) => void,
+  onSelectLeaf?: (node: CheckboxTreeNode) => void,
 ): React.ReactNode => {
   return (
     <div className="space-y-1">
@@ -652,7 +652,7 @@ function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [],
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(() => {
     // 默认展开所有节点
     const allKeys = new Set<string>();
-    const traverse = (nodes: TreeNode[]) => {
+    const traverse = (nodes: CheckboxTreeNode[]) => {
       for (const node of nodes) {
         if (node.children && node.children.length > 0) {
           allKeys.add(node.key);
@@ -669,7 +669,7 @@ function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [],
     if (selectedKeys.size > 0) {
       const keysToExpand = new Set<string>();
 
-      const findPath = (nodes: TreeNode[], targetKey: string): boolean => {
+      const findPath = (nodes: CheckboxTreeNode[], targetKey: string): boolean => {
         for (const node of nodes) {
           if (node.key === targetKey) return true;
           if (node.children) {
@@ -693,10 +693,10 @@ function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [],
 
   // 切换节点选中（递归处理子节点）
   const toggleNodeSelect = useCallback(
-    (node: TreeNode, checked: boolean) => {
+    (node: CheckboxTreeNode, checked: boolean) => {
       const newSelected = new Set(selectedKeys);
 
-      const toggleRecursive = (currentNode: TreeNode) => {
+      const toggleRecursive = (currentNode: CheckboxTreeNode) => {
         if (checked) {
           newSelected.add(currentNode.key);
         } else {
@@ -712,8 +712,8 @@ function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [],
       setSelectedKeys(newSelected);
 
       // 通知父组件
-      const selected: TreeNode[] = [];
-      const collectSelected = (nodes: TreeNode[]) => {
+      const selected: CheckboxTreeNode[] = [];
+      const collectSelected = (nodes: CheckboxTreeNode[]) => {
         for (const n of nodes) {
           if (newSelected.has(n.key)) {
             selected.push(n);
@@ -733,7 +733,7 @@ function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [],
   const toggleAll = useCallback(
     (checked: boolean) => {
       const newSelected = new Set<string>();
-      const traverse = (nodes: TreeNode[]) => {
+      const traverse = (nodes: CheckboxTreeNode[]) => {
         for (const node of nodes) {
           if (checked) {
             newSelected.add(node.key);
@@ -746,8 +746,8 @@ function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [],
       traverse(textbooks);
       setSelectedKeys(newSelected);
 
-      const selected: TreeNode[] = [];
-      const collectSelected = (nodes: TreeNode[]) => {
+      const selected: CheckboxTreeNode[] = [];
+      const collectSelected = (nodes: CheckboxTreeNode[]) => {
         for (const n of nodes) {
           if (newSelected.has(n.key)) {
             selected.push(n);
@@ -768,7 +768,7 @@ function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [],
   // 计算总节点数
   const totalCount = useMemo(() => {
     let count = 0;
-    const traverse = (nodes: TreeNode[]) => {
+    const traverse = (nodes: CheckboxTreeNode[]) => {
       for (const node of nodes) {
         count++;
         if (node.children) {
@@ -783,7 +783,7 @@ function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [],
   // 切换所有节点的展开状态
   const toggleAllExpand = useCallback(() => {
     const allKeys = new Set<string>();
-    const traverse = (nodes: TreeNode[]) => {
+    const traverse = (nodes: CheckboxTreeNode[]) => {
       for (const node of nodes) {
         if (node.children && node.children.length > 0) {
           allKeys.add(node.key);
@@ -859,5 +859,5 @@ function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [],
   );
 }
 
-export type { LevelProps, SelectNavProps };
+export type { LevelProps, SelectNavProps, CheckboxTreeNode };
 export { ChapterExpandNav, ChapterDropdownNav, ChapterTreeCheckboxNav };

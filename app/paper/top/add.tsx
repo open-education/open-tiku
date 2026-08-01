@@ -6,9 +6,9 @@ import { StringConst, StringValidator } from "~/util/string";
 import { Watermark } from "~/common/watermark";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
-import type { PaperTopGroup, PaperTopMeta, PaperTopMetaSearch, PaperTopQuestion } from "~/type/paper";
+import type { PaperGroup, PaperMeta, PaperTopMetaSearch, PaperQuestion } from "~/type/paper";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { FileImage, Plus, Send, Trash2, X } from "lucide-react";
+import { FileImage, Plus, Save, Send, Trash2, X } from "lucide-react";
 import { Label } from "~/components/ui/label";
 import type { Content, QuestionOption } from "~/type/question";
 import { ExamPaperMeta } from "~/common/paper/meta";
@@ -30,7 +30,7 @@ import { PaperMetaConf } from "~/common/paper/config";
 
 // 初始化默认值等信息
 const generateId = () => Math.random().toString(36).substring(2, 9);
-const defaultPaperMeta: PaperTopMeta = {
+const defaultPaperMeta: PaperMeta = {
   relatedId: 0,
   tag: "",
   title: "",
@@ -44,15 +44,14 @@ const defaultPaperMeta: PaperTopMeta = {
   grade: "",
   semester: "",
   remark: "",
-  authorId: 0,
-  authorName: "admin", // 当前登录用户昵称
   count: 0,
   statusDesc: "",
   remarkExt: "",
   relatedName: "",
+  paperType: 1,
 };
 
-const defaultQuestionInfo = (order: number): PaperTopQuestion => ({
+const defaultQuestionInfo = (order: number): PaperQuestion => ({
   genId: generateId(),
   orderNum: order,
   stem: "",
@@ -66,7 +65,7 @@ const defaultQuestionInfo = (order: number): PaperTopQuestion => ({
   answer: "",
 });
 
-const defaultGroup = (): PaperTopGroup => ({
+const defaultGroup = (): PaperGroup => ({
   genId: generateId(),
   typeName: "",
   subTitle: "",
@@ -77,7 +76,7 @@ const defaultGroup = (): PaperTopGroup => ({
 
 interface TopAddProps {
   metaSearch: PaperTopMetaSearch;
-  infoResp?: PaperTopMeta; // 如果是详情页面过来的则处于编译状态
+  infoResp?: PaperMeta; // 如果是详情页面过来的则处于编译状态
 
   // 以下为 Sheet 操作方法和属性
   setSheetTitle?: (value: string) => void;
@@ -93,7 +92,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
       return { ...infoResp };
     }
 
-    const updates: Partial<PaperTopMeta> = {};
+    const updates: Partial<PaperMeta> = {};
     const fields = ["relatedId", "relatedName", "tag", "year", "grade", "semester"] as const;
 
     fields.forEach((field) => {
@@ -113,8 +112,8 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
   }, []); // 只在组件挂载时计算一次
 
   // 初始化试卷信息
-  const [paper, setPaper] = useState<PaperTopMeta>(initialPaperMeta);
-  const updatePaperMeta = (key: keyof PaperTopMeta, value: string | number) => {
+  const [paper, setPaper] = useState<PaperMeta>(initialPaperMeta);
+  const updatePaperMeta = (key: keyof PaperMeta, value: string | number) => {
     setPaper((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -141,7 +140,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
   };
 
   // 更新一个大题
-  const updateGroup = (groupGenId: string, key: keyof PaperTopGroup, value: string) => {
+  const updateGroup = (groupGenId: string, key: keyof PaperGroup, value: string) => {
     setPaper((prev) => ({
       ...prev,
       groups: prev.groups.map((g) => (g.genId === groupGenId ? { ...g, [key]: value } : g)),
@@ -175,7 +174,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
     }));
   };
 
-  const updateQuestion = (groupGenId: string, questionId: string, key: keyof PaperTopQuestion, value: string | string[] | number | Content) => {
+  const updateQuestion = (groupGenId: string, questionId: string, key: keyof PaperQuestion, value: string | string[] | number | Content) => {
     setPaper((prev) => ({
       ...prev,
       groups: prev.groups.map((g) => {
@@ -308,12 +307,14 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
       paper.status = 1;
     }
 
+    paper.paperType = StringConst.paperTypeTop;
+
     httpClient
-      .post<number>("/paper/add", paper)
+      .post<number>("/paper/top/add", paper)
       .then((resId) => {
         // 获取详情渲染Sheet为试卷详情
         httpClient
-          .get<PaperTopMeta>(`/paper/info/${resId}`)
+          .get<PaperMeta>(`/paper/top/info/${resId}`)
           .then((res) => {
             setSheetTitle?.("试卷详情");
             setSheetDesc?.("仅为详情预览, 需审核通过后其他人可见, 可去 我的试卷 查看");
@@ -341,7 +342,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
 
       <div className="mt-3 flex flex-wrap gap-2">
         <Button variant="default" className="text-sm" onClick={() => handleAddPaper(0)} disabled={drafing}>
-          <Send className="mr-2 h-4 w-4" />
+          <Save className="mr-2 h-4 w-4" />
           {drafing ? "存为草稿中..." : "存为草稿"}
         </Button>
         <Button variant="outline" className="text-sm" onClick={() => handleAddPaper(1)} disabled={approving}>
@@ -424,13 +425,13 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
 // ============ 大题卡片 ============
 
 interface GroupCardProps {
-  group: PaperTopGroup;
+  group: PaperGroup;
   index: number;
-  onUpdateGroup: (key: keyof PaperTopGroup, value: string) => void;
+  onUpdateGroup: (key: keyof PaperGroup, value: string) => void;
   onRemoveGroup: () => void;
   onAddQuestion: () => void;
   onRemoveQuestion: (questionId: string) => void;
-  onUpdateQuestion: (questionId: string, key: keyof PaperTopQuestion, value: string | string[] | number | Content) => void;
+  onUpdateQuestion: (questionId: string, key: keyof PaperQuestion, value: string | string[] | number | Content) => void;
   onAddOption: (questionId: string) => void;
   onUpdateOption: (questionId: string, index: number, value: QuestionOption) => void;
   onRemoveOption: (questionId: string, index: number) => void;
@@ -494,9 +495,9 @@ function GroupCard({
 // ============ 小题组件 ============
 
 interface QuestionItemProps {
-  question: PaperTopQuestion;
+  question: PaperQuestion;
   onRemove: () => void;
-  onUpdate: (key: keyof PaperTopQuestion, value: string | string[] | number | Content) => void;
+  onUpdate: (key: keyof PaperQuestion, value: string | string[] | number | Content) => void;
   onAddOption: () => void;
   onUpdateOption: (index: number, value: QuestionOption) => void;
   onRemoveOption: (index: number) => void;

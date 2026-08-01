@@ -21,6 +21,7 @@ import {
   FileImage,
   NotebookPen,
   Send,
+  Save,
 } from "lucide-react";
 import type { Content, CreateQuestionReq, QuestionInfoResp, QuestionOption, QuestionSearch } from "~/type/question";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
@@ -400,7 +401,7 @@ export default function Add({
 
       <div className="mt-3 flex flex-wrap gap-2">
         <Button variant="default" className="text-sm" onClick={() => handleAddSubmit(0)} disabled={drafing}>
-          <Send className="mr-2 h-4 w-4" />
+          <Save className="mr-2 h-4 w-4" />
           {drafing ? "存为草稿中..." : "存为草稿"}
         </Button>
         <Button variant="outline" className="text-sm" onClick={() => handleAddSubmit(1)} disabled={approving}>

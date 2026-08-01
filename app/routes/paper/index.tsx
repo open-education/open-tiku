@@ -39,7 +39,7 @@ const defaultMetaSearch: PaperTopMetaSearch = {
   grade: "",
   semester: "",
   selectedKeys: [],
-  paperType: 1,
+  paperType: 0,
 };
 
 // 试卷管理首页

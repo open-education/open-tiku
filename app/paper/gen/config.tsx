@@ -1,14 +1,16 @@
 import { Minus, Plus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { PaperGenMeta } from "~/type/paper";
+import type { PaperGenTypeMeta } from "~/type/paper";
+
+// 生成试卷配置
 
 interface PaperGenConfigProps {
-  paperGenMetaList: PaperGenMeta[];
-  onChange?: (metaList: PaperGenMeta[]) => void;
+  paperGenMetaList: PaperGenTypeMeta[];
+  onChange?: (metaList: PaperGenTypeMeta[]) => void;
 }
 
 function PaperGenConfig({ paperGenMetaList = [], onChange }: PaperGenConfigProps) {
-  const [metaList, setMetaList] = useState<PaperGenMeta[]>(() => paperGenMetaList.map((item) => ({ ...item })));
+  const [metaList, setMetaList] = useState<PaperGenTypeMeta[]>(() => paperGenMetaList.map((item) => ({ ...item })));
 
   useEffect(() => {
     setMetaList(paperGenMetaList.map((item) => ({ ...item })));

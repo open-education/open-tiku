@@ -675,27 +675,26 @@ function OperateTags({
 
 // 难度等级范围
 interface DifficultyLevelProps {
-  initialData?: DifficultyLevelRange;
+  levelRange: DifficultyLevelRange;
+  setLevelRange: (val: DifficultyLevelRange) => void;
 }
-function ShowDifficultyLevelRange({ initialData = { basic: 50, improve: 30, expand: 20 } }: DifficultyLevelProps) {
-  const [data, setData] = useState<DifficultyLevelRange>(initialData);
-
+function ShowDifficultyLevelRange({ levelRange, setLevelRange }: DifficultyLevelProps) {
   const update = (key: keyof DifficultyLevelRange, val: number) => {
-    const total = data.basic + data.improve + data.expand - data[key];
+    const total = levelRange.basic + levelRange.improve + levelRange.expand - levelRange[key];
     const remaining = 100 - val;
 
     if (total === 0) {
-      setData({
+      setLevelRange({
         basic: key === "basic" ? val : remaining / 2,
         improve: key === "improve" ? val : remaining / 2,
         expand: key === "expand" ? val : remaining / 2,
       });
     } else {
       const ratio = remaining / total;
-      setData({
-        basic: key === "basic" ? val : Math.round(data.basic * ratio),
-        improve: key === "improve" ? val : Math.round(data.improve * ratio),
-        expand: key === "expand" ? val : Math.round(data.expand * ratio),
+      setLevelRange({
+        basic: key === "basic" ? val : Math.round(levelRange.basic * ratio),
+        improve: key === "improve" ? val : Math.round(levelRange.improve * ratio),
+        expand: key === "expand" ? val : Math.round(levelRange.expand * ratio),
       });
     }
   };
@@ -708,9 +707,9 @@ function ShowDifficultyLevelRange({ initialData = { basic: 50, improve: 30, expa
             <span>
               基础题 <span className="text-gray-400">(1 - 3)</span>
             </span>
-            <span className="font-medium">{data.basic}%</span>
+            <span className="font-medium">{levelRange.basic}%</span>
           </div>
-          <Slider value={[data.basic]} onValueChange={(v) => update("basic", Array.isArray(v) ? v[0] : v)} max={100} step={1} />
+          <Slider value={[levelRange.basic]} onValueChange={(v) => update("basic", Array.isArray(v) ? v[0] : v)} max={100} step={1} />
         </div>
 
         <div>
@@ -718,9 +717,9 @@ function ShowDifficultyLevelRange({ initialData = { basic: 50, improve: 30, expa
             <span>
               提升题 <span className="text-gray-400">(3.5 - 4)</span>
             </span>
-            <span className="font-medium">{data.improve}%</span>
+            <span className="font-medium">{levelRange.improve}%</span>
           </div>
-          <Slider value={[data.improve]} onValueChange={(v) => update("improve", Array.isArray(v) ? v[0] : v)} max={100} step={1} />
+          <Slider value={[levelRange.improve]} onValueChange={(v) => update("improve", Array.isArray(v) ? v[0] : v)} max={100} step={1} />
         </div>
 
         <div>
@@ -728,14 +727,14 @@ function ShowDifficultyLevelRange({ initialData = { basic: 50, improve: 30, expa
             <span>
               扩展题 <span className="text-gray-400">(4.5 - 5)</span>
             </span>
-            <span className="font-medium">{data.expand}%</span>
+            <span className="font-medium">{levelRange.expand}%</span>
           </div>
-          <Slider value={[data.expand]} onValueChange={(v) => update("expand", Array.isArray(v) ? v[0] : v)} max={100} step={1} />
+          <Slider value={[levelRange.expand]} onValueChange={(v) => update("expand", Array.isArray(v) ? v[0] : v)} max={100} step={1} />
         </div>
       </div>
 
       <div className="pt-2 border-t mt-2 flex justify-between">
-        <span>合计: {data.basic + data.improve + data.expand}%</span>
+        <span>合计: {levelRange.basic + levelRange.improve + levelRange.expand}%</span>
         <span>难度 1 → 5</span>
       </div>
     </div>

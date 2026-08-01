@@ -268,7 +268,7 @@ export default function Index() {
                             }
                           />
 
-                          <AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
+                          <AlertDialog key={item.id} open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
                             <AlertDialogTrigger
                               render={
                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">

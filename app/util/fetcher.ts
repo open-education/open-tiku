@@ -2,7 +2,7 @@ import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 import { httpClient } from "~/util/http";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
-import type { PaperTopListReq, PaperTopListResp, PaperTopMeta, PaperTopMetaSearch } from "~/type/paper";
+import type { PaperTopListReq, PaperTopListResp, PaperMeta, PaperTopMetaSearch } from "~/type/paper";
 import { StringConst, StringValidator } from "~/util/string";
 import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from "~/type/question";
 import type { TaskListReq, TaskListResp } from "~/type/task";
@@ -23,7 +23,7 @@ export function useTextbooks(depth: number = 5) {
 
 // 最新试卷
 export function useLatestPapers(count: number = 6) {
-  return useSWRImmutable<PaperTopMeta[]>(`/paper/latest/${count}`, httpClient.get, {
+  return useSWRImmutable<PaperMeta[]>(`/paper/latest/${count}`, httpClient.get, {
     errorRetryCount: 2, // 最多重试2次
     errorRetryInterval: 10000, // 10秒间隔
     revalidateOnFocus: false, // 不聚焦时重新验证
@@ -43,6 +43,9 @@ export function usePaperList(search: PaperTopMetaSearch, pageNo: number) {
   }
   if (StringValidator.isNonEmpty(search.year)) {
     req.year = search.year;
+  }
+  if (search.paperType > 0) {
+    req.paperType = search.paperType;
   }
   if (StringValidator.isNonEmpty(search.grade) && search.grade !== "不选") {
     req.grade = search.grade;

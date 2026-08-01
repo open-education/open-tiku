@@ -23,6 +23,7 @@ export interface CreateChapterKnowledgeReq {
 
 // 解除关联关系
 export interface RemoveChapterKnowledgeReq {
+  id: number;
   chapterId: number;
   knowledgeId: number;
 }

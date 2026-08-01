@@ -3,7 +3,7 @@ import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
-import type { PaperTopMeta, PaperTopMetaSearch } from "~/type/paper";
+import type { PaperMeta, PaperTopMetaSearch } from "~/type/paper";
 import { StringConst, StringConstUtil } from "~/util/string";
 import { TagShow } from "~/common/paper/tag";
 import { ExamQuestion } from "~/common/paper/question";
@@ -19,7 +19,7 @@ import { useUser } from "~/hooks/use-user";
 
 // 试卷列表样式展示
 interface ExamPaperProps {
-  papers: PaperTopMeta[];
+  papers: PaperMeta[];
   metaSearch?: PaperTopMetaSearch;
 
   // 以下为 Sheet 操作方法和属性
@@ -38,7 +38,7 @@ function ExamPaper({ papers, metaSearch, setOpenSheet, setSheetTitle, setSheetDe
     setLoading?.(true);
 
     httpClient
-      .get<PaperTopMeta>(`/paper/info/${id}`)
+      .get<PaperMeta>(`/paper/top/info/${id}`)
       .then((res) => {
         // 查询成功后加载右侧 Sheet 详情信息
         setSheetTitle("查看详情");
@@ -117,7 +117,7 @@ function ExamPaperHeader() {
 
 // 试卷详情样式
 interface ExamPaperMetaProps {
-  paperMeta: PaperTopMeta;
+  paperMeta: PaperMeta;
   metaSearch?: PaperTopMetaSearch;
   isPreview?: boolean;
 
@@ -136,6 +136,7 @@ function ExamPaperMeta({
     year: "",
     grade: "",
     semester: "",
+    paperType: 0,
   },
   isPreview = false,
   setSheetTitle,
@@ -194,9 +195,9 @@ function ExamPaperMeta({
       {/* 来源和备注, 只展示存在的信息 */}
       <div className="flex flex-col gap-1 text-sm">
         {paperMeta.score > 0 && <div>分数: {paperMeta.score}</div>}
-        {paperMeta.authorName && (
+        {currentUser?.username && (
           <div>
-            由 <span className="text-sm font-medium text-blue-600">{paperMeta.authorName}</span> 上传
+            由 <span className="text-sm font-medium text-blue-600">{currentUser.username}</span> 上传
           </div>
         )}
         {paperMeta.source && <div>来源: {paperMeta.source}</div>}
