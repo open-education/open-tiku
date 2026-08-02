@@ -1,11 +1,11 @@
-import { FileQuestionMark, LogOutIcon, Menu, ScrollText, Home, BookOpen, FileText, UserRound, UserKey } from "lucide-react";
+import { LogOutIcon, Menu, UserKey } from "lucide-react";
 import { useState } from "react";
-import { NavLink } from "react-router";
+import { NavLink, type NavLinkProps } from "react-router";
 import { Button } from "~/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "~/components/ui/popover";
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet";
-import { useUser } from "~/hooks/useUser";
+import { useUser } from "~/hooks/use-user";
 import type { UserInfoResp } from "~/type/user";
 import { Login } from "~/user/login";
 import { httpClient } from "~/util/http";
@@ -26,23 +26,14 @@ function Header() {
   const userItems = [
     {
       id: 1,
-      label: "个人中心",
-      icon: <UserRound />,
-      url: "/user",
-      role: "",
-    },
-    {
-      id: 2,
       label: "我的题目",
-      icon: <FileQuestionMark />,
       url: "/user/question/my",
       role: "",
     },
     {
-      id: 3,
-      label: "我的试卷",
-      icon: <ScrollText />,
-      url: "/user/paper/my",
+      id: 2,
+      label: "我的审核",
+      url: "/user/question/review",
       role: "",
     },
   ];
@@ -67,6 +58,15 @@ function Header() {
       });
   };
 
+  // 导航样式
+  const pcLinkClass: NavLinkProps["className"] = ({ isActive }) =>
+    `px-2 py-2 text-base transition-all ${isActive ? "font-bold underline underline-offset-4" : "text-gray-600 hover:text-gray-900"}`;
+
+  const mobileLinkClass: NavLinkProps["className"] = ({ isActive }) =>
+    `block w-full px-3 py-2 text-sm rounded-md transition-all ${
+      isActive ? "font-bold underline underline-offset-4" : "text-gray-600 hover:text-gray-900"
+    }`;
+
   return (
     <header className="sticky top-0 z-50 h-14 border-b border-border bg-background/95 backdrop-blur-sm px-2 sm:px-4">
       <div className="h-14 flex items-center justify-between gap-2 sm:gap-6">
@@ -82,19 +82,11 @@ function Header() {
 
         {/* 中等以上屏幕导航 Nav links */}
         <nav className="hidden md:flex items-center gap-1 flex-1">
-          <NavLink to={"question"}>
-            {({ isActive }) => (
-              <Button variant={isActive ? "default" : "link"}>
-                <span className="text-base">题目库</span>
-              </Button>
-            )}
+          <NavLink to={"question"} className={pcLinkClass}>
+            题目库
           </NavLink>
-          <NavLink to={"paper"}>
-            {({ isActive }) => (
-              <Button variant={isActive ? "default" : "link"}>
-                <span className="text-base flex gap-1">精选试卷</span>
-              </Button>
-            )}
+          <NavLink to={"paper"} className={pcLinkClass}>
+            试卷库
           </NavLink>
         </nav>
 
@@ -124,57 +116,24 @@ function Header() {
               </div>
 
               {/* 导航菜单 */}
-              <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-                <NavLink
-                  to="/"
-                  onClick={closeSheet}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                      isActive ? "bg-primary text-primary-foreground" : "hover:bg-accent"
-                    }`
-                  }
-                >
-                  <Home className="h-5 w-5" />
+              <nav className="p-4 space-y-1 overflow-y-auto">
+                <NavLink to="/" onClick={closeSheet} className={mobileLinkClass}>
                   首页
                 </NavLink>
-                <NavLink
-                  to="question"
-                  onClick={closeSheet}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                      isActive ? "bg-primary text-primary-foreground" : "hover:bg-accent"
-                    }`
-                  }
-                >
-                  <BookOpen className="h-5 w-5" />
+                <NavLink to="question" onClick={closeSheet} className={mobileLinkClass}>
                   题目库
                 </NavLink>
-                <NavLink
-                  to="paper"
-                  onClick={closeSheet}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                      isActive ? "bg-primary text-primary-foreground" : "hover:bg-accent"
-                    }`
-                  }
-                >
-                  <FileText className="h-5 w-5" />
-                  精选试卷
+                <NavLink to="paper" onClick={closeSheet} className={mobileLinkClass}>
+                  试卷库
                 </NavLink>
               </nav>
 
               {/* 底部辅助功能 */}
               {isLogin && (
                 <div className="border-t p-4 space-y-1">
-                  {userItems.map(({ id, label, icon, url }) => {
+                  {userItems.map(({ id, label, url }) => {
                     return (
-                      <NavLink
-                        key={id}
-                        to={url}
-                        onClick={closeSheet}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-accent transition-colors"
-                      >
-                        {icon}
+                      <NavLink key={id} to={url} onClick={closeSheet} className={mobileLinkClass}>
                         {label}
                       </NavLink>
                     );
@@ -210,11 +169,10 @@ function Header() {
                       </Button>
                     }
                   />
-                  <DropdownMenuContent>
-                    {userItems.map(({ id, label, icon, url }) => {
+                  <DropdownMenuContent className="min-w-8 px-2 py-2">
+                    {userItems.map(({ id, label, url }) => {
                       return (
                         <DropdownMenuItem key={id}>
-                          {icon}
                           <NavLink to={url} className="text-sm">
                             {label}
                           </NavLink>
@@ -222,7 +180,7 @@ function Header() {
                       );
                     })}
 
-                    <DropdownMenuSeparator />
+                    <DropdownMenuSeparator className="mt-2 mb-2" />
 
                     <DropdownMenuItem variant="destructive" onClick={handleLogout}>
                       <LogOutIcon />
@@ -254,9 +212,7 @@ function Header() {
                 <PopoverContent align="start">
                   <PopoverHeader>
                     <PopoverTitle className="text-base font-bold">账号登录</PopoverTitle>
-                    <PopoverDescription className="text-sm">
-                      为了隐私安全不支持注册, 也不收集除昵称外的任何信息, 作为用户也不要提供任何真实信息; 因此也不提供账户注册.
-                    </PopoverDescription>
+                    <PopoverDescription className="text-sm">不支持注册, 也不收集除昵称外的任何信息, 用户也不要提供任何真实信息</PopoverDescription>
                   </PopoverHeader>
                   <Login />
                 </PopoverContent>

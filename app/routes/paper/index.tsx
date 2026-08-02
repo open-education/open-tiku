@@ -7,15 +7,14 @@ import { GradeSelect } from "~/common/paper/grade";
 import { SemesterSelect } from "~/common/paper/semester";
 import { YearSelect } from "~/common/paper/year";
 import { Button } from "~/components/ui/button";
-import type { PaperMetaSearch } from "~/type/paper";
+import type { PaperTopMetaSearch } from "~/type/paper";
 import type { Textbook } from "~/type/textbook";
-import Add from "~/paper/add";
+import TopAdd from "~/paper/top/add";
 import { StringConst, StringValidator } from "~/util/string";
 import { SimplePagination } from "~/common/page";
 import { Separator } from "~/components/ui/separator";
 import { Loading } from "~/common/load";
 import { usePaperList, useTextbooks } from "~/util/fetcher";
-import { toast } from "sonner";
 import { useLocation } from "react-router";
 import { SimpleAlert } from "~/common/alert";
 import { SimpleSheet } from "~/common/sheet";
@@ -23,15 +22,16 @@ import { SimpleNoData } from "~/common/empty";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Plus } from "lucide-react";
 import type { UserInfoResp } from "~/type/user";
-import { useUser } from "~/hooks/useUser";
+import { useUser } from "~/hooks/use-user";
+import GenAdd from "~/paper/gen/add";
 
 // 重新网页标题等
 export function meta({}: Route.MetaArgs) {
-  return [{ title: "精选试卷" }, { name: "description", content: "精选历年高考，中考试卷；收录名校期末和月考试卷。" }];
+  return [{ title: "试卷库" }, { name: "description", content: "精选历年高考，中考试卷；收录名校期末和月考试卷。" }];
 }
 
 // 默认的搜索属性
-const defaultMetaSearch: PaperMetaSearch = {
+const defaultMetaSearch: PaperTopMetaSearch = {
   relatedId: 0,
   relatedName: "",
   tag: "",
@@ -39,6 +39,7 @@ const defaultMetaSearch: PaperMetaSearch = {
   grade: "",
   semester: "",
   selectedKeys: [],
+  paperType: 0,
 };
 
 // 试卷管理首页
@@ -51,7 +52,7 @@ export default function Index() {
   const selectNavProps: SelectNavProps = location.state?.selectNavProps ?? {};
 
   // 处理搜索信息, 惰性初始化将其它页面传递过来的值进行赋值
-  const [metaSearch, setMetaSearch] = useState<PaperMetaSearch>(() => {
+  const [metaSearch, setMetaSearch] = useState<PaperTopMetaSearch>(() => {
     const initial = { ...defaultMetaSearch };
 
     if (selectNavProps.relatedId > 0) {
@@ -65,14 +66,11 @@ export default function Index() {
     }
     return initial;
   });
-  const updateSearchMeta = (key: keyof PaperMetaSearch, value: string | number | string[]) => {
+  const updateSearchMeta = (key: keyof PaperTopMetaSearch, value: string | number | string[]) => {
     setMetaSearch((prev) => ({ ...prev, [key]: value }));
   };
 
-  const { data: textbooks = [], isLoading: textbooksIdLoading, error: textbooksErr } = useTextbooks(5);
-  if (textbooksErr) {
-    toast.error(<div className="text-red-700">{textbooksErr.message}</div>);
-  }
+  const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks(5);
 
   // 列表相关错误信息展示
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -84,7 +82,7 @@ export default function Index() {
     data: paperListResp = {
       list: [],
       pageNo: pageNo,
-      pageSize: StringConst.pageSize,
+      pageSize: 12,
       total: 0,
     },
     isLoading: paperListIsLoading,
@@ -98,10 +96,18 @@ export default function Index() {
   const [sheetContent, setSheetContent] = useState<React.ReactNode>("");
 
   // 添加试卷Sheet
-  const addExamSheet = () => {
-    setSheetTitle("添加试卷");
-    setSheetDesc("当前为新增试卷模式");
-    setSheetContent(<Add metaSearch={metaSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
+  const handlePaperTopAdd = () => {
+    setSheetTitle("精选试卷");
+    setSheetDesc("精选历年高考，中考试卷；收录名校期末和月考试卷。");
+    setSheetContent(<TopAdd metaSearch={metaSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
+    setOpenSheet(true);
+  };
+
+  // 生成试卷
+  const handlePapgerGenAdd = () => {
+    setSheetTitle("手动组卷");
+    setSheetDesc("根据你选择的条件进行自动组卷, 生成试卷后请回到列表查看和修改");
+    setSheetContent(<GenAdd metaSearch={metaSearch} />);
     setOpenSheet(true);
   };
 
@@ -171,14 +177,37 @@ export default function Index() {
         </div>
 
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">试卷类型:</div>
+          <div className="flex-1 min-w-0 flex flex-wrap gap-4">
+            {StringConst.paperTypes.map(({ value, label }) => (
+              <Button
+                key={value}
+                className="text-sm md:text-sm w-20 text-center"
+                type="button"
+                variant={metaSearch.paperType === value ? "default" : "outline"}
+                onClick={() => updateSearchMeta("paperType", value)}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
           <div className="md:w-24 shrink-0 font-medium">操作:</div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap gap-1">
               {currentUser && (
-                <Button variant="outline" onClick={addExamSheet} className="text-sm">
-                  <Plus className="mr-2 h-4 w-4" />
-                  添加试卷
-                </Button>
+                <>
+                  <Button variant="outline" onClick={handlePaperTopAdd} className="text-sm">
+                    <Plus className="mr-2 h-4 w-4" />
+                    精选试卷
+                  </Button>
+                  <Button variant="outline" onClick={handlePapgerGenAdd} className="text-sm">
+                    <Plus className="mr-2 h-4 w-4" />
+                    手动组卷
+                  </Button>
+                </>
               )}
             </div>
           </div>
@@ -190,6 +219,11 @@ export default function Index() {
       </div>
 
       {/* 列表显示错误 */}
+      {textbooksErr && (
+        <div className="mt-3">
+          <SimpleAlert title="导航获取失败" message={textbooksErr.message} />
+        </div>
+      )}
       {paperListErr && (
         <div className="mt-3">
           <SimpleAlert title="列表获取失败" message={paperListErr.message} />
@@ -204,7 +238,7 @@ export default function Index() {
       )}
 
       {/* 加载中提示 */}
-      {useDelayedLoading(isLoading || paperListIsLoading || textbooksIdLoading) && <Loading />}
+      {useDelayedLoading(isLoading || paperListIsLoading || textbooksIsLoading) && <Loading />}
 
       {/* 试卷列表 */}
       <div className="mt-3">

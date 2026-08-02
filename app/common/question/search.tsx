@@ -21,7 +21,7 @@ import { TaskAdd, TaskListShow } from "~/question/task";
 import { Button } from "~/components/ui/button";
 import { Plus, Upload, View } from "lucide-react";
 import type { UserInfoResp } from "~/type/user";
-import { useUser } from "~/hooks/useUser";
+import { useUser } from "~/hooks/use-user";
 
 // 题目搜索页面
 interface QuestionSearchProps {

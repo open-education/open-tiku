@@ -1,20 +1,14 @@
 import React, { useMemo, useState } from "react";
-import { ChapterDropdownNav } from "~/common/nav";
-import { TagSelect } from "~/common/paper/tag";
-import { GradeSelect } from "~/common/paper/grade";
-import { SemesterSelect } from "~/common/paper/semester";
-import { YearSelect } from "~/common/paper/year";
 import { Button } from "~/components/ui/button";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
 import { Separator } from "~/components/ui/separator";
-import type { Textbook } from "~/type/textbook";
 import { StringConst, StringValidator } from "~/util/string";
 import { Watermark } from "~/common/watermark";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
-import type { PaperGroup, PaperMeta, PaperMetaSearch, PaperQuestion } from "~/type/paper";
+import type { PaperGroup, PaperMeta, PaperTopMetaSearch, PaperQuestion } from "~/type/paper";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { FileImage, Plus, Send, Trash2, X } from "lucide-react";
+import { FileImage, Plus, Save, Send, Trash2, X } from "lucide-react";
 import { Label } from "~/components/ui/label";
 import type { Content, QuestionOption } from "~/type/question";
 import { ExamPaperMeta } from "~/common/paper/meta";
@@ -28,6 +22,7 @@ import { FileUpload } from "~/common/file";
 import { QuickToolList } from "~/common/tool";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Loading } from "~/common/load";
+import { PaperMetaConf } from "~/common/paper/config";
 
 /// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑
 /// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
@@ -49,12 +44,11 @@ const defaultPaperMeta: PaperMeta = {
   grade: "",
   semester: "",
   remark: "",
-  authorId: 0,
-  authorName: "admin", // 当前登录用户昵称
   count: 0,
   statusDesc: "",
   remarkExt: "",
   relatedName: "",
+  paperType: 1,
 };
 
 const defaultQuestionInfo = (order: number): PaperQuestion => ({
@@ -80,8 +74,8 @@ const defaultGroup = (): PaperGroup => ({
   paperId: 0,
 });
 
-interface AddProps {
-  metaSearch: PaperMetaSearch;
+interface TopAddProps {
+  metaSearch: PaperTopMetaSearch;
   infoResp?: PaperMeta; // 如果是详情页面过来的则处于编译状态
 
   // 以下为 Sheet 操作方法和属性
@@ -90,7 +84,7 @@ interface AddProps {
   setSheetContent?: (value: React.ReactNode) => void;
 }
 
-export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc, setSheetContent }: AddProps) {
+export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDesc, setSheetContent }: TopAddProps) {
   // 计算初始值, 编辑时也是更新这个初始化值
   const initialPaperMeta = useMemo(() => {
     // 如果是详情进来的则仅使用详情的数据
@@ -261,7 +255,7 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
   };
 
   // 按钮提交状态
-  const [drafing, setDrafing] = useState<boolean>(false);
+  const [drafting, setDrafting] = useState<boolean>(false);
   const [approving, setApproving] = useState<boolean>(false);
 
   // 提交试卷
@@ -306,19 +300,21 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
     setAddWarnInfo("");
 
     if (status === 0) {
-      setDrafing(true);
+      setDrafting(true);
       paper.status = 0;
     } else {
       setApproving(true);
       paper.status = 1;
     }
 
+    paper.paperType = StringConst.paperTypeTop;
+
     httpClient
-      .post<number>("/paper/add", paper)
+      .post<number>("/paper/top/add", paper)
       .then((resId) => {
         // 获取详情渲染Sheet为试卷详情
         httpClient
-          .get<PaperMeta>(`/paper/info/${resId}`)
+          .get<PaperMeta>(`/paper/top/info/${resId}`)
           .then((res) => {
             setSheetTitle?.("试卷详情");
             setSheetDesc?.("仅为详情预览, 需审核通过后其他人可见, 可去 我的试卷 查看");
@@ -333,7 +329,7 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
       })
       .finally(() => {
         // 不管成功失败最终都要清除按钮控制
-        setDrafing(false);
+        setDrafting(false);
         setApproving(false);
       });
   };
@@ -345,9 +341,9 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <Button variant="default" className="text-sm" onClick={() => handleAddPaper(0)} disabled={drafing}>
-          <Send className="mr-2 h-4 w-4" />
-          {drafing ? "存为草稿中..." : "存为草稿"}
+        <Button variant="default" className="text-sm" onClick={() => handleAddPaper(0)} disabled={drafting}>
+          <Save className="mr-2 h-4 w-4" />
+          {drafting ? "存为草稿中..." : "存为草稿"}
         </Button>
         <Button variant="outline" className="text-sm" onClick={() => handleAddPaper(1)} disabled={approving}>
           <Send className="mr-2 h-4 w-4" />
@@ -385,129 +381,7 @@ export default function Add({ metaSearch, infoResp, setSheetTitle, setSheetDesc,
         <ResizablePanelGroup orientation="horizontal">
           <ResizablePanel defaultSize="50%">
             <div className="px-4">
-              <div className="flex flex-col gap-3">
-                <div className="grid grid-cols-10 gap-1 items-center">
-                  <div className="col-span-2">学段/考点:</div>
-                  <div className="col-span-8">
-                    <ChapterDropdownNav
-                      textbooks={textbooks}
-                      onSelect={(selectedItems: Textbook[]) => {
-                        // 直接记录末级的标识即可, 搜索直接搜索该层级标识即可, 不关心父级和子级
-                        // 但是详情和编辑需要展示这个路径, 需要用了再获取
-                        if (!selectedItems) {
-                          updatePaperMeta("relatedId", 0);
-                          updatePaperMeta("relatedName", "");
-                          return;
-                        }
-                        const current = selectedItems[selectedItems.length - 1];
-                        updatePaperMeta("relatedId", current.id);
-                        updatePaperMeta("relatedName", current.label);
-                      }}
-                      defaultSelectedKeys={metaSearch.selectedKeys ?? []}
-                      placeholder="请选择学段"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-10 gap-1 items-center">
-                  <div className="col-span-2">标签:</div>
-                  <div className="col-span-8">
-                    <TagSelect
-                      options={StringConst.examTags}
-                      defaultValue={paper.tag ?? ""}
-                      onSelect={(val) => {
-                        console.log("val: ", val);
-                        updatePaperMeta("tag", val);
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-10 gap-1 items-center">
-                  <div className="col-span-2">年份:</div>
-                  <div className="col-span-8">
-                    <YearSelect
-                      value={paper.year ?? ""}
-                      onValueChange={(val) => {
-                        updatePaperMeta("year", val ?? "");
-                      }}
-                      placeholder="选择年份"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-10 gap-1 items-center">
-                  <div className="col-span-2">年级:</div>
-                  <div className="col-span-8">
-                    <GradeSelect
-                      value={paper.grade ?? ""}
-                      onValueChange={(val) => updatePaperMeta("grade", !val || val === "不选" ? "" : val)}
-                      placeholder="选择年级"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-10 gap-1 items-center">
-                  <div className="col-span-2">学期:</div>
-                  <div className="col-span-8">
-                    <SemesterSelect
-                      value={paper.semester ?? ""}
-                      onValueChange={(val) => updatePaperMeta("semester", !val || val === "不选" ? "" : val)}
-                      placeholder="选择学期"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-10 gap-1 items-center">
-                  <div className="col-span-2">标题:</div>
-                  <div className="col-span-8">
-                    <Textarea
-                      value={paper.title}
-                      className="text-sm md:text-sm"
-                      onChange={(e) => updatePaperMeta("title", e.target.value)}
-                      placeholder={"请输入试卷标题"}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-10 gap-1 items-center">
-                  <div className="col-span-2">分数:</div>
-                  <div className="col-span-8">
-                    <Input
-                      type="number"
-                      value={paper.score}
-                      onChange={(e) => {
-                        updatePaperMeta("score", Number(e.target.value));
-                      }}
-                      className="text-sm md:text-sm"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-10 gap-1 items-center">
-                  <div className="col-span-2">来源:</div>
-                  <div className="col-span-8">
-                    <Textarea
-                      className="text-sm md:text-sm"
-                      value={paper.source}
-                      onChange={(e) => updatePaperMeta("source", e.target.value)}
-                      placeholder={"请输入试卷来源"}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-10 gap-1 items-center">
-                  <div className="col-span-2">备注:</div>
-                  <div className="col-span-8">
-                    <Textarea
-                      value={paper.remark}
-                      className="texst-sm md:text-sm"
-                      onChange={(e) => updatePaperMeta("remark", e.target.value)}
-                      placeholder={"请输入备注信息"}
-                    />
-                  </div>
-                </div>
-              </div>
+              <PaperMetaConf textbooks={textbooks} paper={paper} defaultSelectedKeys={metaSearch.selectedKeys} updatePaperMeta={updatePaperMeta} />
 
               {/* ===== 大题列表 ===== */}
               <div className="space-y-4 mt-3">
