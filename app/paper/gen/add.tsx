@@ -4,7 +4,6 @@ import { MultiTagSelect, ShowDifficultyLevelRange } from "~/common/question/tag"
 import type { DifficultyLevelRange, PaperGenTypeMeta, PaperGenSearch, PaperMeta, PaperTopMetaSearch, PapgerGenConf } from "~/type/paper";
 import type { Textbook } from "~/type/textbook";
 import { useQuestionCates, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
-import { ArrayUtil } from "~/util/object";
 import { createTextbookPathDict } from "~/util/textbook-dict";
 import { PaperGenConfig } from "~/paper/gen/config";
 import { Button } from "~/components/ui/button";
@@ -132,14 +131,12 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
     isLoading: questionTagsLoading,
     error: questionTagsErr,
   } = useQuestionOtherDicts(paperGenSearch.twoLevelId, "question_tag");
-  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
 
   const {
     data: questionDimensions = [],
     isLoading: questionDimensionsLoading,
     error: questionDimensionsErr,
   } = useQuestionOtherDicts(paperGenSearch.twoLevelId, "question_dimension");
-  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(paperGenSearch.fiveLevelId);
@@ -150,6 +147,10 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
   const [warnInfo, setWarnInfo] = useState<React.ReactNode>(null);
 
   const [paperInfo, setPaperInfo] = useState<PaperMeta>(defaultPaperMeta);
+
+  const [genPreviewing, setGenPreviewing] = useState<boolean>(false);
+  const [drafting, setDrafting] = useState<boolean>(false);
+  const [approving, setApproving] = useState<boolean>(false);
 
   // 生成试卷预览
   const handleGenPaper = () => {
@@ -185,6 +186,8 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
     };
     paper.conf = conf;
 
+    setGenPreviewing(true);
+
     httpClient
       .post<PaperMeta>("/paper/gen/preview", paper)
       .then((res) => {
@@ -193,26 +196,102 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
       .catch((err) => {
         setWarnInfo(<SimpleAlert title="生成预览失败" message={err.message} />);
       })
-      .finally(() => {});
+      .finally(() => {
+        setGenPreviewing(false);
+      });
   };
 
   // 保存试卷
-  const handleSavePaper = (status: number) => {};
+  const handleSavePaper = (status: number) => {
+    setWarnInfo("");
+
+    // 检查必填参数是否为空
+    if (paper.relatedId <= 0) {
+      toast.error(<div className="text-red-700">学段/考点不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (!StringValidator.isNonEmpty(paper.tag)) {
+      toast.error(<div className="text-red-700">标签不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (!StringValidator.isNonEmpty(paper.year)) {
+      toast.error(<div className="text-red-700">年份不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+
+    if (!paperGenSearch.questionCateIds || paperGenSearch.questionCateIds.length == 0) {
+      toast.error(<div className="text-red-700">题目选择： 题型配置不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (paperGenSearch.typeMetaList.length == 0) {
+      toast.error(<div className="text-red-700">题目选择： 题型题量配置不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+
+    if (status === 0) {
+      setDrafting(true);
+      paper.status = 0;
+    } else {
+      setApproving(true);
+      paper.status = 1;
+    }
+
+    paper.paperType = StringConst.paperTypesGen;
+
+    const conf: PapgerGenConf = {
+      questionCateIds: paperGenSearch.questionCateIds || [],
+      tagIds: paperGenSearch.tagIds,
+      dimensionIds: paperGenSearch.dimensionIds,
+      levelRange: levelRange,
+      questionTypes: paperGenSearch.typeMetaList,
+    };
+    paper.conf = conf;
+  };
 
   return (
     <div className="text-base pl-4 pr-4 pb-4">
       <div className="mt-3 flex flex-wrap gap-2">
-        <Button variant="outline" className="text-sm" onClick={handleGenPaper} disabled={false}>
+        <Button variant="outline" className="text-sm" onClick={handleGenPaper} disabled={genPreviewing}>
           <Eye className="mr-2 h-4 w-4" />
-          生成预览
+          {genPreviewing ? "生成预览中" : "生成预览"}
         </Button>
-        <Button variant="outline" className="text-sm" onClick={() => handleSavePaper(1)} disabled={false}>
+        <Button variant="outline" className="text-sm" onClick={() => handleSavePaper(0)} disabled={drafting}>
           <Save className="mr-2 h-4 w-4" />
-          存为草稿
+          {drafting ? "存为草稿中..." : "存为草稿"}
         </Button>
-        <Button variant="outline" className="text-sm" onClick={() => handleSavePaper(2)} disabled={false}>
+        <Button variant="outline" className="text-sm" onClick={() => handleSavePaper(1)} disabled={approving}>
           <Send className="mr-2 h-4 w-4" />
-          提交审核
+          {approving ? "提交审核中..." : "提交审核"}
         </Button>
       </div>
 

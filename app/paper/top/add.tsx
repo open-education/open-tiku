@@ -255,7 +255,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
   };
 
   // 按钮提交状态
-  const [drafing, setDrafing] = useState<boolean>(false);
+  const [drafting, setDrafting] = useState<boolean>(false);
   const [approving, setApproving] = useState<boolean>(false);
 
   // 提交试卷
@@ -300,7 +300,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
     setAddWarnInfo("");
 
     if (status === 0) {
-      setDrafing(true);
+      setDrafting(true);
       paper.status = 0;
     } else {
       setApproving(true);
@@ -329,7 +329,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
       })
       .finally(() => {
         // 不管成功失败最终都要清除按钮控制
-        setDrafing(false);
+        setDrafting(false);
         setApproving(false);
       });
   };
@@ -341,9 +341,9 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <Button variant="default" className="text-sm" onClick={() => handleAddPaper(0)} disabled={drafing}>
+        <Button variant="default" className="text-sm" onClick={() => handleAddPaper(0)} disabled={drafting}>
           <Save className="mr-2 h-4 w-4" />
-          {drafing ? "存为草稿中..." : "存为草稿"}
+          {drafting ? "存为草稿中..." : "存为草稿"}
         </Button>
         <Button variant="outline" className="text-sm" onClick={() => handleAddPaper(1)} disabled={approving}>
           <Send className="mr-2 h-4 w-4" />
