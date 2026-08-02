@@ -3,7 +3,7 @@ import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
-import type { PaperMeta, PaperTopMetaSearch } from "~/type/paper";
+import type { PaperMeta, PaperMetaSearch } from "~/type/paper";
 import { StringConst, StringConstUtil } from "~/util/string";
 import { TagShow } from "~/common/paper/tag";
 import { ExamQuestion } from "~/common/paper/question";
@@ -20,7 +20,7 @@ import { useUser } from "~/hooks/use-user";
 // 试卷列表样式展示
 interface ExamPaperProps {
   papers: PaperMeta[];
-  metaSearch?: PaperTopMetaSearch;
+  metaSearch?: PaperMetaSearch;
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
@@ -118,7 +118,7 @@ function ExamPaperHeader() {
 // 试卷详情样式
 interface ExamPaperMetaProps {
   paperMeta: PaperMeta;
-  metaSearch?: PaperTopMetaSearch;
+  metaSearch?: PaperMetaSearch;
   isPreview?: boolean;
 
   // 以下为 Sheet 操作方法和属性

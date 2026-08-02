@@ -6,7 +6,7 @@ import { StringConst, StringValidator } from "~/util/string";
 import { Watermark } from "~/common/watermark";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
-import type { PaperGroup, PaperMeta, PaperTopMetaSearch, PaperQuestion } from "~/type/paper";
+import type { PaperGroup, PaperMeta, PaperMetaSearch, PaperQuestion } from "~/type/paper";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { FileImage, Plus, Save, Send, Trash2, X } from "lucide-react";
 import { Label } from "~/components/ui/label";
@@ -75,7 +75,7 @@ const defaultGroup = (): PaperGroup => ({
 });
 
 interface TopAddProps {
-  metaSearch: PaperTopMetaSearch;
+  metaSearch: PaperMetaSearch;
   infoResp?: PaperMeta; // 如果是详情页面过来的则处于编译状态
 
   // 以下为 Sheet 操作方法和属性
