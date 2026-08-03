@@ -94,7 +94,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
       return;
     }
     if (addReq.questionCateId <= 0) {
-      toast.error(<div className="text-red-700">题型不能为空</div>, {
+      toast.error(<div className="text-red-700">第8级菜单题型不能为空</div>, {
         duration: Infinity,
         action: {
           label: "关闭",
@@ -217,6 +217,12 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
                 }
 
                 const current: Textbook = selectedItems[selectedItems.length - 1];
+                // 必须选择题型
+                if (current.tableName !== StringConst.questionCateTableName) {
+                  updateAddReq("questionCateId", 0);
+                  return;
+                }
+
                 updateAddReq("questionCateId", current.id);
               }}
               defaultSelectedKeys={questionSearch.eightLevelSelectKeys || []}

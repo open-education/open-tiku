@@ -294,7 +294,7 @@ export default function Add({
   const handleAddSubmit = (status: number) => {
     // 检查必填参数是否为空
     if (addReq.questionCateId <= 0) {
-      toast.error(<div className="text-red-700">题型不能为空</div>, {
+      toast.error(<div className="text-red-700">第8级菜单题型不能为空</div>, {
         duration: Infinity,
         action: {
           label: "关闭",
@@ -478,469 +478,477 @@ export default function Add({
       </div>
 
       <div>
-        <ResizablePanelGroup orientation="horizontal">
+        <ResizablePanelGroup orientation="horizontal" className="border">
           <ResizablePanel defaultSize="50%">
-            {/* ========== 区块 1：基础信息 ========== */}
-            <Card className="ml-3 mr-3 mt-1 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Settings2 className="w-5 h-5 text-primary" />
-                  <CardTitle className="text-base font-medium">基础设置</CardTitle>
-                </div>
-                <CardDescription className="text-sm">配置题目所属题型, 题目类型, 标签, 原创者名称, 来源和难度系数</CardDescription>
-              </CardHeader>
-              <Separator />
-              <CardContent>
-                <div className="text-base flex flex-col gap-3">
-                  {/* 选择前5层级 */}
-                  <div className="grid grid-cols-10 gap-1 items-center">
-                    <div className="col-span-2">
-                      章节/考点:<span className="text-destructive">*</span>
-                    </div>
-                    <div className="col-span-8">
-                      <ChapterDropdownNav
-                        textbooks={textbooks}
-                        onSelect={(selectedItems: Textbook[]) => {
-                          if (!selectedItems) {
-                            setFiveLevelId(0);
-                            return;
-                          }
-
-                          const current: Textbook = selectedItems[selectedItems.length - 1];
-                          setFiveLevelId(current.id);
-                        }}
-                        defaultSelectedKeys={questionSearch.fiveLevelSelectKeys || []}
-                        placeholder="请选择学段/考点"
-                      />
-                    </div>
-                  </div>
-
-                  {/* 根据前5层级选择后3层级 */}
-                  <div className="grid grid-cols-10 gap-4 items-center">
-                    <div className="col-span-2">
-                      题型:<span className="text-destructive">*</span>
-                    </div>
-                    <div className="col-span-8">
-                      <ChapterDropdownNav
-                        textbooks={questionCates}
-                        onSelect={(selectedItems: Textbook[]) => {
-                          if (!selectedItems) {
-                            updateAddReq("questionCateId", 0);
-                            return;
-                          }
-
-                          const current: Textbook = selectedItems[selectedItems.length - 1];
-                          updateAddReq("questionCateId", current.id);
-                        }}
-                        defaultSelectedKeys={questionSearch.eightLevelSelectKeys || []}
-                        placeholder="请选择题型"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-10 gap-4 items-center">
-                    <div className="col-span-2">
-                      类型:<span className="text-destructive">*</span>
-                    </div>
-                    <div className="col-span-8">
-                      <TypeSelect
-                        options={questionTypes}
-                        value={addReq.questionTypeId}
-                        onSelect={(val) => {
-                          updateAddReq("questionTypeId", val);
-                          setIsChoice(questionTypeDict[val]?.isSelect);
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-10 gap-4 items-center">
-                    <div className="col-span-2">标签:</div>
-                    <div className="col-span-8">
-                      <MultiTagSelect
-                        options={questionTags}
-                        value={addReq.questionTagIds ?? []}
-                        onChange={(val) => updateAddReq("questionTagIds", val)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-10 gap-4 items-center">
-                    <div className="col-span-2">核心素养:</div>
-                    <div className="col-span-8">
-                      <MultiTagSelect
-                        options={questionDimensions}
-                        value={addReq.questionDimensionIds ?? []}
-                        onChange={(val) => updateAddReq("questionDimensionIds", val)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-10 gap-4 items-center">
-                    <div className="col-span-2">创作者:</div>
-                    <div className="col-span-8">
-                      <Input
-                        id="originalName"
-                        className="text-sm md:text-sm"
-                        value={addReq.originalName}
-                        onChange={(e) => updateAddReq("originalName", e.target.value)}
-                        placeholder="请输入原创者代号, 不要填写真实信息, 保护他人隐私"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-10 gap-4 items-center">
-                    <div className="col-span-2">来源:</div>
-                    <div className="col-span-8">
-                      <Input
-                        id="source"
-                        className="text-sm md:text-sm"
-                        value={addReq.source}
-                        onChange={(e) => updateAddReq("source", e.target.value)}
-                        placeholder="请输入题目来源, 标注版权信息"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-10 gap-4 items-center">
-                    <div className="col-span-2">
-                      难度:<span className="text-destructive">*</span>
-                    </div>
-                    <div className="col-span-8">
-                      <div className="flex flex-wrap gap-4">
-                        {StringConst.difficultyLevelList.map(({ value: optionValue, label }) => (
-                          <Button
-                            key={optionValue}
-                            className="text-sm md:text-sm w-10 text-center"
-                            type="button"
-                            variant={addReq.difficultyLevel === optionValue ? "default" : "outline"}
-                            onClick={() => updateAddReq("difficultyLevel", optionValue)}
-                          >
-                            {label}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* ========== 区块 2：题干 ========== */}
-            <Card className="ml-3 mr-3 mt-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-primary" />
-                  <CardTitle className="text-base font-medium">题干</CardTitle>
-                </div>
-                <CardDescription className="text-sm">题目正文, 补充说明与相关图片</CardDescription>
-              </CardHeader>
-              <Separator />
-              <CardContent>
-                <div className="space-y-2">
-                  <Label htmlFor="title" className="text-sm">
-                    题干内容 <span className="text-destructive">*</span>
-                  </Label>
-                  <Textarea
-                    id="title"
-                    className="min-h-25 resize-y text-sm md:text-sm"
-                    value={addReq.title || ""}
-                    onChange={(e) => updateAddReq("title", e.target.value)}
-                    placeholder="输入题目正文..."
-                  />
-                </div>
-                <div className="space-y-2 mt-3">
-                  <Label htmlFor="comment" className="text-sm">
-                    补充说明
-                  </Label>
-                  <Textarea
-                    id="comment"
-                    className="min-h-15 resize-y text-sm md:text-sm"
-                    value={addReq.comment || ""}
-                    onChange={(e) => updateAddReq("comment", e.target.value)}
-                    placeholder="例如：题目背景、特殊约束等"
-                  />
-                </div>
-
-                {/* 图片列表 */}
-                <ImageAdd
-                  name="题干图片"
-                  images={addReq.images || []}
-                  add={() => {
-                    addImageToField("images", "");
-                  }}
-                  update={(idx, val) => {
-                    const newImages = [...(addReq.images || [])];
-                    newImages[idx] = val;
-                    updateAddReq("images", newImages);
-                  }}
-                  remove={(idx) => {
-                    removeImageFromField("images", idx);
-                  }}
-                />
-              </CardContent>
-            </Card>
-
-            {/* ========== 区块 3：选项 (条件渲染) ========== */}
-            {isChoice && (
-              <Card className="ml-3 mr-3 mt-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+            <div className="p-4">
+              {/* ========== 区块 1：基础信息 ========== */}
+              <Card className="shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
                 <CardHeader>
                   <div className="flex items-center gap-2">
-                    <ListChecks className="w-5 h-5 text-primary" />
-                    <CardTitle className="text-base font-medium">选项设置</CardTitle>
-                    <Badge variant="secondary" className="font-normal text-sm">
-                      选择题
-                    </Badge>
+                    <Settings2 className="w-5 h-5 text-primary" />
+                    <CardTitle className="text-base font-medium">基础设置</CardTitle>
                   </div>
-                  <CardDescription className="text-sm">配置选项内容和布局</CardDescription>
+                  <CardDescription className="text-sm">配置题目所属题型, 题目类型, 标签, 原创者名称, 来源和难度系数</CardDescription>
                 </CardHeader>
                 <Separator />
                 <CardContent>
-                  {/* 布局切换 */}
-                  <div className="flex items-center gap-6 bg-muted/30 rounded-lg p-2 px-4 w-fit">
-                    <span className="text-sm">选项布局</span>
-                    <RadioGroup
-                      value={addReq.optionsLayout}
-                      onValueChange={(val) => updateAddReq("optionsLayout", val)}
-                      defaultValue={addReq.optionsLayout || 1}
-                      className="flex gap-4 w-fit"
-                    >
-                      {StringConst.selectLayoutList.map(({ id, value, label }) => (
-                        <div key={id} className="flex items-center gap-2">
-                          <RadioGroupItem value={value} id={id} className="text-sm" />
-                          <Label htmlFor={id} className="text-sm">
-                            {label}
-                          </Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </div>
+                  <div className="text-base flex flex-col gap-3">
+                    {/* 选择前5层级 */}
+                    <div className="grid grid-cols-10 gap-1 items-center">
+                      <div className="col-span-2">
+                        章节/考点:<span className="text-destructive">*</span>
+                      </div>
+                      <div className="col-span-8">
+                        <ChapterDropdownNav
+                          textbooks={textbooks}
+                          onSelect={(selectedItems: Textbook[]) => {
+                            if (!selectedItems) {
+                              setFiveLevelId(0);
+                              return;
+                            }
 
-                  {/* 选项列表 */}
-                  <div className="space-y-4">
-                    {(addReq.options || []).map((opt, optIdx) => (
-                      <div key={optIdx} className="bg-muted/10 border rounded-xl p-5 space-y-3 relative transition-all hover:border-primary/20">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
-                              {opt.label}
-                            </div>
-                            <span className="text-sm text-muted-foreground">选项 {optIdx + 1}</span>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            className="text-sm md:text-sm text-destructive hover:text-destructive h-8 px-2"
-                            onClick={() => removeOption(optIdx)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-
-                        <Textarea
-                          value={opt.content}
-                          onChange={(e) => updateOption(optIdx, "content", e.target.value)}
-                          placeholder="输入选项内容"
-                          className="text-sm md:text-sm min-h-15 bg-background/60"
+                            const current: Textbook = selectedItems[selectedItems.length - 1];
+                            setFiveLevelId(current.id);
+                          }}
+                          defaultSelectedKeys={questionSearch.fiveLevelSelectKeys || []}
+                          placeholder="请选择学段/考点"
                         />
+                      </div>
+                    </div>
 
-                        {/* 选项内图片 */}
-                        <ImageAdd
-                          name="选项图片"
-                          images={opt.images || []}
-                          add={() => {
-                            updateOption(optIdx, "images", [...(opt.images || []), ""]);
+                    {/* 根据前5层级选择后3层级 */}
+                    <div className="grid grid-cols-10 gap-4 items-center">
+                      <div className="col-span-2">
+                        题型:<span className="text-destructive">*</span>
+                      </div>
+                      <div className="col-span-8">
+                        <ChapterDropdownNav
+                          textbooks={questionCates}
+                          onSelect={(selectedItems: Textbook[]) => {
+                            if (!selectedItems) {
+                              updateAddReq("questionCateId", 0);
+                              return;
+                            }
+
+                            const current: Textbook = selectedItems[selectedItems.length - 1];
+                            // 必须选择题型
+                            if (current.tableName !== StringConst.questionCateTableName) {
+                              updateAddReq("questionCateId", 0);
+                              return;
+                            }
+
+                            updateAddReq("questionCateId", current.id);
                           }}
-                          update={(idx, val) => {
-                            const newImages = [...(opt.images || [])];
-                            newImages[idx] = val;
-                            updateOption(optIdx, "images", newImages);
-                          }}
-                          remove={(idx) => {
-                            const newImages = (opt.images || []).filter((_, i) => i !== idx);
-                            updateOption(optIdx, "images", newImages);
+                          defaultSelectedKeys={questionSearch.eightLevelSelectKeys || []}
+                          placeholder="请选择题型"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-10 gap-4 items-center">
+                      <div className="col-span-2">
+                        类型:<span className="text-destructive">*</span>
+                      </div>
+                      <div className="col-span-8">
+                        <TypeSelect
+                          options={questionTypes}
+                          value={addReq.questionTypeId}
+                          onSelect={(val) => {
+                            updateAddReq("questionTypeId", val);
+                            setIsChoice(questionTypeDict[val]?.isSelect);
                           }}
                         />
                       </div>
-                    ))}
-                    <Button type="button" variant="outline" className="text-sm md:text-sm w-full border-dashed h-11 gap-2" onClick={addOption}>
-                      <Plus className="w-4 h-4" /> 添加选项
-                    </Button>
+                    </div>
+
+                    <div className="grid grid-cols-10 gap-4 items-center">
+                      <div className="col-span-2">标签:</div>
+                      <div className="col-span-8">
+                        <MultiTagSelect
+                          options={questionTags}
+                          value={addReq.questionTagIds ?? []}
+                          onChange={(val) => updateAddReq("questionTagIds", val)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-10 gap-4 items-center">
+                      <div className="col-span-2">核心素养:</div>
+                      <div className="col-span-8">
+                        <MultiTagSelect
+                          options={questionDimensions}
+                          value={addReq.questionDimensionIds ?? []}
+                          onChange={(val) => updateAddReq("questionDimensionIds", val)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-10 gap-4 items-center">
+                      <div className="col-span-2">创作者:</div>
+                      <div className="col-span-8">
+                        <Input
+                          id="originalName"
+                          className="text-sm md:text-sm"
+                          value={addReq.originalName}
+                          onChange={(e) => updateAddReq("originalName", e.target.value)}
+                          placeholder="请输入原创者代号, 不要填写真实信息, 保护他人隐私"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-10 gap-4 items-center">
+                      <div className="col-span-2">来源:</div>
+                      <div className="col-span-8">
+                        <Input
+                          id="source"
+                          className="text-sm md:text-sm"
+                          value={addReq.source}
+                          onChange={(e) => updateAddReq("source", e.target.value)}
+                          placeholder="请输入题目来源, 标注版权信息"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-10 gap-4 items-center">
+                      <div className="col-span-2">
+                        难度:<span className="text-destructive">*</span>
+                      </div>
+                      <div className="col-span-8">
+                        <div className="flex flex-wrap gap-4">
+                          {StringConst.difficultyLevelList.map(({ value: optionValue, label }) => (
+                            <Button
+                              key={optionValue}
+                              className="text-sm md:text-sm w-10 text-center"
+                              type="button"
+                              variant={addReq.difficultyLevel === optionValue ? "default" : "outline"}
+                              onClick={() => updateAddReq("difficultyLevel", optionValue)}
+                            >
+                              {label}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-            )}
 
-            {/* ========== 区块 4：答案与知识点 ========== */}
-            <Card className="ml-3 mr-3 mt-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-primary" />
-                  <CardTitle className="text-base font-medium">答案与知识点</CardTitle>
-                </div>
-              </CardHeader>
-              <Separator />
-              <CardContent>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="answer" className="text-sm">
-                    参考答案
-                  </Label>
-                  <Textarea
-                    id="answer"
-                    className="min-h-17.5 text-sm md:text-sm"
-                    value={addReq.answer || ""}
-                    onChange={(e) => updateAddReq("answer", e.target.value)}
-                    placeholder="输入参考答案"
-                  />
-                </div>
-
-                <div className="mt-3 space-y-2 md:col-span-2">
-                  <Label htmlFor="knowledge" className="text-sm">
-                    涉及知识点
-                  </Label>
-                  <Textarea
-                    id="knowledge"
-                    className="min-h-17.5 text-sm md:text-sm"
-                    value={addReq.knowledge || ""}
-                    onChange={(e) => updateAddReq("knowledge", e.target.value)}
-                    placeholder="输入知识点，多个可用逗号分隔"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* ========== 区块 5：解题分析 ========== */}
-            <Card className="ml-3 mr-3 mt-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Brain className="w-5 h-5 text-primary" />
-                  <CardTitle className="text-base font-medium">解题分析</CardTitle>
-                </div>
-              </CardHeader>
-              <Separator />
-              <CardContent>
-                <Textarea
-                  value={addReq.analysis?.content || ""}
-                  onChange={(e) => updateContent("analysis", "content", e.target.value)}
-                  placeholder="详细的解题分析..."
-                  className="min-h-20 text-sm md:text-sm"
-                />
-
-                <ImageAdd
-                  name="分析图片"
-                  images={addReq.analysis?.images || []}
-                  add={() => {
-                    addImageToField("analysis.images", "");
-                  }}
-                  update={(idx, val) => {
-                    const current = (addReq.analysis?.images as string[]) || [];
-                    const newImages = [...current];
-                    newImages[idx] = val;
-                    updateContent("analysis", "images", newImages);
-                  }}
-                  remove={(idx) => {
-                    removeImageFromField("analysis.images", idx);
-                  }}
-                />
-              </CardContent>
-            </Card>
-
-            {/* ========== 区块 6：解题过程 ========== */}
-            <Card className="ml-3 mr-3 mt-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Wand2 className="w-5 h-5 text-primary" />
-                  <CardTitle className="text-base font-medium">解题过程</CardTitle>
-                </div>
-              </CardHeader>
-              <Separator />
-              <CardContent>
-                <Textarea
-                  value={addReq.process?.content || ""}
-                  onChange={(e) => updateContent("process", "content", e.target.value)}
-                  placeholder="详细的解题步骤过程..."
-                  className="min-h-20 text-sm md:text-sm"
-                />
-
-                <ImageAdd
-                  name="过程图片"
-                  images={addReq.process?.images || []}
-                  add={() => {
-                    addImageToField("process.images", "");
-                  }}
-                  update={(idx, val) => {
-                    const current = (addReq.process?.images as string[]) || [];
-                    const newImages = [...current];
-                    newImages[idx] = val;
-                    updateContent("process", "images", newImages);
-                  }}
-                  remove={(idx) => {
-                    removeImageFromField("process.images", idx);
-                  }}
-                />
-              </CardContent>
-            </Card>
-
-            {/* ========== 区块 7：步骤提示 ========== */}
-            <Card className="ml-3 mr-3 mt-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Footprints className="w-5 h-5 text-primary" />
-                  <CardTitle className="text-base font-medium">解题步骤提示</CardTitle>
-                </div>
-                <CardDescription className="text-sm">分步骤引导学生思考</CardDescription>
-              </CardHeader>
-              <Separator />
-              <CardContent>
-                {(addReq.steps || []).map((step, idx) => (
-                  <div key={idx} className="flex items-start gap-3 bg-muted/10 rounded-lg p-4 border border-border/40">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 shrink-0 mt-1">{step.id}</div>
-                    <Textarea
-                      value={step.content}
-                      onChange={(e) => updateStep(idx, e.target.value)}
-                      placeholder={`输入第 ${step.id} 步提示内容`}
-                      className="min-h-12.5 bg-background/60 flex-1 text-sm md:text-sm"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive shrink-0 mt-1 text-sm md:text-sm"
-                      onClick={() => removeStep(idx)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+              {/* ========== 区块 2：题干 ========== */}
+              <Card className="mt-4 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-primary" />
+                    <CardTitle className="text-base font-medium">题干</CardTitle>
                   </div>
-                ))}
-                <Button type="button" variant="outline" className="w-full border-dashed h-11 gap-2 text-sm" onClick={addStep}>
-                  <Plus className="w-4 h-4" /> 添加步骤
-                </Button>
-              </CardContent>
-            </Card>
+                  <CardDescription className="text-sm">题目正文, 补充说明与相关图片</CardDescription>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  <div className="space-y-2">
+                    <Label htmlFor="title" className="text-sm">
+                      题干内容 <span className="text-destructive">*</span>
+                    </Label>
+                    <Textarea
+                      id="title"
+                      className="min-h-25 resize-y text-sm md:text-sm"
+                      value={addReq.title || ""}
+                      onChange={(e) => updateAddReq("title", e.target.value)}
+                      placeholder="输入题目正文..."
+                    />
+                  </div>
+                  <div className="space-y-2 mt-3">
+                    <Label htmlFor="comment" className="text-sm">
+                      补充说明
+                    </Label>
+                    <Textarea
+                      id="comment"
+                      className="min-h-15 resize-y text-sm md:text-sm"
+                      value={addReq.comment || ""}
+                      onChange={(e) => updateAddReq("comment", e.target.value)}
+                      placeholder="例如：题目背景、特殊约束等"
+                    />
+                  </div>
 
-            {/* ========== 区块 8：备注 ========== */}
-            <Card className="m-3 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-primary" />
-                  <CardTitle className="text-base font-medium">易错备注</CardTitle>
-                </div>
-              </CardHeader>
-              <Separator />
-              <CardContent>
-                <Textarea
-                  value={addReq.remark || ""}
-                  onChange={(e) => updateAddReq("remark", e.target.value)}
-                  placeholder="例如：易错题型、解题技巧提醒等"
-                  className="min-h-17.5 text-sm md:text-sm"
-                />
-              </CardContent>
-            </Card>
+                  {/* 图片列表 */}
+                  <ImageAdd
+                    name="题干图片"
+                    images={addReq.images || []}
+                    add={() => {
+                      addImageToField("images", "");
+                    }}
+                    update={(idx, val) => {
+                      const newImages = [...(addReq.images || [])];
+                      newImages[idx] = val;
+                      updateAddReq("images", newImages);
+                    }}
+                    remove={(idx) => {
+                      removeImageFromField("images", idx);
+                    }}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* ========== 区块 3：选项 (条件渲染) ========== */}
+              {isChoice && (
+                <Card className="mt-4 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <ListChecks className="w-5 h-5 text-primary" />
+                      <CardTitle className="text-base font-medium">选项设置</CardTitle>
+                      <Badge variant="secondary" className="font-normal text-sm">
+                        选择题
+                      </Badge>
+                    </div>
+                    <CardDescription className="text-sm">配置选项内容和布局</CardDescription>
+                  </CardHeader>
+                  <Separator />
+                  <CardContent>
+                    {/* 布局切换 */}
+                    <div className="flex items-center gap-6 bg-muted/30 rounded-lg p-2 px-4 w-fit">
+                      <span className="text-sm">选项布局</span>
+                      <RadioGroup
+                        value={addReq.optionsLayout}
+                        onValueChange={(val) => updateAddReq("optionsLayout", val)}
+                        defaultValue={addReq.optionsLayout || 1}
+                        className="flex gap-4 w-fit"
+                      >
+                        {StringConst.selectLayoutList.map(({ id, value, label }) => (
+                          <div key={id} className="flex items-center gap-2">
+                            <RadioGroupItem value={value} id={id} className="text-sm" />
+                            <Label htmlFor={id} className="text-sm">
+                              {label}
+                            </Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+
+                    {/* 选项列表 */}
+                    <div className="space-y-4">
+                      {(addReq.options || []).map((opt, optIdx) => (
+                        <div key={optIdx} className="bg-muted/10 border rounded-xl p-5 space-y-3 relative transition-all hover:border-primary/20">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                                {opt.label}
+                              </div>
+                              <span className="text-sm text-muted-foreground">选项 {optIdx + 1}</span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              className="text-sm md:text-sm text-destructive hover:text-destructive h-8 px-2"
+                              onClick={() => removeOption(optIdx)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+
+                          <Textarea
+                            value={opt.content}
+                            onChange={(e) => updateOption(optIdx, "content", e.target.value)}
+                            placeholder="输入选项内容"
+                            className="text-sm md:text-sm min-h-15 bg-background/60"
+                          />
+
+                          {/* 选项内图片 */}
+                          <ImageAdd
+                            name="选项图片"
+                            images={opt.images || []}
+                            add={() => {
+                              updateOption(optIdx, "images", [...(opt.images || []), ""]);
+                            }}
+                            update={(idx, val) => {
+                              const newImages = [...(opt.images || [])];
+                              newImages[idx] = val;
+                              updateOption(optIdx, "images", newImages);
+                            }}
+                            remove={(idx) => {
+                              const newImages = (opt.images || []).filter((_, i) => i !== idx);
+                              updateOption(optIdx, "images", newImages);
+                            }}
+                          />
+                        </div>
+                      ))}
+                      <Button type="button" variant="outline" className="text-sm md:text-sm w-full border-dashed h-11 gap-2" onClick={addOption}>
+                        <Plus className="w-4 h-4" /> 添加选项
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* ========== 区块 4：答案与知识点 ========== */}
+              <Card className="mt-4 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-primary" />
+                    <CardTitle className="text-base font-medium">答案与知识点</CardTitle>
+                  </div>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="answer" className="text-sm">
+                      参考答案
+                    </Label>
+                    <Textarea
+                      id="answer"
+                      className="min-h-17.5 text-sm md:text-sm"
+                      value={addReq.answer || ""}
+                      onChange={(e) => updateAddReq("answer", e.target.value)}
+                      placeholder="输入参考答案"
+                    />
+                  </div>
+
+                  <div className="mt-3 space-y-2 md:col-span-2">
+                    <Label htmlFor="knowledge" className="text-sm">
+                      涉及知识点
+                    </Label>
+                    <Textarea
+                      id="knowledge"
+                      className="min-h-17.5 text-sm md:text-sm"
+                      value={addReq.knowledge || ""}
+                      onChange={(e) => updateAddReq("knowledge", e.target.value)}
+                      placeholder="输入知识点，多个可用逗号分隔"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* ========== 区块 5：解题分析 ========== */}
+              <Card className="mt-4 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Brain className="w-5 h-5 text-primary" />
+                    <CardTitle className="text-base font-medium">解题分析</CardTitle>
+                  </div>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  <Textarea
+                    value={addReq.analysis?.content || ""}
+                    onChange={(e) => updateContent("analysis", "content", e.target.value)}
+                    placeholder="详细的解题分析..."
+                    className="min-h-20 text-sm md:text-sm"
+                  />
+
+                  <ImageAdd
+                    name="分析图片"
+                    images={addReq.analysis?.images || []}
+                    add={() => {
+                      addImageToField("analysis.images", "");
+                    }}
+                    update={(idx, val) => {
+                      const current = (addReq.analysis?.images as string[]) || [];
+                      const newImages = [...current];
+                      newImages[idx] = val;
+                      updateContent("analysis", "images", newImages);
+                    }}
+                    remove={(idx) => {
+                      removeImageFromField("analysis.images", idx);
+                    }}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* ========== 区块 6：解题过程 ========== */}
+              <Card className="mt-4 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Wand2 className="w-5 h-5 text-primary" />
+                    <CardTitle className="text-base font-medium">解题过程</CardTitle>
+                  </div>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  <Textarea
+                    value={addReq.process?.content || ""}
+                    onChange={(e) => updateContent("process", "content", e.target.value)}
+                    placeholder="详细的解题步骤过程..."
+                    className="min-h-20 text-sm md:text-sm"
+                  />
+
+                  <ImageAdd
+                    name="过程图片"
+                    images={addReq.process?.images || []}
+                    add={() => {
+                      addImageToField("process.images", "");
+                    }}
+                    update={(idx, val) => {
+                      const current = (addReq.process?.images as string[]) || [];
+                      const newImages = [...current];
+                      newImages[idx] = val;
+                      updateContent("process", "images", newImages);
+                    }}
+                    remove={(idx) => {
+                      removeImageFromField("process.images", idx);
+                    }}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* ========== 区块 7：步骤提示 ========== */}
+              <Card className="mt-4 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Footprints className="w-5 h-5 text-primary" />
+                    <CardTitle className="text-base font-medium">解题步骤提示</CardTitle>
+                  </div>
+                  <CardDescription className="text-sm">分步骤引导学生思考</CardDescription>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  {(addReq.steps || []).map((step, idx) => (
+                    <div key={idx} className="flex items-start gap-3 bg-muted/10 rounded-lg p-4 border border-border/40">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 shrink-0 mt-1">{step.id}</div>
+                      <Textarea
+                        value={step.content}
+                        onChange={(e) => updateStep(idx, e.target.value)}
+                        placeholder={`输入第 ${step.id} 步提示内容`}
+                        className="min-h-12.5 bg-background/60 flex-1 text-sm md:text-sm"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:text-destructive shrink-0 mt-1 text-sm md:text-sm"
+                        onClick={() => removeStep(idx)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button type="button" variant="outline" className="w-full border-dashed h-11 gap-2 text-sm" onClick={addStep}>
+                    <Plus className="w-4 h-4" /> 添加步骤
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* ========== 区块 8：备注 ========== */}
+              <Card className="mt-4 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5 text-primary" />
+                    <CardTitle className="text-base font-medium">易错备注</CardTitle>
+                  </div>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  <Textarea
+                    value={addReq.remark || ""}
+                    onChange={(e) => updateAddReq("remark", e.target.value)}
+                    placeholder="例如：易错题型、解题技巧提醒等"
+                    className="min-h-17.5 text-sm md:text-sm"
+                  />
+                </CardContent>
+              </Card>
+            </div>
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize="50%">
-            <Watermark className="h-full w-full border bg-slate-50">
-              <div className="pt-3">
+            <Watermark className="h-full w-full bg-slate-50">
+              <div className="pt-4 pb-4">
                 <QuestionInfo
                   pageSource={{ source: "list" }}
                   questionTypeDict={questionTypeDict}

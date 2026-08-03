@@ -181,12 +181,21 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
                   updateQuestionSearch("eightLevelSelectKeys", []);
                   return;
                 }
-                const current: Textbook = selectedItems[selectedItems.length - 1];
-                updateQuestionSearch("eightId", current.id);
+
                 updateQuestionSearch(
                   "eightLevelSelectKeys",
                   selectedItems.map((info) => info.key),
                 );
+
+                const current: Textbook = selectedItems[selectedItems.length - 1];
+
+                // 必须选择题型
+                if (current.tableName !== StringConst.questionCateTableName) {
+                  updateQuestionSearch("eightId", 0);
+                  return;
+                }
+
+                updateQuestionSearch("eightId", current.id);
               }}
               defaultSelectedKeys={[]}
               placeholder="请选择题型"

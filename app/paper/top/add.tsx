@@ -378,9 +378,9 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
       </div>
 
       <div className="mb-6">
-        <ResizablePanelGroup orientation="horizontal">
+        <ResizablePanelGroup orientation="horizontal" className="border">
           <ResizablePanel defaultSize="50%">
-            <div className="px-4">
+            <div className="p-4">
               <PaperMetaConf textbooks={textbooks} paper={paper} defaultSelectedKeys={metaSearch.selectedKeys} updatePaperMeta={updatePaperMeta} />
 
               {/* ===== 大题列表 ===== */}
@@ -410,7 +410,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize="50%">
-            <Watermark className="h-full w-full border bg-slate-50">
+            <Watermark className="h-full w-full bg-slate-50">
               <div className="p-4">
                 <ExamPaperMeta paperMeta={paper} metaSearch={metaSearch} isPreview={true} />
               </div>
