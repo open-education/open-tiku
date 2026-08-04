@@ -1,24 +1,42 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { SimpleAlert } from "~/common/alert";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "~/components/ui/card";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
+import { httpClient } from "~/util/http";
+
+// 账户登录
 
 export function Login() {
   const [isGithubRedirecting, setIsGithubRedirecting] = useState(false);
   const [isQQRedirecting, setIsQQRedirecting] = useState(false);
 
-  const githubRedirectUrl = import.meta.env.VITE_GITHUB_CALLBACK_URL;
-  const qqRedirectUrl = import.meta.env.VITE_QQ_CALLBACK_URL;
+  const [warnInfo, setWarnInfo] = useState<React.ReactNode>(null);
 
-  const handleGithubLogin = () => {
-    setIsGithubRedirecting(true);
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=Iv23liIsMUEOMyDagK0H&redirect_uri=${encodeURIComponent(githubRedirectUrl)}`;
-  };
+  const handleLogin = (providerType: number) => {
+    setWarnInfo("");
 
-  const handleQQLogin = () => {
-    setIsQQRedirecting(true);
-    window.location.href = `https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=1905307874&redirect_uri=${encodeURIComponent(qqRedirectUrl)}&state=tiku&scope=get_user_info`;
+    if (providerType == 1) {
+      setIsGithubRedirecting(true);
+    } else {
+      setIsQQRedirecting(true);
+    }
+
+    // 换取登录url
+    httpClient
+      .get<string>(`/callback/${providerType}/login/url`)
+      .then((res) => {
+        if (!res || res.length == 0) {
+          setWarnInfo(<SimpleAlert title="登录异常" message="无法获取到有效的第三方登录链接" />);
+          return;
+        }
+
+        window.location.href = res;
+      })
+      .catch((err) => {
+        setWarnInfo(<SimpleAlert title="登录异常" message={err.message} />);
+      });
   };
 
   return (
@@ -54,7 +72,12 @@ export function Login() {
               <FieldSeparator className="text-sm">Or continue with</FieldSeparator>
 
               <Field>
-                <Button variant="outline" className="w-full text-sm justify-start gap-1" onClick={handleGithubLogin} disabled={isGithubRedirecting}>
+                <Button
+                  variant="outline"
+                  className="w-full text-sm justify-start gap-1"
+                  onClick={() => handleLogin(1)}
+                  disabled={isGithubRedirecting}
+                >
                   {isGithubRedirecting ? (
                     "登录中..."
                   ) : (
@@ -69,7 +92,7 @@ export function Login() {
               </Field>
 
               <Field>
-                <Button variant="outline" className="w-full text-sm justify-start gap-1" onClick={handleQQLogin} disabled={isQQRedirecting}>
+                <Button variant="outline" className="w-full text-sm justify-start gap-1" onClick={() => handleLogin(2)} disabled={isQQRedirecting}>
                   {isQQRedirecting ? (
                     "登录中..."
                   ) : (
@@ -125,6 +148,8 @@ export function Login() {
                 </Button>
               </Field>
             </FieldGroup>
+
+            {warnInfo}
           </form>
         </CardContent>
       </Card>
