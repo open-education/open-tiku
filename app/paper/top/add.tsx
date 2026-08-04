@@ -6,7 +6,7 @@ import { StringConst, StringValidator } from "~/util/string";
 import { Watermark } from "~/common/watermark";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
-import type { PaperGroup, PaperMeta, PaperTopMetaSearch, PaperQuestion } from "~/type/paper";
+import type { PaperGroup, PaperMeta, PaperMetaSearch, PaperQuestion } from "~/type/paper";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { FileImage, Plus, Save, Send, Trash2, X } from "lucide-react";
 import { Label } from "~/components/ui/label";
@@ -75,7 +75,7 @@ const defaultGroup = (): PaperGroup => ({
 });
 
 interface TopAddProps {
-  metaSearch: PaperTopMetaSearch;
+  metaSearch: PaperMetaSearch;
   infoResp?: PaperMeta; // 如果是详情页面过来的则处于编译状态
 
   // 以下为 Sheet 操作方法和属性
@@ -378,9 +378,9 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
       </div>
 
       <div className="mb-6">
-        <ResizablePanelGroup orientation="horizontal">
+        <ResizablePanelGroup orientation="horizontal" className="border">
           <ResizablePanel defaultSize="50%">
-            <div className="px-4">
+            <div className="p-4">
               <PaperMetaConf textbooks={textbooks} paper={paper} defaultSelectedKeys={metaSearch.selectedKeys} updatePaperMeta={updatePaperMeta} />
 
               {/* ===== 大题列表 ===== */}
@@ -410,7 +410,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize="50%">
-            <Watermark className="h-full w-full border bg-slate-50">
+            <Watermark className="h-full w-full bg-slate-50">
               <div className="p-4">
                 <ExamPaperMeta paperMeta={paper} metaSearch={metaSearch} isPreview={true} />
               </div>

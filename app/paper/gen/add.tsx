@@ -1,7 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ChapterDropdownNav, ChapterTreeCheckboxNav, type CheckboxTreeNode } from "~/common/nav";
 import { MultiTagSelect, ShowDifficultyLevelRange } from "~/common/question/tag";
-import type { DifficultyLevelRange, PaperGenTypeMeta, PaperGenSearch, PaperMeta, PaperTopMetaSearch, PapgerGenConf } from "~/type/paper";
+import type {
+  DifficultyLevelRange,
+  PaperGenTypeMeta,
+  PaperGenSearch,
+  PaperMeta,
+  PaperMetaSearch,
+  PapgerGenConf,
+  PaperPreviewReq,
+  PaperGenReq,
+} from "~/type/paper";
 import type { Textbook } from "~/type/textbook";
 import { useQuestionCates, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
 import { createTextbookPathDict } from "~/util/textbook-dict";
@@ -45,7 +54,7 @@ const defaultPaperMeta: PaperMeta = {
 };
 
 interface GenAddProps {
-  metaSearch: PaperTopMetaSearch;
+  metaSearch: PaperMetaSearch;
 }
 export default function GenAdd({ metaSearch }: GenAddProps) {
   // 计算初始值, 编辑时也是更新这个初始化值
@@ -70,9 +79,9 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
   }, []); // 只在组件挂载时计算一次
 
   // 初始化试卷信息
-  const [paper, setPaper] = useState<PaperMeta>(initialPaperMeta);
+  const [paperMeta, setPaperMeta] = useState<PaperMeta>(initialPaperMeta);
   const updatePaperMeta = (key: keyof PaperMeta, value: string | number) => {
-    setPaper((prev) => ({ ...prev, [key]: value }));
+    setPaperMeta((prev) => ({ ...prev, [key]: value }));
   };
 
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks(5);
@@ -146,9 +155,10 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
 
   const [warnInfo, setWarnInfo] = useState<React.ReactNode>(null);
 
-  const [paperInfo, setPaperInfo] = useState<PaperMeta>(defaultPaperMeta);
+  // 记录生成的预览试卷
+  const [paperPreviewInfo, setPaperPreviewInfo] = useState<PaperMeta>(defaultPaperMeta);
 
-  const [genPreviewing, setGenPreviewing] = useState<boolean>(false);
+  const [previewing, setPreviewing] = useState<boolean>(false);
   const [drafting, setDrafting] = useState<boolean>(false);
   const [approving, setApproving] = useState<boolean>(false);
 
@@ -157,7 +167,7 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
     setWarnInfo("");
 
     if (!paperGenSearch.questionCateIds || paperGenSearch.questionCateIds.length == 0) {
-      toast.error(<div className="text-red-700">题目选择： 题型配置不能为空</div>, {
+      toast.error(<div className="text-red-700">题目选择： 第8级菜单题型配置不能为空</div>, {
         duration: Infinity,
         action: {
           label: "关闭",
@@ -176,6 +186,16 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
       });
       return;
     }
+    if (paperMeta.relatedId !== paperGenSearch.fiveLevelId) {
+      toast.error(<div className="text-red-700">基础设置: 学段/考点 和 题目选择: 章节/考点 不一致</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
 
     const conf: PapgerGenConf = {
       questionCateIds: paperGenSearch.questionCateIds || [],
@@ -184,20 +204,25 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
       levelRange: levelRange,
       questionTypes: paperGenSearch.typeMetaList,
     };
-    paper.conf = conf;
 
-    setGenPreviewing(true);
+    // 预览请求
+    const req: PaperPreviewReq = {
+      ...paperMeta,
+      conf: conf,
+    };
+
+    setPreviewing(true);
 
     httpClient
-      .post<PaperMeta>("/paper/gen/preview", paper)
+      .post<PaperMeta>("/paper/gen/preview", req)
       .then((res) => {
-        setPaperInfo(res);
+        setPaperPreviewInfo(res);
       })
       .catch((err) => {
         setWarnInfo(<SimpleAlert title="生成预览失败" message={err.message} />);
       })
       .finally(() => {
-        setGenPreviewing(false);
+        setPreviewing(false);
       });
   };
 
@@ -206,7 +231,7 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
     setWarnInfo("");
 
     // 检查必填参数是否为空
-    if (paper.relatedId <= 0) {
+    if (paperMeta.relatedId <= 0) {
       toast.error(<div className="text-red-700">学段/考点不能为空</div>, {
         duration: Infinity,
         action: {
@@ -216,7 +241,7 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(paper.tag)) {
+    if (!StringValidator.isNonEmpty(paperMeta.tag)) {
       toast.error(<div className="text-red-700">标签不能为空</div>, {
         duration: Infinity,
         action: {
@@ -226,7 +251,7 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(paper.year)) {
+    if (!StringValidator.isNonEmpty(paperMeta.year)) {
       toast.error(<div className="text-red-700">年份不能为空</div>, {
         duration: Infinity,
         action: {
@@ -238,7 +263,7 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
     }
 
     if (!paperGenSearch.questionCateIds || paperGenSearch.questionCateIds.length == 0) {
-      toast.error(<div className="text-red-700">题目选择： 题型配置不能为空</div>, {
+      toast.error(<div className="text-red-700">题目选择： 第8级菜单题型配置不能为空</div>, {
         duration: Infinity,
         action: {
           label: "关闭",
@@ -257,17 +282,32 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
       });
       return;
     }
+    if (paperMeta.relatedId !== paperGenSearch.fiveLevelId) {
+      toast.error(<div className="text-red-700">基础设置: 学段/考点 和 题目选择: 章节/考点 不一致</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+
+    if (!confirm("确定保存预览数据?")) {
+      return;
+    }
 
     if (status === 0) {
       setDrafting(true);
-      paper.status = 0;
+      paperMeta.status = 0;
     } else {
       setApproving(true);
-      paper.status = 1;
+      paperMeta.status = 1;
     }
 
-    paper.paperType = StringConst.paperTypesGen;
+    paperMeta.paperType = StringConst.paperTypesGen;
 
+    // 题目配置
     const conf: PapgerGenConf = {
       questionCateIds: paperGenSearch.questionCateIds || [],
       tagIds: paperGenSearch.tagIds,
@@ -275,17 +315,45 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
       levelRange: levelRange,
       questionTypes: paperGenSearch.typeMetaList,
     };
-    paper.conf = conf;
+
+    // 从题目配置和 paper 中解析出题目信息, 可以为空比如不预览直接存储
+    // 没有生成预览数据 paperPreviewInfo 是空的, 如果生成预览数据需要从 paperPreviewInfo 中解析题目
+    // todo
+
+    const req: PaperGenReq = {
+      ...paperMeta,
+      conf: conf,
+      groups: [],
+    };
+
+    httpClient
+      .post<number>("/paper/gen/add", req)
+      .then((res) => {
+        // 保存试卷成功则跳转到详情页面即可
+      })
+      .catch((err) => {
+        setWarnInfo(<SimpleAlert title="保存试卷出错" message={err.message} />);
+      })
+      .finally(() => {
+        setDrafting(false);
+        setApproving(false);
+      });
   };
 
   return (
     <div className="text-base pl-4 pr-4 pb-4">
+      <div className="text-sm">
+        <div>1. 生成预览为查看试卷题目完整情况, 未作保存;</div>
+        <div>2. 题目是随机生成的, 如果生成预览后有更新, 需要重新生成预览后再保存, 否则保存的是上一次的预览数据;</div>
+        <div>3. 对预览的试卷不满意, 需保存后再去 我的试卷 进行二次编辑, 调整题目分数, 替换其它题目等;</div>
+      </div>
+
       <div className="mt-3 flex flex-wrap gap-2">
-        <Button variant="outline" className="text-sm" onClick={handleGenPaper} disabled={genPreviewing}>
+        <Button variant="outline" className="text-sm" onClick={handleGenPaper} disabled={previewing}>
           <Eye className="mr-2 h-4 w-4" />
-          {genPreviewing ? "生成预览中" : "生成预览"}
+          {previewing ? "生成预览中" : "生成预览"}
         </Button>
-        <Button variant="outline" className="text-sm" onClick={() => handleSavePaper(0)} disabled={drafting}>
+        <Button variant="default" className="text-sm" onClick={() => handleSavePaper(0)} disabled={drafting}>
           <Save className="mr-2 h-4 w-4" />
           {drafting ? "存为草稿中..." : "存为草稿"}
         </Button>
@@ -309,134 +377,143 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
 
       {warnInfo}
 
-      <ResizablePanelGroup orientation="horizontal">
-        <ResizablePanel defaultSize="50%">
-          {/* 试卷配置 */}
-          <div>
-            <PaperMetaConf textbooks={textbooks} paper={paper} defaultSelectedKeys={metaSearch.selectedKeys} updatePaperMeta={updatePaperMeta} />
-          </div>
+      <div className="mb-4">
+        <ResizablePanelGroup orientation="horizontal" className="border">
+          <ResizablePanel defaultSize="50%">
+            <div className="p-4">
+              {/* 试卷配置 */}
+              <div>
+                <PaperMetaConf
+                  textbooks={textbooks}
+                  paper={paperMeta}
+                  defaultSelectedKeys={metaSearch.selectedKeys}
+                  updatePaperMeta={updatePaperMeta}
+                />
+              </div>
 
-          {/* 题目选择 */}
-          <div className="mt-3">
-            <Card className="mt-1 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Settings2 className="w-5 h-5 text-primary" />
-                  <CardTitle className="text-base font-medium">题目选择</CardTitle>
-                </div>
-                <CardDescription className="text-sm">配置试卷标签, 年份，年级，学期，标题和分数等项</CardDescription>
-              </CardHeader>
-              <Separator />
-              <CardContent>
-                {/* 搜索选项 */}
-                <div className="flex flex-col gap-3 text-sm">
-                  <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                    <div className="md:w-24 shrink-0 font-medium">章节/考点:</div>
-                    <div className="flex-1 min-w-0">
-                      <ChapterDropdownNav
-                        textbooks={textbooks}
-                        onSelect={(selectedItems: Textbook[]) => {
-                          if (!selectedItems) {
-                            updatePaperGenSearch("fiveLevelId", 0);
-                            updatePaperGenSearch("fiveLevelSelectKeys", []);
-                            return;
-                          }
-                          const current: Textbook = selectedItems[selectedItems.length - 1];
-                          updatePaperGenSearch("fiveLevelId", current.id);
-                          updatePaperGenSearch(
-                            "fiveLevelSelectKeys",
-                            selectedItems.map((item) => item.key),
-                          );
-                        }}
-                        defaultSelectedKeys={paperGenSearch.fiveLevelSelectKeys}
-                        placeholder="请选择学段"
-                      />
+              {/* 题目选择 */}
+              <div className="mt-4">
+                <Card className="mt-1 shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40">
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <Settings2 className="w-5 h-5 text-primary" />
+                      <CardTitle className="text-base font-medium">题目选择</CardTitle>
                     </div>
-                  </div>
+                    <CardDescription className="text-sm">配置试卷标签, 年份，年级，学期，标题和分数等项</CardDescription>
+                  </CardHeader>
+                  <Separator />
+                  <CardContent>
+                    {/* 搜索选项 */}
+                    <div className="flex flex-col gap-3 text-sm">
+                      <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                        <div className="md:w-24 shrink-0 font-medium">章节/考点:</div>
+                        <div className="flex-1 min-w-0">
+                          <ChapterDropdownNav
+                            textbooks={textbooks}
+                            onSelect={(selectedItems: Textbook[]) => {
+                              if (!selectedItems) {
+                                updatePaperGenSearch("fiveLevelId", 0);
+                                updatePaperGenSearch("fiveLevelSelectKeys", []);
+                                return;
+                              }
+                              const current: Textbook = selectedItems[selectedItems.length - 1];
+                              updatePaperGenSearch("fiveLevelId", current.id);
+                              updatePaperGenSearch(
+                                "fiveLevelSelectKeys",
+                                selectedItems.map((item) => item.key),
+                              );
+                            }}
+                            defaultSelectedKeys={paperGenSearch.fiveLevelSelectKeys}
+                            placeholder="请选择学段"
+                          />
+                        </div>
+                      </div>
 
-                  {/* 题型 */}
-                  <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                    <div className="md:w-24 shrink-0 font-medium">题型:</div>
-                    <div className="flex-1 min-w-0">
-                      <ChapterTreeCheckboxNav
-                        textbooks={questionCates}
-                        onSelect={(selectedItems: CheckboxTreeNode[]) => {
-                          if (!selectedItems) {
-                            updatePaperGenSearch("questionCateIds", []);
-                            return;
-                          }
-                          // tableName: "question_cate" 对应的为题型标识
-                          const questionCateIds = selectedItems
-                            .filter((item) => item.tableName === StringConst.questionCateTableName)
-                            .map((item) => item.id);
-                          updatePaperGenSearch("questionCateIds", questionCateIds);
-                        }}
-                        maxDepth={7}
-                      />
-                    </div>
-                  </div>
+                      {/* 题型 */}
+                      <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                        <div className="md:w-24 shrink-0 font-medium">题型:</div>
+                        <div className="flex-1 min-w-0">
+                          <ChapterTreeCheckboxNav
+                            textbooks={questionCates}
+                            onSelect={(selectedItems: CheckboxTreeNode[]) => {
+                              if (!selectedItems) {
+                                updatePaperGenSearch("questionCateIds", []);
+                                return;
+                              }
+                              // tableName: "question_cate" 对应的为题型标识
+                              const questionCateIds = selectedItems
+                                .filter((item) => item.tableName === StringConst.questionCateTableName)
+                                .map((item) => item.id);
+                              updatePaperGenSearch("questionCateIds", questionCateIds);
+                            }}
+                            maxDepth={7}
+                          />
+                        </div>
+                      </div>
 
-                  {/* 标签 */}
-                  <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                    <div className="md:w-24 shrink-0 font-medium">标签:</div>
-                    <div className="flex-1 min-w-0">
-                      <MultiTagSelect
-                        options={questionTags}
-                        value={paperGenSearch.tagIds || []}
-                        onChange={(val) => {
-                          updatePaperGenSearch("tagIds", val);
-                        }}
-                      />
-                    </div>
-                  </div>
+                      {/* 标签 */}
+                      <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                        <div className="md:w-24 shrink-0 font-medium">标签:</div>
+                        <div className="flex-1 min-w-0">
+                          <MultiTagSelect
+                            options={questionTags}
+                            value={paperGenSearch.tagIds || []}
+                            onChange={(val) => {
+                              updatePaperGenSearch("tagIds", val);
+                            }}
+                          />
+                        </div>
+                      </div>
 
-                  {/* 核心素养 */}
-                  <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                    <div className="md:w-24 shrink-0 font-medium">核心素养:</div>
-                    <div className="flex-1 min-w-0">
-                      <MultiTagSelect
-                        options={questionDimensions}
-                        value={paperGenSearch.dimensionIds || []}
-                        onChange={(val) => {
-                          updatePaperGenSearch("dimensionIds", val);
-                        }}
-                      />
-                    </div>
-                  </div>
+                      {/* 核心素养 */}
+                      <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                        <div className="md:w-24 shrink-0 font-medium">核心素养:</div>
+                        <div className="flex-1 min-w-0">
+                          <MultiTagSelect
+                            options={questionDimensions}
+                            value={paperGenSearch.dimensionIds || []}
+                            onChange={(val) => {
+                              updatePaperGenSearch("dimensionIds", val);
+                            }}
+                          />
+                        </div>
+                      </div>
 
-                  <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                    <div className="md:w-24 shrink-0 font-medium">难度分布:</div>
-                    <div className="flex-1 min-w-0">
-                      <ShowDifficultyLevelRange levelRange={levelRange} setLevelRange={setLevelRange} />
-                    </div>
-                  </div>
+                      <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                        <div className="md:w-24 shrink-0 font-medium">难度分布:</div>
+                        <div className="flex-1 min-w-0">
+                          <ShowDifficultyLevelRange levelRange={levelRange} setLevelRange={setLevelRange} />
+                        </div>
+                      </div>
 
-                  {/* 题型题量 */}
-                  <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                    <div className="md:w-24 shrink-0 font-medium">题型题量:</div>
-                    <div className="flex-1 min-w-0">
-                      <PaperGenConfig
-                        paperGenMetaList={paperGenMetaList}
-                        onChange={(metaList: PaperGenTypeMeta[]) => {
-                          updatePaperGenSearch("typeMetaList", metaList);
-                        }}
-                      />
+                      {/* 题型题量 */}
+                      <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                        <div className="md:w-24 shrink-0 font-medium">题型题量:</div>
+                        <div className="flex-1 min-w-0">
+                          <PaperGenConfig
+                            paperGenMetaList={paperGenMetaList}
+                            onChange={(metaList: PaperGenTypeMeta[]) => {
+                              updatePaperGenSearch("typeMetaList", metaList);
+                            }}
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize="50%">
-          <Watermark className="h-full w-full border bg-slate-50">
-            <div className="pt-3">
-              <ExamPaperMeta paperMeta={paperInfo} metaSearch={metaSearch} isPreview={true} />
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </Watermark>
-        </ResizablePanel>
-      </ResizablePanelGroup>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize="50%">
+            <Watermark className="h-full w-full bg-slate-50">
+              <div className="p-4">
+                <ExamPaperMeta paperMeta={paperPreviewInfo} metaSearch={metaSearch} isPreview={true} />
+              </div>
+            </Watermark>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
     </div>
   );
 }

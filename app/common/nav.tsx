@@ -828,33 +828,35 @@ function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [],
       </div>
 
       {/* 树形结构 */}
-      <div className="border p-2 max-h-150 overflow-y-auto">
-        {renderTreeNodes(
-          textbooks,
-          0,
-          maxDepth,
-          selectedKeys,
-          expandedKeys,
-          (key) => {
-            setExpandedKeys((prev) => {
-              const next = new Set(prev);
-              if (next.has(key)) {
-                next.delete(key);
-              } else {
-                next.add(key);
+      {textbooks.length > 0 && (
+        <div className="border p-2 max-h-150 overflow-y-auto">
+          {renderTreeNodes(
+            textbooks,
+            0,
+            maxDepth,
+            selectedKeys,
+            expandedKeys,
+            (key) => {
+              setExpandedKeys((prev) => {
+                const next = new Set(prev);
+                if (next.has(key)) {
+                  next.delete(key);
+                } else {
+                  next.add(key);
+                }
+                return next;
+              });
+            },
+            toggleNodeSelect,
+            (node) => {
+              // 点击叶子节点快速选择
+              if (!node.children || node.children.length === 0) {
+                toggleNodeSelect(node, !selectedKeys.has(node.key));
               }
-              return next;
-            });
-          },
-          toggleNodeSelect,
-          (node) => {
-            // 点击叶子节点快速选择
-            if (!node.children || node.children.length === 0) {
-              toggleNodeSelect(node, !selectedKeys.has(node.key));
-            }
-          },
-        )}
-      </div>
+            },
+          )}
+        </div>
+      )}
     </div>
   );
 }

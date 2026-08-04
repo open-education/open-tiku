@@ -7,7 +7,7 @@ import { GradeSelect } from "~/common/paper/grade";
 import { SemesterSelect } from "~/common/paper/semester";
 import { YearSelect } from "~/common/paper/year";
 import { Button } from "~/components/ui/button";
-import type { PaperTopMetaSearch } from "~/type/paper";
+import type { PaperMetaSearch } from "~/type/paper";
 import type { Textbook } from "~/type/textbook";
 import TopAdd from "~/paper/top/add";
 import { StringConst, StringValidator } from "~/util/string";
@@ -31,7 +31,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 // 默认的搜索属性
-const defaultMetaSearch: PaperTopMetaSearch = {
+const defaultMetaSearch: PaperMetaSearch = {
   relatedId: 0,
   relatedName: "",
   tag: "",
@@ -52,7 +52,7 @@ export default function Index() {
   const selectNavProps: SelectNavProps = location.state?.selectNavProps ?? {};
 
   // 处理搜索信息, 惰性初始化将其它页面传递过来的值进行赋值
-  const [metaSearch, setMetaSearch] = useState<PaperTopMetaSearch>(() => {
+  const [metaSearch, setMetaSearch] = useState<PaperMetaSearch>(() => {
     const initial = { ...defaultMetaSearch };
 
     if (selectNavProps.relatedId > 0) {
@@ -66,7 +66,7 @@ export default function Index() {
     }
     return initial;
   });
-  const updateSearchMeta = (key: keyof PaperTopMetaSearch, value: string | number | string[]) => {
+  const updateSearchMeta = (key: keyof PaperMetaSearch, value: string | number | string[]) => {
     setMetaSearch((prev) => ({ ...prev, [key]: value }));
   };
 

@@ -78,7 +78,7 @@ VITE_API_BASE_URL=/api
 运行命令例如
 
 ```bash
-pnpm run dev
+pnpm dev
 ```
 
 #### 格式化
