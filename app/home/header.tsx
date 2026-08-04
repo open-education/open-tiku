@@ -169,7 +169,7 @@ function Header() {
                       </Button>
                     }
                   />
-                  <DropdownMenuContent className="min-w-8 px-2 py-2">
+                  <DropdownMenuContent className="px-2 py-2">
                     {userItems.map(({ id, label, url }) => {
                       return (
                         <DropdownMenuItem key={id}>
