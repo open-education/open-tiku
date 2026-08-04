@@ -110,7 +110,6 @@ function Header() {
                   </div>
                   <div>
                     <p className="font-medium">{username}</p>
-                    <p className="text-xs text-muted-foreground">个人账号</p>
                   </div>
                 </div>
               </div>
@@ -164,8 +163,10 @@ function Header() {
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     render={
-                      <Button variant="ghost" className="max-w-75 truncate">
-                        {username}
+                      <Button variant="link" className="max-w-75 truncate">
+                        <div>
+                          <span className="text-blue-700 text-base">{username}</span> <span>已登录</span>
+                        </div>
                       </Button>
                     }
                   />
