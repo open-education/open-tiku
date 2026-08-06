@@ -1,5 +1,5 @@
 import { Minus, Plus } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { PaperGenTypeMeta } from "~/type/paper";
 
 // 生成试卷配置
@@ -10,40 +10,38 @@ interface PaperGenConfigProps {
 }
 
 function PaperGenConfig({ paperGenMetaList = [], onChange }: PaperGenConfigProps) {
-  const [metaList, setMetaList] = useState<PaperGenTypeMeta[]>(() => paperGenMetaList.map((item) => ({ ...item })));
-
-  useEffect(() => {
-    setMetaList(paperGenMetaList.map((item) => ({ ...item })));
-  }, [paperGenMetaList]);
-
   const updateNum = (index: number, delta: number) => {
-    setMetaList((prev) => {
-      const newList = prev.map((item, i) => (i === index ? { ...item, num: Math.max(0, item.num + delta) } : item));
-      onChange?.(newList);
-      return newList;
+    const newList = paperGenMetaList.map((item, i) => {
+      if (i === index) {
+        return { ...item, num: Math.max(0, item.num + delta) };
+      }
+      return item;
     });
+    onChange?.(newList);
   };
 
   const updateScore = (index: number, value: number) => {
     const newScore = Math.max(0, value);
-    setMetaList((prev) => {
-      const newList = prev.map((item, i) => (i === index ? { ...item, score: newScore } : item));
-      onChange?.(newList);
-      return newList;
+    const newList = paperGenMetaList.map((item, i) => {
+      if (i === index) {
+        return { ...item, score: newScore };
+      }
+      return item;
     });
+    onChange?.(newList);
   };
 
   const totalScore = useMemo(() => {
-    return metaList.reduce((sum, item) => sum + item.num * item.score, 0);
-  }, [metaList]);
+    return paperGenMetaList.reduce((sum, item) => sum + item.num * item.score, 0);
+  }, [paperGenMetaList]);
 
   const totalQuestions = useMemo(() => {
-    return metaList.reduce((sum, item) => sum + item.num, 0);
-  }, [metaList]);
+    return paperGenMetaList.reduce((sum, item) => sum + item.num, 0);
+  }, [paperGenMetaList]);
 
   return (
     <div className="border space-y-2 p-3">
-      {metaList.map((meta, index) => (
+      {paperGenMetaList.map((meta, index) => (
         <div key={meta.id || index} className="flex items-center space-x-4">
           <span className="w-20 text-sm font-medium">{meta.label}</span>
           <div className="flex items-center space-x-2">

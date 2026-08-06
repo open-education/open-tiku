@@ -29,6 +29,7 @@ import { Watermark } from "~/common/watermark";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { ExamPaperMeta } from "~/common/paper/meta";
+import { ArrayUtil } from "~/util/object";
 
 // 生成试卷
 
@@ -122,18 +123,28 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
     isLoading: questionTypesLoading,
     error: questionTypesErr,
   } = useQuestionOtherDicts(paperGenSearch.twoLevelId, "question_type");
-  const paperGenMetaList = useMemo(
-    () =>
-      questionTypes.map(
-        (info): PaperGenTypeMeta => ({
-          id: info.id,
-          label: info.itemValue,
-          num: 0,
-          score: 0,
-        }),
-      ),
-    [questionTypes],
-  );
+
+  // 添加状态来维护题型配置
+  const [typeMetaList, setTypeMetaList] = useState<PaperGenTypeMeta[]>([]);
+
+  // 当 questionTypes 变化时，初始化 typeMetaList
+  useEffect(() => {
+    const initialList = questionTypes.map(
+      (info): PaperGenTypeMeta => ({
+        id: info.id,
+        label: info.itemValue,
+        num: 0,
+        score: 0,
+      }),
+    );
+    setTypeMetaList(initialList);
+  }, [questionTypes]);
+
+  // 更新 paperGenSearch 时使用 typeMetaList
+  const handleTypeMetaListChange = (newList: PaperGenTypeMeta[]) => {
+    setTypeMetaList(newList);
+    updatePaperGenSearch("typeMetaList", newList);
+  };
 
   const {
     data: questionTags = [],
@@ -293,6 +304,62 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
       return;
     }
 
+    // 从题目配置和 paper 中解析出题目信息, 必须生成预览才能保存, 目的是确定试卷完整
+    // 没有生成预览数据 paperPreviewInfo 是空的
+    if (!paperPreviewInfo || paperPreviewInfo.groups.length == 0) {
+      toast.error(<div className="text-red-700">需要先生成预览, 验证试卷完整性后再保存</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    // 检查题型题量配置和预览结果中的数据是否匹配
+    const previewGroupDict = ArrayUtil.arrayToDict(paperPreviewInfo.groups, "typeName");
+    for (let i = 0; i < paperGenSearch.typeMetaList.length; i++) {
+      const item = paperGenSearch.typeMetaList[i];
+      // 题目配置为0的不处理
+      if (item.num <= 0) {
+        continue;
+      }
+      // 分数不能小于等于0
+      if (item.score <= 0) {
+        toast.error(<div className="text-red-700">题型题量配置 [${item.label}] 分数不能小于等于0</div>, {
+          duration: Infinity,
+          action: {
+            label: "关闭",
+            onClick: () => {},
+          },
+        });
+        return;
+      }
+      if (item.label in previewGroupDict) {
+        const groupInfo = previewGroupDict[item.label];
+        // 题目数量不匹配则抛出错误
+        if (item.num != groupInfo.questions.length) {
+          toast.error(<div className="text-red-700">题型题量配置 [{item.label}] 在预览结果中数量不匹配</div>, {
+            duration: Infinity,
+            action: {
+              label: "关闭",
+              onClick: () => {},
+            },
+          });
+          return;
+        }
+      } else {
+        toast.error(<div className="text-red-700">题型题量配置 [{item.label}] 在预览结果中不存在</div>, {
+          duration: Infinity,
+          action: {
+            label: "关闭",
+            onClick: () => {},
+          },
+        });
+        return;
+      }
+    }
+
     if (!confirm("确定保存预览数据?")) {
       return;
     }
@@ -315,10 +382,6 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
       levelRange: levelRange,
       questionTypes: paperGenSearch.typeMetaList,
     };
-
-    // 从题目配置和 paper 中解析出题目信息, 可以为空比如不预览直接存储
-    // 没有生成预览数据 paperPreviewInfo 是空的, 如果生成预览数据需要从 paperPreviewInfo 中解析题目
-    // todo
 
     const req: PaperGenReq = {
       ...paperMeta,
@@ -490,12 +553,7 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
                       <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
                         <div className="md:w-24 shrink-0 font-medium">题型题量:</div>
                         <div className="flex-1 min-w-0">
-                          <PaperGenConfig
-                            paperGenMetaList={paperGenMetaList}
-                            onChange={(metaList: PaperGenTypeMeta[]) => {
-                              updatePaperGenSearch("typeMetaList", metaList);
-                            }}
-                          />
+                          <PaperGenConfig paperGenMetaList={typeMetaList} onChange={handleTypeMetaListChange} />
                         </div>
                       </div>
                     </div>
