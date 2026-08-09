@@ -34,15 +34,20 @@ interface ExamPaperProps {
 
 function ExamPaper({ papers, metaSearch, setOpenSheet, setSheetTitle, setSheetDesc, setSheetContent, setLoading }: ExamPaperProps) {
   // 点击卡片展示详情
-  const handleClickCard = (id: number) => {
+  const handleClickCard = (paperType: number, id: number) => {
     setLoading?.(true);
 
+    let reqUrl = `/paper/top/info/${id}`;
+    if (paperType === StringConst.paperTypesGen) {
+      reqUrl = `/paper/gen/info/${id}`;
+    }
+
     httpClient
-      .get<PaperMeta>(`/paper/top/info/${id}`)
+      .get<PaperMeta>(reqUrl)
       .then((res) => {
         // 查询成功后加载右侧 Sheet 详情信息
         setSheetTitle("查看详情");
-        setSheetDesc("如需修改直接编辑即可");
+        setSheetDesc("精选试卷如需修改直接编辑即可, 手动组卷修改需要去 我的试卷 操作");
         setSheetContent(
           <ExamPaperMeta
             paperMeta={res}
@@ -69,7 +74,7 @@ function ExamPaper({ papers, metaSearch, setOpenSheet, setSheetTitle, setSheetDe
           key={paper.id}
           className="group flex flex-col cursor-pointer hover:border-primary/30 hover:shadow-md transition-all duration-150"
           onClick={() => {
-            handleClickCard(paper.id || 0);
+            handleClickCard(paper.paperType, paper.id || 0);
           }}
         >
           <CardContent className="px-4 py-3.5 flex flex-col h-full">
@@ -178,7 +183,7 @@ function ExamPaperMeta({
           </div>
 
           <div>
-            {currentUser && (
+            {currentUser && paperMeta.paperType === StringConst.paperTypeTop && (
               <Button variant="outline" className="text-sm" onClick={handleEdit}>
                 <SquarePen className="mr-2 h-4 w-4" />
                 编辑

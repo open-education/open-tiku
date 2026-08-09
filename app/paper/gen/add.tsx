@@ -10,6 +10,8 @@ import type {
   PapgerGenConf,
   PaperPreviewReq,
   PaperGenReq,
+  PaperGenGroupReq,
+  PaperGenQuestionReq,
 } from "~/type/paper";
 import type { Textbook } from "~/type/textbook";
 import { useQuestionCates, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
@@ -32,6 +34,8 @@ import { ExamPaperMeta } from "~/common/paper/meta";
 import { ArrayUtil } from "~/util/object";
 
 // 生成试卷
+
+const generateId = () => Math.random().toString(36).substring(2, 9);
 
 const defaultPaperMeta: PaperMeta = {
   relatedId: 0,
@@ -56,8 +60,12 @@ const defaultPaperMeta: PaperMeta = {
 
 interface GenAddProps {
   metaSearch: PaperMetaSearch;
+  // 以下为 Sheet 操作方法和属性
+  setSheetTitle?: (value: string) => void;
+  setSheetDesc?: (value: string) => void;
+  setSheetContent?: (value: React.ReactNode) => void;
 }
-export default function GenAdd({ metaSearch }: GenAddProps) {
+export default function GenAdd({ metaSearch, setSheetTitle, setSheetDesc, setSheetContent }: GenAddProps) {
   // 计算初始值, 编辑时也是更新这个初始化值
   const initialPaperMeta = useMemo(() => {
     const updates: Partial<PaperMeta> = {};
@@ -383,16 +391,62 @@ export default function GenAdd({ metaSearch }: GenAddProps) {
       questionTypes: paperGenSearch.typeMetaList,
     };
 
+    // 题型题目信息
+    const reqGroups: PaperGenGroupReq[] = [];
+    // 统计总题目数
+    let countNum = 0;
+    for (let i = 0; i < paperPreviewInfo.groups.length; i++) {
+      const groupInfo = paperPreviewInfo.groups[i];
+      // 没有题目的不处理
+      if (!groupInfo.questions || groupInfo.questions.length == 0) {
+        continue;
+      }
+      countNum += groupInfo.questions.length;
+      const reqQuestions: PaperGenQuestionReq[] = [];
+      for (let j = 0; j < groupInfo.questions.length; j++) {
+        const qInfo = groupInfo.questions[j];
+        reqQuestions.push({
+          genId: generateId(),
+          orderNum: qInfo.orderNum,
+          questionId: qInfo.id,
+          score: qInfo.score,
+        });
+      }
+      const reqGroupInfo: PaperGenGroupReq = {
+        questions: reqQuestions,
+        id: 0,
+        paperId: 0,
+        genId: generateId(),
+        typeName: groupInfo.typeName,
+        subTitle: groupInfo.subTitle,
+      };
+
+      reqGroups.push(reqGroupInfo);
+    }
+
+    // 保存预览数据
     const req: PaperGenReq = {
       ...paperMeta,
+      count: countNum,
       conf: conf,
-      groups: [],
+      groups: reqGroups,
     };
 
     httpClient
       .post<number>("/paper/gen/add", req)
-      .then((res) => {
+      .then((resId) => {
         // 保存试卷成功则跳转到详情页面即可
+        // 获取详情渲染Sheet为试卷详情
+        httpClient
+          .get<PaperMeta>(`/paper/gen/info/${resId}`)
+          .then((res) => {
+            setSheetTitle?.("试卷详情");
+            setSheetDesc?.("仅为详情预览, 需审核通过后其他人可见, 可去 我的试卷 查看");
+            setSheetContent?.(<ExamPaperMeta paperMeta={res} />);
+          })
+          .catch((err) => {
+            setWarnInfo(<SimpleAlert title="获取试卷详情失败" message={err.message} />);
+          });
       })
       .catch((err) => {
         setWarnInfo(<SimpleAlert title="保存试卷出错" message={err.message} />);

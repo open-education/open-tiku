@@ -135,6 +135,7 @@ export interface PaperPreviewReq extends PaperCommonMeta {
 
 // 试卷题目
 export interface PaperGenQuestionReq {
+  genId: string;
   orderNum: number;
   questionId: number;
   score: number;

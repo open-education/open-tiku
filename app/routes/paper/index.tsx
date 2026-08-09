@@ -107,7 +107,7 @@ export default function Index() {
   const handlePapgerGenAdd = () => {
     setSheetTitle("手动组卷");
     setSheetDesc("根据你选择的条件进行自动组卷, 生成试卷后请回到列表查看和修改");
-    setSheetContent(<GenAdd metaSearch={metaSearch} />);
+    setSheetContent(<GenAdd metaSearch={metaSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
     setOpenSheet(true);
   };
 
