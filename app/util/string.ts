@@ -1,4 +1,4 @@
-import { QuestionStatus } from "~/util/enum";
+import { PaperStatus, QuestionStatus } from "~/util/enum";
 
 // 字符串验证工具类
 export const StringValidator = {
@@ -144,8 +144,19 @@ export const StringConst = {
     { value: 1, label: "精选试卷" },
     { value: 2, label: "手动组卷" },
   ],
+  paperTypeNames: new Map<number, string>([
+    [1, "精选试卷"],
+    [2, "手动组卷"],
+  ]),
   paperTypeTop: 1, // 精选试卷
   paperTypesGen: 2, // 手动组卷
+  // 试卷审核状态
+  paperStatusList: [
+    { id: 1, value: PaperStatus.Drafing, label: "草稿中" },
+    { id: 2, value: PaperStatus.Pending, label: "待审核" },
+    { id: 3, value: PaperStatus.Published, label: "已发布" },
+    { id: 4, value: PaperStatus.Rejected, label: "已拒绝" },
+  ],
 };
 
 // 字符串常量工具

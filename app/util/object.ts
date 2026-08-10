@@ -22,6 +22,25 @@ export const ArrayUtil = {
       return acc;
     }, {} as any);
   },
+
+  // 移动数组内的元素, 拖拽时从 oldIndex 拖拽到 newIndex 位置
+  moveArrayItem: <T>(arr: T[], oldIndex: number, newIndex: number): T[] => {
+    // 边界校验：索引相同、越界 或 数组为空时，直接返回原数组副本
+    if (oldIndex === newIndex || !arr.length || oldIndex < 0 || newIndex < 0 || oldIndex >= arr.length || newIndex >= arr.length) {
+      return [...arr];
+    }
+
+    // 创建副本（避免修改原数组）
+    const newArr = [...arr];
+
+    // 先移除旧位置的元素（此时数组长度减 1，后续元素自动前移）
+    const [movedItem] = newArr.splice(oldIndex, 1);
+
+    // 再插入到新位置（splice 会自动根据当前长度处理插入点）
+    newArr.splice(newIndex, 0, movedItem);
+
+    return newArr;
+  },
 };
 
 // 字典相关工具函数

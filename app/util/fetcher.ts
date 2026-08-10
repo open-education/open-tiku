@@ -34,6 +34,7 @@ export function useLatestPapers(count: number = 6) {
 // 试卷列表
 export function usePaperList(search: PaperMetaSearch, pageNo: number) {
   const req: PaperListReq = {
+    source: search.source,
     relatedId: search.relatedId,
     pageNo: pageNo,
     pageSize: StringConst.pageSize,
@@ -52,6 +53,9 @@ export function usePaperList(search: PaperMetaSearch, pageNo: number) {
   }
   if (StringValidator.isNonEmpty(search.semester) && search.semester !== "不选") {
     req.semester = search.semester;
+  }
+  if (search.status !== undefined) {
+    req.status = search.status;
   }
 
   // 生成 SWR 的 key（只有 relatedId > 0 时才发起请求，否则为 null）

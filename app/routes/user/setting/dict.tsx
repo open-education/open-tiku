@@ -1,3 +1,4 @@
+import type { Route } from "./+types/dict";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { SimpleAlert } from "~/common/alert";
@@ -17,6 +18,16 @@ import { useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
 import { StringConst, StringValidator } from "~/util/string";
 import { toast } from "sonner";
 import { httpClient } from "~/util/http";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "系统设置-通用字典维护" },
+    {
+      name: "description",
+      content: "个人中心, 系统设置, 题目类型, 标签, 核心素养等通用字典维护",
+    },
+  ];
+}
 
 // 其它字典维护
 export default function Index() {
@@ -130,7 +141,7 @@ export default function Index() {
     <div className="px-4 pt-3 sm:px-16 sm:pt-4">
       <Card className="w-full">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle className="text-base font-medium">其它字典管理</CardTitle>
+          <CardTitle className="text-base font-medium">通用字典管理</CardTitle>
           <Button className="text-sm" onClick={handleAdd} variant="secondary">
             <Plus className="mr-2 h-4 w-4" />
             新增

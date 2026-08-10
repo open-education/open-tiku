@@ -1,3 +1,4 @@
+import type { Route } from "./+types/textbook";
 import { CheckCircle2Icon, ChevronsUpDown, Edit, InfoIcon, Menu, Plus, X } from "lucide-react";
 import React, { useState } from "react";
 import { type KeyedMutator } from "swr";
@@ -16,6 +17,18 @@ import type { Textbook, CreateTextbookReq } from "~/type/textbook";
 import { useTextbooks, useTextbookLevel } from "~/util/fetcher";
 import { httpClient } from "~/util/http";
 import { StringConst, StringValidator } from "~/util/string";
+
+/// 网站首页顶部和底部框架
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "系统设置-章节/考点" },
+    {
+      name: "description",
+      content: "个人中心, 系统设置, 维护7级教材目录章节和考点层级关系",
+    },
+  ];
+}
 
 // 教材层级信息构建维护
 export default function Index() {

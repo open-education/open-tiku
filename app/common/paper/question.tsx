@@ -10,12 +10,12 @@ import { cn } from "~/lib/utils";
 
 /// 试卷题目样式
 
-// 题目样式
-interface ExamQuestionProps {
+// 精选试卷题目样式
+interface ExamTopQuestionProps {
   index: number;
   question: PaperQuestion;
 }
-function ExamQuestion(props: ExamQuestionProps) {
+function ExamTopQuestion(props: ExamTopQuestionProps) {
   const { index, question } = props;
 
   // 生成题目标题
@@ -88,4 +88,4 @@ function ExamQuestion(props: ExamQuestionProps) {
   );
 }
 
-export { ExamQuestion };
+export { ExamTopQuestion };

@@ -62,6 +62,7 @@ export interface PaperQuestion {
 
 // 列表页面搜索属性
 export interface PaperMetaSearch {
+  source: string;
   relatedId: number; // 关联标识 考点或者章节等
   relatedName: string; // 关联标识名称
   selectedKeys: string[]; // 考点年级选择的key列表
@@ -70,16 +71,19 @@ export interface PaperMetaSearch {
   grade: string; // 年级
   semester: string; // 学期
   paperType: number; // 试卷类型 1 精选试卷 2 手动组卷
+  status?: number;
 }
 
 // 试卷列表请求
 export interface PaperListReq {
+  source: string;
   relatedId: number;
   tag?: string; // 标签
   year?: string; // 年份
   grade?: string; // 年级
   semester?: string; // 学期
   paperType?: number;
+  status?: number;
   pageNo: number;
   pageSize: number;
 }

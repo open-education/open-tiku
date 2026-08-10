@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { FileImage, Plus, Save, Send, Trash2, X } from "lucide-react";
 import { Label } from "~/components/ui/label";
 import type { Content, QuestionOption } from "~/type/question";
-import { ExamPaperMeta } from "~/common/paper/meta";
+import { ExamPaperTopMeta } from "~/common/paper/meta";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { SimpleAlert } from "~/common/alert";
@@ -318,7 +318,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
           .then((res) => {
             setSheetTitle?.("试卷详情");
             setSheetDesc?.("仅为详情预览, 需审核通过后其他人可见, 可去 我的试卷 查看");
-            setSheetContent?.(<ExamPaperMeta paperMeta={res} />);
+            setSheetContent?.(<ExamPaperTopMeta paperMeta={res} />);
           })
           .catch((err) => {
             setAddWarnInfo(<SimpleAlert title="获取试卷详情失败" message={err.message} />);
@@ -412,7 +412,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
           <ResizablePanel defaultSize="50%">
             <Watermark className="h-full w-full bg-slate-50">
               <div className="p-4">
-                <ExamPaperMeta paperMeta={paper} metaSearch={metaSearch} isPreview={true} />
+                <ExamPaperTopMeta paperMeta={paper} metaSearch={metaSearch} isPreview={true} />
               </div>
             </Watermark>
           </ResizablePanel>

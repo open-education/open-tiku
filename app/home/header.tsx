@@ -1,4 +1,4 @@
-import { LogOutIcon, Menu, UserKey } from "lucide-react";
+import { FileQuestionMark, LogOutIcon, Menu, NotepadText, UserKey } from "lucide-react";
 import { useState } from "react";
 import { NavLink, type NavLinkProps } from "react-router";
 import { Button } from "~/components/ui/button";
@@ -28,13 +28,13 @@ function Header() {
       id: 1,
       label: "我的题目",
       url: "/user/question/my",
-      role: "",
+      icon: <FileQuestionMark className="w-4.5 shrink-0" />,
     },
     {
       id: 2,
-      label: "我的审核",
-      url: "/user/question/review",
-      role: "",
+      label: "我的试卷",
+      url: "/user/paper/my",
+      icon: <NotepadText className="w-4.5 shrink-0" />,
     },
   ];
 
@@ -163,18 +163,22 @@ function Header() {
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     render={
-                      <Button variant="link" className="max-w-75 truncate">
-                        <div>
+                      <Button variant="ghost" className="max-w-75 truncate">
+                        <div className="flex items-center gap-2.5 shrink-0">
+                          <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                            <span className="text-primary-foreground font-bold text-xs leading-none">{username.charAt(0).toUpperCase()}</span>
+                          </div>
                           <span className="text-blue-700 text-base">{username}</span> <span>已登录</span>
                         </div>
                       </Button>
                     }
                   />
-                  <DropdownMenuContent className="px-2 py-2">
-                    {userItems.map(({ id, label, url }) => {
+                  <DropdownMenuContent className="px-2 py-2 w-70">
+                    {userItems.map(({ id, label, url, icon }) => {
                       return (
                         <DropdownMenuItem key={id}>
-                          <NavLink to={url} className="text-sm">
+                          <NavLink to={url} className="text-sm flex items-center gap-2">
+                            {icon}
                             {label}
                           </NavLink>
                         </DropdownMenuItem>

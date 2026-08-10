@@ -32,6 +32,7 @@ import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { ExamPaperMeta } from "~/common/paper/meta";
 import { ArrayUtil } from "~/util/object";
+import { PaperStatus } from "~/util/enum";
 
 // 生成试卷
 
@@ -374,10 +375,10 @@ export default function GenAdd({ metaSearch, setSheetTitle, setSheetDesc, setShe
 
     if (status === 0) {
       setDrafting(true);
-      paperMeta.status = 0;
+      paperMeta.status = PaperStatus.Drafing;
     } else {
       setApproving(true);
-      paperMeta.status = 1;
+      paperMeta.status = PaperStatus.Pending;
     }
 
     paperMeta.paperType = StringConst.paperTypesGen;

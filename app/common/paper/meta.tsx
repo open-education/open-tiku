@@ -6,7 +6,7 @@ import { cn } from "~/lib/utils";
 import type { PaperMeta, PaperMetaSearch } from "~/type/paper";
 import { StringConst, StringConstUtil } from "~/util/string";
 import { TagShow } from "~/common/paper/tag";
-import { ExamQuestion } from "~/common/paper/question";
+import { ExamTopQuestion } from "~/common/paper/question";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { NavLink } from "react-router";
@@ -49,7 +49,7 @@ function ExamPaper({ papers, metaSearch, setOpenSheet, setSheetTitle, setSheetDe
         setSheetTitle("查看详情");
         setSheetDesc("精选试卷如需修改直接编辑即可, 手动组卷修改需要去 我的试卷 操作");
         setSheetContent(
-          <ExamPaperMeta
+          <ExamPaperTopMeta
             paperMeta={res}
             metaSearch={metaSearch}
             setSheetTitle={setSheetTitle}
@@ -121,7 +121,7 @@ function ExamPaperHeader() {
 }
 
 // 试卷详情样式
-interface ExamPaperMetaProps {
+interface ExamPaperTopMetaProps {
   paperMeta: PaperMeta;
   metaSearch?: PaperMetaSearch;
   isPreview?: boolean;
@@ -131,7 +131,7 @@ interface ExamPaperMetaProps {
   setSheetDesc?: (value: string) => void;
   setSheetContent?: (value: React.ReactNode) => void;
 }
-function ExamPaperMeta({
+function ExamPaperTopMeta({
   paperMeta,
   metaSearch = {
     relatedId: 0,
@@ -142,12 +142,13 @@ function ExamPaperMeta({
     grade: "",
     semester: "",
     paperType: 0,
+    source: "",
   },
   isPreview = false,
   setSheetTitle,
   setSheetDesc,
   setSheetContent,
-}: ExamPaperMetaProps) {
+}: ExamPaperTopMetaProps) {
   // 获取用户信息
   const currentUser: UserInfoResp | null = useUser();
 
@@ -236,7 +237,7 @@ function ExamPaperMeta({
 
             {/* 小题列表 */}
             {group.questions?.map((question, idx) => {
-              return <ExamQuestion key={question.genId} index={idx} question={question} />;
+              return <ExamTopQuestion key={question.genId} index={idx} question={question} />;
             })}
           </div>
         );
@@ -245,4 +246,4 @@ function ExamPaperMeta({
   );
 }
 
-export { ExamPaper, ExamPaperHeader, ExamPaperMeta };
+export { ExamPaper, ExamPaperHeader, ExamPaperTopMeta };

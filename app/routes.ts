@@ -19,7 +19,6 @@ export default [
       // 系统设置
       route("setting/textbook", "routes/user/setting/textbook.tsx"),
       route("setting/ck", "routes/user/setting/ck.tsx"),
-      route("setting/cate", "routes/user/setting/cate.tsx"),
       route("setting/dict", "routes/user/setting/dict.tsx"),
 
       // 我的题目和审核
@@ -28,6 +27,7 @@ export default [
 
       // 我的试卷和审核
       route("paper/my", "routes/user/paper/index.tsx"),
+      route("paper/review", "routes/user/paper/review.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;
