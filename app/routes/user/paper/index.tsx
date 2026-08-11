@@ -1,15 +1,17 @@
 import type { Route } from "./+types/index";
 import type { CommonPaperSearchReq } from "~/type/paper";
-import { useState } from "react";
-import { usePaperList, useTextbooks } from "~/util/fetcher";
+import { useEffect, useMemo, useState } from "react";
+import { usePaperList, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
 import { Separator } from "~/components/ui/separator";
 import { SimpleAlert } from "~/common/alert";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Loading } from "~/common/load";
 import { SimplePagination } from "~/common/page";
 import { SimpleSheet } from "~/common/sheet";
-import { PaperGenList } from "~/paper/gen/list";
+import { MyPaperList } from "~/paper/gen/list";
 import { CommonPaperSearchConf } from "~/common/paper/config";
+import { createTextbookPathDict } from "~/util/textbook-dict";
+import { ArrayUtil } from "~/util/object";
 
 // 我的试卷
 
@@ -38,6 +40,36 @@ export default function Index() {
   };
 
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks(5);
+  // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
+  const pathMap = useMemo(() => {
+    return createTextbookPathDict(textbooks);
+  }, [textbooks]);
+
+  const [twoLevelId, setTwoLevelId] = useState<number>(0);
+
+  useEffect(() => {
+    if (!searchReq.relatedId || pathMap.size === 0) {
+      return;
+    }
+
+    const nodes = pathMap.get(searchReq.relatedId.toString()) ?? [];
+    const twoLevelId = nodes.length >= 2 ? nodes[1].id : 0;
+    setTwoLevelId(twoLevelId);
+  }, [searchReq.relatedId, pathMap]);
+
+  // 查询题目类型和标签 核心素养
+  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionOtherDicts(twoLevelId, "question_type");
+  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, "id"), [questionTypes]);
+
+  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionOtherDicts(twoLevelId, "question_tag");
+  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
+
+  const {
+    data: questionDimensions = [],
+    isLoading: questionDimensionsLoading,
+    error: questionDimensionsErr,
+  } = useQuestionOtherDicts(twoLevelId, "question_dimension");
+  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
 
   // 列表相关错误信息展示
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -76,10 +108,24 @@ export default function Index() {
       {/* 列表显示错误 */}
       {textbooksErr && (
         <div className="mt-3">
-          <SimpleAlert title="导航获取失败" message={textbooksErr.message} />
+          <SimpleAlert title="章节/考点导航获取失败" message={textbooksErr.message} />
         </div>
       )}
-
+      {questionTypesErr && (
+        <div className="mt-3">
+          <SimpleAlert title="题目类型获取失败" message={questionTypesErr.message} />
+        </div>
+      )}
+      {questionTagsErr && (
+        <div className="mt-3">
+          <SimpleAlert title="题目标签获取失败" message={questionTagsErr.message} />
+        </div>
+      )}
+      {questionDimensionsErr && (
+        <div className="mt-3">
+          <SimpleAlert title="题目核心素养获取失败" message={questionDimensionsErr.message} />
+        </div>
+      )}
       {paperListErr && (
         <div className="mt-3">
           <SimpleAlert title="试卷列表获取失败" message={paperListErr.message} />
@@ -87,13 +133,18 @@ export default function Index() {
       )}
 
       {/* 加载中提示 */}
-      {useDelayedLoading(isLoading || textbooksIsLoading || paperListIsLoading) && <Loading />}
+      {useDelayedLoading(
+        isLoading || textbooksIsLoading || paperListIsLoading || questionTypesLoading || questionTagsLoading || questionDimensionsLoading,
+      ) && <Loading />}
 
       {/* 试卷列表 */}
       <div className="mt-3 bg-gray-50">
-        <PaperGenList
+        <MyPaperList
           search={searchReq}
           paperList={paperListResp.list}
+          questionTypeDict={questionTypeDict}
+          questionTagDict={questionTagDict}
+          questionDimensionDict={questionDimensionDict}
           setOpenSheet={setOpenSheet}
           setSheetTitle={setSheetTitle}
           setSheetDesc={setSheetDesc}

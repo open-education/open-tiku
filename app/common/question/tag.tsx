@@ -25,8 +25,8 @@ import { QuestionStatus } from "~/util/enum";
 import type { KeyedMutator } from "swr";
 import type { UserInfoResp } from "~/type/user";
 import { useUser } from "~/hooks/use-user";
-import type { DifficultyLevelRange } from "~/type/paper";
 import { Slider } from "~/components/ui/slider";
+import type { GenDifficultyLevelRange } from "~/type/paper";
 
 /// 题目题目相关标签选择器
 
@@ -675,11 +675,11 @@ function OperateTags({
 
 // 难度等级范围
 interface DifficultyLevelProps {
-  levelRange: DifficultyLevelRange;
-  setLevelRange: (val: DifficultyLevelRange) => void;
+  levelRange: GenDifficultyLevelRange;
+  setLevelRange: (val: GenDifficultyLevelRange) => void;
 }
 function ShowDifficultyLevelRange({ levelRange, setLevelRange }: DifficultyLevelProps) {
-  const update = (key: keyof DifficultyLevelRange, val: number) => {
+  const update = (key: keyof GenDifficultyLevelRange, val: number) => {
     const total = levelRange.basic + levelRange.improve + levelRange.expand - levelRange[key];
     const remaining = 100 - val;
 

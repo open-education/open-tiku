@@ -9,8 +9,9 @@ import { httpClient } from "~/util/http";
 import { NavLink } from "react-router";
 import { TopInfo } from "~/paper/top/info";
 import { GenInfo } from "~/paper/gen/info";
-import React, { useState } from "react";
+import React from "react";
 import { SimpleAlert } from "~/common/alert";
+import type { TextbookOtherDict } from "~/type/textbook";
 
 /// 试卷元数据
 
@@ -18,6 +19,10 @@ import { SimpleAlert } from "~/common/alert";
 interface PaperListProps {
   papers: CommonPaperResp[];
   search?: CommonPaperSearchReq;
+
+  questionTypeDict: Record<number, TextbookOtherDict>;
+  questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
@@ -30,7 +35,19 @@ interface PaperListProps {
   setWarnInfo?: (value: React.ReactNode) => void;
 }
 
-function PaperList({ papers, search, setOpenSheet, setSheetTitle, setSheetDesc, setSheetContent, setLoading, setWarnInfo }: PaperListProps) {
+function PaperList({
+  papers,
+  search,
+  questionTypeDict,
+  questionTagDict,
+  questionDimensionDict,
+  setOpenSheet,
+  setSheetTitle,
+  setSheetDesc,
+  setSheetContent,
+  setLoading,
+  setWarnInfo,
+}: PaperListProps) {
   // 点击卡片展示详情
   const handleClickCard = (paperType: number, id: number) => {
     setLoading?.(true);
@@ -42,7 +59,14 @@ function PaperList({ papers, search, setOpenSheet, setSheetTitle, setSheetDesc, 
         .then((res) => {
           setSheetTitle("查看详情");
           setSheetDesc("");
-          setSheetContent(<GenInfo infoResp={res} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
+          setSheetContent(
+            <GenInfo
+              infoResp={res}
+              questionTypeDict={questionTypeDict}
+              questionTagDict={questionTagDict}
+              questionDimensionDict={questionDimensionDict}
+            />,
+          );
           setOpenSheet(true);
         })
         .catch((err) => {

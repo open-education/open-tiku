@@ -2,7 +2,7 @@ import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 import { httpClient } from "~/util/http";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
-import type { PaperListReq, PaperListResp, PaperMeta, CommonPaperSearchReq } from "~/type/paper";
+import type { PaperListReq, PaperListResp, CommonPaperSearchReq, CommonPaperResp } from "~/type/paper";
 import { StringConst, StringValidator } from "~/util/string";
 import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from "~/type/question";
 import type { TaskListReq, TaskListResp } from "~/type/task";
@@ -23,7 +23,7 @@ export function useTextbooks(depth: number = 5) {
 
 // 最新试卷
 export function useLatestPapers(count: number = 6) {
-  return useSWRImmutable<PaperMeta[]>(`/paper/latest/${count}`, httpClient.get, {
+  return useSWRImmutable<CommonPaperResp[]>(`/paper/latest/${count}`, httpClient.get, {
     errorRetryCount: 2, // 最多重试2次
     errorRetryInterval: 10000, // 10秒间隔
     revalidateOnFocus: false, // 不聚焦时重新验证

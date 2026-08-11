@@ -18,7 +18,7 @@ import type {
 import type { Textbook } from "~/type/textbook";
 import { useQuestionCates, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
 import { createTextbookPathDict } from "~/util/textbook-dict";
-import { PaperGenConfig } from "~/paper/gen/config";
+import { GenPaperGenTypeConfig } from "~/paper/gen/config";
 import { Button } from "~/components/ui/button";
 import { Eye, Save, Send, Settings2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
@@ -34,6 +34,7 @@ import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { PaperStatus } from "~/util/enum";
 import { GenInfoPreview } from "./info";
+import { ArrayUtil } from "~/util/object";
 
 // 生成试卷
 
@@ -63,9 +64,9 @@ const defaultGenPaperGenConfReq: GenPaperGenConfReq = {
 interface GenAddProps {
   searchReq: CommonPaperSearchReq;
   // 以下为 Sheet 操作方法和属性
-  setSheetTitle?: (value: string) => void;
-  setSheetDesc?: (value: string) => void;
-  setSheetContent?: (value: React.ReactNode) => void;
+  setSheetTitle: (value: string) => void;
+  setSheetDesc: (value: string) => void;
+  setSheetContent: (value: React.ReactNode) => void;
 }
 export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setSheetContent }: GenAddProps) {
   // 计算初始值, 编辑时也是更新这个初始化值
@@ -119,8 +120,6 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
   };
 
   useEffect(() => {
-    // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再2层深度上, 因此只要有2层深度就可以把题型类型和标签返回, 后续如果有优化再处理
-    // 很明显 fiveLevelId 是选择下拉菜单触发的优先级最高
     if (!genPaperSearchReq.fiveLevelId || pathMap.size === 0) {
       return;
     }
@@ -136,6 +135,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
     isLoading: questionTypesLoading,
     error: questionTypesErr,
   } = useQuestionOtherDicts(genPaperSearchReq.twoLevelId, "question_type");
+  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, "id"), [questionTypes]);
 
   // 添加状态来维护题型配置
   const [genPaperGenTypes, setGenPaperGenTypes] = useState<GenPaperGenType[]>([]);
@@ -163,12 +163,14 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
     isLoading: questionTagsLoading,
     error: questionTagsErr,
   } = useQuestionOtherDicts(genPaperSearchReq.twoLevelId, "question_tag");
+  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
 
   const {
     data: questionDimensions = [],
     isLoading: questionDimensionsLoading,
     error: questionDimensionsErr,
   } = useQuestionOtherDicts(genPaperSearchReq.twoLevelId, "question_dimension");
+  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(genPaperSearchReq.fiveLevelId);
@@ -467,9 +469,16 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
         httpClient
           .get<GenPaperResp>(`/paper/gen/info/${resId}`)
           .then((res) => {
-            setSheetTitle?.("试卷详情");
-            setSheetDesc?.("仅为详情预览, 需审核通过后其他人可见, 可去 我的试卷 查看");
-            setSheetContent?.("");
+            setSheetTitle("预览试卷详情");
+            setSheetDesc("仅为详情预览, 需审核通过后其他人可见, 需去 我的试卷 查看");
+            setSheetContent(
+              <GenInfoPreview
+                infoResp={genPaperPreviewInfo}
+                questionTypeDict={questionTypeDict}
+                questionTagDict={questionTagDict}
+                questionDimensionDict={questionDimensionDict}
+              />,
+            );
           })
           .catch((err) => {
             setWarnInfo(<SimpleAlert title="获取试卷详情失败" message={err.message} />);
@@ -634,7 +643,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
                       <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
                         <div className="md:w-24 shrink-0 font-medium">题型题量:</div>
                         <div className="flex-1 min-w-0">
-                          <PaperGenConfig paperGenMetaList={genPaperGenTypes} onChange={handleGenPaperGenTypesChange} />
+                          <GenPaperGenTypeConfig genTypes={genPaperGenTypes} onChange={handleGenPaperGenTypesChange} />
                         </div>
                       </div>
                     </div>
@@ -647,7 +656,12 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
           <ResizablePanel defaultSize="50%">
             <Watermark className="h-full w-full bg-slate-50">
               <div className="p-4">
-                <GenInfoPreview infoResp={genPaperPreviewInfo} />
+                <GenInfoPreview
+                  infoResp={genPaperPreviewInfo}
+                  questionTypeDict={questionTypeDict}
+                  questionTagDict={questionTagDict}
+                  questionDimensionDict={questionDimensionDict}
+                />
               </div>
             </Watermark>
           </ResizablePanel>

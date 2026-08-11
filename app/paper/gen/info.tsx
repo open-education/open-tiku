@@ -12,15 +12,21 @@ import { Button } from "~/components/ui/button";
 import { ArrayUtil } from "~/util/object";
 import { TitleShow } from "~/common/title";
 import { MultiOptionShow } from "~/common/select";
+import { SimpleSheet } from "~/common/sheet";
+import { QuestionInfo } from "~/common/question/info";
+import type { TextbookOtherDict } from "~/type/textbook";
 
 // 手动组卷试卷详情
 
 // 预览详情
 interface GenInfoPreviewProps {
   infoResp: GenPaperResp;
+  questionTypeDict: Record<number, TextbookOtherDict>;
+  questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
 }
 
-function GenInfoPreview({ infoResp }: GenInfoPreviewProps) {
+function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionDimensionDict }: GenInfoPreviewProps) {
   // 获取用户信息
   const currentUser: UserInfoResp | null = useUser();
 
@@ -40,6 +46,28 @@ function GenInfoPreview({ infoResp }: GenInfoPreviewProps) {
   // 生成题目选项
   const getQuestionOptions = (optionsLayout: number, options: QuestionOption[]) => {
     return <MultiOptionShow optionsLayout={optionsLayout} options={options} />;
+  };
+
+  // Sheet相关操作变量
+  const [openSheet, setOpenSheet] = useState<boolean>(false);
+  const [sheetTitle, setSheetTitle] = useState<string>("");
+  const [sheetDesc, setSheetDesc] = useState<string>("");
+  const [sheetContent, setSheetContent] = useState<React.ReactNode>("");
+
+  // 查看题目详情
+  const handleQuestionInfo = (info: QuestionInfoResp) => {
+    setOpenSheet(true);
+    setSheetTitle("查看题目详情");
+    setSheetDesc("");
+    setSheetContent(
+      <QuestionInfo
+        pageSource={{ source: "genPaper" }}
+        questionTypeDict={questionTypeDict}
+        questionTagDict={questionTagDict}
+        questionDimensionDict={questionDimensionDict}
+        infoResp={info}
+      />,
+    );
   };
 
   return (
@@ -104,16 +132,38 @@ function GenInfoPreview({ infoResp }: GenInfoPreviewProps) {
             {/* 小题列表, 需要支持排序和替换 */}
             {group.questions.map((question, idx) => {
               return (
-                <div className="text-base mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60">
+                <div className="flex text-base mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60">
                   {/* 题目主体 */}
-                  <div>{getQuestionTitle(question.common.orderNum, question.info.baseInfo.title, question.info.baseInfo.images || [])}</div>
-                  <div className="mt-2.5">{getQuestionOptions(question.info.baseInfo.optionsLayout || 1, question.info.baseInfo.options || [])}</div>
+                  <div className="flex-[0_0_95%]">
+                    <div>{getQuestionTitle(question.common.orderNum, question.info.baseInfo.title, question.info.baseInfo.images || [])}</div>
+                    <div className="mt-2.5">
+                      {getQuestionOptions(question.info.baseInfo.optionsLayout || 1, question.info.baseInfo.options || [])}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-[0_0_5%]">
+                    <Button variant="link" onClick={() => handleQuestionInfo(question.info)}>
+                      详情
+                    </Button>
+                  </div>
                 </div>
               );
             })}
           </div>
         );
       })}
+
+      {/* 试卷页面Sheet内容 */}
+      <div>
+        <SimpleSheet
+          openSheet={openSheet}
+          setOpenSheet={setOpenSheet}
+          sheetTitle={sheetTitle}
+          sheetDesc={sheetDesc}
+          sheetContent={sheetContent}
+          className="w-[40vw]! max-w-[40vw]! sm:w-[20vw]! md:w-[30vw]! lg:w-[40vw]! overflow-y-auto"
+        />
+      </div>
     </div>
   );
 }
@@ -121,13 +171,11 @@ function GenInfoPreview({ infoResp }: GenInfoPreviewProps) {
 // 试卷详情样式
 interface GenInfoProps {
   infoResp: GenPaperResp;
-
-  // 以下为 Sheet 操作方法和属性
-  setSheetTitle?: (value: string) => void;
-  setSheetDesc?: (value: string) => void;
-  setSheetContent?: (value: React.ReactNode) => void;
+  questionTypeDict: Record<number, TextbookOtherDict>;
+  questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
 }
-function GenInfo({ infoResp, setSheetTitle, setSheetDesc, setSheetContent }: GenInfoProps) {
+function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensionDict }: GenInfoProps) {
   // 获取用户信息
   const currentUser: UserInfoResp | null = useUser();
 
@@ -180,6 +228,12 @@ function GenInfo({ infoResp, setSheetTitle, setSheetDesc, setSheetContent }: Gen
     }));
   };
 
+  // Sheet相关操作变量
+  const [openSheet, setOpenSheet] = useState<boolean>(false);
+  const [sheetTitle, setSheetTitle] = useState<string>("");
+  const [sheetDesc, setSheetDesc] = useState<string>("");
+  const [sheetContent, setSheetContent] = useState<React.ReactNode>("");
+
   return (
     <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-gray-100">
       <div className="text-sm">
@@ -191,7 +245,7 @@ function GenInfo({ infoResp, setSheetTitle, setSheetDesc, setSheetContent }: Gen
       <div>
         <Button className="text-sm" onClick={() => {}}>
           <Save className="mr-2 h-4 w-4" />
-          保存
+          更新
         </Button>
       </div>
 
@@ -248,7 +302,7 @@ function GenInfo({ infoResp, setSheetTitle, setSheetDesc, setSheetContent }: Gen
       {/* 试卷内容 */}
       {genPaperInfo.groups?.map((group, idx) => {
         return (
-          <div key={`${genPaperInfo.id}-${group.id}`}>
+          <div key={`${genPaperInfo.common.id}-${group.common.id}`}>
             {/* 题型名称 */}
             <div className="mt-2.5 mb-2.5 font-bold">{getGroupName(idx, group.common.typeName, group.common.subTitle)}</div>
 
@@ -259,10 +313,29 @@ function GenInfo({ infoResp, setSheetTitle, setSheetDesc, setSheetContent }: Gen
               onDrag={handleDragQuestion}
               onReplace={handleReplaceQuestion}
               onUpdateScore={handleUpdateQuestionScore}
+              questionTypeDict={questionTypeDict}
+              questionTagDict={questionTagDict}
+              questionDimensionDict={questionDimensionDict}
+              setOpenSheet={setOpenSheet}
+              setSheetTitle={setSheetTitle}
+              setSheetDesc={setSheetDesc}
+              setSheetContent={setSheetContent}
             />
           </div>
         );
       })}
+
+      {/* 试卷页面Sheet内容 */}
+      <div>
+        <SimpleSheet
+          openSheet={openSheet}
+          setOpenSheet={setOpenSheet}
+          sheetTitle={sheetTitle}
+          sheetDesc={sheetDesc}
+          sheetContent={sheetContent}
+          className="w-[40vw]! max-w-[40vw]! sm:w-[20vw]! md:w-[30vw]! lg:w-[40vw]! overflow-y-auto"
+        />
+      </div>
     </div>
   );
 }

@@ -8,12 +8,17 @@ import { GenInfo } from "~/paper/gen/info";
 import { TopInfo } from "~/paper/top/info";
 import React, { useState } from "react";
 import { SimpleAlert } from "~/common/alert";
+import type { TextbookOtherDict } from "~/type/textbook";
 
 // 试卷列表
 
-interface PaperGenListProps {
+interface MyPaperListProps {
   search: CommonPaperSearchReq;
   paperList: CommonPaperResp[];
+
+  questionTypeDict: Record<number, TextbookOtherDict>;
+  questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
@@ -22,7 +27,17 @@ interface PaperGenListProps {
   setSheetContent: (value: React.ReactNode) => void;
 }
 
-function PaperGenList({ search, paperList, setOpenSheet, setSheetTitle, setSheetDesc, setSheetContent }: PaperGenListProps) {
+function MyPaperList({
+  search,
+  paperList,
+  questionTypeDict,
+  questionTagDict,
+  questionDimensionDict,
+  setOpenSheet,
+  setSheetTitle,
+  setSheetDesc,
+  setSheetContent,
+}: MyPaperListProps) {
   const [warnInfo, setWarnInfo] = useState<React.ReactNode>(null);
 
   // 查看详情如果是精选试卷保留原有逻辑, 如果是手动组卷需要支持替换和重新排序题目
@@ -33,7 +48,14 @@ function PaperGenList({ search, paperList, setOpenSheet, setSheetTitle, setSheet
         .then((res) => {
           setSheetTitle("查看详情");
           setSheetDesc("");
-          setSheetContent(<GenInfo infoResp={res} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
+          setSheetContent(
+            <GenInfo
+              infoResp={res}
+              questionTypeDict={questionTypeDict}
+              questionTagDict={questionTagDict}
+              questionDimensionDict={questionDimensionDict}
+            />,
+          );
           setOpenSheet(true);
         })
         .catch((err) => {
@@ -103,4 +125,4 @@ function PaperGenList({ search, paperList, setOpenSheet, setSheetTitle, setSheet
   );
 }
 
-export { PaperGenList };
+export { MyPaperList };

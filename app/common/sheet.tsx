@@ -9,11 +9,19 @@ interface SimpleSheetProps {
   sheetTitle: string;
   sheetDesc: string;
   sheetContent: React.ReactNode;
+  className?: string;
 }
-function SimpleSheet({ openSheet, setOpenSheet, sheetTitle, sheetDesc, sheetContent }: SimpleSheetProps) {
+function SimpleSheet({
+  openSheet,
+  setOpenSheet,
+  sheetTitle,
+  sheetDesc,
+  sheetContent,
+  className = "w-[90vw]! max-w-[90vw]! sm:w-[70vw]! md:w-[80vw]! lg:w-[90vw]! overflow-y-auto",
+}: SimpleSheetProps) {
   return (
     <Sheet open={openSheet} onOpenChange={setOpenSheet}>
-      <SheetContent className="w-[90vw]! max-w-[90vw]! sm:w-[70vw]! md:w-[80vw]! lg:w-[90vw]! overflow-y-auto">
+      <SheetContent className={className}>
         <SheetHeader>
           <SheetTitle className="text-base font-bold">{sheetTitle}</SheetTitle>
           {sheetDesc && <SheetDescription className="text-sm">{sheetDesc}</SheetDescription>}

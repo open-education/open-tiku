@@ -1,17 +1,17 @@
 import { Minus, Plus } from "lucide-react";
 import { useMemo } from "react";
-import type { PaperGenTypeMeta } from "~/type/paper";
+import type { GenPaperGenType } from "~/type/paper";
 
 // 生成试卷配置
 
-interface PaperGenConfigProps {
-  paperGenMetaList: PaperGenTypeMeta[];
-  onChange?: (metaList: PaperGenTypeMeta[]) => void;
+interface GenPaperGenTypeConfigProps {
+  genTypes: GenPaperGenType[];
+  onChange?: (metaList: GenPaperGenType[]) => void;
 }
 
-function PaperGenConfig({ paperGenMetaList = [], onChange }: PaperGenConfigProps) {
+function GenPaperGenTypeConfig({ genTypes = [], onChange }: GenPaperGenTypeConfigProps) {
   const updateNum = (index: number, delta: number) => {
-    const newList = paperGenMetaList.map((item, i) => {
+    const newList = genTypes.map((item, i) => {
       if (i === index) {
         return { ...item, num: Math.max(0, item.num + delta) };
       }
@@ -22,7 +22,7 @@ function PaperGenConfig({ paperGenMetaList = [], onChange }: PaperGenConfigProps
 
   const updateScore = (index: number, value: number) => {
     const newScore = Math.max(0, value);
-    const newList = paperGenMetaList.map((item, i) => {
+    const newList = genTypes.map((item, i) => {
       if (i === index) {
         return { ...item, score: newScore };
       }
@@ -32,16 +32,16 @@ function PaperGenConfig({ paperGenMetaList = [], onChange }: PaperGenConfigProps
   };
 
   const totalScore = useMemo(() => {
-    return paperGenMetaList.reduce((sum, item) => sum + item.num * item.score, 0);
-  }, [paperGenMetaList]);
+    return genTypes.reduce((sum, item) => sum + item.num * item.score, 0);
+  }, [genTypes]);
 
   const totalQuestions = useMemo(() => {
-    return paperGenMetaList.reduce((sum, item) => sum + item.num, 0);
-  }, [paperGenMetaList]);
+    return genTypes.reduce((sum, item) => sum + item.num, 0);
+  }, [genTypes]);
 
   return (
     <div className="border space-y-2 p-3">
-      {paperGenMetaList.map((meta, index) => (
+      {genTypes.map((meta, index) => (
         <div key={meta.id || index} className="flex items-center space-x-4">
           <span className="w-20 text-sm font-medium">{meta.label}</span>
           <div className="flex items-center space-x-2">
@@ -81,4 +81,4 @@ function PaperGenConfig({ paperGenMetaList = [], onChange }: PaperGenConfigProps
   );
 }
 
-export { PaperGenConfig };
+export { GenPaperGenTypeConfig };
