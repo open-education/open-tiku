@@ -1,6 +1,5 @@
-import { PaperMetaSearchConf } from "~/common/paper/config";
 import type { Route } from "./+types/index";
-import type { PaperMetaSearch } from "~/type/paper";
+import type { CommonPaperSearchReq } from "~/type/paper";
 import { useState } from "react";
 import { usePaperList, useTextbooks } from "~/util/fetcher";
 import { Separator } from "~/components/ui/separator";
@@ -10,6 +9,7 @@ import { Loading } from "~/common/load";
 import { SimplePagination } from "~/common/page";
 import { SimpleSheet } from "~/common/sheet";
 import { PaperGenList } from "~/paper/gen/list";
+import { CommonPaperSearchConf } from "~/common/paper/config";
 
 // 我的试卷
 
@@ -18,7 +18,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 // 默认的搜索属性
-const defaultMetaSearch: PaperMetaSearch = {
+const defaultSearchReq: CommonPaperSearchReq = {
   relatedId: 0,
   relatedName: "",
   tag: "",
@@ -32,9 +32,9 @@ const defaultMetaSearch: PaperMetaSearch = {
 
 export default function Index() {
   // 处理搜索信息, 惰性初始化将其它页面传递过来的值进行赋值
-  const [metaSearch, setMetaSearch] = useState<PaperMetaSearch>(defaultMetaSearch);
-  const updateSearchMeta = (key: keyof PaperMetaSearch, value: string | number | string[]) => {
-    setMetaSearch((prev) => ({ ...prev, [key]: value }));
+  const [searchReq, setSearchReq] = useState<CommonPaperSearchReq>(defaultSearchReq);
+  const updateSearchReq = (key: keyof CommonPaperSearchReq, value: string | number | string[]) => {
+    setSearchReq((prev) => ({ ...prev, [key]: value }));
   };
 
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks(5);
@@ -54,7 +54,7 @@ export default function Index() {
     },
     isLoading: paperListIsLoading,
     error: paperListErr,
-  } = usePaperList(metaSearch, pageNo);
+  } = usePaperList(searchReq, pageNo);
 
   // Sheet相关操作变量
   const [openSheet, setOpenSheet] = useState<boolean>(false);
@@ -66,7 +66,7 @@ export default function Index() {
     <div className="px-4 pt-3 sm:px-16 sm:pt-4">
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
-        <PaperMetaSearchConf textbooks={textbooks} metaSearch={metaSearch} updateSearchMeta={updateSearchMeta} />
+        <CommonPaperSearchConf textbooks={textbooks} search={searchReq} updateCommonPaperSearchReq={updateSearchReq} />
       </div>
 
       <div className="mt-3">
@@ -92,7 +92,7 @@ export default function Index() {
       {/* 试卷列表 */}
       <div className="mt-3 bg-gray-50">
         <PaperGenList
-          metaSearch={metaSearch}
+          search={searchReq}
           paperList={paperListResp.list}
           setOpenSheet={setOpenSheet}
           setSheetTitle={setSheetTitle}

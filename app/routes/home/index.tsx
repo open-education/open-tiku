@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { ArrowRight, GraduationCap, Upload } from "lucide-react";
 import { CountStats } from "~/home/stats";
-import { ExamPaper, ExamPaperHeader } from "~/common/paper/meta";
+import { PaperHeader, PaperList } from "~/common/paper/list";
 import { Loading } from "~/common/load";
 import { toast } from "sonner";
 import { Board } from "~/home/board";
@@ -140,8 +140,8 @@ export default function Index() {
 
       {/* 精选试卷 */}
       <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
-        <ExamPaperHeader />
-        <ExamPaper
+        <PaperHeader />
+        <PaperList
           papers={latestPapers}
           setOpenSheet={setOpenSheet}
           setSheetTitle={setSheetTitle}

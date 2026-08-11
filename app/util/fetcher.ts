@@ -2,7 +2,7 @@ import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 import { httpClient } from "~/util/http";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
-import type { PaperListReq, PaperListResp, PaperMeta, PaperMetaSearch } from "~/type/paper";
+import type { PaperListReq, PaperListResp, PaperMeta, CommonPaperSearchReq } from "~/type/paper";
 import { StringConst, StringValidator } from "~/util/string";
 import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from "~/type/question";
 import type { TaskListReq, TaskListResp } from "~/type/task";
@@ -32,7 +32,7 @@ export function useLatestPapers(count: number = 6) {
 }
 
 // 试卷列表
-export function usePaperList(search: PaperMetaSearch, pageNo: number) {
+export function usePaperList(search: CommonPaperSearchReq, pageNo: number) {
   const req: PaperListReq = {
     source: search.source,
     relatedId: search.relatedId,

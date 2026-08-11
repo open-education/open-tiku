@@ -1,9 +1,9 @@
 import type { Route } from "./+types/index";
 import React, { useState } from "react";
 import { type SelectNavProps } from "~/common/nav";
-import { ExamPaper } from "~/common/paper/meta";
+import { PaperList } from "~/common/paper/list";
 import { Button } from "~/components/ui/button";
-import type { PaperMetaSearch } from "~/type/paper";
+import type { CommonPaperSearchReq } from "~/type/paper";
 import TopAdd from "~/paper/top/add";
 import { StringValidator } from "~/util/string";
 import { SimplePagination } from "~/common/page";
@@ -18,8 +18,8 @@ import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Plus } from "lucide-react";
 import type { UserInfoResp } from "~/type/user";
 import { useUser } from "~/hooks/use-user";
+import { CommonPaperSearchConf } from "~/common/paper/config";
 import GenAdd from "~/paper/gen/add";
-import { PaperMetaSearchConf } from "~/common/paper/config";
 
 // 重新网页标题等
 export function meta({}: Route.MetaArgs) {
@@ -27,7 +27,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 // 默认的搜索属性
-const defaultMetaSearch: PaperMetaSearch = {
+const defaultSearch: CommonPaperSearchReq = {
   relatedId: 0,
   relatedName: "",
   tag: "",
@@ -49,8 +49,8 @@ export default function Index() {
   const selectNavProps: SelectNavProps = location.state?.selectNavProps ?? {};
 
   // 处理搜索信息, 惰性初始化将其它页面传递过来的值进行赋值
-  const [metaSearch, setMetaSearch] = useState<PaperMetaSearch>(() => {
-    const initial = { ...defaultMetaSearch };
+  const [searchReq, setSearchReq] = useState<CommonPaperSearchReq>(() => {
+    const initial = { ...defaultSearch };
 
     if (selectNavProps.relatedId > 0) {
       initial.relatedId = selectNavProps.relatedId;
@@ -63,12 +63,13 @@ export default function Index() {
     }
     return initial;
   });
-  const updateSearchMeta = (key: keyof PaperMetaSearch, value: string | number | string[]) => {
-    setMetaSearch((prev) => ({ ...prev, [key]: value }));
+  const updateSearchReq = (key: keyof CommonPaperSearchReq, value: string | number | string[]) => {
+    setSearchReq((prev) => ({ ...prev, [key]: value }));
   };
 
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks(5);
 
+  const [warnInfo, setWarnInfo] = useState<React.ReactNode>(null);
   // 列表相关错误信息展示
   const [isLoading, setIsLoading] = useState<boolean>(false);
   // 页码
@@ -84,7 +85,7 @@ export default function Index() {
     },
     isLoading: paperListIsLoading,
     error: paperListErr,
-  } = usePaperList(metaSearch, pageNo);
+  } = usePaperList(searchReq, pageNo);
 
   // Sheet相关操作变量
   const [openSheet, setOpenSheet] = useState<boolean>(false);
@@ -96,7 +97,7 @@ export default function Index() {
   const handlePaperTopAdd = () => {
     setSheetTitle("精选试卷");
     setSheetDesc("精选历年高考，中考试卷；收录名校期末和月考试卷。");
-    setSheetContent(<TopAdd metaSearch={metaSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
+    setSheetContent(<TopAdd searchReq={searchReq} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
     setOpenSheet(true);
   };
 
@@ -104,7 +105,7 @@ export default function Index() {
   const handlePapgerGenAdd = () => {
     setSheetTitle("手动组卷");
     setSheetDesc("根据你选择的条件进行自动组卷, 生成试卷后请回到列表查看和修改");
-    setSheetContent(<GenAdd metaSearch={metaSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
+    setSheetContent(<GenAdd searchReq={searchReq} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
     setOpenSheet(true);
   };
 
@@ -112,7 +113,7 @@ export default function Index() {
     <div className="px-4 pt-3 sm:px-16 sm:pt-4">
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
-        <PaperMetaSearchConf textbooks={textbooks} metaSearch={metaSearch} updateSearchMeta={updateSearchMeta} />
+        <CommonPaperSearchConf textbooks={textbooks} search={searchReq} updateCommonPaperSearchReq={updateSearchReq} />
 
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
           <div className="md:w-24 shrink-0 font-medium">操作:</div>
@@ -150,6 +151,7 @@ export default function Index() {
           <SimpleAlert title="列表获取失败" message={paperListErr.message} />
         </div>
       )}
+      {warnInfo && <div className="mt-3">{warnInfo}</div>}
 
       {/* 空数据提示 */}
       {paperListResp.total == 0 && (
@@ -163,14 +165,15 @@ export default function Index() {
 
       {/* 试卷列表 */}
       <div className="mt-3">
-        <ExamPaper
+        <PaperList
           papers={paperListResp.list}
-          metaSearch={metaSearch}
+          search={searchReq}
           setOpenSheet={setOpenSheet}
           setSheetTitle={setSheetTitle}
           setSheetDesc={setSheetDesc}
           setSheetContent={setSheetContent}
           setLoading={setIsLoading}
+          setWarnInfo={setWarnInfo}
         />
       </div>
 

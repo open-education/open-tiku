@@ -6,12 +6,11 @@ import { StringConst, StringValidator } from "~/util/string";
 import { Watermark } from "~/common/watermark";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
-import type { PaperGroup, PaperMeta, PaperMetaSearch, PaperQuestion } from "~/type/paper";
+import type { CommonPaperReq, CommonPaperSearchReq, TopPaperGroupReq, TopPaperQuestionReq, TopPaperReq, TopPaperResp } from "~/type/paper";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { FileImage, Plus, Save, Send, Trash2, X } from "lucide-react";
 import { Label } from "~/components/ui/label";
 import type { Content, QuestionOption } from "~/type/question";
-import { ExamPaperTopMeta } from "~/common/paper/meta";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { SimpleAlert } from "~/common/alert";
@@ -22,7 +21,9 @@ import { FileUpload } from "~/common/file";
 import { QuickToolList } from "~/common/tool";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Loading } from "~/common/load";
-import { PaperMetaConf } from "~/common/paper/config";
+import { PaperStatus } from "~/util/enum";
+import { CommonPaperConf } from "~/common/paper/config";
+import { TopInfo, TopInfoPreview } from "~/paper/top/info";
 
 /// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑
 /// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
@@ -30,53 +31,46 @@ import { PaperMetaConf } from "~/common/paper/config";
 
 // 初始化默认值等信息
 const generateId = () => Math.random().toString(36).substring(2, 9);
-const defaultPaperMeta: PaperMeta = {
+
+const defaultCommonPaperReq: CommonPaperReq = {
   relatedId: 0,
+  relatedName: "",
+  paperType: StringConst.paperTypeTop,
   tag: "",
+  year: "",
+  grade: "",
+  semester: "",
   title: "",
   score: 0,
   source: "",
-  year: "",
-  groups: [],
-  status: 0,
-  createdAt: "",
-  updatedAt: "",
-  grade: "",
-  semester: "",
   remark: "",
   count: 0,
-  statusDesc: "",
-  remarkExt: "",
-  relatedName: "",
-  paperType: 1,
+  status: PaperStatus.Drafing,
 };
 
-const defaultQuestionInfo = (order: number): PaperQuestion => ({
-  genId: generateId(),
-  orderNum: order,
-  stem: "",
-  analysis: {
-    content: "",
-  },
-  score: 0,
-  id: 0,
-  groupId: 0,
-  paperId: 0,
-  answer: "",
-});
-
-const defaultGroup = (): PaperGroup => ({
+// 默认的题型类型信息
+const defaultTopPaperGroupInfo = (): TopPaperGroupReq => ({
   genId: generateId(),
   typeName: "",
   subTitle: "",
   questions: [],
-  id: 0,
-  paperId: 0,
+});
+
+// 默认的题目信息
+const defaultTopPaperQuestionInfo = (orderNum: number): TopPaperQuestionReq => ({
+  genId: generateId(),
+  orderNum,
+  stem: "",
+  answer: "",
+  analysis: {
+    content: "",
+  },
+  score: 0,
 });
 
 interface TopAddProps {
-  metaSearch: PaperMetaSearch;
-  infoResp?: PaperMeta; // 如果是详情页面过来的则处于编译状态
+  searchReq: CommonPaperSearchReq;
+  infoResp?: TopPaperResp; // 如果是详情页面过来的则处于编译状态
 
   // 以下为 Sheet 操作方法和属性
   setSheetTitle?: (value: string) => void;
@@ -84,19 +78,19 @@ interface TopAddProps {
   setSheetContent?: (value: React.ReactNode) => void;
 }
 
-export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDesc, setSheetContent }: TopAddProps) {
+export default function TopAdd({ searchReq, infoResp, setSheetTitle, setSheetDesc, setSheetContent }: TopAddProps) {
   // 计算初始值, 编辑时也是更新这个初始化值
-  const initialPaperMeta = useMemo(() => {
+  const initialPaperReq = useMemo<TopPaperReq>(() => {
     // 如果是详情进来的则仅使用详情的数据
-    if (infoResp && infoResp.id != null && infoResp.id > 0) {
-      return { ...infoResp };
-    }
+    // if (infoResp && infoResp.common.id != null && infoResp.common.id > 0) {
+    //   return { ...infoResp };
+    // }
 
-    const updates: Partial<PaperMeta> = {};
+    const updates: Partial<CommonPaperReq> = {};
     const fields = ["relatedId", "relatedName", "tag", "year", "grade", "semester"] as const;
 
     fields.forEach((field) => {
-      const value = metaSearch[field as keyof typeof metaSearch];
+      const value = searchReq[field as keyof typeof searchReq];
       // relatedId 是 number
       if (field === "relatedId") {
         const rid = value as number;
@@ -108,14 +102,18 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
       }
     });
 
-    return { ...defaultPaperMeta, ...updates };
+    return { common: { ...defaultCommonPaperReq, ...updates }, groups: [] };
   }, []); // 只在组件挂载时计算一次
 
   // 初始化试卷信息
-  const [paper, setPaper] = useState<PaperMeta>(initialPaperMeta);
-  const updatePaperMeta = (key: keyof PaperMeta, value: string | number) => {
-    setPaper((prev) => ({ ...prev, [key]: value }));
+  const [commonPaperReq, setCommonPaperReq] = useState<CommonPaperReq>(initialPaperReq.common);
+  // 只更新公共的请求字段信息
+  const updateCommonPaperReq = (key: keyof CommonPaperReq, value: string | number) => {
+    setCommonPaperReq((prev) => ({ ...prev, [key]: value }));
   };
+
+  // 题型类型分组维护
+  const [topPaperGroupReq, setTopPaperGroupReq] = useState<TopPaperGroupReq[]>(initialPaperReq.groups);
 
   const [addWarnInfo, setAddWarnInfo] = useState<React.ReactNode>("");
 
@@ -125,73 +123,60 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
   // ---- 大题操作 ----
   // 追加一个默认题型默认值
   const addGroup = () => {
-    setPaper((prev) => ({
-      ...prev,
-      groups: [...prev.groups, defaultGroup()],
-    }));
+    setTopPaperGroupReq((prev) => [...prev, defaultTopPaperGroupInfo()]);
   };
 
-  // 删除一个大题
+  // 删除一个大题题型, 包括大题题型下的所有小题列表
   const removeGroup = (groupGenId: string) => {
-    setPaper((prev) => ({
-      ...prev,
-      groups: prev.groups.filter((g) => g.genId !== groupGenId),
-    }));
+    setTopPaperGroupReq((prev) => prev.filter((g) => g.genId !== groupGenId));
   };
 
-  // 更新一个大题
-  const updateGroup = (groupGenId: string, key: keyof PaperGroup, value: string) => {
-    setPaper((prev) => ({
-      ...prev,
-      groups: prev.groups.map((g) => (g.genId === groupGenId ? { ...g, [key]: value } : g)),
-    }));
+  // 更新一个大题字段
+  const updateGroup = (groupGenId: string, key: keyof TopPaperGroupReq, value: string) => {
+    setTopPaperGroupReq((prev) => prev.map((g) => (g.genId === groupGenId ? { ...g, [key]: value } : g)));
   };
 
   // ---- 小题操作 ----
   const addQuestion = (groupGenId: string) => {
-    setPaper((prev) => ({
-      ...prev,
-      groups: prev.groups.map((g) => {
+    setTopPaperGroupReq((prev) =>
+      prev.map((g) => {
         if (g.genId !== groupGenId) return g;
-        const nextOrder = g.questions.length + 1;
+        const nextOrderNum = g.questions.length + 1;
         return {
           ...g,
-          questions: [...g.questions, defaultQuestionInfo(nextOrder)],
+          questions: [...g.questions, defaultTopPaperQuestionInfo(nextOrderNum)],
         };
       }),
-    }));
+    );
   };
 
   const removeQuestion = (groupGenId: string, questionId: string) => {
-    setPaper((prev) => ({
-      ...prev,
-      groups: prev.groups.map((g) => {
+    setTopPaperGroupReq((prev) =>
+      prev.map((g) => {
         if (g.genId !== groupGenId) return g;
         const filtered = g.questions.filter((q) => q.genId !== questionId);
         const reordered = filtered.map((q, idx) => ({ ...q, order: idx + 1 }));
         return { ...g, questions: reordered };
       }),
-    }));
+    );
   };
 
-  const updateQuestion = (groupGenId: string, questionId: string, key: keyof PaperQuestion, value: string | string[] | number | Content) => {
-    setPaper((prev) => ({
-      ...prev,
-      groups: prev.groups.map((g) => {
+  const updateQuestion = (groupGenId: string, questionId: string, key: keyof TopPaperQuestionReq, value: string | string[] | number | Content) => {
+    setTopPaperGroupReq((prev) =>
+      prev.map((g) => {
         if (g.genId !== groupGenId) return g;
         return {
           ...g,
           questions: g.questions.map((q) => (q.genId === questionId ? { ...q, [key]: value } : q)),
         };
       }),
-    }));
+    );
   };
 
   // ---- 选项操作 ----
   const addOption = (groupGenId: string, questionId: string) => {
-    setPaper((prev) => ({
-      ...prev,
-      groups: prev.groups.map((g) => {
+    setTopPaperGroupReq((prev) =>
+      prev.map((g) => {
         if (g.genId !== groupGenId) return g;
         return {
           ...g,
@@ -210,13 +195,12 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
           }),
         };
       }),
-    }));
+    );
   };
 
   const updateOption = (groupGenId: string, questionId: string, index: number, value: QuestionOption) => {
-    setPaper((prev) => ({
-      ...prev,
-      groups: prev.groups.map((g) => {
+    setTopPaperGroupReq((prev) =>
+      prev.map((g) => {
         if (g.genId !== groupGenId) return g;
         return {
           ...g,
@@ -228,16 +212,15 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
           }),
         };
       }),
-    }));
+    );
   };
 
   // 移除选项时需要刷新选项的标签和排序等信息
   // 也不是现在的做法比如 A B C D 我突然移除 B 结果变为 A B C 实际上应该删除移除之后的所有选项
   // 因为试卷的选项内容是固定的
   const removeOption = (groupGenId: string, questionId: string, index: number) => {
-    setPaper((prev) => ({
-      ...prev,
-      groups: prev.groups.map((g) => {
+    setTopPaperGroupReq((prev) =>
+      prev.map((g) => {
         if (g.genId !== groupGenId) return g;
         return {
           ...g,
@@ -251,7 +234,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
           }),
         };
       }),
-    }));
+    );
   };
 
   // 按钮提交状态
@@ -261,7 +244,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
   // 提交试卷
   const handleAddPaper = (status: number) => {
     // 检查必填参数是否为空
-    if (paper.relatedId <= 0) {
+    if (commonPaperReq.relatedId <= 0) {
       toast.error(<div className="text-red-700">学段/考点不能为空</div>, {
         duration: Infinity,
         action: {
@@ -271,7 +254,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(paper.tag)) {
+    if (!StringValidator.isNonEmpty(commonPaperReq.tag)) {
       toast.error(<div className="text-red-700">标签不能为空</div>, {
         duration: Infinity,
         action: {
@@ -281,7 +264,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(paper.year)) {
+    if (!StringValidator.isNonEmpty(commonPaperReq.year)) {
       toast.error(<div className="text-red-700">年份不能为空</div>, {
         duration: Infinity,
         action: {
@@ -292,7 +275,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
       return;
     }
 
-    if (!confirm(paper.id && paper.id > 0 ? "确定要更新试卷吗？" : "确定要新增试卷吗？")) {
+    if (!confirm(commonPaperReq.id && commonPaperReq.id > 0 ? "确定要更新试卷吗？" : "确定要新增试卷吗？")) {
       return;
     }
 
@@ -301,24 +284,30 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
 
     if (status === 0) {
       setDrafting(true);
-      paper.status = 0;
+      commonPaperReq.status = PaperStatus.Drafing;
     } else {
       setApproving(true);
-      paper.status = 1;
+      commonPaperReq.status = PaperStatus.Pending;
     }
 
-    paper.paperType = StringConst.paperTypeTop;
+    commonPaperReq.paperType = StringConst.paperTypeTop;
+
+    // 添加精选试卷
+    let topPaperReq: TopPaperReq = {
+      common: commonPaperReq,
+      groups: topPaperGroupReq,
+    };
 
     httpClient
-      .post<number>("/paper/top/add", paper)
+      .post<number>("/paper/top/add", topPaperReq)
       .then((resId) => {
         // 获取详情渲染Sheet为试卷详情
         httpClient
-          .get<PaperMeta>(`/paper/top/info/${resId}`)
+          .get<TopPaperResp>(`/paper/top/info/${resId}`)
           .then((res) => {
             setSheetTitle?.("试卷详情");
             setSheetDesc?.("仅为详情预览, 需审核通过后其他人可见, 可去 我的试卷 查看");
-            setSheetContent?.(<ExamPaperTopMeta paperMeta={res} />);
+            setSheetContent?.(<TopInfo infoResp={res} />);
           })
           .catch((err) => {
             setAddWarnInfo(<SimpleAlert title="获取试卷详情失败" message={err.message} />);
@@ -351,7 +340,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
         </Button>
       </div>
 
-      {addWarnInfo}
+      <div className="mt-3">{addWarnInfo}</div>
 
       <Separator className="mt-3 mb-3" />
 
@@ -381,11 +370,16 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
         <ResizablePanelGroup orientation="horizontal" className="border">
           <ResizablePanel defaultSize="50%">
             <div className="p-4">
-              <PaperMetaConf textbooks={textbooks} paper={paper} defaultSelectedKeys={metaSearch.selectedKeys} updatePaperMeta={updatePaperMeta} />
+              <CommonPaperConf
+                textbooks={textbooks}
+                commonPaperReq={commonPaperReq}
+                defaultSelectedKeys={searchReq.selectedKeys}
+                updateCommonPaperReq={updateCommonPaperReq}
+              />
 
               {/* ===== 大题列表 ===== */}
               <div className="space-y-4 mt-3">
-                {paper.groups.map((group, idx) => (
+                {topPaperGroupReq.map((group, idx) => (
                   <GroupCard
                     key={group.genId}
                     group={group}
@@ -412,7 +406,7 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
           <ResizablePanel defaultSize="50%">
             <Watermark className="h-full w-full bg-slate-50">
               <div className="p-4">
-                <ExamPaperTopMeta paperMeta={paper} metaSearch={metaSearch} isPreview={true} />
+                <TopInfoPreview req={{ common: commonPaperReq, groups: topPaperGroupReq }} />
               </div>
             </Watermark>
           </ResizablePanel>
@@ -425,13 +419,13 @@ export default function TopAdd({ metaSearch, infoResp, setSheetTitle, setSheetDe
 // ============ 大题卡片 ============
 
 interface GroupCardProps {
-  group: PaperGroup;
+  group: TopPaperGroupReq;
   index: number;
-  onUpdateGroup: (key: keyof PaperGroup, value: string) => void;
+  onUpdateGroup: (key: keyof TopPaperGroupReq, value: string) => void;
   onRemoveGroup: () => void;
   onAddQuestion: () => void;
   onRemoveQuestion: (questionId: string) => void;
-  onUpdateQuestion: (questionId: string, key: keyof PaperQuestion, value: string | string[] | number | Content) => void;
+  onUpdateQuestion: (questionId: string, key: keyof TopPaperQuestionReq, value: string | string[] | number | Content) => void;
   onAddOption: (questionId: string) => void;
   onUpdateOption: (questionId: string, index: number, value: QuestionOption) => void;
   onRemoveOption: (questionId: string, index: number) => void;
@@ -495,9 +489,9 @@ function GroupCard({
 // ============ 小题组件 ============
 
 interface QuestionItemProps {
-  question: PaperQuestion;
+  question: TopPaperQuestionReq;
   onRemove: () => void;
-  onUpdate: (key: keyof PaperQuestion, value: string | string[] | number | Content) => void;
+  onUpdate: (key: keyof TopPaperQuestionReq, value: string | string[] | number | Content) => void;
   onAddOption: () => void;
   onUpdateOption: (index: number, value: QuestionOption) => void;
   onRemoveOption: (index: number) => void;
