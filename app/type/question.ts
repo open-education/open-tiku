@@ -90,7 +90,7 @@ export interface QuestionInfoResp {
 // 题目列表请求
 export interface QuestionListReq {
   source: string;
-  questionCateId: number;
+  questionCateIds: number[];
   questionTypeId?: number;
   ids?: number[];
   status?: number; // 题目状态, 我的题目能看全部状态
@@ -124,7 +124,7 @@ export interface QuestionSearch {
   twoLevelId: number; // 第2层标识-用于查询题目类型和标签
   fiveLevelId: number; // 第5层标识-用于获取知识点分类和教材目录
   fiveLevelSelectKeys: string[]; // 选择的5层菜单导航key列表
-  eightId: number; // 第8层标识-用于查询该题型下的题目列表
+  eightIds: number[]; // 第8层标识-用于查询该题型下的题目列表
   eightLevelSelectKeys: string[]; // 题目分类类表导航key集合
   typeId: number; // 题目类型
   tagIds: number[]; // 题目标签

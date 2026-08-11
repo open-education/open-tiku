@@ -24,6 +24,7 @@ import { Loading } from "~/common/load";
 import { PaperStatus } from "~/util/enum";
 import { CommonPaperConf } from "~/common/paper/config";
 import { TopInfo, TopInfoPreview } from "~/paper/top/info";
+import { ObjectUtil } from "~/util/object";
 
 /// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑
 /// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
@@ -82,9 +83,9 @@ export default function TopAdd({ searchReq, infoResp, setSheetTitle, setSheetDes
   // 计算初始值, 编辑时也是更新这个初始化值
   const initialPaperReq = useMemo<TopPaperReq>(() => {
     // 如果是详情进来的则仅使用详情的数据
-    // if (infoResp && infoResp.common.id != null && infoResp.common.id > 0) {
-    //   return { ...infoResp };
-    // }
+    if (infoResp && infoResp.common.id != null && infoResp.common.id > 0) {
+      return ObjectUtil.toTopPaperReq(infoResp);
+    }
 
     const updates: Partial<CommonPaperReq> = {};
     const fields = ["relatedId", "relatedName", "tag", "year", "grade", "semester"] as const;

@@ -1,3 +1,4 @@
+import type { TopPaperReq, TopPaperResp } from "~/type/paper";
 import type { Textbook, TextbookOption, TextbookOtherDict } from "~/type/textbook";
 
 // 数组相关操作工具
@@ -56,4 +57,16 @@ export const DictUtil = {
   getQuestionDimensionNames: (dimensionIds: number[], dict: Record<number, TextbookOtherDict>): string[] => {
     return dimensionIds.map((id) => dict[id]?.itemValue).filter((name): name is string => name !== undefined);
   },
+};
+
+// 对象工具
+export const ObjectUtil = {
+  // 将精选试卷返回结构转为请求结构, 编辑详情时需要
+  toTopPaperReq: (resp: TopPaperResp): TopPaperReq => ({
+    common: { ...resp.common },
+    groups: resp.groups.map((group) => ({
+      ...group.common,
+      questions: group.questions.map((q) => ({ ...q })),
+    })),
+  }),
 };

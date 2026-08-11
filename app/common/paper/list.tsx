@@ -20,9 +20,10 @@ interface PaperListProps {
   papers: CommonPaperResp[];
   search?: CommonPaperSearchReq;
 
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
+  // 精选试卷不需要该部分信息
+  questionTypeDict?: Record<number, TextbookOtherDict>;
+  questionTagDict?: Record<number, TextbookOtherDict>;
+  questionDimensionDict?: Record<number, TextbookOtherDict>;
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
@@ -38,9 +39,9 @@ interface PaperListProps {
 function PaperList({
   papers,
   search,
-  questionTypeDict,
-  questionTagDict,
-  questionDimensionDict,
+  questionTypeDict = {},
+  questionTagDict = {},
+  questionDimensionDict = {},
   setOpenSheet,
   setSheetTitle,
   setSheetDesc,

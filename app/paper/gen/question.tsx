@@ -15,7 +15,7 @@ interface GenSortableQuestionListProps {
   groupId: number;
   questions: GenPaperQuestionResp[];
   onDrag: (groupId: number, oldIndex: number, newIndex: number) => void;
-  onReplace: (groupId: number, questionId: number) => void;
+  onReplace: (groupId: number, index: number, question: GenPaperQuestionResp) => void;
   onUpdateScore: (groupId: number, questionId: number, newScore: number) => void;
 
   questionTypeDict: Record<number, TextbookOtherDict>;
@@ -97,7 +97,7 @@ interface GenQuestionInfoProps {
   groupId: number;
   index: number;
   question: GenPaperQuestionResp;
-  onReplace: (groupId: number, questionId: number) => void;
+  onReplace: (groupId: number, index: number, question: GenPaperQuestionResp) => void;
   onUpdateScore: (groupId: number, questionId: number, score: number) => void;
 
   questionTypeDict: Record<number, TextbookOtherDict>;
@@ -194,7 +194,7 @@ function GenQuestionInfo({
           />
         </div>
         <button
-          onClick={() => onReplace(groupId, question.info.baseInfo.id)}
+          onClick={() => onReplace(groupId, index, question)}
           className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
           title="替换题目"
         >

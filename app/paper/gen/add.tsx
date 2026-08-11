@@ -6,7 +6,7 @@ import type {
   CommonPaperSearchReq,
   CommonPaperReq,
   GenPaperReq,
-  GenPaperGenConfReq,
+  CommonGenPaperGenConf,
   GenPaperGroupReq,
   GenPaperGenType,
   GenPaperPreviewReq,
@@ -56,7 +56,7 @@ const defaultCommonPaperReq: CommonPaperReq = {
   status: PaperStatus.Drafing,
 };
 
-const defaultGenPaperGenConfReq: GenPaperGenConfReq = {
+const defaultGenPaperGenConfReq: CommonGenPaperGenConf = {
   questionCateIds: [],
   questionTypes: [],
 };
@@ -96,7 +96,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
     setCommonPaperReq((prev) => ({ ...prev, [key]: value }));
   };
 
-  const [genPaperGenConfReq, setGenPaperGenConfReq] = useState<GenPaperGenConfReq>(initialGenPaperReq.conf);
+  const [genPaperGenConfReq, setGenPaperGenConfReq] = useState<CommonGenPaperGenConf>(initialGenPaperReq.conf);
   const [genPaperGroupReq, setGenPaperGroupReq] = useState<GenPaperGroupReq[]>(initialGenPaperReq.groups);
 
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks(5);
@@ -203,6 +203,10 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       createdAt: "",
       updatedAt: "",
     },
+    conf: {
+      questionCateIds: [],
+      questionTypes: [],
+    },
     groups: [],
   });
 
@@ -245,7 +249,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       return;
     }
 
-    const conf: GenPaperGenConfReq = {
+    const conf: CommonGenPaperGenConf = {
       questionCateIds: genPaperSearchReq.questionCateIds || [],
       tagIds: genPaperSearchReq.tagIds,
       dimensionIds: genPaperSearchReq.dimensionIds,
@@ -415,7 +419,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
     commonPaperReq.paperType = StringConst.paperTypesGen;
 
     // 题目配置
-    const conf: GenPaperGenConfReq = {
+    const conf: CommonGenPaperGenConf = {
       questionCateIds: genPaperSearchReq.questionCateIds || [],
       tagIds: genPaperSearchReq.tagIds,
       dimensionIds: genPaperSearchReq.dimensionIds,

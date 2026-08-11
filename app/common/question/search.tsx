@@ -45,7 +45,7 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
     twoLevelId: 0,
     fiveLevelId: selectNavProps?.relatedId || 0,
     fiveLevelSelectKeys: selectNavProps?.selectedKeys || [],
-    eightId: 0,
+    eightIds: [],
     eightLevelSelectKeys: [],
     typeId: 0,
     tagIds: [],
@@ -177,7 +177,7 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
               textbooks={questionCates}
               onSelect={(selectedItems: Textbook[]) => {
                 if (!selectedItems) {
-                  updateQuestionSearch("eightId", 0);
+                  updateQuestionSearch("eightIds", []);
                   updateQuestionSearch("eightLevelSelectKeys", []);
                   return;
                 }
@@ -191,11 +191,11 @@ function QuestionSearchPage({ selectNavProps, pageSource }: QuestionSearchProps)
 
                 // 必须选择题型
                 if (current.tableName !== StringConst.questionCateTableName) {
-                  updateQuestionSearch("eightId", 0);
+                  updateQuestionSearch("eightIds", []);
                   return;
                 }
 
-                updateQuestionSearch("eightId", current.id);
+                updateQuestionSearch("eightIds", [current.id]);
               }}
               defaultSelectedKeys={[]}
               placeholder="请选择题型"

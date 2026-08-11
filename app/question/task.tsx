@@ -47,8 +47,8 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
     };
 
     // questionSearch 为列表页传递过来的数据, 可能选也可能为空
-    if (questionSearch.eightId > 0) {
-      initAddDefault.questionCateId = questionSearch.eightId;
+    if (questionSearch.eightIds.length > 0) {
+      initAddDefault.questionCateId = questionSearch.eightIds[0];
     }
 
     return initAddDefault;
@@ -317,8 +317,8 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
     };
 
     // questionSearch 为列表页传递过来的数据, 可能选也可能为空
-    if (questionSearch.eightId > 0) {
-      initAddDefault.questionCateId = questionSearch.eightId;
+    if (questionSearch.eightIds.length > 0) {
+      initAddDefault.questionCateId = questionSearch.eightIds[0];
     }
 
     return initAddDefault;

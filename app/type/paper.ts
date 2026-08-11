@@ -169,7 +169,7 @@ export interface GenPaperGenQuestionReq {
 }
 
 // 试卷生成配置
-export interface GenPaperGenConfReq {
+export interface CommonGenPaperGenConf {
   questionCateIds: number[];
   tagIds?: number[];
   dimensionIds?: number[];
@@ -188,13 +188,13 @@ export interface GenPaperGroupReq {
 // 手动组卷预览请求
 export interface GenPaperPreviewReq {
   common: CommonPaperReq;
-  conf: GenPaperGenConfReq; // 试卷生成配置信息
+  conf: CommonGenPaperGenConf; // 试卷生成配置信息
 }
 
 // 手动组卷保存请求
 export interface GenPaperReq {
   common: CommonPaperReq;
-  conf: GenPaperGenConfReq; // 试卷生成配置信息
+  conf: CommonGenPaperGenConf; // 试卷生成配置信息
   groups: GenPaperGroupReq[]; // 题型分组
 }
 
@@ -234,5 +234,6 @@ export interface GenPaperGroupResp {
 // 手动组卷详情返回结构
 export interface GenPaperResp {
   common: CommonPaperResp;
+  conf: CommonGenPaperGenConf;
   groups: GenPaperGroupResp[];
 }

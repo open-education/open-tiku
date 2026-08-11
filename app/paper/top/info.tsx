@@ -8,6 +8,7 @@ import { TagShow } from "~/common/paper/tag";
 import TopAdd from "~/paper/top/add";
 import { Button } from "~/components/ui/button";
 import { SquarePen } from "lucide-react";
+import { PaperStatus } from "~/util/enum";
 
 // 试卷详情预览样式
 interface TopInfoPreviewProps {
@@ -125,6 +126,25 @@ function TopInfo({
     );
   };
 
+  // 显示编辑按钮
+  const showEdit = () => {
+    if (!currentUser || infoResp.common.paperType !== StringConst.paperTypeTop) {
+      return "";
+    }
+
+    const status = infoResp.common.status;
+    if (status !== PaperStatus.Drafing && status != PaperStatus.Pending) {
+      return "";
+    }
+
+    return (
+      <Button className="text-sm" onClick={handleEdit}>
+        <SquarePen className="mr-2 h-4 w-4" />
+        编辑
+      </Button>
+    );
+  };
+
   return (
     <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-gray-100">
       {/* 编辑模式查看详情时才有 */}
@@ -133,14 +153,7 @@ function TopInfo({
         <Separator />
       </div>
 
-      <div>
-        {currentUser && infoResp.common.paperType === StringConst.paperTypeTop && (
-          <Button variant="outline" className="text-sm" onClick={handleEdit}>
-            <SquarePen className="mr-2 h-4 w-4" />
-            编辑
-          </Button>
-        )}
-      </div>
+      <div>{showEdit()}</div>
 
       <div>
         <Separator />

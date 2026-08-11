@@ -59,7 +59,7 @@ export default function Add({
   questionSearch = {
     twoLevelId: 0,
     fiveLevelId: 0,
-    eightId: 0,
+    eightIds: [],
     typeId: 0,
     tagIds: [],
     dimensionIds: [],
@@ -107,8 +107,8 @@ export default function Add({
     };
 
     // questionSearch 为列表页传递过来的数据, 可能选也可能为空
-    if (questionSearch.eightId > 0) {
-      initAddDefault.questionCateId = questionSearch.eightId;
+    if (questionSearch.eightIds.length > 0) {
+      initAddDefault.questionCateId = questionSearch.eightIds[0];
     }
     if (questionSearch.typeId > 0) {
       initAddDefault.questionTypeId = questionSearch.typeId;
