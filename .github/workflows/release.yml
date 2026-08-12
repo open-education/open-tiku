@@ -36,13 +36,14 @@ jobs:
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
+      # 缓存 key 要考虑 node 和 pnpm 的版本
       - uses: actions/cache@v3
         name: Setup pnpm cache
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-node${{ steps.node.outputs.node-version }}-pnpm${{ steps.pnpm.outputs.version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-pnpm-store-node${{ steps.node.outputs.node-version }}-pnpm${{ steps.pnpm.outputs.version }}-
 
       # 执行项目构建脚本
       - name: Compile and Package
