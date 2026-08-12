@@ -1,20 +1,28 @@
 import { useState } from "react";
 import { SimplePagination } from "~/common/page";
 import type { CommonGenPaperGenConf } from "~/type/paper";
-import type { QuestionSearch } from "~/type/question";
+import type { QuestionInfoResp, QuestionSearch } from "~/type/question";
 import { PaperStatus } from "~/util/enum";
 import { useQuestionList } from "~/util/fetcher";
 import { StringConst } from "~/util/string";
-import { GenInfoReplaceList } from "./info";
+import { GenInfoReplaceList } from "~/paper/gen/info";
+import type { TextbookOtherDict } from "~/type/textbook";
+import { SimpleAlert } from "~/common/alert";
+import { useDelayedLoading } from "~/hooks/delayed-loading";
+import { Loading } from "~/common/load";
 
 // 替换题目, 其实筛选条件是固定的，就是继续展示其它题目
 
 interface ReplaceQuestionProps {
   conf: CommonGenPaperGenConf; // 试卷配置
   questionTypeId: number; // 当前题目类型
+  questionTypeDict: Record<number, TextbookOtherDict>;
+  questionTagDict: Record<number, TextbookOtherDict>;
+  questionDimensionDict: Record<number, TextbookOtherDict>;
+  onConfirmReplace: (value: QuestionInfoResp) => void;
 }
 
-function ReplaceQuestion({ conf, questionTypeId }: ReplaceQuestionProps) {
+function ReplaceQuestion({ conf, questionTypeId, questionTypeDict, questionTagDict, questionDimensionDict, onConfirmReplace }: ReplaceQuestionProps) {
   // 查询题目列表
   const [pageNo, setPageNo] = useState<number>(1);
 
@@ -34,13 +42,22 @@ function ReplaceQuestion({ conf, questionTypeId }: ReplaceQuestionProps) {
     data: questionListResp = { list: [], pageNo: pageNo, pageSize: StringConst.pageSize, total: 0 },
     isLoading: questionListRespLoading,
     error: questionListRespErr,
-    mutate: questionListRespMutate,
   } = useQuestionList("list", search, pageNo);
 
   return (
     <div>
+      {questionListRespErr && <SimpleAlert title="题目列表获取错误" message={questionListRespErr.message} />}
+
+      {useDelayedLoading(questionListRespLoading) && <Loading />}
+
       {/* 题目列表 */}
-      <GenInfoReplaceList listResp={questionListResp.list} />
+      <GenInfoReplaceList
+        listResp={questionListResp.list}
+        questionTypeDict={questionTypeDict}
+        questionTagDict={questionTagDict}
+        questionDimensionDict={questionDimensionDict}
+        onConfirmReplace={onConfirmReplace}
+      />
 
       {/* 分页 */}
       {questionListResp.total > 0 && (

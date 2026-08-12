@@ -237,3 +237,11 @@ export interface GenPaperResp {
   conf: CommonGenPaperGenConf;
   groups: GenPaperGroupResp[];
 }
+
+// 记录待替换的题目信息
+export interface ReplaceQuestionReq {
+  questionTypeId: number;
+  groupId: number;
+  index: number;
+  questionId: number;
+}

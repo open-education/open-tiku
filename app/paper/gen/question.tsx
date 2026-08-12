@@ -7,8 +7,6 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { useSortable, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Button } from "~/components/ui/button";
 import { CSS } from "@dnd-kit/utilities";
-import type { TextbookOtherDict } from "~/type/textbook";
-import { QuestionInfo } from "~/common/question/info";
 
 // 一组题目拖拽列表
 interface GenSortableQuestionListProps {
@@ -17,32 +15,10 @@ interface GenSortableQuestionListProps {
   onDrag: (groupId: number, oldIndex: number, newIndex: number) => void;
   onReplace: (groupId: number, index: number, question: GenPaperQuestionResp) => void;
   onUpdateScore: (groupId: number, questionId: number, newScore: number) => void;
-
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
-
-  // 以下为 Sheet 操作方法和属性
-  setOpenSheet: (value: boolean) => void;
-  setSheetTitle: (value: string) => void;
-  setSheetDesc: (value: string) => void;
-  setSheetContent: (value: React.ReactNode) => void;
+  onViewInfo: (value: QuestionInfoResp) => void;
 }
 
-function GenSortableQuestionList({
-  groupId,
-  questions,
-  onDrag,
-  onReplace,
-  onUpdateScore,
-  questionTypeDict,
-  questionTagDict,
-  questionDimensionDict,
-  setOpenSheet,
-  setSheetTitle,
-  setSheetDesc,
-  setSheetContent,
-}: GenSortableQuestionListProps) {
+function GenSortableQuestionList({ groupId, questions, onDrag, onReplace, onUpdateScore, onViewInfo }: GenSortableQuestionListProps) {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -77,13 +53,7 @@ function GenSortableQuestionList({
               question={question}
               onReplace={onReplace}
               onUpdateScore={onUpdateScore}
-              questionTypeDict={questionTypeDict}
-              questionTagDict={questionTagDict}
-              questionDimensionDict={questionDimensionDict}
-              setOpenSheet={setOpenSheet}
-              setSheetTitle={setSheetTitle}
-              setSheetDesc={setSheetDesc}
-              setSheetContent={setSheetContent}
+              onViewInfo={onViewInfo}
             />
           );
         })}
@@ -99,31 +69,9 @@ interface GenQuestionInfoProps {
   question: GenPaperQuestionResp;
   onReplace: (groupId: number, index: number, question: GenPaperQuestionResp) => void;
   onUpdateScore: (groupId: number, questionId: number, score: number) => void;
-
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
-
-  // 以下为 Sheet 操作方法和属性
-  setOpenSheet: (value: boolean) => void;
-  setSheetTitle: (value: string) => void;
-  setSheetDesc: (value: string) => void;
-  setSheetContent: (value: React.ReactNode) => void;
+  onViewInfo: (value: QuestionInfoResp) => void;
 }
-function GenQuestionInfo({
-  groupId,
-  index,
-  question,
-  onReplace,
-  onUpdateScore,
-  questionTypeDict,
-  questionTagDict,
-  questionDimensionDict,
-  setOpenSheet,
-  setSheetTitle,
-  setSheetDesc,
-  setSheetContent,
-}: GenQuestionInfoProps) {
+function GenQuestionInfo({ groupId, index, question, onReplace, onUpdateScore, onViewInfo }: GenQuestionInfoProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: question.info.baseInfo.id });
 
   // 生成题目标题
@@ -140,22 +88,6 @@ function GenQuestionInfo({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-  };
-
-  // 查看题目详情
-  const handleQuestionInfo = (info: QuestionInfoResp) => {
-    setOpenSheet(true);
-    setSheetTitle("查看题目详情");
-    setSheetDesc("");
-    setSheetContent(
-      <QuestionInfo
-        pageSource={{ source: "genPaper" }}
-        questionTypeDict={questionTypeDict}
-        questionTagDict={questionTagDict}
-        questionDimensionDict={questionDimensionDict}
-        infoResp={info}
-      />,
-    );
   };
 
   return (
@@ -181,7 +113,7 @@ function GenQuestionInfo({
 
       {/* 分数值可以动态调整, 比如一个大题内部的小题有分数差异, 支持替换题目 */}
       <div className="flex items-center justify-center space-x-2 ml-4 flex-[0_0_15%]">
-        <Button variant="link" onClick={() => handleQuestionInfo(question.info)}>
+        <Button variant="link" onClick={() => onViewInfo(question.info)}>
           详情
         </Button>
         <div className="flex items-center space-x-1">

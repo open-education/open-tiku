@@ -4,7 +4,7 @@ import type { CommonPaperResp, CommonPaperSearchReq, GenPaperResp, TopPaperResp 
 import { PaperStatus } from "~/util/enum";
 import { httpClient } from "~/util/http";
 import { StringConst } from "~/util/string";
-import { GenInfo } from "~/paper/gen/info";
+import { GenInfo, GenInfoPreview } from "~/paper/gen/info";
 import { TopInfo } from "~/paper/top/info";
 import React, { useState } from "react";
 import { SimpleAlert } from "~/common/alert";
@@ -47,15 +47,27 @@ function MyPaperList({
         .get<GenPaperResp>(`/paper/gen/info/${id}`)
         .then((res) => {
           setSheetTitle("查看详情");
-          setSheetDesc("");
-          setSheetContent(
-            <GenInfo
-              infoResp={res}
-              questionTypeDict={questionTypeDict}
-              questionTagDict={questionTagDict}
-              questionDimensionDict={questionDimensionDict}
-            />,
-          );
+          if (res.common.status === PaperStatus.Drafing || res.common.status === PaperStatus.Pending) {
+            setSheetDesc("当前为可编辑状态");
+            setSheetContent(
+              <GenInfo
+                infoResp={res}
+                questionTypeDict={questionTypeDict}
+                questionTagDict={questionTagDict}
+                questionDimensionDict={questionDimensionDict}
+              />,
+            );
+          } else {
+            setSheetDesc("当前为不可编辑状态");
+            setSheetContent(
+              <GenInfoPreview
+                infoResp={res}
+                questionTypeDict={questionTypeDict}
+                questionTagDict={questionTagDict}
+                questionDimensionDict={questionDimensionDict}
+              />,
+            );
+          }
           setOpenSheet(true);
         })
         .catch((err) => {
