@@ -188,7 +188,7 @@ function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionD
 
               <div className="flex-1 overflow-y-auto pt-4">
                 <QuestionInfo
-                  pageSource={{ source: "genPaper" }}
+                  pageSource={{ source: "list" }}
                   questionTypeDict={questionTypeDict}
                   questionTagDict={questionTagDict}
                   questionDimensionDict={questionDimensionDict}
@@ -493,7 +493,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
                 {showViewQuestionInfo && viewQuestionInfo && (
                   <div className="mt-3">
                     <QuestionInfo
-                      pageSource={{ source: "genPaper" }}
+                      pageSource={{ source: "list" }}
                       questionTypeDict={questionTypeDict}
                       questionTagDict={questionTagDict}
                       questionDimensionDict={questionDimensionDict}
@@ -619,7 +619,7 @@ function GenInfoReplaceList({ listResp, questionTypeDict, questionTagDict, quest
 
               <div className="flex-1 overflow-y-auto pt-4">
                 <QuestionInfo
-                  pageSource={{ source: "genPaper" }}
+                  pageSource={{ source: "list" }}
                   questionTypeDict={questionTypeDict}
                   questionTagDict={questionTagDict}
                   questionDimensionDict={questionDimensionDict}

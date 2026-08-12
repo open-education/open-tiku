@@ -60,13 +60,6 @@ export const StringConst = {
   listSelectAll: 0,
   listSelectAllDesc: "全部",
 
-  // 我要组卷
-  // 题目来源
-  tiKuChapterOrKnowledgeSourceVal: "1", // 教材章节或知识点
-  tikuMy: "2", // 我的题库
-  tikuMyBox: "3", // 我的试题篮
-  tikuMaxNum: 30, // 每种题型最多选择题目数量
-
   questionCateTableName: "question_cate", // 题型表
   dictPath: "_cate", // 面包屑字典路径
 
