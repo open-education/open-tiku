@@ -444,7 +444,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
         reqQuestions.push({
           genId: generateId(),
           orderNum: qInfo.common.orderNum,
-          questionId: qInfo.common.id,
+          questionId: qInfo.info.baseInfo.id,
           score: qInfo.common.score,
         });
       }

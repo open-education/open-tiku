@@ -42,6 +42,8 @@ function MyPaperList({
 
   // 查看详情如果是精选试卷保留原有逻辑, 如果是手动组卷需要支持替换和重新排序题目
   const handlePaperInfo = (paperType: number, id: number) => {
+    setWarnInfo("");
+
     if (paperType === StringConst.paperTypesGen) {
       httpClient
         .get<GenPaperResp>(`/paper/gen/info/${id}`)
@@ -55,6 +57,7 @@ function MyPaperList({
                 questionTypeDict={questionTypeDict}
                 questionTagDict={questionTagDict}
                 questionDimensionDict={questionDimensionDict}
+                setOpenSheet={setOpenSheet}
               />,
             );
           } else {
@@ -125,7 +128,7 @@ function MyPaperList({
                     </Button>
                     {info.status === PaperStatus.Drafing && <Button variant="link">提交审核</Button>}
                     {info.status === PaperStatus.Published && <Button variant="link">布置作业</Button>}
-                    <Button variant="destructive">删除</Button>
+                    {(info.status === PaperStatus.Drafing || info.status === PaperStatus.Pending) && <Button variant="destructive">删除</Button>}
                   </div>
                 </TableCell>
               </TableRow>

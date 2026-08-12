@@ -415,7 +415,7 @@ function OperateTags({
       rejectReason: "",
     };
     httpClient
-      .post("/edit/status", req)
+      .post("/edit/question/status", req)
       .then((res) => {
         setSubmitApproveRes({
           success: true,
@@ -455,7 +455,7 @@ function OperateTags({
       message: "",
     });
     httpClient
-      .post("/edit/status", approveReq)
+      .post("/edit/question/status", approveReq)
       .then((res) => {
         setApproveRes({
           success: true,

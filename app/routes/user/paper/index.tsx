@@ -71,8 +71,6 @@ export default function Index() {
   } = useQuestionOtherDicts(twoLevelId, "question_dimension");
   const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
 
-  // 列表相关错误信息展示
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   // 页码
   const [pageNo, setPageNo] = useState<number>(1);
 
@@ -133,9 +131,9 @@ export default function Index() {
       )}
 
       {/* 加载中提示 */}
-      {useDelayedLoading(
-        isLoading || textbooksIsLoading || paperListIsLoading || questionTypesLoading || questionTagsLoading || questionDimensionsLoading,
-      ) && <Loading />}
+      {useDelayedLoading(textbooksIsLoading || paperListIsLoading || questionTypesLoading || questionTagsLoading || questionDimensionsLoading) && (
+        <Loading />
+      )}
 
       {/* 试卷列表 */}
       <div className="mt-3 bg-gray-50">

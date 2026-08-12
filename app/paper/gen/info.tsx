@@ -1,7 +1,15 @@
 import { TagShow } from "~/common/paper/tag";
 import { Separator } from "~/components/ui/separator";
 import { useUser } from "~/hooks/use-user";
-import type { CommonPaperResp, GenPaperQuestionResp, GenPaperResp, ReplaceQuestionReq } from "~/type/paper";
+import type {
+  CommonPaperResp,
+  GenPaperGenQuestionReq,
+  GenPaperGroupReq,
+  GenPaperQuestionResp,
+  GenPaperReq,
+  GenPaperResp,
+  ReplaceQuestionReq,
+} from "~/type/paper";
 import type { UserInfoResp } from "~/type/user";
 import { StringConst } from "~/util/string";
 import { GenSortableQuestionList } from "~/paper/gen/question";
@@ -168,7 +176,7 @@ function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionD
         viewQuestionInfo &&
         createPortal(
           <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center" onClick={() => setOpenDialog(false)}>
-            <div className="bg-white h-[70vh] w-[70vw] flex flex-col rounded-lg shadow-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white h-[70vh] w-[70vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 shrink-0">
                 <div className="text-base font-semibold text-gray-800">题目详情</div>
                 <button className="text-gray-400 hover:text-gray-600 focus:outline-none" onClick={() => setOpenDialog(false)} aria-label="关闭">
@@ -201,8 +209,9 @@ interface GenInfoProps {
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
   questionDimensionDict: Record<number, TextbookOtherDict>;
+  setOpenSheet: (value: boolean) => void;
 }
-function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensionDict }: GenInfoProps) {
+function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensionDict, setOpenSheet }: GenInfoProps) {
   // 需要在这里维护这个变量状态, 考虑获取到数据后再打开抽屉因此接口请求放在上一步
   const [genPaperInfo, setGenPaperInfo] = useState<GenPaperResp>(infoResp);
 
@@ -332,10 +341,80 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
     }));
   };
 
+  const [saving, setSaving] = useState<boolean>(false);
   const [warnInfo, setWarnInfo] = useState<React.ReactNode>(null);
 
   // 更新试卷
-  const handleEdit = () => {};
+  const handleEdit = () => {
+    setSaving(true);
+
+    let questionIdSet: Set<number> = new Set<number>();
+
+    // 题型题目信息
+    const reqGroups: GenPaperGroupReq[] = [];
+    // 统计总题目数
+    let countNum = 0;
+    for (let i = 0; i < genPaperInfo.groups.length; i++) {
+      const groupInfo = genPaperInfo.groups[i];
+      // 没有题目的不处理
+      if (!groupInfo.questions || groupInfo.questions.length == 0) {
+        continue;
+      }
+      countNum += groupInfo.questions.length;
+      const reqQuestions: GenPaperGenQuestionReq[] = [];
+      for (let j = 0; j < groupInfo.questions.length; j++) {
+        const qInfo = groupInfo.questions[j];
+
+        // 检查题目不能重复
+        if (questionIdSet.has(qInfo.info.baseInfo.id)) {
+          toast.error(<div className="text-red-700">题目标题: [{qInfo.info.baseInfo.title}] 重复, 不能提交更新</div>, {
+            duration: Infinity,
+            action: {
+              label: "关闭",
+              onClick: () => {},
+            },
+          });
+          return;
+        }
+        questionIdSet.add(qInfo.info.baseInfo.id);
+
+        reqQuestions.push({
+          genId: qInfo.common.genId,
+          orderNum: qInfo.common.orderNum,
+          questionId: qInfo.info.baseInfo.id,
+          score: qInfo.common.score,
+        });
+      }
+      const reqGroupInfo: GenPaperGroupReq = {
+        questions: reqQuestions,
+        genId: groupInfo.common.genId,
+        typeName: groupInfo.common.typeName,
+        subTitle: groupInfo.common.subTitle,
+      };
+
+      reqGroups.push(reqGroupInfo);
+    }
+
+    // 保存预览数据
+    const req: GenPaperReq = {
+      common: { ...genPaperInfo.common, count: countNum },
+      conf: { ...genPaperInfo.conf },
+      groups: reqGroups,
+    };
+
+    httpClient
+      .post<number>("/paper/gen/add", req)
+      .then((resId) => {
+        // 成功了回到列表页面
+        setOpenSheet(false);
+      })
+      .catch((err) => {
+        setWarnInfo(<SimpleAlert title="更新试卷出错" message={err.message} />);
+      })
+      .finally(() => {
+        setSaving(false);
+      });
+  };
 
   return (
     <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-gray-100">
@@ -348,9 +427,9 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
       </div>
 
       <div>
-        <Button className="text-sm" onClick={handleEdit}>
+        <Button className="text-sm" onClick={handleEdit} disabled={saving}>
           <Save className="mr-2 h-4 w-4" />
-          更新
+          {saving ? "更新中..." : "更新"}
         </Button>
       </div>
 
@@ -387,7 +466,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
       {openDialog &&
         createPortal(
           <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center" onClick={() => setOpenDialog(false)}>
-            <div className="bg-white h-[90vh] w-[90vw] flex flex-col rounded-lg shadow-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white h-[90vh] w-[90vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 shrink-0">
                 <div className="text-base font-semibold text-gray-800">{dialogTitle}</div>
                 <button className="text-gray-400 hover:text-gray-600 focus:outline-none" onClick={() => setOpenDialog(false)} aria-label="关闭">
@@ -528,7 +607,7 @@ function GenInfoReplaceList({ listResp, questionTypeDict, questionTagDict, quest
         viewQuestionInfo &&
         createPortal(
           <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center" onClick={() => setOpenDialog(false)}>
-            <div className="bg-white h-[70vh] w-[70vw] flex flex-col rounded-lg shadow-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white h-[70vh] w-[70vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 shrink-0">
                 <div className="text-base font-semibold text-gray-800">题目详情</div>
                 <button className="text-gray-400 hover:text-gray-600 focus:outline-none" onClick={() => setOpenDialog(false)} aria-label="关闭">

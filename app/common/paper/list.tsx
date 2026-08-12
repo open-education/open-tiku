@@ -8,7 +8,7 @@ import { StringConst, StringConstUtil } from "~/util/string";
 import { httpClient } from "~/util/http";
 import { NavLink } from "react-router";
 import { TopInfo } from "~/paper/top/info";
-import { GenInfo } from "~/paper/gen/info";
+import { GenInfoPreview } from "~/paper/gen/info";
 import React from "react";
 import { SimpleAlert } from "~/common/alert";
 import type { TextbookOtherDict } from "~/type/textbook";
@@ -59,9 +59,9 @@ function PaperList({
         .get<GenPaperResp>(`/paper/gen/info/${id}`)
         .then((res) => {
           setSheetTitle("查看详情");
-          setSheetDesc("");
+          setSheetDesc("该处仅能查看明细, 如需修改请去 我的试卷 修改");
           setSheetContent(
-            <GenInfo
+            <GenInfoPreview
               infoResp={res}
               questionTypeDict={questionTypeDict}
               questionTagDict={questionTagDict}
