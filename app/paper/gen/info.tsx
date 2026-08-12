@@ -44,9 +44,9 @@ function GenInfoHead({ commonPaperResp }: GenInfoHeadProps) {
       {/* 来源和备注, 只展示存在的信息 */}
       <div className="flex flex-col gap-1 text-sm">
         {commonPaperResp.score && <div>分数: {commonPaperResp.score}</div>}
-        {currentUser?.username && (
+        {commonPaperResp.authorName && (
           <div>
-            由 <span className="text-sm font-medium text-blue-600">{currentUser.username}</span> 上传
+            由 <span className="text-sm font-medium text-blue-600">{commonPaperResp.authorName}</span> 上传
           </div>
         )}
         {commonPaperResp.source && <div>来源: {commonPaperResp.source}</div>}
