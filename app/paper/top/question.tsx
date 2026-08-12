@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { QuestionOption } from "~/type/question";
-import type { PaperQuestion } from "~/type/paper";
+import type { TopPaperQuestionReq } from "~/type/paper";
 import { SimpleFullContent } from "~/common/content";
 import { MultiOptionShow } from "~/common/select";
 import { TitleShow } from "~/common/title";
@@ -10,12 +10,12 @@ import { cn } from "~/lib/utils";
 
 /// 试卷题目样式
 
-// 题目样式
-interface ExamQuestionProps {
+// 精选试卷题目样式
+interface TopQuestionInfoProps {
   index: number;
-  question: PaperQuestion;
+  question: TopPaperQuestionReq;
 }
-function ExamQuestion(props: ExamQuestionProps) {
+function TopQuestionInfo(props: TopQuestionInfoProps) {
   const { index, question } = props;
 
   // 生成题目标题
@@ -88,4 +88,4 @@ function ExamQuestion(props: ExamQuestionProps) {
   );
 }
 
-export { ExamQuestion };
+export { TopQuestionInfo };

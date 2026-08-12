@@ -1,3 +1,4 @@
+import type { Route } from "./+types/ck";
 import { CheckCircle2Icon, Link2, Link2Off, List } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { SimpleAlert } from "~/common/alert";
@@ -28,6 +29,16 @@ import type { CreateChapterKnowledgeReq, ChapterKnowledgeResp, RemoveChapterKnow
 import { httpClient } from "~/util/http";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { QuestionCateListShow } from "~/user/cate";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "系统设置-挂载题型" },
+    {
+      name: "description",
+      content: "个人中心, 系统设置, 关联教材章节和知识点考点的关联关系",
+    },
+  ];
+}
 
 // 题型关联
 export default function Index() {

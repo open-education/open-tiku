@@ -1,20 +1,15 @@
 import type { Route } from "./+types/index";
-import React, { useState } from "react";
-import { ChapterDropdownNav, type SelectNavProps } from "~/common/nav";
-import { ExamPaper } from "~/common/paper/meta";
-import { TagSelect } from "~/common/paper/tag";
-import { GradeSelect } from "~/common/paper/grade";
-import { SemesterSelect } from "~/common/paper/semester";
-import { YearSelect } from "~/common/paper/year";
+import React, { useEffect, useMemo, useState } from "react";
+import { type SelectNavProps } from "~/common/nav";
+import { PaperList } from "~/common/paper/list";
 import { Button } from "~/components/ui/button";
-import type { PaperMetaSearch } from "~/type/paper";
-import type { Textbook } from "~/type/textbook";
+import type { CommonPaperSearchReq } from "~/type/paper";
 import TopAdd from "~/paper/top/add";
-import { StringConst, StringValidator } from "~/util/string";
+import { StringValidator } from "~/util/string";
 import { SimplePagination } from "~/common/page";
 import { Separator } from "~/components/ui/separator";
 import { Loading } from "~/common/load";
-import { usePaperList, useTextbooks } from "~/util/fetcher";
+import { usePaperList, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
 import { useLocation } from "react-router";
 import { SimpleAlert } from "~/common/alert";
 import { SimpleSheet } from "~/common/sheet";
@@ -23,7 +18,10 @@ import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Plus } from "lucide-react";
 import type { UserInfoResp } from "~/type/user";
 import { useUser } from "~/hooks/use-user";
+import { CommonPaperSearchConf } from "~/common/paper/config";
 import GenAdd from "~/paper/gen/add";
+import { createTextbookPathDict } from "~/util/textbook-dict";
+import { ArrayUtil } from "~/util/object";
 
 // 重新网页标题等
 export function meta({}: Route.MetaArgs) {
@@ -31,7 +29,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 // 默认的搜索属性
-const defaultMetaSearch: PaperMetaSearch = {
+const defaultSearch: CommonPaperSearchReq = {
   relatedId: 0,
   relatedName: "",
   tag: "",
@@ -40,6 +38,7 @@ const defaultMetaSearch: PaperMetaSearch = {
   semester: "",
   selectedKeys: [],
   paperType: 0,
+  source: "list",
 };
 
 // 试卷管理首页
@@ -52,8 +51,8 @@ export default function Index() {
   const selectNavProps: SelectNavProps = location.state?.selectNavProps ?? {};
 
   // 处理搜索信息, 惰性初始化将其它页面传递过来的值进行赋值
-  const [metaSearch, setMetaSearch] = useState<PaperMetaSearch>(() => {
-    const initial = { ...defaultMetaSearch };
+  const [searchReq, setSearchReq] = useState<CommonPaperSearchReq>(() => {
+    const initial = { ...defaultSearch };
 
     if (selectNavProps.relatedId > 0) {
       initial.relatedId = selectNavProps.relatedId;
@@ -66,12 +65,43 @@ export default function Index() {
     }
     return initial;
   });
-  const updateSearchMeta = (key: keyof PaperMetaSearch, value: string | number | string[]) => {
-    setMetaSearch((prev) => ({ ...prev, [key]: value }));
+  const updateSearchReq = (key: keyof CommonPaperSearchReq, value: string | number | string[]) => {
+    setSearchReq((prev) => ({ ...prev, [key]: value }));
   };
 
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks(5);
+  // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
+  const pathMap = useMemo(() => {
+    return createTextbookPathDict(textbooks);
+  }, [textbooks]);
 
+  const [twoLevelId, setTwoLevelId] = useState<number>(0);
+
+  useEffect(() => {
+    if (!searchReq.relatedId || pathMap.size === 0) {
+      return;
+    }
+
+    const nodes = pathMap.get(searchReq.relatedId.toString()) ?? [];
+    const twoLevelId = nodes.length >= 2 ? nodes[1].id : 0;
+    setTwoLevelId(twoLevelId);
+  }, [searchReq.relatedId, pathMap]);
+
+  // 查询题目类型和标签 核心素养
+  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionOtherDicts(twoLevelId, "question_type");
+  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, "id"), [questionTypes]);
+
+  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionOtherDicts(twoLevelId, "question_tag");
+  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
+
+  const {
+    data: questionDimensions = [],
+    isLoading: questionDimensionsLoading,
+    error: questionDimensionsErr,
+  } = useQuestionOtherDicts(twoLevelId, "question_dimension");
+  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
+
+  const [warnInfo, setWarnInfo] = useState<React.ReactNode>(null);
   // 列表相关错误信息展示
   const [isLoading, setIsLoading] = useState<boolean>(false);
   // 页码
@@ -87,7 +117,7 @@ export default function Index() {
     },
     isLoading: paperListIsLoading,
     error: paperListErr,
-  } = usePaperList(metaSearch, pageNo);
+  } = usePaperList(searchReq, pageNo);
 
   // Sheet相关操作变量
   const [openSheet, setOpenSheet] = useState<boolean>(false);
@@ -99,7 +129,7 @@ export default function Index() {
   const handlePaperTopAdd = () => {
     setSheetTitle("精选试卷");
     setSheetDesc("精选历年高考，中考试卷；收录名校期末和月考试卷。");
-    setSheetContent(<TopAdd metaSearch={metaSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
+    setSheetContent(<TopAdd searchReq={searchReq} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
     setOpenSheet(true);
   };
 
@@ -107,7 +137,7 @@ export default function Index() {
   const handlePapgerGenAdd = () => {
     setSheetTitle("手动组卷");
     setSheetDesc("根据你选择的条件进行自动组卷, 生成试卷后请回到列表查看和修改");
-    setSheetContent(<GenAdd metaSearch={metaSearch} />);
+    setSheetContent(<GenAdd searchReq={searchReq} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
     setOpenSheet(true);
   };
 
@@ -115,83 +145,7 @@ export default function Index() {
     <div className="px-4 pt-3 sm:px-16 sm:pt-4">
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
-        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-          <div className="md:w-24 shrink-0 font-medium">学段/考点:</div>
-          <div className="flex-1 min-w-0">
-            <ChapterDropdownNav
-              textbooks={textbooks}
-              onSelect={(selectedItems: Textbook[]) => {
-                if (!selectedItems) {
-                  updateSearchMeta("relatedId", 0);
-                  updateSearchMeta("relatedName", "");
-                  updateSearchMeta("selectedKeys", []);
-                  return;
-                }
-
-                const current: Textbook = selectedItems[selectedItems.length - 1];
-                updateSearchMeta("relatedId", current.id);
-                updateSearchMeta("relatedName", current.label);
-                updateSearchMeta(
-                  "selectedKeys",
-                  selectedItems.map((item) => item.key),
-                );
-              }}
-              defaultSelectedKeys={metaSearch.selectedKeys}
-              placeholder="请选择学段"
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-          <div className="md:w-24 shrink-0 font-medium">标签:</div>
-          <div className="flex-1 min-w-0">
-            <TagSelect
-              options={StringConst.examTags}
-              defaultValue={metaSearch.tag}
-              onSelect={(value) => {
-                updateSearchMeta("tag", value);
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-          <div className="md:w-24 shrink-0 font-medium">年份:</div>
-          <div className="flex-1 min-w-0">
-            <YearSelect value={metaSearch.year} onValueChange={(val) => updateSearchMeta("year", val ?? "")} placeholder="选择年份" />
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-          <div className="md:w-24 shrink-0 font-medium">年级:</div>
-          <div className="flex-1 min-w-0">
-            <GradeSelect value={metaSearch.grade} onValueChange={(val) => updateSearchMeta("grade", val ?? "")} placeholder="选择年级" />
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-          <div className="md:w-24 shrink-0 font-medium">学期:</div>
-          <div className="flex-1 min-w-0">
-            <SemesterSelect value={metaSearch.semester} onValueChange={(val) => updateSearchMeta("semester", val ?? "")} placeholder="选择学期" />
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-          <div className="md:w-24 shrink-0 font-medium">试卷类型:</div>
-          <div className="flex-1 min-w-0 flex flex-wrap gap-4">
-            {StringConst.paperTypes.map(({ value, label }) => (
-              <Button
-                key={value}
-                className="text-sm md:text-sm w-20 text-center"
-                type="button"
-                variant={metaSearch.paperType === value ? "default" : "outline"}
-                onClick={() => updateSearchMeta("paperType", value)}
-              >
-                {label}
-              </Button>
-            ))}
-          </div>
-        </div>
+        <CommonPaperSearchConf textbooks={textbooks} search={searchReq} updateCommonPaperSearchReq={updateSearchReq} />
 
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
           <div className="md:w-24 shrink-0 font-medium">操作:</div>
@@ -224,11 +178,27 @@ export default function Index() {
           <SimpleAlert title="导航获取失败" message={textbooksErr.message} />
         </div>
       )}
+      {questionTypesErr && (
+        <div className="mt-3">
+          <SimpleAlert title="题目类型获取失败" message={questionTypesErr.message} />
+        </div>
+      )}
+      {questionTagsErr && (
+        <div className="mt-3">
+          <SimpleAlert title="题目标签获取失败" message={questionTagsErr.message} />
+        </div>
+      )}
+      {questionDimensionsErr && (
+        <div className="mt-3">
+          <SimpleAlert title="题目核心素养获取失败" message={questionDimensionsErr.message} />
+        </div>
+      )}
       {paperListErr && (
         <div className="mt-3">
           <SimpleAlert title="列表获取失败" message={paperListErr.message} />
         </div>
       )}
+      {warnInfo && <div className="mt-3">{warnInfo}</div>}
 
       {/* 空数据提示 */}
       {paperListResp.total == 0 && (
@@ -238,18 +208,24 @@ export default function Index() {
       )}
 
       {/* 加载中提示 */}
-      {useDelayedLoading(isLoading || paperListIsLoading || textbooksIsLoading) && <Loading />}
+      {useDelayedLoading(
+        isLoading || paperListIsLoading || textbooksIsLoading || questionTypesLoading || questionTagsLoading || questionDimensionsLoading,
+      ) && <Loading />}
 
       {/* 试卷列表 */}
       <div className="mt-3">
-        <ExamPaper
+        <PaperList
           papers={paperListResp.list}
-          metaSearch={metaSearch}
+          search={searchReq}
+          questionTypeDict={questionTypeDict}
+          questionTagDict={questionTagDict}
+          questionDimensionDict={questionDimensionDict}
           setOpenSheet={setOpenSheet}
           setSheetTitle={setSheetTitle}
           setSheetDesc={setSheetDesc}
           setSheetContent={setSheetContent}
           setLoading={setIsLoading}
+          setWarnInfo={setWarnInfo}
         />
       </div>
 

@@ -1,49 +1,47 @@
 import { Minus, Plus } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import type { PaperGenTypeMeta } from "~/type/paper";
+import { useMemo } from "react";
+import type { GenPaperGenType } from "~/type/paper";
 
 // 生成试卷配置
 
-interface PaperGenConfigProps {
-  paperGenMetaList: PaperGenTypeMeta[];
-  onChange?: (metaList: PaperGenTypeMeta[]) => void;
+interface GenPaperGenTypeConfigProps {
+  genTypes: GenPaperGenType[];
+  onChange?: (metaList: GenPaperGenType[]) => void;
 }
 
-function PaperGenConfig({ paperGenMetaList = [], onChange }: PaperGenConfigProps) {
-  const [metaList, setMetaList] = useState<PaperGenTypeMeta[]>(() => paperGenMetaList.map((item) => ({ ...item })));
-
-  useEffect(() => {
-    setMetaList(paperGenMetaList.map((item) => ({ ...item })));
-  }, [paperGenMetaList]);
-
+function GenPaperGenTypeConfig({ genTypes = [], onChange }: GenPaperGenTypeConfigProps) {
   const updateNum = (index: number, delta: number) => {
-    setMetaList((prev) => {
-      const newList = prev.map((item, i) => (i === index ? { ...item, num: Math.max(0, item.num + delta) } : item));
-      onChange?.(newList);
-      return newList;
+    const newList = genTypes.map((item, i) => {
+      if (i === index) {
+        return { ...item, num: Math.max(0, item.num + delta) };
+      }
+      return item;
     });
+    onChange?.(newList);
   };
 
   const updateScore = (index: number, value: number) => {
     const newScore = Math.max(0, value);
-    setMetaList((prev) => {
-      const newList = prev.map((item, i) => (i === index ? { ...item, score: newScore } : item));
-      onChange?.(newList);
-      return newList;
+    const newList = genTypes.map((item, i) => {
+      if (i === index) {
+        return { ...item, score: newScore };
+      }
+      return item;
     });
+    onChange?.(newList);
   };
 
   const totalScore = useMemo(() => {
-    return metaList.reduce((sum, item) => sum + item.num * item.score, 0);
-  }, [metaList]);
+    return genTypes.reduce((sum, item) => sum + item.num * item.score, 0);
+  }, [genTypes]);
 
   const totalQuestions = useMemo(() => {
-    return metaList.reduce((sum, item) => sum + item.num, 0);
-  }, [metaList]);
+    return genTypes.reduce((sum, item) => sum + item.num, 0);
+  }, [genTypes]);
 
   return (
     <div className="border space-y-2 p-3">
-      {metaList.map((meta, index) => (
+      {genTypes.map((meta, index) => (
         <div key={meta.id || index} className="flex items-center space-x-4">
           <span className="w-20 text-sm font-medium">{meta.label}</span>
           <div className="flex items-center space-x-2">
@@ -83,4 +81,4 @@ function PaperGenConfig({ paperGenMetaList = [], onChange }: PaperGenConfigProps
   );
 }
 
-export { PaperGenConfig };
+export { GenPaperGenTypeConfig };
