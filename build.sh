@@ -28,7 +28,7 @@ rm -rf "$BUILD_DIR" "$TARGET_DIR"
 
 # 安装依赖
 echo "安装依赖..."
-if [ -f "pnpm-lock.json" ]; then
+if [ -f "pnpm-lock.yaml" ]; then
     pnpm ci
 else
     pnpm install
