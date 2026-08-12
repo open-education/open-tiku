@@ -49,7 +49,7 @@ function MyPaperList({
         .get<GenPaperResp>(`/paper/gen/info/${id}`)
         .then((res) => {
           setSheetTitle("查看详情");
-          if (res.common.status === PaperStatus.Drafing || res.common.status === PaperStatus.Pending) {
+          if (res.common.status === PaperStatus.Drafing) {
             setSheetDesc("当前为可编辑状态");
             setSheetContent(
               <GenInfo
@@ -95,6 +95,34 @@ function MyPaperList({
     }
   };
 
+  // 展示按钮区域
+  const showOperateList = (info: CommonPaperResp) => {
+    // 详情按钮-所有地方均有
+    const buttons = [
+      <Button variant="link" onClick={() => handlePaperInfo(info.paperType, info.id || 0)}>
+        详情
+      </Button>,
+    ];
+
+    if (search.source === "myPaper") {
+      // 我的试卷
+      if (info.status === PaperStatus.Drafing) {
+        buttons.push(<Button variant="link">提交审核</Button>);
+        buttons.push(<Button variant="destructive">删除</Button>);
+      } else if (info.status === PaperStatus.Published) {
+        buttons.push(<Button variant="link">布置作业</Button>);
+        buttons.push(<Button variant="destructive">删除</Button>);
+      }
+    } else {
+      // 我的审核
+      if (info.status === PaperStatus.Pending) {
+        buttons.push(<Button variant="link">审核</Button>);
+      }
+    }
+
+    return buttons;
+  };
+
   return (
     <div>
       <div className="mt-3 mb-3">{warnInfo}</div>
@@ -122,14 +150,7 @@ function MyPaperList({
                 <TableCell className="text-sm">{info.statusDesc}</TableCell>
                 <TableCell className="text-sm">{info.authorName}</TableCell>
                 <TableCell className="text-sm text-right">
-                  <div className="flex justify-end">
-                    <Button variant="link" onClick={() => handlePaperInfo(info.paperType, info.id || 0)}>
-                      详情
-                    </Button>
-                    {info.status === PaperStatus.Drafing && <Button variant="link">提交审核</Button>}
-                    {info.status === PaperStatus.Published && <Button variant="link">布置作业</Button>}
-                    {(info.status === PaperStatus.Drafing || info.status === PaperStatus.Pending) && <Button variant="destructive">删除</Button>}
-                  </div>
+                  <div className="flex justify-end">{showOperateList(info)}</div>
                 </TableCell>
               </TableRow>
             ))}

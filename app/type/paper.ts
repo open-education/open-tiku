@@ -245,3 +245,8 @@ export interface ReplaceQuestionReq {
   index: number;
   questionId: number;
 }
+
+// 试卷搜索页面
+export interface PaperPageSourceProps {
+  source: "list" | "myPaper" | "myReview";
+}

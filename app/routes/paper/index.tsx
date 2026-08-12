@@ -142,7 +142,7 @@ export default function Index() {
   };
 
   return (
-    <div className="px-4 pt-3 sm:px-16 sm:pt-4">
+    <div className="px-4 pt-4 sm:px-16 sm:pt-4">
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
         <CommonPaperSearchConf textbooks={textbooks} search={searchReq} updateCommonPaperSearchReq={updateSearchReq} />
