@@ -28,8 +28,8 @@ rm -rf "$BUILD_DIR" "$TARGET_DIR"
 
 # 安装依赖
 echo "安装依赖..."
-if [ -f "package-lock.json" ]; then
-    pnpm ci || pnpm install
+if [ -f "pnpm-lock.json" ]; then
+    pnpm ci
 else
     pnpm install
 fi
