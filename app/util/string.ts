@@ -148,7 +148,8 @@ export const StringConst = {
     { id: 1, value: PaperStatus.Drafing, label: "草稿中" },
     { id: 2, value: PaperStatus.Pending, label: "待审核" },
     { id: 3, value: PaperStatus.Published, label: "已发布" },
-    { id: 4, value: PaperStatus.Rejected, label: "已拒绝" },
+    { id: 4, value: PaperStatus.Homework, label: "已布置作业" },
+    { id: 10, value: PaperStatus.Rejected, label: "已拒绝" },
   ],
 };
 

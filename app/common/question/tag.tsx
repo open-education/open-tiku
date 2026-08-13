@@ -1,6 +1,13 @@
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import type { ApproveReq, DeleteReq, QuestionInfoResp, QuestionListResp, QuestionPageSourceProps, QuestionSearch } from "~/type/question";
+import type {
+  QuestionApproveReq,
+  QuestionDeleteReq,
+  QuestionInfoResp,
+  QuestionListResp,
+  QuestionPageSourceProps,
+  QuestionSearch,
+} from "~/type/question";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
 import { QuestionInfo } from "~/common/question/info";
@@ -10,7 +17,6 @@ import { toast } from "sonner";
 import { StringConst } from "~/util/string";
 import { useState } from "react";
 import { Textarea } from "~/components/ui/textarea";
-import { Separator } from "~/components/ui/separator";
 import {
   Dialog,
   DialogClose,
@@ -401,15 +407,14 @@ function OperateTags({
   };
 
   // 提交审核
-  const [submitApproveRes, setSubmitApproveRes] = useState<{ success: boolean; loading: boolean; message: string } | null>(null);
+  const [openSubmitApprove, setOpenSubmitApprove] = useState<boolean>(false);
+  const [submitApproving, setSubmitApproving] = useState<boolean>(false);
+
   const handleSubmitApprove = () => {
     setLoading?.(true);
-    setSubmitApproveRes({
-      success: false,
-      loading: true,
-      message: "",
-    });
-    const req: ApproveReq = {
+    setSubmitApproving(true);
+
+    const req: QuestionApproveReq = {
       id: questionId,
       status: QuestionStatus.Pending,
       rejectReason: "",
@@ -417,98 +422,74 @@ function OperateTags({
     httpClient
       .post("/edit/question/status", req)
       .then((res) => {
-        setSubmitApproveRes({
-          success: true,
-          loading: false,
-          message: "审核通过",
-        });
         questionListRespMutate();
+        setOpenSubmitApprove(false);
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">提交审核操作出错: {err.message}</div>);
-        setSubmitApproveRes({
-          success: false,
-          loading: false,
-          message: `审核出错: ${err.message}`,
-        });
       })
       .finally(() => {
         setLoading?.(false);
+        setSubmitApproving(false);
       });
   };
 
   // 审核题目
-  const [approveRes, setApproveRes] = useState<{ success: boolean; loading: boolean; message: string } | null>(null);
-  const [approveReq, setApproveReq] = useState<ApproveReq>({
+  const [openConfirmApprove, setOpenConfirmApprove] = useState<boolean>(false);
+  const [confirmApproving, setConfirmApproving] = useState<boolean>(false);
+
+  const [approveReq, setApproveReq] = useState<QuestionApproveReq>({
     id: questionId,
     status: QuestionStatus.Drafing,
     rejectReason: "",
   });
-  const updateApproveReq = (key: keyof ApproveReq, value: number | string) => {
+  const updateApproveReq = (key: keyof QuestionApproveReq, value: number | string) => {
     setApproveReq((prev) => ({ ...prev, [key]: value }));
   };
+
   const handleApprove = () => {
     setLoading?.(true);
-    setApproveRes({
-      success: false,
-      loading: true,
-      message: "",
-    });
+    setConfirmApproving(true);
+
     httpClient
       .post("/edit/question/status", approveReq)
       .then((res) => {
-        setApproveRes({
-          success: true,
-          loading: false,
-          message: "审核通过",
-        });
         questionListRespMutate();
+        setOpenConfirmApprove(false);
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">审核操作出错: {err.message}</div>);
-        setApproveRes({
-          success: false,
-          loading: false,
-          message: `审核出错: ${err.message}`,
-        });
       })
       .finally(() => {
         setLoading?.(false);
+        setConfirmApproving(false);
       });
   };
 
   // 删除题目
-  const [deleteRes, setDeleteRes] = useState<{ success: boolean; loading: boolean; message: string } | null>(null);
+  const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<boolean>(false);
+
   const handleDelete = () => {
     setLoading?.(true);
-    setDeleteRes({
-      success: false,
-      loading: true,
-      message: "",
-    });
-    const req: DeleteReq = {
+    setDeleting(true);
+
+    const req: QuestionDeleteReq = {
       id: questionId,
     };
+
     httpClient
       .post("/question/delete", req)
       .then((res) => {
-        setDeleteRes({
-          success: true,
-          loading: false,
-          message: "删除成功",
-        });
         questionListRespMutate();
+        setOpenDelete(false);
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">删除题目出错: {err.message}</div>);
-        setDeleteRes({
-          success: false,
-          loading: false,
-          message: `删除出错: ${err.message}`,
-        });
       })
       .finally(() => {
         setLoading?.(false);
+        setDeleting(false);
       });
   };
 
@@ -528,14 +509,13 @@ function OperateTags({
     // 我的题目页面状态为草稿中才会出现提交审核
     if (currentUser && source === "myQuestion" && status === QuestionStatus.Drafing) {
       buttons.push(
-        <Dialog key="myQuestionSubmit">
+        <Dialog key="myQuestionSubmit" open={openSubmitApprove} onOpenChange={setOpenSubmitApprove}>
           <DialogTrigger render={<Button variant="link">提交审核</Button>} />
-          <DialogContent className="sm:max-w-sm">
+          <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
             <DialogHeader>
               <DialogTitle className="text-base font-bold">提交审核</DialogTitle>
               <DialogDescription className="text-sm">请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
             </DialogHeader>
-            <div className="mt-3 text-sm text-blue-500">{submitApproveRes?.success ? "提交成功" : submitApproveRes?.message}</div>
             <DialogFooter>
               <DialogClose
                 render={
@@ -544,8 +524,8 @@ function OperateTags({
                   </Button>
                 }
               />
-              <Button className="text-sm" onClick={handleSubmitApprove} disabled={submitApproveRes?.loading}>
-                {submitApproveRes?.loading ? "提交审核中" : "提交审核"}
+              <Button className="text-sm" onClick={handleSubmitApprove} disabled={submitApproving}>
+                {submitApproving ? "提交审核中" : "提交审核"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -557,39 +537,31 @@ function OperateTags({
     // 我的审核页面状态为待审核的数据才会出现审核按钮
     if (currentUser && source === "myReview" && status === QuestionStatus.Pending) {
       buttons.push(
-        <Dialog key="myReviewApprove">
+        <Dialog key="myReviewApprove" open={openConfirmApprove} onOpenChange={setOpenConfirmApprove}>
           <DialogTrigger render={<Button variant="link">审核</Button>} />
-          <DialogContent>
+          <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
             <DialogHeader>
               <DialogTitle className="text-base font-bold">题目审核</DialogTitle>
               <DialogDescription className="text-sm">请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
             </DialogHeader>
-            <div className="text-sm">
-              <div className="flex flex-col gap-3">
-                <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                  <div className="md:w-24 shrink-0 font-medium">审核状态:</div>
-                  <div className="flex-1 min-w-0">
-                    <StatusSelect defaultValue={approveReq.status} onSelect={(val) => updateApproveReq("status", val)} />
-                  </div>
-                </div>
-                <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                  <div className="md:w-24 shrink-0 font-medium">拒绝理由:</div>
-                  <div className="flex-1 min-w-0">
-                    <Textarea
-                      value={approveReq.rejectReason}
-                      className="text-sm md:text-sm"
-                      onChange={(e) => updateApproveReq("rejectReason", e.target.value)}
-                      placeholder="拒绝时需要说明拒绝原因"
-                    />
-                  </div>
+            <div className="flex flex-col gap-3 text-sm">
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                <div className="md:w-24 shrink-0 font-medium">审核状态:</div>
+                <div className="flex-1 min-w-0">
+                  <StatusSelect defaultValue={approveReq.status} onSelect={(val) => updateApproveReq("status", val)} />
                 </div>
               </div>
-
-              <div className="mt-3">
-                <Separator />
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                <div className="md:w-24 shrink-0 font-medium">拒绝理由:</div>
+                <div className="flex-1 min-w-0">
+                  <Textarea
+                    value={approveReq.rejectReason}
+                    className="text-sm md:text-sm"
+                    onChange={(e) => updateApproveReq("rejectReason", e.target.value)}
+                    placeholder="拒绝时需要说明拒绝原因"
+                  />
+                </div>
               </div>
-
-              <div className="mt-3 text-sm text-blue-500">{approveRes?.success ? "审核成功" : approveRes?.message}</div>
             </div>
             <DialogFooter>
               <DialogClose
@@ -599,8 +571,8 @@ function OperateTags({
                   </Button>
                 }
               />
-              <Button className="text-sm" onClick={handleApprove} disabled={approveRes?.loading}>
-                {approveRes?.loading ? "审核中" : "审核"}
+              <Button className="text-sm" onClick={handleApprove} disabled={confirmApproving}>
+                {confirmApproving ? "审核中" : "审核"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -642,14 +614,13 @@ function OperateTags({
     // 我的题目可以删除题目
     if (source === "myQuestion") {
       buttons.push(
-        <Dialog key="myQuestionDelete">
+        <Dialog key="myQuestionDelete" open={openDelete} onOpenChange={setOpenDelete}>
           <DialogTrigger render={<Button variant="link">删除</Button>} />
-          <DialogContent className="sm:max-w-sm">
+          <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
             <DialogHeader>
               <DialogTitle className="text-base font-bold">删除题目</DialogTitle>
               <DialogDescription className="text-sm">题目删除后不可恢复, 如果不确定, 可以保留等后续确认后再删除</DialogDescription>
             </DialogHeader>
-            <div className="mt-3 text-sm text-blue-500">{deleteRes?.success ? "删除成功" : deleteRes?.message}</div>
             <DialogFooter>
               <DialogClose
                 render={
@@ -658,8 +629,8 @@ function OperateTags({
                   </Button>
                 }
               />
-              <Button className="text-sm" onClick={handleDelete} disabled={deleteRes?.loading}>
-                {deleteRes?.loading ? "删除中" : "删除"}
+              <Button className="text-sm" onClick={handleDelete} disabled={deleting}>
+                {deleting ? "删除中" : "删除"}
               </Button>
             </DialogFooter>
           </DialogContent>

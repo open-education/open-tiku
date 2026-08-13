@@ -1,6 +1,6 @@
 import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import type { CommonPaperResp, CommonPaperSearchReq, GenPaperResp, TopPaperResp } from "~/type/paper";
+import type { CommonPaperResp, CommonPaperSearchReq, GenPaperResp, PaperApproveReq, PaperDeleteReq, PaperListResp, TopPaperResp } from "~/type/paper";
 import { PaperStatus } from "~/util/enum";
 import { httpClient } from "~/util/http";
 import { StringConst } from "~/util/string";
@@ -9,12 +9,27 @@ import { TopInfo } from "~/paper/top/info";
 import React, { useState } from "react";
 import { SimpleAlert } from "~/common/alert";
 import type { TextbookOtherDict } from "~/type/textbook";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import type { KeyedMutator } from "swr";
+import { StatusSelect } from "~/common/paper/tag";
+import { Textarea } from "~/components/ui/textarea";
+import { toast } from "sonner";
 
 // 试卷列表
 
 interface MyPaperListProps {
   search: CommonPaperSearchReq;
   paperList: CommonPaperResp[];
+  paperListRespMutate: KeyedMutator<PaperListResp>;
 
   questionTypeDict: Record<number, TextbookOtherDict>;
   questionTagDict: Record<number, TextbookOtherDict>;
@@ -25,11 +40,14 @@ interface MyPaperListProps {
   setSheetTitle: (value: string) => void;
   setSheetDesc: (value: string) => void;
   setSheetContent: (value: React.ReactNode) => void;
+
+  setIsLoading: (value: boolean) => void;
 }
 
 function MyPaperList({
   search,
   paperList,
+  paperListRespMutate,
   questionTypeDict,
   questionTagDict,
   questionDimensionDict,
@@ -37,6 +55,7 @@ function MyPaperList({
   setSheetTitle,
   setSheetDesc,
   setSheetContent,
+  setIsLoading,
 }: MyPaperListProps) {
   const [warnInfo, setWarnInfo] = useState<React.ReactNode>(null);
 
@@ -49,7 +68,8 @@ function MyPaperList({
         .get<GenPaperResp>(`/paper/gen/info/${id}`)
         .then((res) => {
           setSheetTitle("查看详情");
-          if (res.common.status === PaperStatus.Drafing) {
+          // 我的试卷才有编辑功能
+          if (res.common.status === PaperStatus.Drafing && search.source === "myPaper") {
             setSheetDesc("当前为可编辑状态");
             setSheetContent(
               <GenInfo
@@ -95,6 +115,95 @@ function MyPaperList({
     }
   };
 
+  // 提交审核
+  const [openSubmitApprove, setOpenSubmitApprove] = useState<boolean>(false);
+  const [submitApproving, setSubmitApproving] = useState<boolean>(false);
+
+  const handleSubmitApprove = (paperId: number) => {
+    setIsLoading(true);
+
+    setSubmitApproving(true);
+
+    const req: PaperApproveReq = {
+      id: paperId,
+      status: PaperStatus.Pending,
+      rejectReason: "",
+    };
+    httpClient
+      .post("/edit/paper/status", req)
+      .then((res) => {
+        paperListRespMutate();
+        setOpenSubmitApprove(false);
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">审核操作出错: {err.message}</div>);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setSubmitApproving(false);
+      });
+  };
+
+  // 审核
+  const [openConfirmApprove, setOpenConfirmApprove] = useState<boolean>(false);
+  const [confirmApproving, setConfirmApproving] = useState<boolean>(false);
+
+  const defaultApproveReq: PaperApproveReq = { id: 0, status: PaperStatus.Drafing, rejectReason: "" };
+  const [approveReq, setApproveReq] = useState<PaperApproveReq>(defaultApproveReq);
+
+  const updateApproveReq = (key: keyof PaperApproveReq, value: number | string) => {
+    setApproveReq((prev) => ({ ...prev, [key]: value }));
+  };
+  const handleApprove = (paperId: number) => {
+    setIsLoading(true);
+
+    setConfirmApproving(true);
+
+    let req: PaperApproveReq = { ...approveReq, id: paperId };
+
+    httpClient
+      .post("/edit/paper/status", req)
+      .then((res) => {
+        paperListRespMutate();
+        setOpenConfirmApprove(false);
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">审核操作出错: {err.message}</div>);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setConfirmApproving(false);
+        setApproveReq({ ...defaultApproveReq });
+      });
+  };
+
+  // 删除
+  const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<boolean>(false);
+
+  const handleDelete = (paperId: number) => {
+    setIsLoading(true);
+    setDeleting(true);
+
+    const req: PaperDeleteReq = {
+      id: paperId,
+    };
+
+    httpClient
+      .post("/paper/delete", req)
+      .then((res) => {
+        paperListRespMutate();
+        setOpenDelete(false);
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">删除试卷出错: {err.message}</div>);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setDeleting(false);
+      });
+  };
+
   // 展示按钮区域
   const showOperateList = (info: CommonPaperResp) => {
     // 详情按钮-所有地方均有
@@ -107,16 +216,100 @@ function MyPaperList({
     if (search.source === "myPaper") {
       // 我的试卷
       if (info.status === PaperStatus.Drafing) {
-        buttons.push(<Button variant="link">提交审核</Button>);
-        buttons.push(<Button variant="destructive">删除</Button>);
+        buttons.push(
+          <Dialog key="myPaperSubmit" open={openSubmitApprove} onOpenChange={setOpenSubmitApprove}>
+            <DialogTrigger render={<Button variant="link">提交审核</Button>} />
+            <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
+              <DialogHeader>
+                <DialogTitle className="text-base font-bold">提交试卷审核</DialogTitle>
+                <DialogDescription className="text-sm">请确认试卷没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <DialogClose
+                  render={
+                    <Button variant="outline" className="text-sm">
+                      Cancel
+                    </Button>
+                  }
+                />
+                <Button className="text-sm" onClick={() => handleSubmitApprove(info.id)} disabled={submitApproving}>
+                  {submitApproving ? "提交审核中" : "提交审核"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>,
+        );
+        buttons.push(
+          <Dialog key="myQuestionDelete" open={openDelete} onOpenChange={setOpenDelete}>
+            <DialogTrigger render={<Button variant="link">删除</Button>} />
+            <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
+              <DialogHeader>
+                <DialogTitle className="text-base font-bold">删除试卷</DialogTitle>
+                <DialogDescription className="text-sm">试卷删除后不可恢复, 如果不确定, 可以保留等后续确认后再删除</DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <DialogClose
+                  render={
+                    <Button variant="outline" className="text-sm">
+                      Cancel
+                    </Button>
+                  }
+                />
+                <Button className="text-sm" onClick={() => handleDelete(info.id)} disabled={deleting}>
+                  {deleting ? "删除中" : "删除"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>,
+        );
       } else if (info.status === PaperStatus.Published) {
         buttons.push(<Button variant="link">布置作业</Button>);
-        buttons.push(<Button variant="destructive">删除</Button>);
       }
     } else {
       // 我的审核
       if (info.status === PaperStatus.Pending) {
-        buttons.push(<Button variant="link">审核</Button>);
+        buttons.push(
+          <Dialog key="myPaperReviewApprove" open={openConfirmApprove} onOpenChange={setOpenConfirmApprove}>
+            <DialogTrigger render={<Button variant="link">审核</Button>} />
+            <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
+              <DialogHeader>
+                <DialogTitle className="text-base font-bold">试卷审核</DialogTitle>
+                <DialogDescription className="text-sm">请确认试卷没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col gap-3 text-sm">
+                <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                  <div className="md:w-24 shrink-0 font-medium">审核状态:</div>
+                  <div className="flex-1 min-w-0">
+                    <StatusSelect defaultValue={approveReq.status} onSelect={(val) => updateApproveReq("status", val)} />
+                  </div>
+                </div>
+                <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                  <div className="md:w-24 shrink-0 font-medium">拒绝理由:</div>
+                  <div className="flex-1 min-w-0">
+                    <Textarea
+                      value={approveReq.rejectReason}
+                      className="text-sm md:text-sm"
+                      onChange={(e) => updateApproveReq("rejectReason", e.target.value)}
+                      placeholder="拒绝时需要说明拒绝原因"
+                    />
+                  </div>
+                </div>
+              </div>
+              <DialogFooter>
+                <DialogClose
+                  render={
+                    <Button variant="outline" className="text-sm">
+                      Cancel
+                    </Button>
+                  }
+                />
+                <Button className="text-sm" onClick={() => handleApprove(info.id)} disabled={confirmApproving}>
+                  {confirmApproving ? "审核中" : "审核"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>,
+        );
       }
     }
 

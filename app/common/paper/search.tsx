@@ -68,6 +68,8 @@ function MyPaperSearchList({ pageSource }: MyPaperSearchListProps) {
   } = useQuestionOtherDicts(twoLevelId, "question_dimension");
   const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   // 页码
   const [pageNo, setPageNo] = useState<number>(1);
 
@@ -81,6 +83,7 @@ function MyPaperSearchList({ pageSource }: MyPaperSearchListProps) {
     },
     isLoading: paperListIsLoading,
     error: paperListErr,
+    mutate: paperListRespMutate,
   } = usePaperList(searchReq, pageNo);
 
   // Sheet相关操作变量
@@ -128,15 +131,16 @@ function MyPaperSearchList({ pageSource }: MyPaperSearchListProps) {
       )}
 
       {/* 加载中提示 */}
-      {useDelayedLoading(textbooksIsLoading || paperListIsLoading || questionTypesLoading || questionTagsLoading || questionDimensionsLoading) && (
-        <Loading />
-      )}
+      {useDelayedLoading(
+        isLoading || textbooksIsLoading || paperListIsLoading || questionTypesLoading || questionTagsLoading || questionDimensionsLoading,
+      ) && <Loading />}
 
       {/* 试卷列表 */}
       <div className="mt-3 bg-gray-50">
         <MyPaperList
           search={searchReq}
           paperList={paperListResp.list}
+          paperListRespMutate={paperListRespMutate}
           questionTypeDict={questionTypeDict}
           questionTagDict={questionTagDict}
           questionDimensionDict={questionDimensionDict}
@@ -144,6 +148,7 @@ function MyPaperSearchList({ pageSource }: MyPaperSearchListProps) {
           setSheetTitle={setSheetTitle}
           setSheetDesc={setSheetDesc}
           setSheetContent={setSheetContent}
+          setIsLoading={setIsLoading}
         />
       </div>
 
