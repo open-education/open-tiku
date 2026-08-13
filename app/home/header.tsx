@@ -98,7 +98,7 @@ function Header() {
         <NavLink to={"/"}>
           <div className="flex items-center gap-2.5 shrink-0">
             <div className="w-12 h-12 rounded flex items-center justify-center">
-              <img src="logo.png" />
+              <img src="/logo.png" />
             </div>
             <span className="font-semibold tracking-tight text-lg hidden sm:inline">开放题库</span>
           </div>

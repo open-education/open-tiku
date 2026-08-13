@@ -1,4 +1,3 @@
-import { ArrowRight, FileText } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
@@ -6,7 +5,6 @@ import { cn } from "~/lib/utils";
 import type { CommonPaperSearchReq, CommonPaperResp, TopPaperResp, GenPaperResp } from "~/type/paper";
 import { StringConst, StringConstUtil } from "~/util/string";
 import { httpClient } from "~/util/http";
-import { NavLink } from "react-router";
 import { TopInfo } from "~/paper/top/info";
 import { GenInfoPreview } from "~/paper/gen/info";
 import React from "react";
@@ -127,26 +125,4 @@ function PaperList({
   );
 }
 
-// 首页试卷头
-function PaperHeader() {
-  return (
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <FileText size={14} className="text-muted-foreground" />
-          <span className="">精选试卷</span>
-        </div>
-        <Badge variant="outline" className="font-normal">
-          中高考 · 期末月考 · 名校特供
-        </Badge>
-      </div>
-      <NavLink to={"/paper"}>
-        <div className="flex items-center gap-1 text-xs">
-          全部试卷 <ArrowRight size={11} />
-        </div>
-      </NavLink>
-    </div>
-  );
-}
-
-export { PaperList, PaperHeader };
+export { PaperList };

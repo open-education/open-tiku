@@ -59,7 +59,7 @@ function QuestionListShow({
             />
 
             {/* 题目其它标签, 比如查看答案, 关联题目等 */}
-            <div className="flex gap-2 justify-end">
+            <div className="flex flex-wrap gap-2 justify-start md:justify-end">
               <OperateTags
                 pageSource={pageSource}
                 questionTypeDict={questionTypeDict}

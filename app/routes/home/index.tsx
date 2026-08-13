@@ -1,9 +1,9 @@
 import { ChapterExpandNav, type LevelProps, type SelectNavProps } from "~/common/nav";
 import { useCallback, useState } from "react";
 import { Button } from "~/components/ui/button";
-import { ArrowRight, GraduationCap, Upload } from "lucide-react";
+import { ArrowRight, FileText, Flame, GraduationCap, Upload } from "lucide-react";
 import { CountStats } from "~/home/stats";
-import { PaperHeader, PaperList } from "~/common/paper/list";
+import { PaperList } from "~/common/paper/list";
 import { Loading } from "~/common/load";
 import { toast } from "sonner";
 import { Board } from "~/home/board";
@@ -14,6 +14,7 @@ import { useLatestPapers, useTextbooks } from "~/util/fetcher";
 import type { Textbook } from "~/type/textbook";
 import { SimpleSheet } from "~/common/sheet";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
+import { Badge } from "~/components/ui/badge";
 
 // 默认首页
 export default function Index() {
@@ -140,7 +141,23 @@ export default function Index() {
 
       {/* 精选试卷 */}
       <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
-        <PaperHeader />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <FileText size={20} className="text-muted-foreground" />
+              <span className="">精选试卷</span>
+            </div>
+            <Badge variant="ghost" className="font-normal">
+              中高考 · 期末月考 · 名校特供
+            </Badge>
+          </div>
+          <NavLink to={"/paper"}>
+            <div className="flex items-center gap-1 text-xs">
+              全部试卷 <ArrowRight size={11} />
+            </div>
+          </NavLink>
+        </div>
+
         <PaperList
           papers={latestPapers}
           setOpenSheet={setOpenSheet}
@@ -153,6 +170,18 @@ export default function Index() {
 
       {/* 统计面板 */}
       <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Flame size={20} className="stroke-red-500" />
+              <span className="">热点排行</span>
+            </div>
+            <Badge variant="ghost" className="font-normal">
+              题目 · 教材 · 用户
+            </Badge>
+          </div>
+        </div>
+
         <Board />
       </div>
 
