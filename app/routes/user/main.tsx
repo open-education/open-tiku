@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from "react-router";
 import type { Route } from "./+types/main";
-import { BookA, BookOpenText, CheckCheck, ChevronDown, FileQuestionMark, Link, Menu, NotepadText, Settings, X } from "lucide-react";
+import { BookA, BookOpenText, ChevronDown, CircleCheckBig, FileQuestionMark, FileText, Link, Menu, School, Settings, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -56,7 +56,7 @@ const navigationItems: NavItem[] = [
       {
         id: "myReview",
         label: "我的审核",
-        icon: CheckCheck,
+        icon: CircleCheckBig,
         href: "/user/question/review",
       },
     ],
@@ -64,20 +64,34 @@ const navigationItems: NavItem[] = [
   {
     id: "papers",
     label: "试卷",
-    icon: NotepadText,
+    icon: FileText,
     href: "",
     children: [
       {
         id: "myPaper",
         label: "我的试卷",
-        icon: NotepadText,
+        icon: FileText,
         href: "/user/paper/my",
       },
       {
         id: "myPaperReview",
         label: "我的审核",
-        icon: CheckCheck,
+        icon: CircleCheckBig,
         href: "/user/paper/review",
+      },
+    ],
+  },
+  {
+    id: "classes",
+    label: "班级",
+    icon: School,
+    href: "",
+    children: [
+      {
+        id: "myClasses",
+        label: "我的班级",
+        icon: School,
+        href: "/user/class/my",
       },
     ],
   },

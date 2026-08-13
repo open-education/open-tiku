@@ -1,5 +1,4 @@
 import type { Route } from "./+types/main";
-import { Footer } from "~/home/footer";
 import { Header } from "~/home/header";
 import { Outlet, useNavigate } from "react-router";
 import { useEffect } from "react";
@@ -7,6 +6,7 @@ import { httpClient } from "~/util/http";
 import type { UserInfoResp } from "~/type/user";
 import { toast } from "sonner";
 import "katex/dist/katex.min.css";
+import { Footer } from "~/home/footer";
 
 /// 网站首页顶部和底部框架
 export function meta({}: Route.MetaArgs) {
@@ -79,7 +79,7 @@ export default function Main() {
         <Outlet />
       </div>
 
-      {/* ── Footer ── */}
+      {/* 网站底部 */}
       <Footer />
     </div>
   );

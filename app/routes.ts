@@ -28,6 +28,9 @@ export default [
       // 我的试卷和审核
       route("paper/my", "routes/user/paper/index.tsx"),
       route("paper/review", "routes/user/paper/review.tsx"),
+
+      // 我的班级
+      route("class/my", "routes/user/class/index.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;

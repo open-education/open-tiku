@@ -1,5 +1,5 @@
-import { FileQuestionMark, LogOutIcon, Menu, NotepadText, UserKey } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight, FileQuestionMark, FileText, LogOutIcon, Menu, School, Settings, UserKey } from "lucide-react";
+import React, { useState } from "react";
 import { NavLink, type NavLinkProps } from "react-router";
 import { Button } from "~/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
@@ -12,6 +12,14 @@ import { httpClient } from "~/util/http";
 
 /// 网站头部导航
 
+interface LinkProps {
+  id: number;
+  label: string;
+  url: string;
+  leftIcon: React.ElementType;
+  rightIcon: React.ElementType;
+}
+
 function Header() {
   // 获取用户信息
   const currentUser: UserInfoResp | null = useUser();
@@ -23,18 +31,34 @@ function Header() {
   const username = currentUser?.email || currentUser?.username || "";
 
   // 用户中心配置
-  const userItems = [
+  const userItems: LinkProps[] = [
     {
       id: 1,
-      label: "我的题目",
-      url: "/user/question/my",
-      icon: <FileQuestionMark className="w-4.5 shrink-0" />,
+      label: "教材章节/考点",
+      url: "/user/setting/textbook",
+      leftIcon: Settings,
+      rightIcon: ArrowRight,
     },
     {
       id: 2,
+      label: "我的题目",
+      url: "/user/question/my",
+      leftIcon: FileQuestionMark,
+      rightIcon: ArrowRight,
+    },
+    {
+      id: 3,
       label: "我的试卷",
       url: "/user/paper/my",
-      icon: <NotepadText className="w-4.5 shrink-0" />,
+      leftIcon: FileText,
+      rightIcon: ArrowRight,
+    },
+    {
+      id: 4,
+      label: "我的班级",
+      url: "/user/class/my",
+      leftIcon: School,
+      rightIcon: ArrowRight,
     },
   ];
 
@@ -68,13 +92,13 @@ function Header() {
     }`;
 
   return (
-    <header className="sticky top-0 z-50 h-14 border-b border-border bg-background/95 backdrop-blur-sm px-2 sm:px-4">
-      <div className="h-14 flex items-center justify-between gap-2 sm:gap-6">
+    <header className="flex items-center sticky top-0 z-50 h-16 border-b border-border bg-background/95 backdrop-blur-sm px-2 sm:px-4">
+      <div className="flex items-center justify-between gap-2 sm:gap-6 w-full">
         {/* Logo */}
         <NavLink to={"/"}>
           <div className="flex items-center gap-2.5 shrink-0">
-            <div className="w-7 h-7 rounded bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xs leading-none">题</span>
+            <div className="w-12 h-12 rounded flex items-center justify-center">
+              <img src="logo.png" />
             </div>
             <span className="font-semibold tracking-tight text-lg hidden sm:inline">开放题库</span>
           </div>
@@ -99,12 +123,11 @@ function Header() {
               </Button>
             }
           />
-          <SheetContent side="left" className="w-72 p-0 flex flex-col bg-background">
+          <SheetContent side="left" className="w-60 p-0 flex flex-col bg-background">
             <div className="flex flex-col h-full">
               {/* 顶部用户信息 */}
               <div className="flex items-center justify-between p-4 border-b">
                 <div className="flex items-center gap-3">
-                  {/* 用昵称首字符作为头像 */}
                   <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
                     {username.charAt(0).toUpperCase()}
                   </div>
@@ -127,16 +150,21 @@ function Header() {
                 </NavLink>
               </nav>
 
-              {/* 底部辅助功能 */}
+              {/* 底部辅助功能 - 使用 NavLink 代替 DropdownMenuItem */}
               {isLogin && (
                 <div className="border-t p-4 space-y-1">
-                  {userItems.map(({ id, label, url }) => {
-                    return (
-                      <NavLink key={id} to={url} onClick={closeSheet} className={mobileLinkClass}>
-                        {label}
-                      </NavLink>
-                    );
-                  })}
+                  {userItems.map((item) => (
+                    <NavLink
+                      key={item.id}
+                      to={item.url}
+                      onClick={closeSheet}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-accent"
+                    >
+                      <item.leftIcon className="w-4.5 shrink-0" />
+                      {item.label}
+                      <item.rightIcon className="ml-auto" />
+                    </NavLink>
+                  ))}
 
                   <button
                     onClick={() => {
@@ -173,17 +201,16 @@ function Header() {
                       </Button>
                     }
                   />
-                  <DropdownMenuContent className="px-2 py-2 w-70">
-                    {userItems.map(({ id, label, url, icon }) => {
-                      return (
-                        <DropdownMenuItem key={id}>
-                          <NavLink to={url} className="text-sm flex items-center gap-2">
-                            {icon}
-                            {label}
-                          </NavLink>
-                        </DropdownMenuItem>
-                      );
-                    })}
+                  <DropdownMenuContent className="px-2 py-2 w-60">
+                    {userItems.map((item) => (
+                      <DropdownMenuItem key={item.id}>
+                        <NavLink to={item.url} className="text-sm flex items-center gap-2 w-full">
+                          <item.leftIcon className="w-4.5 shrink-0" />
+                          {item.label}
+                          <item.rightIcon className="ml-auto" />
+                        </NavLink>
+                      </DropdownMenuItem>
+                    ))}
 
                     <DropdownMenuSeparator className="mt-2 mb-2" />
 
