@@ -250,3 +250,15 @@ export interface ReplaceQuestionReq {
 export interface PaperPageSourceProps {
   source: "list" | "myPaper" | "myReview";
 }
+
+// 试卷审核
+export interface PaperApproveReq {
+  id: number;
+  status: number; // 审核状态
+  rejectReason: string; // 拒绝原因
+}
+
+// 试卷删除
+export interface PaperDeleteReq {
+  id: number;
+}

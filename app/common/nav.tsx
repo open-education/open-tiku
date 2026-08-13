@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect, memo } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Card, CardContent } from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
 import { Button } from "~/components/ui/button";
@@ -21,8 +21,6 @@ import { Check, ChevronDown, ChevronRight } from "lucide-react";
 import { StringConst } from "~/util/string";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Badge } from "~/components/ui/badge";
-import { Collapsible, CollapsibleContent } from "~/components/ui/collapsible";
-import { Popover, PopoverTrigger } from "~/components/ui/popover";
 
 // 章节导航选择
 // 前5层级标识
