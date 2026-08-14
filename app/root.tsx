@@ -7,6 +7,12 @@ import { Toaster } from "~/components/ui/sonner";
 import { InitLoading } from "~/common/load";
 import { Error } from "~/common/error";
 import { ObjectUtil } from "~/util/object";
+import katexStyles from "katex/dist/katex.min.css?url";
+
+// 使用该方式引入 katex css 文件
+export function links(): Route.LinkDescriptors {
+  return [{ rel: "stylesheet", href: katexStyles }];
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (

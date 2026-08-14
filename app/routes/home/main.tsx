@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { httpClient } from "~/util/http";
 import type { UserInfoResp } from "~/type/user";
 import { toast } from "sonner";
-import "katex/dist/katex.min.css";
 import { Footer } from "~/home/footer";
 
 /// 网站首页顶部和底部框架

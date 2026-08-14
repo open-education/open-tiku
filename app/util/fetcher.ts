@@ -3,10 +3,11 @@ import useSWRImmutable from "swr/immutable";
 import { httpClient } from "~/util/http";
 import type { Textbook, TextbookOtherDict } from "~/type/textbook";
 import type { PaperListReq, PaperListResp, CommonPaperSearchReq, CommonPaperResp } from "~/type/paper";
-import { StringConst, StringValidator } from "~/util/string";
+import { StringConst, StringUtil, StringValidator } from "~/util/string";
 import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from "~/type/question";
 import type { TaskListReq, TaskListResp } from "~/type/task";
 import type { ChapterKnowledgeResp, QuestionCateResp } from "~/type/question-cate";
+import type { ClassListReq, ClassListResp, ClassSearchReq } from "~/type/class";
 
 /// 使用 SWR 缓存查询组件
 /// https://swr.vercel.app/
@@ -141,4 +142,25 @@ export function useChapterKnowledgeList(sevenLevelId: number) {
 export function useQuestionCateList(relatedId: number) {
   const key = relatedId > 0 ? `/question-cate/list/${relatedId}` : null;
   return useSWRImmutable<QuestionCateResp[]>(key, httpClient.get, defaultErrConfig);
+}
+
+// 班级列表
+export function useClassList(search: ClassSearchReq, pageNo: number) {
+  let req: ClassListReq = {
+    pageNo,
+    pageSize: StringConst.pageSize,
+  };
+
+  if (StringValidator.isNonEmpty(search.year)) {
+    req.year = search.year;
+  }
+  if (StringValidator.isNonEmpty(search.grade)) {
+    req.grade = search.grade;
+  }
+  if (StringValidator.isNonEmpty(search.semester)) {
+    req.semester = search.semester;
+  }
+
+  const key = JSON.stringify(req);
+  return useSWR<ClassListResp>(key, () => httpClient.post<ClassListResp>("/class/list", req), defaultErrConfig);
 }

@@ -78,7 +78,7 @@ function Error({ message, details, stack }: ErrorProps) {
 
         {/* 次要访问导航 */}
         <div className="mt-12 border-t pt-8">
-          <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">试着浏览这些有用的链接: </p>
+          <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">试着浏览这些有效的链接: </p>
           <div className="mt-4 flex flex-wrap justify-center gap-x-6 gap-y-3">
             {secondNavLinks.map((item) => {
               return (
