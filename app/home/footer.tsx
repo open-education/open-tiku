@@ -4,8 +4,17 @@ import { Link } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 
-// 配置链接信息（保持不变）
-const links = [
+// 配置链接信息
+interface LinkItemProps {
+  title: string;
+  href: string;
+}
+interface LinksProps {
+  title: string;
+  items: LinkItemProps[];
+}
+
+const links: LinksProps[] = [
   {
     title: "关于我们",
     items: [{ title: "加入我们", href: "https://oef.org.cn/about/join/" }],
@@ -13,6 +22,19 @@ const links = [
   {
     title: "帮助文档",
     items: [],
+  },
+  {
+    title: "常见问题",
+    items: [
+      {
+        title: "账户和登录",
+        href: "",
+      },
+      {
+        title: "FAQs",
+        href: "",
+      },
+    ],
   },
   {
     title: "友情链接",
@@ -34,7 +56,7 @@ function Footer() {
           <div className="max-w-sm">
             <div className="mb-2 font-semibold text-lg">开放题库</div>
             <div className="text-sm text-foreground text-balance">以素养为导向的精准教学平台</div>
-            <div className="mt-2 inline-block text-sm font-semibold">
+            <div className="mt-2 text-sm">
               <div>
                 <Link to={"https://github.com/open-education/open-tiku"} target="_blank" rel="noopener noreferrer">
                   <Button variant="ghost">
@@ -44,6 +66,10 @@ function Footer() {
                   </Button>
                 </Link>
               </div>
+            </div>
+            <div className="mt-2 text-sm">
+              <div>举报电话: </div>
+              <div>举报邮箱: zhangguangxun1@outlook.com</div>
             </div>
           </div>
 

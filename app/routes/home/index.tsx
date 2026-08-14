@@ -1,8 +1,8 @@
 import { ChapterExpandNav, type LevelProps, type SelectNavProps } from "~/common/nav";
 import { useCallback, useState } from "react";
 import { Button } from "~/components/ui/button";
-import { ArrowRight, FileText, Flame, GraduationCap, Upload } from "lucide-react";
-import { CountStats } from "~/home/stats";
+import { ArrowRight, FileText, Flame, GraduationCap, TableOfContents, Upload } from "lucide-react";
+import { Hero } from "~/home/hero";
 import { PaperList } from "~/common/paper/list";
 import { Loading } from "~/common/load";
 import { toast } from "sonner";
@@ -123,13 +123,25 @@ export default function Index() {
       {/* 加载中提示 */}
       {useDelayedLoading(isLoading || textbooksIsLoading || latestIsLoading) && <Loading />}
 
-      {/* 统计总数*/}
-      <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
-        <CountStats />
+      {/* 使命 */}
+      <div>
+        <Hero />
       </div>
 
       {/* 关键导航 */}
       <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-primary">
+              <TableOfContents size={20} />
+              <span className="font-semibold">关键导航</span>
+            </div>
+            <Badge variant="ghost" className="font-normal">
+              视频 · 试卷 · 题目 · 练题
+            </Badge>
+          </div>
+        </div>
+
         <ChapterExpandNav
           textbooks={textbooks}
           onSelectionChange={(selection, selectedTextbooks) => {
@@ -143,9 +155,9 @@ export default function Index() {
       <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <FileText size={20} className="text-muted-foreground" />
-              <span className="">精选试卷</span>
+            <div className="flex items-center gap-2 text-blue-500">
+              <FileText size={20} />
+              <span className="font-semibold">精选试卷</span>
             </div>
             <Badge variant="ghost" className="font-normal">
               中高考 · 期末月考 · 名校特供
@@ -172,9 +184,9 @@ export default function Index() {
       <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Flame size={20} className="stroke-red-500" />
-              <span className="">热点排行</span>
+            <div className="flex items-center gap-2 text-red-500">
+              <Flame size={20} />
+              <span className="font-semibold">热点榜单</span>
             </div>
             <Badge variant="ghost" className="font-normal">
               题目 · 教材 · 用户
@@ -186,7 +198,7 @@ export default function Index() {
       </div>
 
       {/* 网站碎碎念 */}
-      <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
+      <div className="mx-4 my-3 sm:mx-16 sm:mt-4">
         <Note />
       </div>
 

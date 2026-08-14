@@ -1,6 +1,5 @@
-import { BookOpen, Clock, GraduationCap, TrendingUp, Upload } from "lucide-react";
+import { BookOpen, Clock, TrendingUp, Upload, Users } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { Card } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
 
 /// 统计面板
@@ -65,8 +64,8 @@ function Board() {
         {/* 最新上传 */}
         <div className="bg-white border">
           <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
-            <TrendingUp size={16} />
-            热门题目
+            <Clock size={16} />
+            最新上传
           </div>
           <div>
             {LATEST_QUESTIONS.map((q, i) => (
@@ -149,7 +148,7 @@ function Board() {
         {/* 活跃学生 */}
         <div className="bg-white">
           <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
-            <GraduationCap size={16} />
+            <Users size={16} />
             活跃学生
           </div>
           <div>

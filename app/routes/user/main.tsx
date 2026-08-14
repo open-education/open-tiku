@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useLocation } from "react-router";
 import type { Route } from "./+types/main";
 import { BookA, BookOpenText, ChevronDown, CircleCheckBig, FileQuestionMark, FileText, Link, Menu, School, Settings, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -97,6 +97,14 @@ const navigationItems: NavItem[] = [
   },
 ];
 
+// 记录路径对应的父级id, 用于首次访问展开父级菜单
+const navigationItemMap: Record<string, string> = {};
+navigationItems.forEach((item) => {
+  (item.children ?? []).forEach((child) => {
+    navigationItemMap[child.href] = item.id;
+  });
+});
+
 // 个人中心布局首页
 export default function Index() {
   // 未登录用户不渲染任何子页面
@@ -104,7 +112,29 @@ export default function Index() {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
-  const [expandedNavItems, setExpandedNavItems] = useState<Set<string>>(new Set([]));
+
+  // 记录需要展开的菜单标识 /user/question/my
+  const location = useLocation();
+  const [expandedNavItems, setExpandedNavItems] = useState<Set<string>>(() => {
+    const set = new Set<string>();
+    const parentId = navigationItemMap[location.pathname];
+    if (parentId) set.add(parentId);
+    return set;
+  });
+
+  // 依赖路径变化时看是否要展开菜单
+  useEffect(() => {
+    const parentId = navigationItemMap[location.pathname];
+    if (parentId) {
+      setExpandedNavItems((prev) => {
+        // 如果已经展开，保持不变，避免不必要的重新渲染
+        if (prev.has(parentId)) return prev;
+        const next = new Set(prev);
+        next.add(parentId);
+        return next;
+      });
+    }
+  }, [location.pathname]);
 
   // 检测是否为桌面端
   useEffect(() => {

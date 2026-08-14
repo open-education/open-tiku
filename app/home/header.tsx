@@ -20,6 +20,38 @@ interface LinkProps {
   rightIcon: React.ElementType;
 }
 
+// 用户中心配置
+const userItems: LinkProps[] = [
+  {
+    id: 1,
+    label: "教材章节/考点",
+    url: "/user/setting/textbook",
+    leftIcon: Settings,
+    rightIcon: ArrowRight,
+  },
+  {
+    id: 2,
+    label: "我的题目",
+    url: "/user/question/my",
+    leftIcon: FileQuestionMark,
+    rightIcon: ArrowRight,
+  },
+  {
+    id: 3,
+    label: "我的试卷",
+    url: "/user/paper/my",
+    leftIcon: FileText,
+    rightIcon: ArrowRight,
+  },
+  {
+    id: 4,
+    label: "我的班级",
+    url: "/user/class/my",
+    leftIcon: School,
+    rightIcon: ArrowRight,
+  },
+];
+
 function Header() {
   // 获取用户信息
   const currentUser: UserInfoResp | null = useUser();
@@ -29,38 +61,6 @@ function Header() {
 
   // 实际从你的状态中获取
   const username = currentUser?.email || currentUser?.username || "";
-
-  // 用户中心配置
-  const userItems: LinkProps[] = [
-    {
-      id: 1,
-      label: "教材章节/考点",
-      url: "/user/setting/textbook",
-      leftIcon: Settings,
-      rightIcon: ArrowRight,
-    },
-    {
-      id: 2,
-      label: "我的题目",
-      url: "/user/question/my",
-      leftIcon: FileQuestionMark,
-      rightIcon: ArrowRight,
-    },
-    {
-      id: 3,
-      label: "我的试卷",
-      url: "/user/paper/my",
-      leftIcon: FileText,
-      rightIcon: ArrowRight,
-    },
-    {
-      id: 4,
-      label: "我的班级",
-      url: "/user/class/my",
-      leftIcon: School,
-      rightIcon: ArrowRight,
-    },
-  ];
 
   const closeSheet = () => setSheetOpen(false);
   const openSheet = () => setSheetOpen(true);

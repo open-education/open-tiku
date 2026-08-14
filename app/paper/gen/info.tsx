@@ -1,6 +1,5 @@
 import { TagShow } from "~/common/paper/tag";
 import { Separator } from "~/components/ui/separator";
-import { useUser } from "~/hooks/use-user";
 import type {
   CommonPaperResp,
   GenPaperGenQuestionReq,
@@ -10,12 +9,11 @@ import type {
   GenPaperResp,
   ReplaceQuestionReq,
 } from "~/type/paper";
-import type { UserInfoResp } from "~/type/user";
 import { StringConst } from "~/util/string";
 import { GenSortableQuestionList } from "~/paper/gen/question";
 import type { QuestionBaseInfoResp, QuestionInfoResp, QuestionOption } from "~/type/question";
 import React, { useState } from "react";
-import { Save } from "lucide-react";
+import { FileQuestionMark, GraduationCap, List, Save, Star } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { ArrayUtil } from "~/util/object";
 import { TitleShow } from "~/common/title";
@@ -27,6 +25,8 @@ import { ReplaceQuestion } from "~/paper/gen/replace";
 import { httpClient } from "~/util/http";
 import { SimpleAlert } from "~/common/alert";
 import { toast } from "sonner";
+import { Card, CardContent } from "~/components/ui/card";
+import { cn } from "~/lib/utils";
 
 // 手动组卷试卷详情
 
@@ -35,10 +35,51 @@ interface GenInfoHeadProps {
   commonPaperResp: CommonPaperResp;
 }
 
-function GenInfoHead({ commonPaperResp }: GenInfoHeadProps) {
-  // 获取用户信息
-  const currentUser: UserInfoResp | null = useUser();
+// 试卷概览
+interface PaperStatProps {
+  id: number;
+  icon: React.ElementType;
+  count: string;
+  className: string;
+  title: string;
+  desc: string;
+}
+const STATS: PaperStatProps[] = [
+  {
+    id: 1,
+    icon: GraduationCap,
+    count: "30%",
+    className: "text-green-600",
+    title: "知识点覆盖",
+    desc: "所有题目关联的知识点 / 选择的所有知识点, 保留两位小数",
+  },
+  {
+    id: 2,
+    icon: Star,
+    count: "3.2",
+    className: "text-red-600",
+    title: "平均难度",
+    desc: "所有题目的难度之和 / 题目数量, 保留一位小数",
+  },
+  {
+    id: 3,
+    icon: List,
+    count: "80%",
+    className: "text-pink-600",
+    title: "题型占比",
+    desc: "所有关联题目的题型 / 所有知识点涉及的题型, 保留两位小数",
+  },
+  {
+    id: 4,
+    icon: FileQuestionMark,
+    count: "17",
+    className: "text-blue-600",
+    title: "题目总数",
+    desc: "所有题目数量之和",
+  },
+];
 
+function GenInfoHead({ commonPaperResp }: GenInfoHeadProps) {
   return (
     <>
       {/* 来源和备注, 只展示存在的信息 */}
@@ -72,20 +113,22 @@ function GenInfoHead({ commonPaperResp }: GenInfoHeadProps) {
       <div className="text-lg font-bold text-center">{commonPaperResp.title}</div>
 
       {/* 概览卡片 */}
-      <div className="grid grid-cols-3 gap-4 mb-6 bg-blue-50 rounded-lg p-4">
-        <div className="text-center">
-          <div className="text-sm text-gray-500">知识点覆盖</div>
-          <div className="text-2xl font-bold text-blue-600">78%</div>
+      <section className="py-4">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {STATS.map((item) => (
+              <Card key={item.id} className="border-0 text-center">
+                <CardContent className="pt-4">
+                  <item.icon className={item.className} />
+                  <h2 className={cn("text-4xl font-bold", item.className)}>{item.count}</h2>
+                  <h6 className="mt-4 mb-2 text-base font-semibold">{item.title}</h6>
+                  <p className="text-foreground mx-auto max-w-sm text-balance">{item.desc}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
-        <div className="text-center">
-          <div className="text-sm text-gray-500">难度系数</div>
-          <div className="text-2xl font-bold text-blue-600">4.2</div>
-        </div>
-        <div className="text-center">
-          <div className="text-sm text-gray-500">题目总数</div>
-          <div className="text-2xl font-bold text-blue-600">17</div>
-        </div>
-      </div>
+      </section>
     </>
   );
 }
