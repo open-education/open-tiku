@@ -30,7 +30,7 @@ interface QuestionSearchProps {
   className?: string;
 }
 
-function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 pt-4 sm:px-16 sm:pt-4" }: QuestionSearchProps) {
+function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4 sm:px-16 sm:py-4" }: QuestionSearchProps) {
   // 获取用户信息
   const currentUser: UserInfoResp | null = useUser();
 
@@ -373,7 +373,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 pt-4
 
       {/* 分页 */}
       {questionListResp.total > 0 && (
-        <div className="mt-3 mb-3">
+        <div className="mt-3">
           <SimplePagination
             pageNo={questionListResp.pageNo}
             pageSize={questionListResp.pageSize}

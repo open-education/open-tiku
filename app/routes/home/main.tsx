@@ -1,5 +1,4 @@
 import type { Route } from "./+types/main";
-import { Footer } from "~/home/footer";
 import { Header } from "~/home/header";
 import { Outlet, useNavigate } from "react-router";
 import { useEffect } from "react";
@@ -7,14 +6,16 @@ import { httpClient } from "~/util/http";
 import type { UserInfoResp } from "~/type/user";
 import { toast } from "sonner";
 import "katex/dist/katex.min.css";
+import { Footer } from "~/home/footer";
 
 /// 网站首页顶部和底部框架
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "开放题库" },
+    { title: "开放题库-以素养为导向的精准教学平台" },
     {
       name: "description",
-      content: "根据中小学教材章节和教育部发布的考点进行选题，精选历年高考中考和名校期末月考等试卷，辅助教学视频等给学生提供精选的题库进行练习。",
+      content:
+        "根据中小学教材章节和教育部发布的考点进行选题，精选历年高考中考和名校期末月考等试卷，手动根据需要和学情自主组卷，辅助教学视频等提供以素养为导向的精准教学、练题平台。",
     },
   ];
 }
@@ -79,7 +80,7 @@ export default function Main() {
         <Outlet />
       </div>
 
-      {/* ── Footer ── */}
+      {/* 网站底部 */}
       <Footer />
     </div>
   );

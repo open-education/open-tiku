@@ -6,7 +6,7 @@ function Teacher() {
           <p className="text-primary-foreground text-xl font-medium mb-1" style={{ fontFamily: '"Noto Serif SC", serif' }}>
             成为教师角色
           </p>
-          <p className="text-primary-foreground/70 text-sm">上传自制题目，管理班级学情，一站式教学辅助工具</p>
+          <p className="text-primary-foreground/70 text-sm">上传自制题目，精选现有试卷，基于题库生成试卷，管理班级学情，一站式教学辅助工具</p>
         </div>
         <div className="flex gap-3 shrink-0">
           <button className="text-sm border border-primary-foreground/30 text-primary-foreground px-5 py-2.5 rounded-lg hover:bg-primary-foreground/10 transition-colors">

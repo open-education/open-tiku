@@ -1,7 +1,5 @@
-import { BookOpen, Clock, GraduationCap, TrendingUp, Upload } from "lucide-react";
+import { BookOpen, Clock, TrendingUp, Upload, Users } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { Card } from "~/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { cn } from "~/lib/utils";
 
 /// 统计面板
@@ -25,9 +23,6 @@ function Board() {
     { title: "整式加减运算（合并同类项）", grade: "七年级", edition: "人教版", count: 6890 },
     { title: "二次函数图象与性质综合", grade: "初三", edition: "人教版", count: 6210 },
     { title: "用字母表示数（列代数式）", grade: "七年级", edition: "湘教版", count: 5980 },
-    { title: "平行线的判定与性质应用", grade: "八年级", edition: "北师大版", count: 5740 },
-    { title: "分式方程的解法与检验", grade: "八年级", edition: "人教版", count: 5320 },
-    { title: "等差数列通项公式与求和", grade: "高二", edition: "人教A版", count: 4980 },
   ];
 
   const TOP_TEXTBOOKS = [
@@ -46,10 +41,6 @@ function Board() {
     { name: "李**老师", school: "湖南省实验中学", count: 286 },
     { name: "王**老师", school: "北京市第八十中学", count: 254 },
     { name: "陈**老师", school: "广州市执信中学", count: 218 },
-    { name: "刘**老师", school: "南京外国语学校", count: 197 },
-    { name: "赵**老师", school: "武汉市第二中学", count: 175 },
-    { name: "孙**老师", school: "成都市实验中学", count: 163 },
-    { name: "周**老师", school: "杭州市学军中学", count: 148 },
   ];
 
   const TOP_STUDENTS = [
@@ -69,115 +60,111 @@ function Board() {
 
   return (
     <section>
-      <Card className="overflow-hidden">
-        <Tabs defaultValue="latest">
-          {/* Tab bar — override TabsList to span full width, border-bottom style */}
-          <TabsList className="w-full justify-start rounded-none bg-transparent border-b border-border h-auto p-0 gap-0">
-            {[
-              { value: "latest", label: "最新上传", icon: Clock },
-              { value: "top", label: "热门题目", icon: TrendingUp },
-              { value: "textbooks", label: "热门教材", icon: BookOpen },
-              { value: "teachers", label: "活跃教师", icon: Upload },
-              { value: "students", label: "活跃学生", icon: GraduationCap },
-            ].map(({ value, label, icon: Icon }) => (
-              <TabsTrigger
-                key={value}
-                value={value}
-                className="flex items-center gap-1.5 rounded-none px-4 py-3 text-xs border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-foreground text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <Icon size={13} />
-                {label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          {/* Latest questions */}
-          <TabsContent value="latest" className="mt-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* 最新上传 */}
+        <div className="bg-white border">
+          <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
+            <Clock size={16} />
+            最新上传
+          </div>
+          <div>
             {LATEST_QUESTIONS.map((q, i) => (
-              <a
-                key={i}
-                href="#"
-                className={cn("flex items-center gap-4 px-6 py-3 hover:bg-muted/30 transition-colors group", i > 0 && "border-t border-border")}
-              >
+              <a key={i} href="#" className={cn("flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors group", i > 0 && "border-t")}>
                 <RankBadge n={i + 1} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] truncate group-hover:text-primary transition-colors">{q.title}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                  <p className="text-sm truncate group-hover:text-primary">{q.title}</p>
+                  <p className="text-xs text-muted-foreground">
                     {q.grade} · {q.edition}
                   </p>
                 </div>
-                <span className="text-[11px] text-muted-foreground shrink-0">{q.time}</span>
+                <span className="text-xs text-muted-foreground shrink-0">{q.time}</span>
               </a>
             ))}
-          </TabsContent>
+          </div>
+        </div>
 
-          {/* Top questions */}
-          <TabsContent value="top" className="mt-0">
+        {/* 热门题目 */}
+        <div className="bg-white">
+          <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
+            <TrendingUp size={16} />
+            热门题目
+          </div>
+          <div>
             {TOP_QUESTIONS.map((q, i) => (
-              <a
-                key={i}
-                href="#"
-                className={cn("flex items-center gap-4 px-6 py-3 hover:bg-muted/30 transition-colors group", i > 0 && "border-t border-border")}
-              >
+              <a key={i} href="#" className={cn("flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors group", i > 0 && "border-t")}>
                 <RankBadge n={i + 1} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] truncate group-hover:text-primary transition-colors">{q.title}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                  <p className="text-sm truncate group-hover:text-primary">{q.title}</p>
+                  <p className="text-xs text-muted-foreground">
                     {q.grade} · {q.edition}
                   </p>
                 </div>
-                <span className="text-[11px] font-medium text-muted-foreground shrink-0">{q.count.toLocaleString()} 次</span>
+                <span className="text-xs font-medium text-muted-foreground shrink-0">{q.count.toLocaleString()} 次</span>
               </a>
             ))}
-          </TabsContent>
+          </div>
+        </div>
 
-          {/* Top textbooks */}
-          <TabsContent value="textbooks" className="mt-0">
+        {/* 热门教材 */}
+        <div className="bg-white">
+          <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
+            <BookOpen size={16} />
+            热门教材
+          </div>
+          <div>
             {TOP_TEXTBOOKS.map((t, i) => (
-              <a
-                key={i}
-                href="#"
-                className={cn("flex items-center gap-4 px-6 py-3 hover:bg-muted/30 transition-colors group", i > 0 && "border-t border-border")}
-              >
+              <div key={i} className={cn("flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors", i > 0 && "border-t")}>
                 <RankBadge n={i + 1} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] truncate group-hover:text-primary transition-colors">{t.name}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">{t.schools} 所学校在用</p>
+                  <p className="text-sm truncate">{t.name}</p>
+                  <p className="text-xs text-muted-foreground">{t.schools} 所学校在用</p>
                 </div>
-                <span className="text-[11px] font-medium text-muted-foreground shrink-0">{t.questions.toLocaleString()} 题</span>
-              </a>
+                <span className="text-xs font-medium text-muted-foreground shrink-0">{t.questions.toLocaleString()} 题</span>
+              </div>
             ))}
-          </TabsContent>
+          </div>
+        </div>
 
-          {/* Top teachers */}
-          <TabsContent value="teachers" className="mt-0">
+        {/* 活跃教师 */}
+        <div className="bg-white">
+          <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
+            <Upload size={16} />
+            活跃教师
+          </div>
+          <div>
             {TOP_TEACHERS.map((t, i) => (
-              <div key={i} className={cn("flex items-center gap-4 px-6 py-3 hover:bg-muted/30 transition-colors", i > 0 && "border-t border-border")}>
+              <div key={i} className={cn("flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors", i > 0 && "border-t")}>
                 <RankBadge n={i + 1} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium">{t.name}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{t.school}</p>
+                  <p className="text-sm font-medium">{t.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{t.school}</p>
                 </div>
-                <span className="text-[11px] font-medium text-muted-foreground shrink-0">上传 {t.count} 题</span>
+                <span className="text-xs font-medium text-muted-foreground shrink-0">上传 {t.count} 题</span>
               </div>
             ))}
-          </TabsContent>
+          </div>
+        </div>
 
-          {/* Top students */}
-          <TabsContent value="students" className="mt-0">
+        {/* 活跃学生 */}
+        <div className="bg-white">
+          <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
+            <Users size={16} />
+            活跃学生
+          </div>
+          <div>
             {TOP_STUDENTS.map((s, i) => (
-              <div key={i} className={cn("flex items-center gap-4 px-6 py-3 hover:bg-muted/30 transition-colors", i > 0 && "border-t border-border")}>
+              <div key={i} className={cn("flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors", i > 0 && "border-t")}>
                 <RankBadge n={i + 1} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium">{s.name}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{s.school}</p>
+                  <p className="text-sm font-medium">{s.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{s.school}</p>
                 </div>
-                <span className="text-[11px] font-medium text-muted-foreground shrink-0">做题 {s.count.toLocaleString()} 题</span>
+                <span className="text-xs font-medium text-muted-foreground shrink-0">做题 {s.count.toLocaleString()} 题</span>
               </div>
             ))}
-          </TabsContent>
-        </Tabs>
-      </Card>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

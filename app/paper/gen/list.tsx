@@ -208,7 +208,7 @@ function MyPaperList({
   const showOperateList = (info: CommonPaperResp) => {
     // 详情按钮-所有地方均有
     const buttons = [
-      <Button variant="link" onClick={() => handlePaperInfo(info.paperType, info.id || 0)}>
+      <Button key="myPaperInfo" variant="link" onClick={() => handlePaperInfo(info.paperType, info.id || 0)}>
         详情
       </Button>,
     ];
@@ -240,7 +240,7 @@ function MyPaperList({
           </Dialog>,
         );
         buttons.push(
-          <Dialog key="myQuestionDelete" open={openDelete} onOpenChange={setOpenDelete}>
+          <Dialog key="myPaperDelete" open={openDelete} onOpenChange={setOpenDelete}>
             <DialogTrigger render={<Button variant="link">删除</Button>} />
             <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
               <DialogHeader>
@@ -263,7 +263,11 @@ function MyPaperList({
           </Dialog>,
         );
       } else if (info.status === PaperStatus.Published) {
-        buttons.push(<Button variant="link">布置作业</Button>);
+        buttons.push(
+          <Button key="myPaperHomework" variant="link">
+            布置作业
+          </Button>,
+        );
       }
     } else {
       // 我的审核

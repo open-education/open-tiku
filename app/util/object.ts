@@ -69,4 +69,9 @@ export const ObjectUtil = {
       questions: group.questions.map((q) => ({ ...q })),
     })),
   }),
+
+  // 处理错误类型
+  isError: (error: unknown): error is Error => {
+    return error instanceof Error;
+  },
 };

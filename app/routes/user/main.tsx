@@ -1,6 +1,6 @@
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useLocation } from "react-router";
 import type { Route } from "./+types/main";
-import { BookA, BookOpenText, CheckCheck, ChevronDown, FileQuestionMark, Link, Menu, NotepadText, Settings, X } from "lucide-react";
+import { BookA, BookOpenText, ChevronDown, CircleCheckBig, FileQuestionMark, FileText, Link, Menu, School, Settings, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -56,7 +56,7 @@ const navigationItems: NavItem[] = [
       {
         id: "myReview",
         label: "我的审核",
-        icon: CheckCheck,
+        icon: CircleCheckBig,
         href: "/user/question/review",
       },
     ],
@@ -64,24 +64,46 @@ const navigationItems: NavItem[] = [
   {
     id: "papers",
     label: "试卷",
-    icon: NotepadText,
+    icon: FileText,
     href: "",
     children: [
       {
         id: "myPaper",
         label: "我的试卷",
-        icon: NotepadText,
+        icon: FileText,
         href: "/user/paper/my",
       },
       {
         id: "myPaperReview",
         label: "我的审核",
-        icon: CheckCheck,
+        icon: CircleCheckBig,
         href: "/user/paper/review",
       },
     ],
   },
+  {
+    id: "classes",
+    label: "班级",
+    icon: School,
+    href: "",
+    children: [
+      {
+        id: "myClasses",
+        label: "我的班级",
+        icon: School,
+        href: "/user/class/my",
+      },
+    ],
+  },
 ];
+
+// 记录路径对应的父级id, 用于首次访问展开父级菜单
+const navigationItemMap: Record<string, string> = {};
+navigationItems.forEach((item) => {
+  (item.children ?? []).forEach((child) => {
+    navigationItemMap[child.href] = item.id;
+  });
+});
 
 // 个人中心布局首页
 export default function Index() {
@@ -90,7 +112,29 @@ export default function Index() {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
-  const [expandedNavItems, setExpandedNavItems] = useState<Set<string>>(new Set([]));
+
+  // 记录需要展开的菜单标识 /user/question/my
+  const location = useLocation();
+  const [expandedNavItems, setExpandedNavItems] = useState<Set<string>>(() => {
+    const set = new Set<string>();
+    const parentId = navigationItemMap[location.pathname];
+    if (parentId) set.add(parentId);
+    return set;
+  });
+
+  // 依赖路径变化时看是否要展开菜单
+  useEffect(() => {
+    const parentId = navigationItemMap[location.pathname];
+    if (parentId) {
+      setExpandedNavItems((prev) => {
+        // 如果已经展开，保持不变，避免不必要的重新渲染
+        if (prev.has(parentId)) return prev;
+        const next = new Set(prev);
+        next.add(parentId);
+        return next;
+      });
+    }
+  }, [location.pathname]);
 
   // 检测是否为桌面端
   useEffect(() => {
