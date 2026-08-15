@@ -1,3 +1,4 @@
+import type { StudentAccountParseResult } from "~/type/class";
 import { PaperStatus, QuestionStatus } from "~/util/enum";
 
 // 字符串验证工具类
@@ -49,6 +50,32 @@ export const StringUtil = {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  },
+
+  getStudentAccount: (input: string): StudentAccountParseResult => {
+    // 1. 按行分割，清洗，过滤空行
+    const lines = input.split("\n");
+    const cleaned = lines.map((line) => line.trim()).filter((line) => line !== "");
+
+    // 2. 统计出现次数
+    const countMap = new Map<string, number>();
+    cleaned.forEach((account) => {
+      countMap.set(account, (countMap.get(account) || 0) + 1);
+    });
+
+    // 3. 找出重复项（出现次数 > 1）
+    const duplicates = Array.from(countMap.entries())
+      .filter(([_, count]) => count > 1)
+      .map(([account]) => account);
+
+    // 4. 逗号拼接
+    const commaSeparated = cleaned.join(",");
+
+    return {
+      cleaned: cleaned,
+      commaSeparated,
+      duplicates,
+    };
   },
 };
 

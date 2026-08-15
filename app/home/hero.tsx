@@ -56,7 +56,7 @@ function Hero() {
         </div>
 
         <div className="container mx-auto">
-          <div className="flex gap-3 justify-center">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 w-fit mx-auto justify-items-center">
             {STATS.map((item) => (
               <div key={item.id} className="flex flex-col items-center justify-center p-4 text-center">
                 <h2 className={cn("text-2xl font-bold", item.className)}>{item.count}</h2>

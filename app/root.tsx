@@ -8,6 +8,7 @@ import { InitLoading } from "~/common/load";
 import { Error } from "~/common/error";
 import { ObjectUtil } from "~/util/object";
 import katexStyles from "katex/dist/katex.min.css?url";
+import { TooltipProvider } from "~/components/ui/tooltip";
 
 // 使用该方式引入 katex css 文件
 export function links(): Route.LinkDescriptors {
@@ -24,7 +25,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
 
         {/* toast 提示位置顶部居中 */}
         <Toaster position="top-center" />

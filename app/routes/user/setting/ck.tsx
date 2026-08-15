@@ -28,7 +28,7 @@ import { toast } from "sonner";
 import type { CreateChapterKnowledgeReq, ChapterKnowledgeResp, RemoveChapterKnowledgeReq } from "~/type/question-cate";
 import { httpClient } from "~/util/http";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { QuestionCateListShow } from "~/user/cate";
+import { QuestionCateListShow } from "~/user/setting/cate";
 
 export function meta({}: Route.MetaArgs) {
   return [
