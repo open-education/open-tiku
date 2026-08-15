@@ -81,6 +81,7 @@ export interface ClassStudentEditReq {
   id: number;
   classId: number;
   account: string;
+  resetPwd: boolean; // 是否重置密码
   status: number;
   remark: string;
 }

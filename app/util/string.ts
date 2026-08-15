@@ -1,5 +1,5 @@
 import type { StudentAccountParseResult } from "~/type/class";
-import { PaperStatus, QuestionStatus } from "~/util/enum";
+import { PaperStatus, QuestionStatus, StudentStatus } from "~/util/enum";
 
 // 字符串验证工具类
 export const StringValidator = {
@@ -177,6 +177,12 @@ export const StringConst = {
     { id: 3, value: PaperStatus.Published, label: "已发布" },
     { id: 4, value: PaperStatus.Homework, label: "已布置作业" },
     { id: 10, value: PaperStatus.Rejected, label: "已拒绝" },
+  ],
+  // 学生账户状态
+  studentStatusList: [
+    { id: 1, value: StudentStatus.Active, label: "激活" },
+    { id: 2, value: StudentStatus.Pause, label: "暂停" },
+    { id: 3, value: StudentStatus.Disabled, label: "禁用" },
   ],
 };
 

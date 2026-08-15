@@ -14,3 +14,10 @@ export enum PaperStatus {
   Homework = 4, // 已布置作业
   Rejected = 10, // 已拒绝
 }
+
+// 学生账户状态
+export enum StudentStatus {
+  Active = 1, // 激活
+  Pause = 2, // 暂停
+  Disabled = 3, // 禁用
+}

@@ -1,5 +1,6 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import type { KeyedMutator } from "swr";
 import { GradeSelect } from "~/common/paper/grade";
@@ -11,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
+import { Switch } from "~/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { Textarea } from "~/components/ui/textarea";
 import type {
@@ -23,7 +25,7 @@ import type {
   ClassStudentResp,
 } from "~/type/class";
 import { httpClient } from "~/util/http";
-import { StringUtil, StringValidator } from "~/util/string";
+import { StringConst, StringUtil, StringValidator } from "~/util/string";
 
 // 班级编辑
 
@@ -419,6 +421,7 @@ const defaultStudentEditReq: ClassStudentEditReq = {
   id: 0,
   classId: 0,
   account: "",
+  resetPwd: false,
   status: 0,
   remark: "",
 };
@@ -478,13 +481,77 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
 
   // 批量操作示例
   const [editReq, setEditReq] = useState<ClassStudentEditReq>(defaultStudentEditReq);
-  const updateEditReq = (key: keyof ClassStudentEditReq, value: number | string) => {
+  const updateEditReq = (key: keyof ClassStudentEditReq, value: number | string | boolean) => {
     setEditReq((prev) => ({ ...prev, [key]: value }));
   };
 
+  // 编辑账户
   const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
-  const [processIng, setProcessIng] = useState<boolean>(false);
-  const handleSubmit = () => {};
+  const [editProcessIng, setEditProcessIng] = useState<boolean>(false);
+
+  const handleEdit = () => {
+    if (editReq.id <= 0) {
+      toast.error(<div className="text-red-700">没有选择学生账户</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (!StringValidator.isNonEmpty(editReq.account)) {
+      toast.error(<div className="text-red-700">账户为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+
+    setEditProcessIng(true);
+
+    const classId = editReq.classId;
+
+    // 请求编辑账户更新
+    httpClient
+      .post<boolean>("/class/student/edit", editReq)
+      .then((res) => {
+        setEditDialogOpen(false);
+        setEditReq({ ...defaultStudentEditReq });
+
+        // 如何刷新账户列表, 重新查询列表页面
+        httpClient
+          .get<ClassStudentResp[]>(`/class/student/${classId}/list`)
+          .then((res) => {
+            setStudentList(res);
+            setSelectedIds(new Set());
+          })
+          .catch((err) => {
+            toast.error(<div className="text-red-700">查询班级学生账户出错: {err.message}</div>, {
+              duration: Infinity,
+              action: {
+                label: "关闭",
+                onClick: () => {},
+              },
+            });
+          });
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">编辑账户信息出错: {err.message}</div>, {
+          duration: Infinity,
+          action: {
+            label: "关闭",
+            onClick: () => {},
+          },
+        });
+      })
+      .finally(() => {
+        setEditProcessIng(false);
+      });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -495,8 +562,6 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
         </DialogHeader>
 
         <Separator />
-
-        {selectedCount > 0 && <span className="ml-2 text-blue-600">（已选 {selectedCount} 项）</span>}
 
         <div className="space-y-4 py-2 overflow-y-auto">
           <Table>
@@ -532,7 +597,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
                         variant="ghost"
                         size="icon"
                         onClick={() => {
-                          setEditReq({ ...student });
+                          setEditReq({ ...student, resetPwd: false });
                           setEditDialogOpen(true);
                         }}
                         className="h-8 w-8"
@@ -556,60 +621,83 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
         </div>
 
         {/* 编辑学生账户信息-内部对话框 */}
-        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-          <DialogContent className="sm:max-w-106.25">
-            <DialogHeader>
-              <DialogTitle className="text-base font-semibold">编辑账户信息</DialogTitle>
-              <DialogDescription className="text-sm">...</DialogDescription>
-            </DialogHeader>
-
-            <Separator />
-
-            <div className="space-y-4 py-2">
-              <div className="flex flex-row items-center justify-between">
-                <div className="space-y-0.5">
-                  <label className="text-sm">账户名称:</label>
+        {editDialogOpen &&
+          editReq.id > 0 &&
+          createPortal(
+            <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center" onClick={() => setEditDialogOpen(false)}>
+              <div className="bg-white h-[40vh] w-[30vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 shrink-0">
+                  <div className="text-base font-semibold text-gray-800">账户修改</div>
+                  <button className="text-gray-400 hover:text-gray-600 focus:outline-none" onClick={() => setEditDialogOpen(false)} aria-label="关闭">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
-                <Input
-                  className="text-sm md:text-sm w-80"
-                  value={editReq.account}
-                  onChange={(e) => updateEditReq("account", e.target.value)}
-                  placeholder="请输入新的账户名称"
-                />
-              </div>
 
-              {/* 备注 */}
-              <div className="flex flex-row items-center justify-between">
-                <div className="space-y-0.5">
-                  <label className="text-sm leading-none">备注:</label>
+                {/* 内容区域 */}
+                <div className="flex-1 overflow-y-auto space-y-4 py-4 px-8">
+                  <div className="text-sm text-gray-500">若重置密码, 更新成功后会将新的密码发送到你的个人邮箱中</div>
+
+                  {/* 账户名称 */}
+                  <div className="flex items-center gap-4">
+                    <label className="text-sm w-20 shrink-0">账户名称:</label>
+                    <Input
+                      className="flex-1 text-sm md:text-sm"
+                      value={editReq.account}
+                      onChange={(e) => updateEditReq("account", e.target.value)}
+                      placeholder="请输入新的账户名称"
+                    />
+                  </div>
+
+                  {/* 状态 */}
+                  <div className="flex items-center gap-4">
+                    <label className="text-sm w-20 shrink-0">状态:</label>
+                    <StudentStatusSelect defaultValue={editReq.status} onSelect={(val) => updateEditReq("status", val)} />
+                  </div>
+
+                  {/* 重置密码 */}
+                  <div className="flex items-center gap-4">
+                    <label className="text-sm w-20 shrink-0">重置密码:</label>
+                    <div className="flex-1 flex items-center justify-between">
+                      <Switch checked={editReq.resetPwd} onCheckedChange={(val) => updateEditReq("resetPwd", val)} />
+                    </div>
+                  </div>
+
+                  {/* 备注 */}
+                  <div className="flex items-start gap-4">
+                    <label className="text-sm w-20 shrink-0 pt-1">备注:</label>
+                    <Textarea
+                      className="flex-1 text-sm md:text-sm"
+                      value={editReq.remark}
+                      onChange={(e) => updateEditReq("remark", e.target.value)}
+                      placeholder="请输入备注信息"
+                    />
+                  </div>
+
+                  <Separator />
+
+                  {/* 按钮组 */}
+                  <div className="flex justify-end gap-4">
+                    <Button
+                      variant="outline"
+                      className="text-sm"
+                      onClick={() => {
+                        setEditDialogOpen(false);
+                        setEditReq({ ...defaultStudentEditReq });
+                      }}
+                    >
+                      取消
+                    </Button>
+                    <Button className="text-sm" onClick={handleEdit} disabled={editProcessIng}>
+                      {editProcessIng ? "更新中..." : "更新"}
+                    </Button>
+                  </div>
                 </div>
-                <Textarea
-                  value={editReq.remark}
-                  className="texst-sm md:text-sm w-80"
-                  onChange={(e) => updateEditReq("remark", e.target.value)}
-                  placeholder={"请输入备注信息"}
-                />
               </div>
-            </div>
-
-            <Separator />
-
-            <DialogFooter>
-              <Button
-                variant="outline"
-                className="text-sm"
-                onClick={() => {
-                  setEditDialogOpen(false);
-                }}
-              >
-                取消
-              </Button>
-              <Button className="text-sm" onClick={handleSubmit} disabled={processIng}>
-                {processIng ? "保存中..." : "保存"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </div>,
+            document.body,
+          )}
 
         <Separator />
 
@@ -624,9 +712,44 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
           >
             取消
           </Button>
+
+          <Button
+            variant="outline"
+            className="text-sm"
+            onClick={() => {
+              alert("批量操作后续支持");
+            }}
+          >
+            批量删除
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// 试卷状态选择器
+interface StudentStatusSelectProps {
+  defaultValue?: number;
+  onSelect: (val: number) => void;
+}
+function StudentStatusSelect({ defaultValue = 0, onSelect }: StudentStatusSelectProps) {
+  const handleSelect = (val: number) => {
+    // 点击相同项时取消选中（行为可选）
+    if (defaultValue === val) {
+      return;
+    }
+    onSelect(val);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2 justify-start">
+      {StringConst.studentStatusList.map(({ id, value, label }) => (
+        <Button key={id} className="text-sm" variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
+          {label}
+        </Button>
+      ))}
+    </div>
   );
 }
 
