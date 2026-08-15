@@ -6,6 +6,7 @@ import { cn } from "~/lib/utils";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Button } from "~/components/ui/button";
 import { useUser } from "~/hooks/use-user";
+import { UserRoleType } from "~/type/enum";
 
 // 个人中心首页
 
@@ -236,7 +237,7 @@ export default function Index() {
   // ----- 移动端布局 -----
   return (
     <div className="flex flex-col h-full text-base">
-      {currentUser && (
+      {currentUser && currentUser.role === UserRoleType.Teacher && (
         <>
           {/* 顶部导航栏（汉堡按钮 + 标题） */}
           <div className="sticky top-0 z-20 border bg-background/95 backdrop-blur-sm">

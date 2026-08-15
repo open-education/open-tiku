@@ -27,7 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { QuestionStatus } from "~/util/enum";
+import { QuestionStatus } from "~/type/enum";
 import type { KeyedMutator } from "swr";
 import type { UserInfoResp } from "~/type/user";
 import { useUser } from "~/hooks/use-user";

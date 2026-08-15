@@ -32,7 +32,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/componen
 import { Watermark } from "~/common/watermark";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
-import { PaperStatus } from "~/util/enum";
+import { PaperStatus } from "~/type/enum";
 import { GenInfoPreview } from "./info";
 import { ArrayUtil } from "~/util/object";
 

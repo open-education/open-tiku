@@ -8,7 +8,7 @@ import { TagShow } from "~/common/paper/tag";
 import TopAdd from "~/paper/top/add";
 import { Button } from "~/components/ui/button";
 import { SquarePen } from "lucide-react";
-import { PaperStatus } from "~/util/enum";
+import { PaperStatus } from "~/type/enum";
 
 // 试卷详情预览样式
 interface TopInfoPreviewProps {

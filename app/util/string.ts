@@ -1,5 +1,5 @@
 import type { StudentAccountParseResult } from "~/type/class";
-import { PaperStatus, QuestionStatus, StudentStatus } from "~/util/enum";
+import { PaperStatus, QuestionStatus, StudentStatus } from "~/type/enum";
 
 // 字符串验证工具类
 export const StringValidator = {

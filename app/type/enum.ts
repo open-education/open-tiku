@@ -21,3 +21,10 @@ export enum StudentStatus {
   Pause = 2, // 暂停
   Disabled = 3, // 禁用
 }
+
+// 用户角色
+export enum UserRoleType {
+  Normal = 1, // 普通
+  Student = 2, // 学生
+  Teacher = 3, // 教师
+}

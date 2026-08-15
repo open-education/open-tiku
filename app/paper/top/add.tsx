@@ -21,7 +21,7 @@ import { FileUpload } from "~/common/file";
 import { QuickToolList } from "~/common/tool";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Loading } from "~/common/load";
-import { PaperStatus } from "~/util/enum";
+import { PaperStatus } from "~/type/enum";
 import { CommonPaperConf } from "~/common/paper/config";
 import { TopInfo, TopInfoPreview } from "~/paper/top/info";
 import { ObjectUtil } from "~/util/object";

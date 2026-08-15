@@ -2,7 +2,7 @@ import { useState } from "react";
 import { SimplePagination } from "~/common/page";
 import type { CommonGenPaperGenConf } from "~/type/paper";
 import type { QuestionInfoResp, QuestionSearch } from "~/type/question";
-import { PaperStatus } from "~/util/enum";
+import { PaperStatus } from "~/type/enum";
 import { useQuestionList } from "~/util/fetcher";
 import { StringConst } from "~/util/string";
 import { GenInfoReplaceList } from "~/paper/gen/info";
