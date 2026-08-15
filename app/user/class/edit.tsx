@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import type { KeyedMutator } from "swr";
+import { SimpleAlert } from "~/common/alert";
+import { Loading } from "~/common/load";
 import { GradeSelect } from "~/common/paper/grade";
 import { SemesterSelect } from "~/common/paper/semester";
 import { YearSelect } from "~/common/paper/year";
@@ -15,6 +17,7 @@ import { Separator } from "~/components/ui/separator";
 import { Switch } from "~/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { Textarea } from "~/components/ui/textarea";
+import { useDelayedLoading } from "~/hooks/delayed-loading";
 import type {
   ClassInfoReq,
   ClassInfoResp,
@@ -24,6 +27,7 @@ import type {
   ClassStudentReq,
   ClassStudentResp,
 } from "~/type/class";
+import { useClassStudentList } from "~/util/fetcher";
 import { httpClient } from "~/util/http";
 import { StringConst, StringUtil, StringValidator } from "~/util/string";
 
@@ -417,44 +421,19 @@ interface StudentAccountListProps {
   infoResp: ClassInfoResp | null;
 }
 
-const defaultStudentEditReq: ClassStudentEditReq = {
-  id: 0,
-  classId: 0,
-  account: "",
-  resetPwd: false,
-  status: 0,
-  remark: "",
-};
-
 function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps) {
-  // 维护学生账户列表
-  const [studentList, setStudentList] = useState<ClassStudentResp[]>([]);
-
   // 用 Set 存储选中的学生 id
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
-  // 获取数据（使用 useEffect 避免重复请求）
-  useEffect(() => {
-    if (!open || !infoResp?.id) return;
-    httpClient
-      .get<ClassStudentResp[]>(`/class/student/${infoResp.id}/list`)
-      .then((res) => {
-        setStudentList(res);
-        setSelectedIds(new Set());
-      })
-      .catch((err) => {
-        toast.error(<div className="text-red-700">查询班级学生账户出错: {err.message}</div>, {
-          duration: Infinity,
-          action: {
-            label: "关闭",
-            onClick: () => {},
-          },
-        });
-      });
-  }, [open, infoResp?.id]);
+  const {
+    data: studentListResp = [],
+    isLoading: studentListRespIdLoading,
+    error: studentListRespErr,
+    mutate: studentListRespMutate,
+  } = useClassStudentList(infoResp?.id || 0);
 
   // 判断全选状态
-  const totalCount = studentList.length;
+  const totalCount = studentListResp.length;
   const selectedCount = selectedIds.size;
   const isAllSelected = totalCount > 0 && selectedCount === totalCount;
 
@@ -463,7 +442,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
     if (isAllSelected) {
       setSelectedIds(new Set());
     } else {
-      const allIds = studentList.map((s) => s.id);
+      const allIds = studentListResp.map((s) => s.id);
       setSelectedIds(new Set(allIds));
     }
   };
@@ -479,79 +458,9 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
     setSelectedIds(newSet);
   };
 
-  // 批量操作示例
-  const [editReq, setEditReq] = useState<ClassStudentEditReq>(defaultStudentEditReq);
-  const updateEditReq = (key: keyof ClassStudentEditReq, value: number | string | boolean) => {
-    setEditReq((prev) => ({ ...prev, [key]: value }));
-  };
-
   // 编辑账户
   const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
-  const [editProcessIng, setEditProcessIng] = useState<boolean>(false);
-
-  const handleEdit = () => {
-    if (editReq.id <= 0) {
-      toast.error(<div className="text-red-700">没有选择学生账户</div>, {
-        duration: Infinity,
-        action: {
-          label: "关闭",
-          onClick: () => {},
-        },
-      });
-      return;
-    }
-    if (!StringValidator.isNonEmpty(editReq.account)) {
-      toast.error(<div className="text-red-700">账户为空</div>, {
-        duration: Infinity,
-        action: {
-          label: "关闭",
-          onClick: () => {},
-        },
-      });
-      return;
-    }
-
-    setEditProcessIng(true);
-
-    const classId = editReq.classId;
-
-    // 请求编辑账户更新
-    httpClient
-      .post<boolean>("/class/student/edit", editReq)
-      .then((res) => {
-        setEditDialogOpen(false);
-        setEditReq({ ...defaultStudentEditReq });
-
-        // 如何刷新账户列表, 重新查询列表页面
-        httpClient
-          .get<ClassStudentResp[]>(`/class/student/${classId}/list`)
-          .then((res) => {
-            setStudentList(res);
-            setSelectedIds(new Set());
-          })
-          .catch((err) => {
-            toast.error(<div className="text-red-700">查询班级学生账户出错: {err.message}</div>, {
-              duration: Infinity,
-              action: {
-                label: "关闭",
-                onClick: () => {},
-              },
-            });
-          });
-      })
-      .catch((err) => {
-        toast.error(<div className="text-red-700">编辑账户信息出错: {err.message}</div>, {
-          duration: Infinity,
-          action: {
-            label: "关闭",
-            onClick: () => {},
-          },
-        });
-      })
-      .finally(() => {
-        setEditProcessIng(false);
-      });
-  };
+  const [editInfoResp, setEditInfoResp] = useState<ClassStudentResp | null>(null);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -562,6 +471,10 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
         </DialogHeader>
 
         <Separator />
+
+        {studentListRespErr && <SimpleAlert title="班级学生账户列表获取出错" message={studentListRespErr.message} />}
+
+        {useDelayedLoading(studentListRespIdLoading) && <Loading />}
 
         <div className="space-y-4 py-2 overflow-y-auto">
           <Table>
@@ -577,14 +490,14 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
               </TableRow>
             </TableHeader>
             <TableBody>
-              {studentList.length === 0 ? (
+              {studentListResp.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="h-24 text-center">
                     暂无学生账户
                   </TableCell>
                 </TableRow>
               ) : (
-                studentList.map((student) => (
+                studentListResp.map((student) => (
                   <TableRow key={student.id} className={selectedIds.has(student.id) ? "bg-muted/50" : ""}>
                     <TableCell className="text-sm">
                       <Checkbox checked={selectedIds.has(student.id)} onCheckedChange={() => toggleOne(student.id)} aria-label="选择行" />
@@ -597,7 +510,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
                         variant="ghost"
                         size="icon"
                         onClick={() => {
-                          setEditReq({ ...student, resetPwd: false });
+                          setEditInfoResp(student);
                           setEditDialogOpen(true);
                         }}
                         className="h-8 w-8"
@@ -622,7 +535,8 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
 
         {/* 编辑学生账户信息-内部对话框 */}
         {editDialogOpen &&
-          editReq.id > 0 &&
+          editInfoResp &&
+          editInfoResp.id > 0 &&
           createPortal(
             <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center" onClick={() => setEditDialogOpen(false)}>
               <div className="bg-white h-[40vh] w-[30vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
@@ -636,64 +550,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
                 </div>
 
                 {/* 内容区域 */}
-                <div className="flex-1 overflow-y-auto space-y-4 py-4 px-8">
-                  <div className="text-sm text-gray-500">若重置密码, 更新成功后会将新的密码发送到你的个人邮箱中</div>
-
-                  {/* 账户名称 */}
-                  <div className="flex items-center gap-4">
-                    <label className="text-sm w-20 shrink-0">账户名称:</label>
-                    <Input
-                      className="flex-1 text-sm md:text-sm"
-                      value={editReq.account}
-                      onChange={(e) => updateEditReq("account", e.target.value)}
-                      placeholder="请输入新的账户名称"
-                    />
-                  </div>
-
-                  {/* 状态 */}
-                  <div className="flex items-center gap-4">
-                    <label className="text-sm w-20 shrink-0">状态:</label>
-                    <StudentStatusSelect defaultValue={editReq.status} onSelect={(val) => updateEditReq("status", val)} />
-                  </div>
-
-                  {/* 重置密码 */}
-                  <div className="flex items-center gap-4">
-                    <label className="text-sm w-20 shrink-0">重置密码:</label>
-                    <div className="flex-1 flex items-center justify-between">
-                      <Switch checked={editReq.resetPwd} onCheckedChange={(val) => updateEditReq("resetPwd", val)} />
-                    </div>
-                  </div>
-
-                  {/* 备注 */}
-                  <div className="flex items-start gap-4">
-                    <label className="text-sm w-20 shrink-0 pt-1">备注:</label>
-                    <Textarea
-                      className="flex-1 text-sm md:text-sm"
-                      value={editReq.remark}
-                      onChange={(e) => updateEditReq("remark", e.target.value)}
-                      placeholder="请输入备注信息"
-                    />
-                  </div>
-
-                  <Separator />
-
-                  {/* 按钮组 */}
-                  <div className="flex justify-end gap-4">
-                    <Button
-                      variant="outline"
-                      className="text-sm"
-                      onClick={() => {
-                        setEditDialogOpen(false);
-                        setEditReq({ ...defaultStudentEditReq });
-                      }}
-                    >
-                      取消
-                    </Button>
-                    <Button className="text-sm" onClick={handleEdit} disabled={editProcessIng}>
-                      {editProcessIng ? "更新中..." : "更新"}
-                    </Button>
-                  </div>
-                </div>
+                <StudentAccountEdit setOpen={setEditDialogOpen} infoResp={editInfoResp} studentListRespMutate={studentListRespMutate} />
               </div>
             </div>,
             document.body,
@@ -749,6 +606,141 @@ function StudentStatusSelect({ defaultValue = 0, onSelect }: StudentStatusSelect
           {label}
         </Button>
       ))}
+    </div>
+  );
+}
+
+// 编辑学生账户信息
+interface StudentAccountEditProps {
+  setOpen: (val: boolean) => void;
+  infoResp: ClassStudentResp;
+  studentListRespMutate: KeyedMutator<ClassStudentResp[]>;
+}
+
+const defaultStudentEditReq: ClassStudentEditReq = {
+  id: 0,
+  classId: 0,
+  account: "",
+  resetPwd: false,
+  status: 0,
+  remark: "",
+};
+
+function StudentAccountEdit({ setOpen, infoResp, studentListRespMutate }: StudentAccountEditProps) {
+  // 批量操作示例
+  const [editReq, setEditReq] = useState<ClassStudentEditReq>({ ...infoResp, resetPwd: false });
+  const updateEditReq = (key: keyof ClassStudentEditReq, value: number | string | boolean) => {
+    setEditReq((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const [editProcessIng, setEditProcessIng] = useState<boolean>(false);
+
+  const handleEdit = () => {
+    if (editReq.id <= 0) {
+      toast.error(<div className="text-red-700">没有选择学生账户</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (!StringValidator.isNonEmpty(editReq.account)) {
+      toast.error(<div className="text-red-700">账户为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+
+    setEditProcessIng(true);
+
+    // 请求编辑账户更新
+    httpClient
+      .post<boolean>("/class/student/edit", editReq)
+      .then((res) => {
+        setOpen(false);
+        setEditReq({ ...defaultStudentEditReq });
+
+        // 刷新账户列表, 重新查询列表页面
+        studentListRespMutate();
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">编辑账户信息出错: {err.message}</div>, {
+          duration: Infinity,
+          action: {
+            label: "关闭",
+            onClick: () => {},
+          },
+        });
+      })
+      .finally(() => {
+        setEditProcessIng(false);
+      });
+  };
+
+  return (
+    <div className="flex-1 overflow-y-auto space-y-4 py-4 px-8">
+      <div className="text-sm text-gray-500">若重置密码, 更新成功后会将新的密码发送到你的个人邮箱中</div>
+
+      {/* 账户名称 */}
+      <div className="flex items-center gap-4">
+        <label className="text-sm w-20 shrink-0">账户名称:</label>
+        <Input
+          className="flex-1 text-sm md:text-sm"
+          value={editReq.account}
+          onChange={(e) => updateEditReq("account", e.target.value)}
+          placeholder="请输入新的账户名称"
+        />
+      </div>
+
+      {/* 状态 */}
+      <div className="flex items-center gap-4">
+        <label className="text-sm w-20 shrink-0">状态:</label>
+        <StudentStatusSelect defaultValue={editReq.status} onSelect={(val) => updateEditReq("status", val)} />
+      </div>
+
+      {/* 重置密码 */}
+      <div className="flex items-center gap-4">
+        <label className="text-sm w-20 shrink-0">重置密码:</label>
+        <div className="flex-1 flex items-center justify-between">
+          <Switch checked={editReq.resetPwd} onCheckedChange={(val) => updateEditReq("resetPwd", val)} />
+        </div>
+      </div>
+
+      {/* 备注 */}
+      <div className="flex items-start gap-4">
+        <label className="text-sm w-20 shrink-0 pt-1">备注:</label>
+        <Textarea
+          className="flex-1 text-sm md:text-sm"
+          value={editReq.remark}
+          onChange={(e) => updateEditReq("remark", e.target.value)}
+          placeholder="请输入备注信息"
+        />
+      </div>
+
+      <Separator />
+
+      {/* 按钮组 */}
+      <div className="flex justify-end gap-4">
+        <Button
+          variant="outline"
+          className="text-sm"
+          onClick={() => {
+            setOpen(false);
+            setEditReq({ ...defaultStudentEditReq });
+          }}
+        >
+          取消
+        </Button>
+        <Button className="text-sm" onClick={handleEdit} disabled={editProcessIng}>
+          {editProcessIng ? "更新中..." : "更新"}
+        </Button>
+      </div>
     </div>
   );
 }

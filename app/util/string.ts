@@ -182,7 +182,7 @@ export const StringConst = {
   studentStatusList: [
     { id: 1, value: StudentStatus.Active, label: "激活" },
     { id: 2, value: StudentStatus.Pause, label: "暂停" },
-    { id: 3, value: StudentStatus.Disabled, label: "禁用" },
+    { id: 3, value: StudentStatus.Disabled, label: "停用" },
   ],
 };
 

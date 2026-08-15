@@ -7,7 +7,7 @@ import { StringConst, StringUtil, StringValidator } from "~/util/string";
 import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from "~/type/question";
 import type { TaskListReq, TaskListResp } from "~/type/task";
 import type { ChapterKnowledgeResp, QuestionCateResp } from "~/type/question-cate";
-import type { ClassListReq, ClassListResp, ClassSearchReq } from "~/type/class";
+import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentResp } from "~/type/class";
 
 /// 使用 SWR 缓存查询组件
 /// https://swr.vercel.app/
@@ -163,4 +163,10 @@ export function useClassList(search: ClassSearchReq, pageNo: number) {
 
   const key = JSON.stringify(req);
   return useSWR<ClassListResp>(key, () => httpClient.post<ClassListResp>("/class/list", req), defaultErrConfig);
+}
+
+// 班级学生账户列表
+export function useClassStudentList(classId: number) {
+  const key = classId > 0 ? `/class/student/${classId}/list` : null;
+  return useSWRImmutable<ClassStudentResp[]>(key, httpClient.get, defaultErrConfig);
 }
