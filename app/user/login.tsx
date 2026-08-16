@@ -5,7 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "~/components/ui/card";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
-import { useClearAuth, useSaveAuth } from "~/hooks/use-user";
+import { clearAuth, saveAuth } from "~/util/user";
 import { UserLoginSource } from "~/type/enum";
 import type { StudentLoginReq, UserInfoResp, UserLoginReq } from "~/type/user";
 import { httpClient } from "~/util/http";
@@ -62,12 +62,12 @@ export function Login() {
           setWarnInfo(<SimpleAlert title="登录失败" message="账户信息不完整" />);
           return;
         }
-        useSaveAuth(userInfo.token, userInfo);
+        saveAuth(userInfo.token, userInfo);
         navigate("/", { replace: true }); // 登录成功跳转
       })
       .catch((err) => {
         setWarnInfo(<SimpleAlert title="登录失败" message={err.message} />);
-        useClearAuth();
+        clearAuth();
       })
       .finally(() => {
         setStudentLoggingIn(false);
