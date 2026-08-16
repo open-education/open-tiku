@@ -203,11 +203,11 @@ function Header() {
                       </Button>
                     }
                   />
-                  <DropdownMenuContent className="px-2 py-2 w-60">
+                  <DropdownMenuContent className="px-8 py-4 w-60">
                     {currentUser.role === UserRoleType.Teacher &&
                       userItems.map((item) => (
                         <DropdownMenuItem key={item.id}>
-                          <NavLink to={item.url} className="text-sm flex items-center gap-2 w-full">
+                          <NavLink to={item.url} className="text-sm flex items-center gap-4 w-full">
                             <item.leftIcon className="w-4.5 shrink-0" />
                             {item.label}
                             <item.rightIcon className="ml-auto" />
@@ -217,9 +217,9 @@ function Header() {
 
                     <DropdownMenuSeparator className="mt-2 mb-2" />
 
-                    <DropdownMenuItem variant="destructive" onClick={handleLogout}>
+                    <DropdownMenuItem variant="destructive" onClick={handleLogout} className="text-sm">
                       <LogOutIcon />
-                      Log out
+                      退出登录
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

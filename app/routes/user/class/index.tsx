@@ -89,6 +89,19 @@ export default function Index() {
         </CardHeader>
         <CardContent>
           {/* 说明事项 */}
+          <div className="text-sm">
+            <div>
+              1. 目前发送学生账户密码的邮件服务器是 QQ 个人邮箱, 有每日容量限制, 如果接收不到邮件或者垃圾箱也没有收到邮件, 先不要操作,
+              在客服群反应等确认原因后再上传学生账户;
+            </div>
+            <div>2. 生成密码本身比较耗时, 一次添加的用户建议不要超过 20 个;</div>
+            <div>3. 上传学生账户时, 注意是覆盖上传还是增量上传, 覆盖上传会清空班级内已有的学生账户;</div>
+          </div>
+
+          <div className="my-4">
+            <Separator />
+          </div>
+
           {/* 搜索选项 */}
           <div className="text-base mt-3">
             <div className="flex flex-col gap-3">
@@ -150,16 +163,16 @@ export default function Index() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-sm">ID</TableHead>
-                  <TableHead className="text-sm">年份</TableHead>
-                  <TableHead className="text-sm">年级</TableHead>
-                  <TableHead className="text-sm">学期</TableHead>
-                  <TableHead className="text-sm">名称</TableHead>
-                  <TableHead className="text-sm">邮箱</TableHead>
-                  <TableHead className="text-sm">排序</TableHead>
-                  <TableHead className="text-sm">备注</TableHead>
-                  <TableHead className="text-sm">创建时间</TableHead>
-                  <TableHead className="text-sm">操作</TableHead>
+                  <TableHead className="text-sm font-semibold">ID</TableHead>
+                  <TableHead className="text-sm font-semibold">年份</TableHead>
+                  <TableHead className="text-sm font-semibold">年级</TableHead>
+                  <TableHead className="text-sm font-semibold">学期</TableHead>
+                  <TableHead className="text-sm font-semibold">名称</TableHead>
+                  <TableHead className="text-sm font-semibold">邮箱</TableHead>
+                  <TableHead className="text-sm font-semibold">排序</TableHead>
+                  <TableHead className="text-sm font-semibold">备注</TableHead>
+                  <TableHead className="text-sm font-semibold">创建时间</TableHead>
+                  <TableHead className="text-sm font-semibold">操作</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -177,7 +190,9 @@ export default function Index() {
                       <TableCell className="text-sm">{item.grade}</TableCell>
                       <TableCell className="text-sm">{item.semester}</TableCell>
                       <TableCell className="text-sm">{item.label}</TableCell>
-                      <TableCell className="text-sm">{item.email}</TableCell>
+                      <TableCell className="text-sm">
+                        <SimpleTooltip children={item.email} />
+                      </TableCell>
                       <TableCell className="text-sm">{item.sortOrder}</TableCell>
                       <TableCell className="text-sm">
                         <SimpleTooltip children={item.remark} />

@@ -23,6 +23,7 @@ import type { KeyedMutator } from "swr";
 import { StatusSelect } from "~/common/paper/tag";
 import { Textarea } from "~/components/ui/textarea";
 import { toast } from "sonner";
+import { SimpleTooltip } from "~/common/tooltip";
 
 // 试卷列表
 
@@ -328,19 +329,21 @@ function MyPaperList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-sm">标题</TableHead>
-              <TableHead className="text-sm">标签</TableHead>
-              <TableHead className="text-sm">年份</TableHead>
-              <TableHead className="text-sm">试卷类型</TableHead>
-              <TableHead className="text-sm">状态</TableHead>
-              <TableHead className="text-sm">作者</TableHead>
-              <TableHead className="text-sm text-right">操作</TableHead>
+              <TableHead className="text-sm font-semibold">标题</TableHead>
+              <TableHead className="text-sm font-semibold">标签</TableHead>
+              <TableHead className="text-sm font-semibold">年份</TableHead>
+              <TableHead className="text-sm font-semibold">试卷类型</TableHead>
+              <TableHead className="text-sm font-semibold">状态</TableHead>
+              <TableHead className="text-sm font-semibold">作者</TableHead>
+              <TableHead className="text-sm text-right font-semibold">操作</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paperList.map((info) => (
               <TableRow key={info.id}>
-                <TableCell className="font-medium text-sm">{info.title}</TableCell>
+                <TableCell className="font-medium text-sm">
+                  <SimpleTooltip children={info.title} />
+                </TableCell>
                 <TableCell className="text-sm">{info.tag}</TableCell>
                 <TableCell className="text-sm">{info.year}</TableCell>
                 <TableCell className="text-sm">{StringConst.paperTypeNames.get(info.paperType) || ""}</TableCell>
