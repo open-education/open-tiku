@@ -8,6 +8,7 @@ import { Loading } from "~/common/load";
 import { GradeSelect } from "~/common/paper/grade";
 import { SemesterSelect } from "~/common/paper/semester";
 import { YearSelect } from "~/common/paper/year";
+import { SimpleTooltip } from "~/common/tooltip";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
@@ -313,6 +314,14 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
       });
       return;
     }
+    let notice = "确定全量导入学生账户? 班级内已有的学生账户会被全部清除";
+    if (isIncrementalImport) {
+      notice = "确定增量导入学生账户? 班级内已有的学生账户不会被清除";
+    }
+    // 最后做提示导入行为
+    if (!confirm(notice)) {
+      return;
+    }
 
     // 添加学生账户
     setProcessIng(true);
@@ -366,7 +375,7 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
                 <FieldLabel htmlFor="terms-checkbox-desc" className="text-sm">
                   是否增量导入
                 </FieldLabel>
-                <FieldDescription className="text-sm">
+                <FieldDescription className="text-sm text-red-500">
                   增量导入时不会覆盖已有学生账户, 也不允许当前导入的学生账户中有已存在的账户; 否则删除历史账户新增本次全部账户
                 </FieldDescription>
               </FieldContent>
@@ -515,7 +524,9 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
                     <TableCell className="text-sm">{student.statusDesc}</TableCell>
                     <TableCell className="text-sm">{student.lastLoginTime}</TableCell>
                     <TableCell className="text-sm">{student.loginCount}</TableCell>
-                    <TableCell className="text-sm">{student.remark || "-"}</TableCell>
+                    <TableCell className="text-sm">
+                      <SimpleTooltip children={student.remark || "-"} />
+                    </TableCell>
                     <TableCell className="text-sm">
                       <Button
                         variant="ghost"
@@ -531,7 +542,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => alert("没有实现")}
+                        onClick={() => alert("删除暂未实现")}
                         className="h-8 w-8 text-destructive hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
