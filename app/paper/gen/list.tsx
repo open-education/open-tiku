@@ -1,7 +1,7 @@
 import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import type { CommonPaperResp, CommonPaperSearchReq, GenPaperResp, PaperApproveReq, PaperDeleteReq, PaperListResp, TopPaperResp } from "~/type/paper";
-import { PaperStatus } from "~/util/enum";
+import { PaperStatus } from "~/type/enum";
 import { httpClient } from "~/util/http";
 import { StringConst } from "~/util/string";
 import { GenInfo, GenInfoPreview } from "~/paper/gen/info";

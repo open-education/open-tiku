@@ -14,3 +14,23 @@ export enum PaperStatus {
   Homework = 4, // 已布置作业
   Rejected = 10, // 已拒绝
 }
+
+// 学生账户状态
+export enum StudentStatus {
+  Active = 1, // 激活
+  Pause = 2, // 暂停
+  Disabled = 3, // 禁用
+}
+
+// 用户角色
+export enum UserRoleType {
+  Normal = 1, // 普通
+  Student = 2, // 学生
+  Teacher = 3, // 教师
+}
+
+// 用户登录来源
+export enum UserLoginSource {
+  User = 1, // 普通用户
+  Student = 2, // 学生
+}

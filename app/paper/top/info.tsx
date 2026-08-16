@@ -1,5 +1,5 @@
 import { Separator } from "~/components/ui/separator";
-import { useUser } from "~/hooks/use-user";
+import { useUserInfo } from "~/hooks/use-user";
 import type { CommonPaperSearchReq, TopPaperReq, TopPaperResp } from "~/type/paper";
 import type { UserInfoResp } from "~/type/user";
 import { StringConst } from "~/util/string";
@@ -8,7 +8,7 @@ import { TagShow } from "~/common/paper/tag";
 import TopAdd from "~/paper/top/add";
 import { Button } from "~/components/ui/button";
 import { SquarePen } from "lucide-react";
-import { PaperStatus } from "~/util/enum";
+import { PaperStatus } from "~/type/enum";
 
 // 试卷详情预览样式
 interface TopInfoPreviewProps {
@@ -16,7 +16,7 @@ interface TopInfoPreviewProps {
 }
 function TopInfoPreview({ req }: TopInfoPreviewProps) {
   // 获取用户信息
-  const currentUser: UserInfoResp | null = useUser();
+  const currentUser: UserInfoResp | null = useUserInfo();
 
   // 生成题型样式
   const getGroupName = (index: number, typeName: string, subTitle: string) => {
@@ -108,7 +108,7 @@ function TopInfo({
   setSheetContent,
 }: TopInfoProps) {
   // 获取用户信息
-  const currentUser: UserInfoResp | null = useUser();
+  const currentUser: UserInfoResp | null = useUserInfo();
 
   // 生成题型样式
   const getGroupName = (index: number, typeName: string, subTitle: string) => {

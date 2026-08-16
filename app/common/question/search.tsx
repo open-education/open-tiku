@@ -21,7 +21,7 @@ import { TaskAdd, TaskListShow } from "~/question/task";
 import { Button } from "~/components/ui/button";
 import { Plus, Upload, View } from "lucide-react";
 import type { UserInfoResp } from "~/type/user";
-import { useUser } from "~/hooks/use-user";
+import { useUserInfo } from "~/hooks/use-user";
 
 // 题目搜索页面
 interface QuestionSearchProps {
@@ -32,7 +32,7 @@ interface QuestionSearchProps {
 
 function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4 sm:px-16 sm:py-4" }: QuestionSearchProps) {
   // 获取用户信息
-  const currentUser: UserInfoResp | null = useUser();
+  const currentUser: UserInfoResp | null = useUserInfo();
 
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);

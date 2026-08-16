@@ -118,7 +118,7 @@ function GenInfoHead({ commonPaperResp }: GenInfoHeadProps) {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {STATS.map((item) => (
               <Card key={item.id} className="border-0 text-center">
-                <CardContent className="pt-4">
+                <CardContent>
                   <item.icon className={item.className} />
                   <h2 className={cn("text-4xl font-bold", item.className)}>{item.count}</h2>
                   <h6 className="mt-4 mb-2 text-base font-semibold">{item.title}</h6>

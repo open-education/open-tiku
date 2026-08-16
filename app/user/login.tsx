@@ -1,20 +1,84 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { SimpleAlert } from "~/common/alert";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "~/components/ui/card";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
+import { useClearAuth, useSaveAuth } from "~/hooks/use-user";
+import { UserLoginSource } from "~/type/enum";
+import type { StudentLoginReq, UserInfoResp, UserLoginReq } from "~/type/user";
 import { httpClient } from "~/util/http";
+import { StringValidator } from "~/util/string";
 
 // 账户登录
 
+const defaultStudentLoginReq: StudentLoginReq = {
+  account: "",
+  password: "",
+};
+
+// 当前自己浏览器登录只保留最新的一个有效用户
 export function Login() {
-  const [isGithubRedirecting, setIsGithubRedirecting] = useState(false);
-  const [isQQRedirecting, setIsQQRedirecting] = useState(false);
+  const navigate = useNavigate();
 
   const [warnInfo, setWarnInfo] = useState<React.ReactNode>(null);
 
-  const handleLogin = (providerType: number) => {
+  // 学生账户登录, 用户名密码登录
+  const [studentLoggingIn, setStudentLoggingIn] = useState<boolean>(false);
+
+  const [logInReq, setLogInReq] = useState<StudentLoginReq>(defaultStudentLoginReq);
+  const updateLogInReq = (key: keyof StudentLoginReq, value: string) => {
+    setLogInReq((prev) => ({ ...prev, [key]: value }));
+  };
+
+  // 学生登录
+  const handleStudentLogin = () => {
+    setWarnInfo("");
+
+    if (!StringValidator.isNonEmpty(logInReq.account)) {
+      setWarnInfo(<SimpleAlert title="登录参数校验" message="账户为空" />);
+      return;
+    }
+    if (!StringValidator.isNonEmpty(logInReq.password)) {
+      setWarnInfo(<SimpleAlert title="登录参数校验" message="密码为空" />);
+      return;
+    }
+
+    // 账户登录
+    setStudentLoggingIn(true);
+
+    let req: UserLoginReq = {
+      source: UserLoginSource.Student,
+      account: logInReq.account,
+      password: logInReq.password,
+    };
+
+    httpClient
+      .post<UserInfoResp>("/user/login", req)
+      .then((userInfo) => {
+        // 检查 token 信息
+        if (!StringValidator.isNonEmpty(userInfo.token)) {
+          setWarnInfo(<SimpleAlert title="登录失败" message="账户信息不完整" />);
+          return;
+        }
+        useSaveAuth(userInfo.token, userInfo);
+        navigate("/", { replace: true }); // 登录成功跳转
+      })
+      .catch((err) => {
+        setWarnInfo(<SimpleAlert title="登录失败" message={err.message} />);
+        useClearAuth();
+      })
+      .finally(() => {
+        setStudentLoggingIn(false);
+      });
+  };
+
+  // 第三方账户登录
+  const [isGithubRedirecting, setIsGithubRedirecting] = useState(false);
+  const [isQQRedirecting, setIsQQRedirecting] = useState(false);
+
+  const handleNormalLogin = (providerType: number) => {
     setWarnInfo("");
 
     if (providerType == 1) {
@@ -52,7 +116,15 @@ export function Login() {
                 <FieldLabel htmlFor="name" className="text-sm">
                   昵称
                 </FieldLabel>
-                <Input id="name" className="text-sm md:text-sm" type="string" placeholder="uu" required />
+                <Input
+                  id="name"
+                  className="text-sm md:text-sm"
+                  type="string"
+                  placeholder="uu"
+                  required
+                  value={logInReq.account}
+                  onChange={(e) => updateLogInReq("account", e.target.value)}
+                />
                 <FieldDescription className="text-sm">由你的老师帮你创建的账号</FieldDescription>
               </Field>
 
@@ -62,11 +134,21 @@ export function Login() {
                     密码
                   </FieldLabel>
                 </div>
-                <Input id="password" className="text-sm md:text-sm" type="password" required placeholder="******" />
+                <Input
+                  id="password"
+                  className="text-sm md:text-sm"
+                  type="password"
+                  required
+                  placeholder="******"
+                  value={logInReq.password}
+                  onChange={(e) => updateLogInReq("password", e.target.value)}
+                />
               </Field>
 
               <Field>
-                <Button variant="default">登录</Button>
+                <Button variant="default" onClick={handleStudentLogin} disabled={studentLoggingIn}>
+                  {studentLoggingIn ? "登录中..." : "登录"}
+                </Button>
               </Field>
 
               <FieldSeparator className="text-sm">Or continue with</FieldSeparator>
@@ -75,7 +157,7 @@ export function Login() {
                 <Button
                   variant="outline"
                   className="w-full text-sm justify-start gap-1"
-                  onClick={() => handleLogin(1)}
+                  onClick={() => handleNormalLogin(1)}
                   disabled={isGithubRedirecting}
                 >
                   {isGithubRedirecting ? (
@@ -92,7 +174,12 @@ export function Login() {
               </Field>
 
               <Field>
-                <Button variant="outline" className="w-full text-sm justify-start gap-1" onClick={() => handleLogin(2)} disabled={isQQRedirecting}>
+                <Button
+                  variant="outline"
+                  className="w-full text-sm justify-start gap-1"
+                  onClick={() => handleNormalLogin(2)}
+                  disabled={isQQRedirecting}
+                >
                   {isQQRedirecting ? (
                     "登录中..."
                   ) : (

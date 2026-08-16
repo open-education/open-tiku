@@ -10,7 +10,7 @@ import { MultiOptionShow } from "~/common/select";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { DictUtil } from "~/util/object";
 import { SimpleAlert } from "../alert";
-import { QuestionStatus } from "~/util/enum";
+import { QuestionStatus } from "~/type/enum";
 
 // 题目详情样式-预览和详情均使用该样式
 interface QuestionInfoProps {

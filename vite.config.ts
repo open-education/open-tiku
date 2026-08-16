@@ -1,11 +1,9 @@
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
-import path from "path";
 
 export default defineConfig({
-  plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
+  plugins: [tailwindcss(), reactRouter()],
   server: {
     hmr: {
       port: 24680, // 本地启动多个项目时需要指定其它端口, 端口可用即可, 默认是 24678
@@ -18,8 +16,6 @@ export default defineConfig({
     allowedHosts: ["tiku.test"],
   },
   resolve: {
-    alias: {
-      "~": path.resolve(__dirname, "./app"),
-    },
+    tsconfigPaths: true,
   },
 });
