@@ -17,7 +17,7 @@ import { SimpleNoData } from "~/common/empty";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Plus } from "lucide-react";
 import type { UserInfoResp } from "~/type/user";
-import { useUser } from "~/hooks/use-user";
+import { useUserInfo } from "~/hooks/use-user";
 import { CommonPaperSearchConf } from "~/common/paper/config";
 import GenAdd from "~/paper/gen/add";
 import { createTextbookPathDict } from "~/util/textbook-dict";
@@ -44,7 +44,7 @@ const defaultSearch: CommonPaperSearchReq = {
 // 试卷管理首页
 export default function Index() {
   // 获取用户信息
-  const currentUser: UserInfoResp | null = useUser();
+  const currentUser: UserInfoResp | null = useUserInfo();
 
   const location = useLocation();
   // 首页可能传递过来已经选择好的导航级联信息keys列表

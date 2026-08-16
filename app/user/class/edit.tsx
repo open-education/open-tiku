@@ -249,10 +249,9 @@ interface UploadStudentAccountProps {
   open: boolean;
   setOpen: (value: boolean) => void;
   infoResp: ClassInfoResp | null;
-  classListMutate: KeyedMutator<ClassListResp>;
 }
 
-function UploadStudentAccount({ open, setOpen, infoResp, classListMutate }: UploadStudentAccountProps) {
+function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountProps) {
   const [processIng, setProcessIng] = useState<boolean>(false);
   const [isIncrementalImport, setIsIncrementalImport] = useState<boolean>(false);
   const [accounts, setAccounts] = useState<string>("");
@@ -328,7 +327,6 @@ function UploadStudentAccount({ open, setOpen, infoResp, classListMutate }: Uplo
       .post<number>("/class/student/add", addReq)
       .then((res) => {
         setOpen(false);
-        classListMutate();
         setAccounts(""); // 导入成功后清除上一次输入的账户内容
       })
       .catch((err) => {
@@ -425,12 +423,21 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
   // 用 Set 存储选中的学生 id
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
+  // 每次弹窗打开时，版本号 +1
+  const [version, setVersion] = useState(0);
+
+  useEffect(() => {
+    if (open) {
+      setVersion((prev) => prev + 1);
+    }
+  }, [open]);
+
   const {
     data: studentListResp = [],
     isLoading: studentListRespIdLoading,
     error: studentListRespErr,
     mutate: studentListRespMutate,
-  } = useClassStudentList(infoResp?.id || 0);
+  } = useClassStudentList(infoResp?.id || 0, version);
 
   // 判断全选状态
   const totalCount = studentListResp.length;
@@ -464,7 +471,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-3xl sm:max-h-9sm:max-w-3xl max-h-[85vh] flex flex-col">
+      <DialogContent className="sm:max-w-4xl sm:max-h-9sm:max-w-4xl max-h-[85vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold">班级学生账户列表</DialogTitle>
           <DialogDescription className="text-sm">如果需要重置密码或者暂停, 禁用账户, 请对应勾选需要处理的的账户</DialogDescription>
@@ -485,6 +492,8 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
                 </TableHead>
                 <TableHead className="text-sm font-semibold">账号</TableHead>
                 <TableHead className="text-sm font-semibold">状态</TableHead>
+                <TableHead className="text-sm font-semibold">最后登录时间</TableHead>
+                <TableHead className="text-sm font-semibold">登录次数</TableHead>
                 <TableHead className="text-sm font-semibold">备注</TableHead>
                 <TableHead className="text-sm font-semibold">操作</TableHead>
               </TableRow>
@@ -492,7 +501,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
             <TableBody>
               {studentListResp.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
+                  <TableCell colSpan={7} className="h-24 text-center">
                     暂无学生账户
                   </TableCell>
                 </TableRow>
@@ -504,6 +513,8 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
                     </TableCell>
                     <TableCell className="text-sm">{student.account}</TableCell>
                     <TableCell className="text-sm">{student.statusDesc}</TableCell>
+                    <TableCell className="text-sm">{student.lastLoginTime}</TableCell>
+                    <TableCell className="text-sm">{student.loginCount}</TableCell>
                     <TableCell className="text-sm">{student.remark || "-"}</TableCell>
                     <TableCell className="text-sm">
                       <Button

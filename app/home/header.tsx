@@ -5,7 +5,7 @@ import { Button } from "~/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "~/components/ui/popover";
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet";
-import { useUser } from "~/hooks/use-user";
+import { useUserInfo } from "~/hooks/use-user";
 import { UserRoleType } from "~/type/enum";
 import type { UserInfoResp } from "~/type/user";
 import { Login } from "~/user/login";
@@ -55,7 +55,7 @@ const userItems: LinkProps[] = [
 
 function Header() {
   // 获取用户信息
-  const currentUser: UserInfoResp | null = useUser();
+  const currentUser: UserInfoResp | null = useUserInfo();
 
   const isLogin = currentUser && currentUser?.userId > 0;
   const [sheetOpen, setSheetOpen] = useState(false);

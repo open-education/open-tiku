@@ -102,14 +102,34 @@ export default function Index() {
               <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
                 <div className="md:w-24 shrink-0 font-medium">年级:</div>
                 <div className="flex-1 min-w-0">
-                  <GradeSelect value={searchReq.grade} onValueChange={(val) => updateSearchReq("grade", val ?? "")} placeholder="选择年级" />
+                  <GradeSelect
+                    value={searchReq.grade}
+                    onValueChange={(val) => {
+                      if (!val || StringConst.searchCondDefaultVal === val) {
+                        updateSearchReq("grade", "");
+                      } else {
+                        updateSearchReq("grade", val);
+                      }
+                    }}
+                    placeholder="选择年级"
+                  />
                 </div>
               </div>
 
               <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
                 <div className="md:w-24 shrink-0 font-medium">学期:</div>
                 <div className="flex-1 min-w-0">
-                  <SemesterSelect value={searchReq.semester} onValueChange={(val) => updateSearchReq("semester", val ?? "")} placeholder="选择学期" />
+                  <SemesterSelect
+                    value={searchReq.semester}
+                    onValueChange={(val) => {
+                      if (!val || StringConst.searchCondDefaultVal === val) {
+                        updateSearchReq("semester", "");
+                      } else {
+                        updateSearchReq("semester", val);
+                      }
+                    }}
+                    placeholder="选择学期"
+                  />
                 </div>
               </div>
             </div>
@@ -233,12 +253,7 @@ export default function Index() {
       <ClassEdit open={editDialogOpen} setOpen={setEditDialogOpen} searchReq={searchReq} infoResp={infoResp} classListMutate={classListMutate} />
 
       {/* 导入学生账户对话框 */}
-      <UploadStudentAccount
-        open={uploadStudentDialogOpen}
-        setOpen={setUploadStudentAccountOpen}
-        infoResp={infoResp}
-        classListMutate={classListMutate}
-      />
+      <UploadStudentAccount open={uploadStudentDialogOpen} setOpen={setUploadStudentAccountOpen} infoResp={infoResp} />
 
       {/* 查看班级学生对话框 */}
       <StudentAccountList open={viewInfoDialogOpen} setOpen={setViewInfoDialogOpen} infoResp={infoResp} />

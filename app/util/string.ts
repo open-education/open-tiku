@@ -184,6 +184,8 @@ export const StringConst = {
     { id: 2, value: StudentStatus.Pause, label: "暂停" },
     { id: 3, value: StudentStatus.Disabled, label: "停用" },
   ],
+  // 搜索列表默认的不选
+  searchCondDefaultVal: "不选",
 };
 
 // 字符串常量工具

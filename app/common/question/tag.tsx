@@ -30,7 +30,7 @@ import {
 import { QuestionStatus } from "~/type/enum";
 import type { KeyedMutator } from "swr";
 import type { UserInfoResp } from "~/type/user";
-import { useUser } from "~/hooks/use-user";
+import { useUserInfo } from "~/hooks/use-user";
 import { Slider } from "~/components/ui/slider";
 import type { GenDifficultyLevelRange } from "~/type/paper";
 
@@ -496,7 +496,7 @@ function OperateTags({
   // 题目标签按钮处理
   const renderButtons = (source: string) => {
     // 获取用户信息
-    const currentUser: UserInfoResp | null = useUser();
+    const currentUser: UserInfoResp | null = useUserInfo();
 
     // 详情按钮-所有地方均有
     const buttons = [

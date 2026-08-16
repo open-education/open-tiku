@@ -68,10 +68,13 @@ export interface StudentAccountParseResult {
 export interface ClassStudentResp {
   id: number;
   classId: number;
+  userId: number;
   account: string;
   status: number; // 1 正常 2 暂停 3 停用
   statusDesc: string;
   remark: string;
+  lastLoginTime: string;
+  loginCount: number;
   createdAt: string;
   updatedAt: string;
 }

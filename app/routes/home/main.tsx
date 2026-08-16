@@ -6,6 +6,8 @@ import { httpClient } from "~/util/http";
 import type { UserInfoResp } from "~/type/user";
 import { toast } from "sonner";
 import { Footer } from "~/home/footer";
+import { UserLoginSource } from "~/type/enum";
+import { useClearAuth, useSaveAuth } from "~/hooks/use-user";
 
 /// 网站首页顶部和底部框架
 export function meta({}: Route.MetaArgs) {
@@ -28,30 +30,25 @@ export default function Main() {
     const params = new URLSearchParams(window.location.search);
     const tempToken = params.get("token");
 
-    const clearAuth = () => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.dispatchEvent(new Event("user-update"));
-    };
-
     if (tempToken) {
       // 临时换票流程
       httpClient
         .post<string>("/user/exchange", { tempToken })
-        .then((realToken) => httpClient.post<UserInfoResp>("/user/login", { token: realToken }).then((userInfo) => ({ realToken, userInfo })))
+        .then((realToken) =>
+          httpClient
+            .post<UserInfoResp>("/user/login", { source: UserLoginSource.User, token: realToken })
+            .then((userInfo) => ({ realToken, userInfo })),
+        )
         .then(({ realToken, userInfo }) => {
-          localStorage.setItem("token", realToken);
-          localStorage.setItem("user", JSON.stringify(userInfo));
-          window.history.replaceState(null, "", window.location.pathname);
-          window.dispatchEvent(new Event("user-update"));
+          useSaveAuth(realToken, userInfo);
           navigate("/", { replace: true }); // 登录成功跳转
         })
         .catch((err) => {
           toast.error(err.message);
-          clearAuth();
+          useClearAuth();
         });
     } else {
-      // 静默登录：检查本地 token 是否有效
+      // 静默登录：检查本地 token 是否有效, 所以同一时刻只能登录一个账户, 后续看是否支持多账户登录, 因为 token 虽然生效但是被强制替换了
       const token = localStorage.getItem("token");
       if (token) {
         httpClient
@@ -61,10 +58,10 @@ export default function Main() {
             window.dispatchEvent(new Event("user-update"));
           })
           .catch(() => {
-            clearAuth(); // token 失效，清除
+            useClearAuth(); // token 失效，清除
           });
       } else {
-        clearAuth(); // 无 token，确保 user 为空
+        useClearAuth(); // 无 token，确保 user 为空
       }
     }
   }, []);

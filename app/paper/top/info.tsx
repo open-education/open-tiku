@@ -1,5 +1,5 @@
 import { Separator } from "~/components/ui/separator";
-import { useUser } from "~/hooks/use-user";
+import { useUserInfo } from "~/hooks/use-user";
 import type { CommonPaperSearchReq, TopPaperReq, TopPaperResp } from "~/type/paper";
 import type { UserInfoResp } from "~/type/user";
 import { StringConst } from "~/util/string";
@@ -16,7 +16,7 @@ interface TopInfoPreviewProps {
 }
 function TopInfoPreview({ req }: TopInfoPreviewProps) {
   // 获取用户信息
-  const currentUser: UserInfoResp | null = useUser();
+  const currentUser: UserInfoResp | null = useUserInfo();
 
   // 生成题型样式
   const getGroupName = (index: number, typeName: string, subTitle: string) => {
@@ -108,7 +108,7 @@ function TopInfo({
   setSheetContent,
 }: TopInfoProps) {
   // 获取用户信息
-  const currentUser: UserInfoResp | null = useUser();
+  const currentUser: UserInfoResp | null = useUserInfo();
 
   // 生成题型样式
   const getGroupName = (index: number, typeName: string, subTitle: string) => {

@@ -166,7 +166,7 @@ export function useClassList(search: ClassSearchReq, pageNo: number) {
 }
 
 // 班级学生账户列表
-export function useClassStudentList(classId: number) {
-  const key = classId > 0 ? `/class/student/${classId}/list` : null;
-  return useSWRImmutable<ClassStudentResp[]>(key, httpClient.get, defaultErrConfig);
+export function useClassStudentList(classId: number, version: number) {
+  const key = classId > 0 ? [`/class/student/${classId}/list`, version] : null;
+  return useSWR<ClassStudentResp[]>(key, ([url]) => httpClient.get(url), defaultErrConfig);
 }

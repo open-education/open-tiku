@@ -28,3 +28,9 @@ export enum UserRoleType {
   Student = 2, // 学生
   Teacher = 3, // 教师
 }
+
+// 用户登录来源
+export enum UserLoginSource {
+  User = 1, // 普通用户
+  Student = 2, // 学生
+}
