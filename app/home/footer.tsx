@@ -8,6 +8,7 @@ import { Separator } from "~/components/ui/separator";
 interface LinkItemProps {
   title: string;
   href: string;
+  target: string;
 }
 interface LinksProps {
   title: string;
@@ -17,7 +18,7 @@ interface LinksProps {
 const links: LinksProps[] = [
   {
     title: "关于我们",
-    items: [{ title: "加入我们", href: "https://oef.org.cn/about/join/" }],
+    items: [{ title: "加入我们", href: "https://oef.org.cn/about/join/", target: "_blank" }],
   },
   {
     title: "帮助文档",
@@ -27,18 +28,15 @@ const links: LinksProps[] = [
     title: "常见问题",
     items: [
       {
-        title: "账户和登录",
-        href: "",
-      },
-      {
         title: "FAQs",
-        href: "",
+        href: "faqs",
+        target: "_self",
       },
     ],
   },
   {
     title: "友情链接",
-    items: [{ title: "开放教育反应堆", href: "https://oef.org.cn" }],
+    items: [{ title: "开放教育反应堆", href: "https://oef.org.cn", target: "_blank" }],
   },
 ];
 
@@ -78,9 +76,9 @@ function Footer() {
             {links.map(({ title, items }) => (
               <ul key={title} className="flex-1 min-w-25">
                 <p className="mb-2 text-sm font-semibold">{title}</p>
-                {items.map(({ title, href }) => (
+                {items.map(({ title, href, target }) => (
                   <li key={title} className="mb-1">
-                    <Link to={href} target="_blank" rel="noopener noreferrer" className="text-xs text-foreground hover:text-primary">
+                    <Link to={href} target={target} rel="noopener noreferrer" className="text-xs text-foreground hover:text-primary">
                       {title}
                     </Link>
                   </li>
