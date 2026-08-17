@@ -196,12 +196,12 @@ export default function Index() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-sm">ID</TableHead>
-                  <TableHead className="text-sm">类型</TableHead>
-                  <TableHead className="text-sm">名称</TableHead>
-                  <TableHead className="text-sm">顺序</TableHead>
-                  <TableHead className="text-sm">是否为选择题</TableHead>
-                  <TableHead className="text-sm">操作</TableHead>
+                  <TableHead className="text-sm font-semibold">ID</TableHead>
+                  <TableHead className="text-sm font-semibold">类型</TableHead>
+                  <TableHead className="text-sm font-semibold">名称</TableHead>
+                  <TableHead className="text-sm font-semibold">顺序</TableHead>
+                  <TableHead className="text-sm font-semibold">是否为选择题</TableHead>
+                  <TableHead className="text-sm font-semibold">操作</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -269,7 +269,7 @@ export default function Index() {
   );
 }
 
-// 展示题型和标签
+// 展示字典列表
 interface OtherDictListShowProps {
   list: TextbookOtherDict[];
   onEdit: (val: TextbookOtherDict) => void;

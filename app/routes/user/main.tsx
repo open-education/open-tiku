@@ -1,6 +1,21 @@
 import { NavLink, Outlet, useLocation } from "react-router";
 import type { Route } from "./+types/main";
-import { BookA, BookOpenText, ChevronDown, CircleCheckBig, FileQuestionMark, FileText, Link, Menu, School, Settings, X } from "lucide-react";
+import {
+  BookA,
+  BookOpenText,
+  ChevronDown,
+  CircleCheckBig,
+  FileQuestionMark,
+  FileText,
+  Link,
+  Menu,
+  School,
+  Settings,
+  UserCheck,
+  UserCog,
+  Users,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -93,6 +108,26 @@ const navigationItems: NavItem[] = [
         label: "我的班级",
         icon: School,
         href: "/user/class/my",
+      },
+    ],
+  },
+  {
+    id: "users",
+    label: "用户",
+    icon: UserCog,
+    href: "",
+    children: [
+      {
+        id: "thirdUserList",
+        label: "第三方账户列表",
+        icon: Users,
+        href: "/user/account/list",
+      },
+      {
+        id: "userSessionList",
+        label: "用户 Session 列表",
+        icon: UserCheck,
+        href: "/user/session/list",
       },
     ],
   },

@@ -8,9 +8,11 @@ import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilar
 import type { TaskListReq, TaskListResp } from "~/type/task";
 import type { ChapterKnowledgeResp, QuestionCateResp } from "~/type/question-cate";
 import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentResp } from "~/type/class";
+import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from "~/type/user";
 
 /// 使用 SWR 缓存查询组件
 /// https://swr.vercel.app/
+/// 手动指定 key 时记得把请求路径加入到 key 中
 
 // 默认的错误处理配置, 避免服务端未启动时频繁提示错误
 const defaultErrConfig = {
@@ -27,7 +29,7 @@ export function useTextbooks(depth: number = 5) {
 
 // 最新精选试卷
 export function useLatestPapers(paperType: number = StringConst.paperTypeTop, count: number = 6) {
-  return useSWRImmutable<CommonPaperResp[]>(`/paper/latest/${paperType}/${count}`, httpClient.get, defaultErrConfig);
+  return useSWR<CommonPaperResp[]>(`/paper/latest/${paperType}/${count}`, httpClient.get, defaultErrConfig);
 }
 
 // 试卷列表
@@ -58,17 +60,16 @@ export function usePaperList(search: CommonPaperSearchReq, pageNo: number) {
   }
 
   // 生成 SWR 的 key（只有 relatedId > 0 时才发起请求，否则为 null）
-  const key = req.relatedId > 0 ? JSON.stringify(req) : null;
+  const reqPath = "/paper/list";
+  const key = req.relatedId > 0 ? [reqPath, JSON.stringify(req)] : null;
 
-  return useSWR<PaperListResp>(key, () => httpClient.post<PaperListResp>("/paper/list", req), {
-    keepPreviousData: true, // 分页切换时保留旧数据，体验更好
-  });
+  return useSWR<PaperListResp>(key, () => httpClient.post<PaperListResp>(reqPath, req), defaultErrConfig);
 }
 
 // 教材/考点题型列表-第5层标识同时获取题型列表
 export function useQuestionCates(fiveLevelId: number) {
   const key = fiveLevelId > 0 ? `/textbook/list/${fiveLevelId}/children` : null;
-  return useSWRImmutable<Textbook[]>(key, httpClient.get, defaultErrConfig);
+  return useSWR<Textbook[]>(key, httpClient.get, defaultErrConfig);
 }
 
 // 题目列表
@@ -96,10 +97,9 @@ export function useQuestionList(source: string, search: QuestionSearch, pageNo: 
   }
 
   // 生成 SWR 的 key（只有 relatedId > 0 时才发起请求，否则为 null）
-  const key = req.questionCateIds.length > 0 ? JSON.stringify(req) : null;
-  return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>("/question/list", req), {
-    keepPreviousData: true, // 分页切换时保留旧数据，体验更好
-  });
+  const reqPath = "/question/list";
+  const key = req.questionCateIds.length > 0 ? [reqPath, JSON.stringify(req)] : null;
+  return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>(reqPath, req), defaultErrConfig);
 }
 
 // 变式题列表, 只展示题干, 不展示详情, 因为变式题本身在列表题目中
@@ -111,8 +111,9 @@ export function useSimilarList(questionId: number, eightId: number, pageNo: numb
     pageSize: StringConst.pageSize,
   };
 
-  const key = JSON.stringify(req);
-  return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>("/question/similar", req), defaultErrConfig);
+  const reqPath = "/question/similar";
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>(reqPath, req), defaultErrConfig);
 }
 
 // 题目上传任务列表
@@ -135,13 +136,13 @@ export function useTextbookLevel(parentId: number = 0) {
 // 通过章节或者考点拉去关联关系
 export function useChapterKnowledgeList(sevenLevelId: number) {
   const key = sevenLevelId > 0 ? `/chapter-knowledge/list/${sevenLevelId}` : null;
-  return useSWRImmutable<ChapterKnowledgeResp[]>(key, httpClient.get, defaultErrConfig);
+  return useSWR<ChapterKnowledgeResp[]>(key, httpClient.get, defaultErrConfig);
 }
 
 // 获取题型列表
 export function useQuestionCateList(relatedId: number) {
   const key = relatedId > 0 ? `/question-cate/list/${relatedId}` : null;
-  return useSWRImmutable<QuestionCateResp[]>(key, httpClient.get, defaultErrConfig);
+  return useSWR<QuestionCateResp[]>(key, httpClient.get, defaultErrConfig);
 }
 
 // 班级列表
@@ -161,12 +162,37 @@ export function useClassList(search: ClassSearchReq, pageNo: number) {
     req.semester = search.semester;
   }
 
-  const key = JSON.stringify(req);
-  return useSWR<ClassListResp>(key, () => httpClient.post<ClassListResp>("/class/list", req), defaultErrConfig);
+  const reqPath = "/class/list";
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<ClassListResp>(key, () => httpClient.post<ClassListResp>(reqPath, req), defaultErrConfig);
 }
 
 // 班级学生账户列表
 export function useClassStudentList(classId: number, version: number) {
   const key = classId > 0 ? [`/class/student/${classId}/list`, version] : null;
   return useSWR<ClassStudentResp[]>(key, ([url]) => httpClient.get(url), defaultErrConfig);
+}
+
+// 第三方登录用户列表
+export function useUserAccountList(pageNo: number) {
+  let req: UserIdentityListReq = {
+    pageNo,
+    pageSize: StringConst.pageSize,
+  };
+
+  const reqPath = "/user/account/list";
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<UserIdentityListResp>(key, () => httpClient.post<UserIdentityListResp>(reqPath, req), defaultErrConfig);
+}
+
+// 用户 Session 列表
+export function useUserSessionList(pageNo: number) {
+  let req: UserSessionListReq = {
+    pageNo,
+    pageSize: StringConst.pageSize,
+  };
+
+  const reqPath = "/user/session/list";
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<UserSessionListResp>(key, () => httpClient.post<UserSessionListResp>(reqPath, req), defaultErrConfig);
 }

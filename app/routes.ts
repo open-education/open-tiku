@@ -31,6 +31,10 @@ export default [
 
       // 我的班级
       route("class/my", "routes/user/class/index.tsx"),
+
+      // 第三方用户列表
+      route("account/list", "routes/user/account/index.tsx"),
+      route("session/list", "routes/user/account/session.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;
