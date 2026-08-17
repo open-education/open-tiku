@@ -86,7 +86,7 @@ class HttpClient {
     }
 
     const apiResponse = (await response.json()) as ApiResponse<T>;
-    if (apiResponse.code !== 200) {
+    if (apiResponse.code !== 0) {
       throw new Error(apiResponse.msg || "Request failed");
     }
     return apiResponse.data as T;

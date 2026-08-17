@@ -252,10 +252,10 @@ export default function Index() {
             {/* 关联关系列表 */}
             <div>
               <div className={`${rowClass} text-sm font-medium text-muted-foreground`}>
-                <div className="w-20 shrink-0">ID</div>
-                <div className="flex-1">章节</div>
-                <div className="flex-1">考点</div>
-                <div className="w-45 shrink-0">操作</div>
+                <div className="w-20 shrink-0 font-semibold">ID</div>
+                <div className="flex-1 font-semibold">章节</div>
+                <div className="flex-1 font-semibold">考点</div>
+                <div className="w-45 shrink-0 font-semibold">操作</div>
               </div>
 
               {ckList.length === 0 ? (
