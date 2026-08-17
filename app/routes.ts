@@ -11,6 +11,9 @@ export default [
     // 题目库
     route("question", "routes/question/index.tsx"),
 
+    // 帮助中心
+    route("faqs", "routes/help/faqs.tsx"),
+
     // 用户中心
     route("user", "routes/user/main.tsx", [
       // 用户中心布局
