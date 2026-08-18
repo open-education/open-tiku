@@ -9,6 +9,7 @@ import TopAdd from "~/paper/top/add";
 import { Button } from "~/components/ui/button";
 import { SquarePen } from "lucide-react";
 import { PaperStatus } from "~/type/enum";
+import { getGroupName } from "~/common/paper/print";
 
 // 试卷详情预览样式
 interface TopInfoPreviewProps {
@@ -17,14 +18,6 @@ interface TopInfoPreviewProps {
 function TopInfoPreview({ req }: TopInfoPreviewProps) {
   // 获取用户信息
   const currentUser: UserInfoResp | null = useUserInfo();
-
-  // 生成题型样式
-  const getGroupName = (index: number, typeName: string, subTitle: string) => {
-    const groupName = subTitle
-      ? `${StringConst.groupNumberMap[index]}、${typeName} (${subTitle})`
-      : `${StringConst.groupNumberMap[index]}、${typeName}`;
-    return <div className="text-base">{groupName}</div>;
-  };
 
   return (
     <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-gray-100">
@@ -109,14 +102,6 @@ function TopInfo({
 }: TopInfoProps) {
   // 获取用户信息
   const currentUser: UserInfoResp | null = useUserInfo();
-
-  // 生成题型样式
-  const getGroupName = (index: number, typeName: string, subTitle: string) => {
-    const groupName = subTitle
-      ? `${StringConst.groupNumberMap[index]}、${typeName} (${subTitle})`
-      : `${StringConst.groupNumberMap[index]}、${typeName}`;
-    return <div className="text-base">{groupName}</div>;
-  };
 
   const handleEdit = () => {
     setSheetTitle?.("编辑试卷");

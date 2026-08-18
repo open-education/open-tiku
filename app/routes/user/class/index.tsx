@@ -91,8 +91,12 @@ export default function Index() {
           {/* 说明事项 */}
           <div className="text-sm">
             <div>
-              1. 目前发送学生账户密码的邮件服务器是 QQ 个人邮箱, 有每日容量限制, 如果接收不到邮件或者垃圾箱也没有收到邮件, 先不要操作,
-              在客服群反应等确认原因后再上传学生账户;
+              1. 目前发送学生账户密码的邮件抬头是:&nbsp;
+              <span className="text-blue-600 text-base font-semibold">
+                {StringConst.defaultServEmailTitle}
+                &nbsp;&lt;{StringConst.defaultServEmail}&gt;
+              </span>
+              , 有每日容量限制, 如果接收不到邮件或者垃圾箱也没有收到邮件, 先不要操作, 在客服群反应等确认原因后再上传学生账户;
             </div>
             <div>2. 生成密码本身比较耗时, 一次添加的用户建议不要超过 20 个;</div>
             <div>3. 上传学生账户时, 注意是覆盖上传还是增量上传, 覆盖上传会清空班级内已有的学生账户;</div>

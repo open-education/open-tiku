@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import type { QuestionOption } from "~/type/question";
 import type { TopPaperQuestionReq } from "~/type/paper";
 import { SimpleFullContent } from "~/common/content";
 import { MultiOptionShow } from "~/common/select";
@@ -18,16 +17,6 @@ interface TopQuestionInfoProps {
 function TopQuestionInfo(props: TopQuestionInfoProps) {
   const { index, question } = props;
 
-  // 生成题目标题
-  const getQuestionTitle = (orderNum: number, stem: string, images: string[]) => {
-    return <TitleShow no={orderNum} title={stem} comment={""} images={images} />;
-  };
-
-  // 生成题目选项
-  const getQuestionOptions = (index: number, options: QuestionOption[]) => {
-    return <MultiOptionShow optionsLayout={question.optionsLayout || 1} options={options} />;
-  };
-
   const [isAnswerExpanded, setIsAnswerExpanded] = useState(false);
 
   const toggleAnswer = (e: React.MouseEvent) => {
@@ -39,8 +28,12 @@ function TopQuestionInfo(props: TopQuestionInfoProps) {
     <div className="text-base mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60">
       {/* 题目主体 */}
       <div className="pb-2">
-        <div>{getQuestionTitle(question.orderNum, question.stem, question.images || [])}</div>
-        <div className="mt-2.5">{getQuestionOptions(index, question.options || [])}</div>
+        <div>
+          <TitleShow no={question.orderNum} title={question.stem} comment={""} images={question.images || []} />
+        </div>
+        <div className="mt-2.5">
+          <MultiOptionShow optionsLayout={question.optionsLayout || 1} options={question.options || []} />
+        </div>
       </div>
 
       {/* 查看答案按钮 */}

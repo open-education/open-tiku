@@ -9,7 +9,6 @@ import type {
   GenPaperResp,
   ReplaceQuestionReq,
 } from "~/type/paper";
-import { StringConst } from "~/util/string";
 import { GenSortableQuestionList } from "~/paper/gen/question";
 import type { QuestionBaseInfoResp, QuestionInfoResp, QuestionOption } from "~/type/question";
 import React, { useState } from "react";
@@ -27,6 +26,7 @@ import { SimpleAlert } from "~/common/alert";
 import { toast } from "sonner";
 import { Card, CardContent } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
+import { getGroupName } from "~/common/paper/print";
 
 // 手动组卷试卷详情
 
@@ -142,14 +142,6 @@ interface GenInfoPreviewProps {
 }
 
 function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionDimensionDict }: GenInfoPreviewProps) {
-  // 生成题型样式
-  const getGroupName = (index: number, typeName: string, subTitle: string) => {
-    const groupName = subTitle
-      ? `${StringConst.groupNumberMap[index]}、${typeName} (${subTitle})`
-      : `${StringConst.groupNumberMap[index]}、${typeName}`;
-    return <div className="text-base">{groupName}</div>;
-  };
-
   // 生成题目标题
   const getQuestionTitle = (orderNum: number, stem: string, images: string[]) => {
     return <TitleShow no={orderNum} title={stem} comment={""} images={images} />;
@@ -196,9 +188,16 @@ function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionD
                 >
                   {/* 题目主体 */}
                   <div className="flex-[0_0_95%]">
-                    <div>{getQuestionTitle(question.common.orderNum, question.info.baseInfo.title, question.info.baseInfo.images || [])}</div>
+                    <div>
+                      <TitleShow
+                        no={question.common.orderNum}
+                        title={question.info.baseInfo.title}
+                        comment={""}
+                        images={question.info.baseInfo.images || []}
+                      />
+                    </div>
                     <div className="mt-2.5">
-                      {getQuestionOptions(question.info.baseInfo.optionsLayout || 1, question.info.baseInfo.options || [])}
+                      <MultiOptionShow optionsLayout={question.info.baseInfo.optionsLayout || 1} options={question.info.baseInfo.options || []} />
                     </div>
                   </div>
 
@@ -257,14 +256,6 @@ interface GenInfoProps {
 function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensionDict, setOpenSheet }: GenInfoProps) {
   // 需要在这里维护这个变量状态, 考虑获取到数据后再打开抽屉因此接口请求放在上一步
   const [genPaperInfo, setGenPaperInfo] = useState<GenPaperResp>(infoResp);
-
-  // 生成题型样式
-  const getGroupName = (index: number, typeName: string, subTitle: string) => {
-    const groupName = subTitle
-      ? `${StringConst.groupNumberMap[index]}、${typeName} (${subTitle})`
-      : `${StringConst.groupNumberMap[index]}、${typeName}`;
-    return <div className="text-base">{groupName}</div>;
-  };
 
   // 拖拽分组下一个题目到新位置
   const handleDragQuestion = (groupId: number, oldIndex: number, newIndex: number) => {
@@ -563,16 +554,6 @@ interface GenInfoReplaceListProps {
 }
 
 function GenInfoReplaceList({ listResp, questionTypeDict, questionTagDict, questionDimensionDict, onConfirmReplace }: GenInfoReplaceListProps) {
-  // 生成题目标题
-  const getQuestionTitle = (id: number, stem: string, images: string[]) => {
-    return <TitleShow id={id} title={stem} comment={""} images={images} />;
-  };
-
-  // 生成题目选项
-  const getQuestionOptions = (optionsLayout: number, options: QuestionOption[]) => {
-    return <MultiOptionShow optionsLayout={optionsLayout} options={options} />;
-  };
-
   // 遮盖层弹框查看试卷详情
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
@@ -624,8 +605,12 @@ function GenInfoReplaceList({ listResp, questionTypeDict, questionTagDict, quest
           >
             {/* 题目主体 */}
             <div className="flex-[0_0_90%]">
-              <div>{getQuestionTitle(question.id, question.title, question.images || [])}</div>
-              <div className="mt-2.5">{getQuestionOptions(question.optionsLayout || 1, question.options || [])}</div>
+              <div>
+                <TitleShow no={question.id} title={question.title} comment={""} images={question.images || []} />
+              </div>
+              <div className="mt-2.5">
+                <MultiOptionShow optionsLayout={question.optionsLayout || 1} options={question.options || []} />
+              </div>
             </div>
 
             <div className="flex flex-[0_0_10%] justify-center">

@@ -24,6 +24,7 @@ import { StatusSelect } from "~/common/paper/tag";
 import { Textarea } from "~/components/ui/textarea";
 import { toast } from "sonner";
 import { SimpleTooltip } from "~/common/tooltip";
+import { ExportPdf } from "~/common/paper/print";
 
 // 试卷列表
 
@@ -61,36 +62,42 @@ function MyPaperList({
   const [warnInfo, setWarnInfo] = useState<React.ReactNode>(null);
 
   // 查看详情如果是精选试卷保留原有逻辑, 如果是手动组卷需要支持替换和重新排序题目
-  const handlePaperInfo = (paperType: number, id: number) => {
+  const handlePaperInfo = (paperType: number, id: number, isExport: boolean) => {
     setWarnInfo("");
 
     if (paperType === StringConst.paperTypesGen) {
       httpClient
         .get<GenPaperResp>(`/paper/gen/info/${id}`)
         .then((res) => {
-          setSheetTitle("查看详情");
           // 我的试卷才有编辑功能
-          if (res.common.status === PaperStatus.Drafing && search.source === "myPaper") {
-            setSheetDesc("当前为可编辑状态");
-            setSheetContent(
-              <GenInfo
-                infoResp={res}
-                questionTypeDict={questionTypeDict}
-                questionTagDict={questionTagDict}
-                questionDimensionDict={questionDimensionDict}
-                setOpenSheet={setOpenSheet}
-              />,
-            );
+          if (isExport) {
+            setSheetTitle("下载PDF文件");
+            setSheetDesc("下载PDF文件预览样式, 没问题后确认下载即可");
+            setSheetContent(<ExportPdf genInfoResp={res} />);
           } else {
-            setSheetDesc("当前为不可编辑状态");
-            setSheetContent(
-              <GenInfoPreview
-                infoResp={res}
-                questionTypeDict={questionTypeDict}
-                questionTagDict={questionTagDict}
-                questionDimensionDict={questionDimensionDict}
-              />,
-            );
+            setSheetTitle("查看详情");
+            if (res.common.status === PaperStatus.Drafing && search.source === "myPaper") {
+              setSheetDesc("当前为可编辑状态");
+              setSheetContent(
+                <GenInfo
+                  infoResp={res}
+                  questionTypeDict={questionTypeDict}
+                  questionTagDict={questionTagDict}
+                  questionDimensionDict={questionDimensionDict}
+                  setOpenSheet={setOpenSheet}
+                />,
+              );
+            } else {
+              setSheetDesc("当前为不可编辑状态");
+              setSheetContent(
+                <GenInfoPreview
+                  infoResp={res}
+                  questionTypeDict={questionTypeDict}
+                  questionTagDict={questionTagDict}
+                  questionDimensionDict={questionDimensionDict}
+                />,
+              );
+            }
           }
           setOpenSheet(true);
         })
@@ -102,11 +109,18 @@ function MyPaperList({
       httpClient
         .get<TopPaperResp>(`/paper/top/info/${id}`)
         .then((res) => {
-          setSheetTitle("查看详情");
-          setSheetDesc("如需修改直接编辑即可");
-          setSheetContent(
-            <TopInfo infoResp={res} search={search} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
-          );
+          // 打印预览
+          if (isExport) {
+            setSheetTitle("下载PDF文件");
+            setSheetDesc("下载PDF文件预览样式, 没问题后确认下载即可");
+            setSheetContent(<ExportPdf topInfoResp={res} />);
+          } else {
+            setSheetTitle("查看详情");
+            setSheetDesc("如需修改直接编辑即可");
+            setSheetContent(
+              <TopInfo infoResp={res} search={search} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
+            );
+          }
           setOpenSheet(true);
         })
         .catch((err) => {
@@ -209,7 +223,7 @@ function MyPaperList({
   const showOperateList = (info: CommonPaperResp) => {
     // 详情按钮-所有地方均有
     const buttons = [
-      <Button key="myPaperInfo" variant="link" onClick={() => handlePaperInfo(info.paperType, info.id || 0)}>
+      <Button key="myPaperInfo" variant="link" onClick={() => handlePaperInfo(info.paperType, info.id || 0, false)}>
         详情
       </Button>,
     ];
@@ -226,13 +240,7 @@ function MyPaperList({
                 <DialogDescription className="text-sm">请确认试卷没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <DialogClose
-                  render={
-                    <Button variant="outline" className="text-sm">
-                      Cancel
-                    </Button>
-                  }
-                />
+                <DialogClose render={<Button variant="outline">Cancel</Button>} />
                 <Button className="text-sm" onClick={() => handleSubmitApprove(info.id)} disabled={submitApproving}>
                   {submitApproving ? "提交审核中" : "提交审核"}
                 </Button>
@@ -246,16 +254,10 @@ function MyPaperList({
             <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
               <DialogHeader>
                 <DialogTitle className="text-base font-bold">删除试卷</DialogTitle>
-                <DialogDescription className="text-sm">试卷删除后不可恢复, 如果不确定, 可以保留等后续确认后再删除</DialogDescription>
+                <DialogDescription>试卷删除后不可恢复, 如果不确定, 可以保留等后续确认后再删除</DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <DialogClose
-                  render={
-                    <Button variant="outline" className="text-sm">
-                      Cancel
-                    </Button>
-                  }
-                />
+                <DialogClose render={<Button variant="outline">Cancel</Button>} />
                 <Button className="text-sm" onClick={() => handleDelete(info.id)} disabled={deleting}>
                   {deleting ? "删除中" : "删除"}
                 </Button>
@@ -301,13 +303,7 @@ function MyPaperList({
                 </div>
               </div>
               <DialogFooter>
-                <DialogClose
-                  render={
-                    <Button variant="outline" className="text-sm">
-                      Cancel
-                    </Button>
-                  }
-                />
+                <DialogClose render={<Button variant="outline">Cancel</Button>} />
                 <Button className="text-sm" onClick={() => handleApprove(info.id)} disabled={confirmApproving}>
                   {confirmApproving ? "审核中" : "审核"}
                 </Button>
@@ -317,6 +313,13 @@ function MyPaperList({
         );
       }
     }
+
+    // 始终可以打印不做控制
+    buttons.push(
+      <Button key="topInfoExportPdf" variant="link" onClick={() => handlePaperInfo(info.paperType, info.id || 0, true)}>
+        下载
+      </Button>,
+    );
 
     return buttons;
   };
