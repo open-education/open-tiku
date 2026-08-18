@@ -4,18 +4,6 @@ import { Spinner } from "~/components/ui/spinner";
 
 /// 加载中提示
 
-// 初始加载提示, 没有遮盖层等控制, 仅仅告知服务运行中
-function InitLoading() {
-  return (
-    <div className="flex h-screen">
-      <div className="flex flex-col items-center gap-4 p-10">
-        <Spinner className="size-8 animate-spin text-blue-500" />
-        <p className="text-blue-500">Please wait...</p>
-      </div>
-    </div>
-  );
-}
-
 // 直接使用 Portal 挂载到 body，摆脱父容器样式影响, 需要确保 document 存在方可挂载
 function Loading() {
   return createPortal(
@@ -31,4 +19,4 @@ function Loading() {
   );
 }
 
-export { InitLoading, Loading };
+export { Loading };
