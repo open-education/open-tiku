@@ -92,7 +92,7 @@ function Footer() {
         <div className="mt-10 flex flex-wrap items-center justify-between gap-2">
           <div className="text-base text-foreground text-left">&copy; 2026 开放题库. All Rights Reserved.</div>
           <div className="text-sm">
-            ICP备案/许可证号:
+            ICP备案号:
             <Link to="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary">
               桂ICP备2026001793号-1
             </Link>

@@ -480,7 +480,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-4xl sm:max-h-9sm:max-w-4xl max-h-[85vh] flex flex-col">
+      <DialogContent className="w-300! max-w-[90vw]! flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold">班级学生账户列表</DialogTitle>
           <DialogDescription className="text-sm">如果需要重置密码或者暂停, 禁用账户, 请对应勾选需要处理的的账户</DialogDescription>
@@ -510,7 +510,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
             <TableBody>
               {studentListResp.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
+                  <TableCell colSpan={7} className="h-24 text-center text-sm">
                     暂无学生账户
                   </TableCell>
                 </TableRow>
@@ -561,7 +561,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
           editInfoResp.id > 0 &&
           createPortal(
             <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center" onClick={() => setEditDialogOpen(false)}>
-              <div className="bg-white h-[40vh] w-[30vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
+              <div className="bg-white w-[40vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 shrink-0">
                   <div className="text-base font-semibold text-gray-800">账户修改</div>
                   <button className="text-gray-400 hover:text-gray-600 focus:outline-none" onClick={() => setEditDialogOpen(false)} aria-label="关闭">

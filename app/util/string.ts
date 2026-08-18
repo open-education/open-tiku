@@ -186,6 +186,9 @@ export const StringConst = {
   ],
   // 搜索列表默认的不选
   searchCondDefaultVal: "不选",
+  // 服务邮箱
+  defaultServEmail: "tiku@oniqi.com",
+  defaultServEmailTitle: "OpenTiku",
 };
 
 // 字符串常量工具
