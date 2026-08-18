@@ -4,7 +4,6 @@ import type { Route } from "./+types/root";
 import "~/app.css";
 import React from "react";
 import { Toaster } from "~/components/ui/sonner";
-import { InitLoading } from "~/common/load";
 import { Error } from "~/common/error";
 import { ObjectUtil } from "~/util/object";
 import katexStyles from "katex/dist/katex.min.css?url";
@@ -34,11 +33,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   );
-}
-
-// SPA 模式只能在根路由添加加载中的提示
-export function HydrateFallback() {
-  return <InitLoading />;
 }
 
 export default function App() {
