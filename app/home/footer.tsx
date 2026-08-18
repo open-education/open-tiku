@@ -67,7 +67,7 @@ function Footer() {
             </div>
             <div className="mt-2 text-sm">
               <div>举报电话: </div>
-              <div>举报邮箱: zhangguangxun1@outlook.com</div>
+              <div>举报邮箱: z@oef.org.cn</div>
             </div>
           </div>
 

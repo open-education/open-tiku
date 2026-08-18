@@ -17,7 +17,7 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Index() {
   return (
-    <section className="p-4">
+    <section className="px-4 py-4 sm:px-16 sm:py-4 mx-auto">
       <div className="w-full p-8 bg-white">
         <div className="text-center">
           <h2 className="mb-4 text-3xl font-bold">常见问题</h2>
@@ -64,6 +64,24 @@ export default function Index() {
             </p>
 
             <p>该邮箱服务的发送频率和数量限制如下：每月 15000 封邮件，每天 500 封邮件，每2秒 1封邮件；因此如果频繁发送可能无法接收对应的邮件</p>
+          </div>
+        </div>
+
+        {/* 教师角色 */}
+        <div className="space-y-3 mt-4">
+          <h3 className="text-base font-semibold">3. 教师角色</h3>
+
+          <Separator />
+
+          <div className="text-muted-foreground leading-relaxed text-sm space-y-2">
+            <p>需要在首页申请加入教师角色，发送申请邮件给网站管理员，等管理员确认将你升级为教师账户后才生效</p>
+
+            <p>
+              网站没有配置超管一类的高权限账户，因此就目前来说，第三方登录账户角色升级为 <b>教师用户</b>
+              后权限已经是最大；承担着审核题目和试卷的任务；还可以建立自己的班级，管理班级的学生账户
+            </p>
+
+            <p>题目和试卷的创建只要是登录用户均可上传</p>
           </div>
         </div>
       </div>
