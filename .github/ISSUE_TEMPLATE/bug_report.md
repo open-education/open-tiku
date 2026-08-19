@@ -1,6 +1,6 @@
 ---
-name: Bug report
-about: Help us improve by reporting a bug
+name: 错误报告
+about: 通过报告错误来帮助我们改进
 title: "[BUG]"
 labels: ["bug"]
 assignees: ""

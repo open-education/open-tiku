@@ -1,6 +1,6 @@
 ---
-name: Feature request
-about: Suggest a feature
+name: 功能请求
+about: 建议一个新功能
 title: "[NEW]"
 labels: ["enhancement"]
 assignees: ""
