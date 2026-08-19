@@ -50,7 +50,8 @@ tiku.wiseteacher.net {
 		file_server
 	}
 
-	# SPA 核心回退: 当请求的路径对应文件不存在时, 返回 index.html
+	# SPA 核心回退: 当请求的路径对应文件不存在时, 返回 __spa-fallback.html
+	# 提前预生成的静态页面就直接加载即可
 	handle {
 		try_files {path} /__spa-fallback.html
 		file_server
