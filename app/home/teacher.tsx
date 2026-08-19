@@ -19,7 +19,7 @@ function Teacher() {
           <p className="text-primary-foreground text-xl font-medium mb-1" style={{ fontFamily: '"Noto Serif SC", serif' }}>
             成为教师角色
           </p>
-          <p className="text-primary-foreground/70 text-sm">上传自制题目，精选现有试卷，基于题库生成试卷，管理班级学情，一站式教学辅助工具</p>
+          <p className="text-primary-foreground/70 text-sm">上传自制题目，精选现有试卷，基于题库自主组卷，管理班级学情，一站式教学辅助工具</p>
         </div>
         <div className="flex gap-3 shrink-0">
           <button className="text-sm border border-primary-foreground/30 text-primary-foreground px-5 py-2.5 rounded-lg hover:bg-primary-foreground/10 transition-colors">
@@ -72,12 +72,17 @@ function Teacher() {
                 <div className="text-sm">下面是发送申请的邮件模板：</div>
 
                 <div className="text-sm">
-                  <pre>邮件标题：[账号来源选择 GitHub | QQ]-[昵称]-申请教师用户权限, 例如：QQ-Sui-申请教师用户权限</pre>
-                  <pre>邮件内容：我已阅读并理解教师用户权限与责任，愿意遵守平台内容规范。</pre>
+                  <div>
+                    <span className="font-semibold">邮件标题：</span>[账号来源选择 GitHub | QQ]-[昵称]-申请教师用户权限, 例如：
+                    <span className="font-semibold">QQ-Sui-申请教师用户权限</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold">邮件内容：</span>我已阅读并理解教师用户权限与责任，愿意遵守平台内容规范。
+                  </div>
                 </div>
 
                 <div className="text-sm">
-                  将该邮件发送到管理员邮箱账户: <span className="text-blue-400">z@oef.org.cn</span>，收到邮件后我们会尽快做出判断并给你反馈。
+                  将该邮件发送给管理员邮箱账户: <span className="text-blue-400">z@oef.org.cn</span>，收到邮件后我们会尽快做出判断并给你反馈。
                 </div>
               </div>
 
