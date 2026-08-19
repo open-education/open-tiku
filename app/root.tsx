@@ -8,6 +8,7 @@ import { Error } from "~/common/error";
 import { ObjectUtil } from "~/util/object";
 import katexStyles from "katex/dist/katex.min.css?url";
 import { TooltipProvider } from "~/components/ui/tooltip";
+import { InitLoading } from "~/common/load";
 
 // 使用该方式引入 katex css 文件
 export function links(): Route.LinkDescriptors {
@@ -33,6 +34,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   );
+}
+
+// SPA 模式只能在根路由添加加载中的提示
+export function HydrateFallback() {
+  return <InitLoading />;
 }
 
 export default function App() {

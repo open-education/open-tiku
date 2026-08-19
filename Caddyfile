@@ -41,15 +41,18 @@ tiku.wiseteacher.net {
 		header Cache-Control "public, max-age=31536000, immutable"
 	}
 
-	# 入口文件 index.html 绝对不能缓存
-	route /index.html {
+	# 入口文件 index.html __spa-fallback.html 不缓存
+	@no_cache {
+		path /index.html /__spa-fallback.html
+	}
+	route @no_cache {
 		header Cache-Control "no-store, must-revalidate"
 		file_server
 	}
 
 	# SPA 核心回退: 当请求的路径对应文件不存在时, 返回 index.html
 	handle {
-		try_files {path} /index.html
+		try_files {path} /__spa-fallback.html
 		file_server
 	}
 
