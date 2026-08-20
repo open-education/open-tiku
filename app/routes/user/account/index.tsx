@@ -10,6 +10,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~
 import { Button } from "~/components/ui/button";
 import { Pencil } from "lucide-react";
 import { SimplePagination } from "~/common/page";
+import type { UserIdentityInfoResp } from "~/type/user";
+import { AccountEdit } from "~/user/account/edit";
+import { SimpleTooltip } from "~/common/tooltip";
 
 // 网站第三方登录用户列表
 
@@ -35,7 +38,11 @@ export default function Index() {
     },
     isLoading: userListRespLoading,
     error: userListRespErr,
+    mutate: accountListRespMutate,
   } = useUserAccountList(pageNo);
+
+  const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
+  const [editInfoResp, setEditInfoResp] = useState<UserIdentityInfoResp | null>(null);
 
   return (
     <div className="p-4">
@@ -45,6 +52,10 @@ export default function Index() {
           <CardDescription className="text-sm">第三方登录账户只允许修改用户状态</CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="text-sm">
+            <div>1. 如果需要下线用户, 修改用户状态为 暂停/封禁 即可, 更新后用户将下线, 账户状态再恢复为 激活 前将无法再登录平台</div>
+          </div>
+
           {/* 错误提示 */}
           {userListRespErr && <SimpleAlert title="用户列表获取失败" message={userListRespErr.message} />}
 
@@ -60,12 +71,12 @@ export default function Index() {
                   <TableHead className="text-sm font-semibold">userId</TableHead>
                   <TableHead className="text-sm font-semibold">来源</TableHead>
                   <TableHead className="text-sm font-semibold">账户名称</TableHead>
-                  <TableHead className="text-sm font-semibold">邮箱</TableHead>
                   <TableHead className="text-sm font-semibold">最后登录时间</TableHead>
                   <TableHead className="text-sm font-semibold">登录次数</TableHead>
                   <TableHead className="text-sm font-semibold">角色</TableHead>
                   <TableHead className="text-sm font-semibold">状态</TableHead>
                   <TableHead className="text-sm font-semibold">创建时间</TableHead>
+                  <TableHead className="text-sm font-semibold">备注</TableHead>
                   <TableHead className="text-sm font-semibold">操作</TableHead>
                 </TableRow>
               </TableHeader>
@@ -83,18 +94,21 @@ export default function Index() {
                       <TableCell className="text-sm">{item.userId}</TableCell>
                       <TableCell className="text-sm">{item.providerDesc}</TableCell>
                       <TableCell className="text-sm">{item.providerUsername}</TableCell>
-                      <TableCell className="text-sm">{item.providerEmail}</TableCell>
                       <TableCell className="text-sm">{item.lastLoginTime}</TableCell>
                       <TableCell className="text-sm">{item.loginCount}</TableCell>
                       <TableCell className="text-sm">{item.roleDesc}</TableCell>
                       <TableCell className="text-sm">{item.statusDesc}</TableCell>
                       <TableCell className="text-sm">{item.createdAt}</TableCell>
+                      <TableCell className="text-sm">
+                        <SimpleTooltip children={item.remark} />
+                      </TableCell>
                       <TableCell>
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => {
-                            alert("暂时不支持修改");
+                            setEditDialogOpen(true);
+                            setEditInfoResp(item);
                           }}
                           className="h-8 w-8"
                         >
@@ -123,6 +137,11 @@ export default function Index() {
           )}
         </CardContent>
       </Card>
+
+      {/* 编辑窗口 */}
+      {editDialogOpen && editInfoResp && (
+        <AccountEdit open={editDialogOpen} setOpen={setEditDialogOpen} infoResp={editInfoResp} accountListRespMutate={accountListRespMutate} />
+      )}
     </div>
   );
 }

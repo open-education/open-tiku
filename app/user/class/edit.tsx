@@ -135,7 +135,7 @@ function ClassEdit({ open, setOpen, searchReq, infoResp, classListMutate }: Clas
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-106.25">
+      <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold">{addReq.id && addReq.id > 0 ? "编辑班级信息" : "添加班级信息"}</DialogTitle>
           <DialogDescription className="text-sm">个人邮箱用于接收班级学生账户密码</DialogDescription>
@@ -143,83 +143,46 @@ function ClassEdit({ open, setOpen, searchReq, infoResp, classListMutate }: Clas
 
         <Separator />
 
-        <div className="space-y-4 py-2">
-          <div className="flex flex-row items-center justify-between">
-            <div className="space-y-0.5">
-              <label className="text-sm">选择年份:</label>
-            </div>
-            <YearSelect value={addReq.year} onValueChange={(val) => updateAddReq("year", val ?? "")} className="w-80" placeholder="选择年份" />
-          </div>
+        <div className="py-4">
+          {/* Grid 布局：左列固定 100px 右对齐，右列自适应 */}
+          <div className="grid grid-cols-[100px_1fr] gap-4 items-center">
+            {/* 年份 */}
+            <span className="text-sm text-right">选择年份:</span>
+            <YearSelect value={addReq.year} onValueChange={(val) => updateAddReq("year", val ?? "")} placeholder="选择年份" />
 
-          <div className="flex flex-row items-center justify-between">
-            <div className="space-y-0.5">
-              <label className="text-sm">选择年级:</label>
-            </div>
-            <GradeSelect value={addReq.grade} onValueChange={(val) => updateAddReq("grade", val ?? "")} className="w-80" placeholder="选择年级" />
-          </div>
+            {/* 年级 */}
+            <span className="text-sm text-right">选择年级:</span>
+            <GradeSelect value={addReq.grade} onValueChange={(val) => updateAddReq("grade", val ?? "")} placeholder="选择年级" />
 
-          <div className="flex flex-row items-center justify-between">
-            <div className="space-y-0.5">
-              <label className="text-sm">选择学期:</label>
-            </div>
-            <SemesterSelect
-              value={addReq.semester}
-              onValueChange={(val) => updateAddReq("semester", val ?? "")}
-              className="w-80"
-              placeholder="选择学期"
-            />
-          </div>
+            {/* 学期 */}
+            <span className="text-sm text-right">选择学期:</span>
+            <SemesterSelect value={addReq.semester} onValueChange={(val) => updateAddReq("semester", val ?? "")} placeholder="选择学期" />
 
-          {/* 名称 */}
-          <div className="flex flex-row items-center justify-between">
-            <div className="space-y-0.5">
-              <label className="text-sm leading-none">班级名称:</label>
-            </div>
+            {/* 班级名称 */}
+            <span className="text-sm text-right">班级名称:</span>
+            <Input className="text-sm" value={addReq.label} onChange={(e) => updateAddReq("label", e.target.value)} placeholder="例如 3班" />
+
+            {/* 个人邮箱 */}
+            <span className="text-sm text-right">个人邮箱:</span>
+            <Input className="text-sm" value={addReq.email} onChange={(e) => updateAddReq("email", e.target.value)} placeholder="例如 xx@xx.com" />
+
+            {/* 顺序 */}
+            <span className="text-sm text-right">顺序:</span>
             <Input
-              className="text-sm md:text-sm w-80"
-              value={addReq.label}
-              onChange={(e) => updateAddReq("label", e.target.value)}
-              placeholder="例如 3班"
-            />
-          </div>
-
-          {/* 邮箱 */}
-          <div className="flex flex-row items-center justify-between">
-            <div className="space-y-0.5">
-              <label className="text-sm leading-none">个人邮箱:</label>
-            </div>
-            <Input
-              className="text-sm md:text-sm w-80"
-              value={addReq.email}
-              onChange={(e) => updateAddReq("email", e.target.value)}
-              placeholder="例如 xx@xx.com 等"
-            />
-          </div>
-
-          {/* 顺序 */}
-          <div className="flex flex-row items-center justify-between">
-            <div className="space-y-0.5">
-              <label className="text-sm leading-none">顺序:</label>
-            </div>
-            <Input
-              className="text-sm md:text-sm w-80"
+              className="text-sm"
               type="number"
               min="0"
               value={addReq.sortOrder}
               onChange={(e) => updateAddReq("sortOrder", Number(e.target.value))}
             />
-          </div>
 
-          {/* 备注 */}
-          <div className="flex flex-row items-center justify-between">
-            <div className="space-y-0.5">
-              <label className="text-sm leading-none">备注:</label>
-            </div>
+            {/* 备注 - 让标签和文本域顶部对齐 */}
+            <span className="text-sm text-right self-start pt-1.5">备注:</span>
             <Textarea
+              className="text-sm min-h-19 resize-y"
               value={addReq.remark}
-              className="texst-sm md:text-sm w-80"
               onChange={(e) => updateAddReq("remark", e.target.value)}
-              placeholder={"请输入备注信息"}
+              placeholder="请输入备注信息"
             />
           </div>
         </div>
@@ -354,7 +317,7 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-106.25">
+      <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold">导入班级学生账户</DialogTitle>
           <DialogDescription className="text-sm">不要输入学生的真实身份信息, 比如真实姓名, 学校班级名称等, 避免泄露真实身份</DialogDescription>
@@ -362,7 +325,7 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
 
         <Separator />
 
-        <div className="space-y-4 py-2">
+        <div className="space-y-4 p-4">
           <FieldGroup className="">
             <Field orientation="horizontal">
               <Checkbox
