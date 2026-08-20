@@ -156,9 +156,6 @@ export const StringConst = {
     ["chapter", "章节"],
     ["knowledge", "考点"],
   ]),
-  // 变式题分类
-  questionSimilarTypeDefault: 1, // 变式题
-  questionSimilarTypeOriginal: 2, // 课本原题
   // 试卷类型
   paperTypes: [
     { value: 1, label: "精选试卷" },
