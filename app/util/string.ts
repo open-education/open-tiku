@@ -181,6 +181,12 @@ export const StringConst = {
     { id: 2, value: StudentStatus.Pause, label: "暂停" },
     { id: 3, value: StudentStatus.Disabled, label: "停用" },
   ],
+  // 第三方账户状态
+  accountStatusList: [
+    { id: 1, value: StudentStatus.Active, label: "激活" },
+    { id: 2, value: StudentStatus.Pause, label: "暂停" },
+    { id: 20, value: StudentStatus.Disabled, label: "封禁" },
+  ],
   // 搜索列表默认的不选
   searchCondDefaultVal: "不选",
   // 服务邮箱

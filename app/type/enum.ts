@@ -41,3 +41,10 @@ export enum QuestionRelationType {
   Original = 2, // 课本原题
   Base = 3, // 母题
 }
+
+// 第三方登录账号状态
+export enum AccountStatus {
+  Active = 1, // 1 激活
+  Paused = 2, // 2 暂停
+  Forbidden = 20, // 20 封禁
+}

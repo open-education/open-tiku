@@ -47,6 +47,7 @@ export interface UserIdentityInfoResp {
   roleDesc: string;
   status: number;
   statusDesc: string;
+  remark: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -84,4 +85,11 @@ export interface UserSessionListResp {
   pageNo: number;
   pageSize: number;
   total: number;
+}
+
+// 编辑请求
+export interface UserIdentityInfoReq {
+  id: number;
+  status: number;
+  remark: string;
 }
