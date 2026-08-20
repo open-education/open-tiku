@@ -34,3 +34,10 @@ export enum UserLoginSource {
   User = 1, // 普通用户
   Student = 2, // 学生
 }
+
+// 题目关系
+export enum QuestionRelationType {
+  Similar = 1, // 变式题
+  Original = 2, // 课本原题
+  Base = 3, // 母题
+}

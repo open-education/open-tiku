@@ -22,6 +22,7 @@ import { Button } from "~/components/ui/button";
 import { Plus, Upload, View } from "lucide-react";
 import type { UserInfoResp } from "~/type/user";
 import { useUserInfo } from "~/hooks/use-user";
+import { QuestionRelationType } from "~/type/enum";
 
 // 题目搜索页面
 interface QuestionSearchProps {
@@ -115,10 +116,16 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
 
   // 添加题目
   const handleQuestionAdd = () => {
-    setSheetTitle("添加题目");
+    setSheetTitle("添加母题");
     setSheetDesc("通常只有标题是必填项, 比如纯粹的填空简答题等");
     setSheetContent(
-      <Add questionSearch={questionSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
+      <Add
+        questionSearch={questionSearch}
+        addRelationType={QuestionRelationType.Base}
+        setSheetTitle={setSheetTitle}
+        setSheetDesc={setSheetDesc}
+        setSheetContent={setSheetContent}
+      />,
     );
     setOpenSheet(true);
   };
@@ -281,7 +288,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
                   <>
                     <Button variant="outline" className="text-sm" onClick={handleQuestionAdd}>
                       <Plus className="mr-2 h-4 w-4" />
-                      添加题目
+                      添加母题
                     </Button>
                     <Button variant="outline" className="text-sm" onClick={handleTaskAdd}>
                       <Upload className="mr-2 h-4 w-4" />

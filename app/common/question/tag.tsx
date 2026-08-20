@@ -27,7 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { QuestionStatus } from "~/type/enum";
+import { QuestionRelationType, QuestionStatus } from "~/type/enum";
 import type { KeyedMutator } from "swr";
 import type { UserInfoResp } from "~/type/user";
 import { useUserInfo } from "~/hooks/use-user";
@@ -234,6 +234,7 @@ function TagShow({ pageSource, typeValue, tagNames, dimensionNames, difficultyLe
 interface OperateTagsProps {
   pageSource: QuestionPageSourceProps;
   questionId: number; // 题目主键
+  questionRelationType: number; // 题目类型
   eightId: number; // 第8层题型标识
   status: number; // 题目状态
   questionTypeDict: Record<number, TextbookOtherDict>;
@@ -254,6 +255,7 @@ interface OperateTagsProps {
 function OperateTags({
   pageSource,
   questionId,
+  questionRelationType,
   eightId,
   status,
   questionTypeDict,
@@ -311,6 +313,7 @@ function OperateTags({
             setSheetDesc={setSheetDesc}
             setSheetContent={setSheetContent}
             infoResp={res} // 编辑时详情是最高优先级, 会覆盖其它值
+            questionListRespMutate={questionListRespMutate} // 编辑完毕需要刷新列表
           />,
         );
         setOpenSheet(true);
@@ -326,12 +329,18 @@ function OperateTags({
   // 添加课本原题
   const handleOriginalTextbookAdd = () => {
     // 将当前题目主键作为变式题的父题标识
-    const similarSearch = { sourceId: questionId, similarType: StringConst.questionSimilarTypeOriginal, ...questionSearch };
+    const initSearch: QuestionSearch = { ...questionSearch, sourceId: questionId };
 
     setSheetTitle("添加课本原题");
-    setSheetDesc("题目需要借助其它 ai 工具转为 markdown 源格式文档后使用");
+    setSheetDesc("题目需要借助其它 ai 工具转为 markdown 源格式文档后使用; 仅母题可添加课本原题");
     setSheetContent(
-      <Add questionSearch={similarSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
+      <Add
+        questionSearch={initSearch}
+        addRelationType={QuestionRelationType.Original}
+        setSheetTitle={setSheetTitle}
+        setSheetDesc={setSheetDesc}
+        setSheetContent={setSheetContent}
+      />,
     );
     setOpenSheet(true);
   };
@@ -339,48 +348,42 @@ function OperateTags({
   // 添加变式题
   const handleSimilarAdd = () => {
     // 变式题将当前题目主键作为变式题的父题标识
-    const similarSearch = { sourceId: questionId, similarType: StringConst.questionSimilarTypeDefault, ...questionSearch };
+    const initSearch: QuestionSearch = { ...questionSearch, sourceId: questionId };
 
     setSheetTitle("添加变式题");
     setSheetDesc("题目需要借助其它 ai 工具转为 markdown 源格式文档后使用");
     setSheetContent(
-      <Add questionSearch={similarSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
+      <Add
+        questionSearch={initSearch}
+        addRelationType={QuestionRelationType.Similar}
+        setSheetTitle={setSheetTitle}
+        setSheetDesc={setSheetDesc}
+        setSheetContent={setSheetContent}
+      />,
     );
     setOpenSheet(true);
   };
 
-  // 查看变式题列表
+  // 查看课本原题
   const handleOriginalTextbook = () => {
     setLoading?.(true);
 
     // 通过题目关联关系获取到详情标识
     httpClient
-      .post<number | null>("question/original", { id: questionId })
+      .post<QuestionInfoResp>("question/original", { id: questionId, relationType: questionRelationType })
       .then((res) => {
-        if (!res || res == 0) {
-          toast.info(<div className="text-blue-700">没有找到课本原题, 只有母题才关联课本原题</div>);
-          return;
-        }
-
-        httpClient
-          .get<QuestionInfoResp>(`/question/info/${res}`)
-          .then((res) => {
-            setSheetTitle("查看 课本原题 详情");
-            setSheetDesc("");
-            setSheetContent(
-              <QuestionInfo
-                pageSource={pageSource}
-                questionTypeDict={questionTypeDict}
-                questionTagDict={questionTagDict}
-                questionDimensionDict={questionDimensionDict}
-                infoResp={res}
-              />,
-            );
-            setOpenSheet(true);
-          })
-          .catch((err) => {
-            toast.error(<div className="text-red-700">查询题目详情出错: {err.message}</div>);
-          });
+        setSheetTitle("查看 课本原题 详情");
+        setSheetDesc("一道母题只能关联一道课本原题, 变式题不能关联课本原题");
+        setSheetContent(
+          <QuestionInfo
+            pageSource={pageSource}
+            questionTypeDict={questionTypeDict}
+            questionTagDict={questionTagDict}
+            questionDimensionDict={questionDimensionDict}
+            infoResp={res}
+          />,
+        );
+        setOpenSheet(true);
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">查询课本原题出错: {err.message}</div>);
@@ -494,7 +497,7 @@ function OperateTags({
   };
 
   // 题目标签按钮处理
-  const renderButtons = (source: string) => {
+  const renderButtons = (source: string, questionRelationType: number) => {
     // 获取用户信息
     const currentUser: UserInfoResp | null = useUserInfo();
 
@@ -589,8 +592,8 @@ function OperateTags({
       );
     }
 
-    // 添加变式题只有普通页面可以操作
-    if (currentUser && source === "list") {
+    // 变式题课本原题只有母题可添加
+    if (currentUser && source === "list" && questionRelationType === QuestionRelationType.Base) {
       buttons.push(
         <Button key="originalTextbook" variant="link" onClick={handleOriginalTextbookAdd}>
           添加课本原题
@@ -601,11 +604,17 @@ function OperateTags({
       );
     }
 
+    // 非课本原题才查看课本原题
+    if (questionRelationType !== QuestionRelationType.Original) {
+      buttons.push(
+        <Button key="originalTextbookInfo" variant="link" onClick={handleOriginalTextbook}>
+          查看课本原题
+        </Button>,
+      );
+    }
+
     // 查看变式题, 均可以查看
     buttons.push(
-      <Button key="originalTextbookInfo" variant="link" onClick={handleOriginalTextbook}>
-        查看课本原题
-      </Button>,
       <Button key="similarList" variant="link" onClick={handleSimilarList}>
         查看变式题
       </Button>,
@@ -641,7 +650,7 @@ function OperateTags({
     return buttons;
   };
 
-  return renderButtons(pageSource.source);
+  return renderButtons(pageSource.source, questionRelationType);
 }
 
 // 难度等级范围

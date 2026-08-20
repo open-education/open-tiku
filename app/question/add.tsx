@@ -23,7 +23,7 @@ import {
   Send,
   Save,
 } from "lucide-react";
-import type { Content, CreateQuestionReq, QuestionInfoResp, QuestionOption, QuestionSearch } from "~/type/question";
+import type { Content, CreateQuestionReq, QuestionInfoResp, QuestionListResp, QuestionOption, QuestionSearch } from "~/type/question";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
 import { Watermark } from "~/common/watermark";
 import type { Textbook } from "~/type/textbook";
@@ -43,16 +43,21 @@ import { QuickToolList } from "~/common/tool";
 import { FileUpload } from "~/common/file";
 import { ParseQuestion } from "~/common/text";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
+import type { QuestionRelationType } from "~/type/enum";
+import type { KeyedMutator } from "swr";
 
 /// 题目添加和编辑
 
 interface AddProps {
   questionSearch: QuestionSearch; // 列表页面搜索携带的信息
   infoResp?: QuestionInfoResp; // 初始化数据信息, 比如修改时会是详情完整信息
+  addRelationType?: QuestionRelationType; // 添加题目类型
 
   setSheetTitle: (value: string) => void;
   setSheetDesc: (value: string) => void;
   setSheetContent: (value: React.ReactNode) => void;
+
+  questionListRespMutate?: KeyedMutator<QuestionListResp>; // 编辑时也要刷新列表
 }
 
 export default function Add({
@@ -80,12 +85,15 @@ export default function Add({
       status: 0,
       createdAt: "",
       updatedAt: "",
+      relationType: 0,
     },
     extraInfo: {},
   },
+  addRelationType,
   setSheetTitle,
   setSheetDesc,
   setSheetContent,
+  questionListRespMutate,
 }: AddProps) {
   // 初始化数据状态管理
   const initAddDefaultReq = useMemo(() => {
@@ -104,6 +112,7 @@ export default function Add({
       optionsLayout: 1,
       source: "",
       status: 0,
+      relationType: addRelationType || 0, // 不存在传入非法的值
     };
 
     // questionSearch 为列表页传递过来的数据, 可能选也可能为空
@@ -119,9 +128,6 @@ export default function Add({
     if (questionSearch.sourceId && questionSearch.sourceId > 0) {
       // 此时为变式题母题标识id
       initAddDefault.sourceId = questionSearch.sourceId;
-    }
-    if (questionSearch.similarType && questionSearch.similarType > 0) {
-      initAddDefault.questionSimilarType = questionSearch.similarType;
     }
 
     return initAddDefault;
@@ -290,7 +296,7 @@ export default function Add({
     }
   };
 
-  // 提交
+  // 提交, 如果是编辑实际上要刷新列表页面
   const handleAddSubmit = (status: number) => {
     // 检查必填参数是否为空
     if (addReq.questionCateId <= 0) {
@@ -377,6 +383,11 @@ export default function Add({
                 infoResp={res}
               />,
             );
+
+            // 刷新列表页面如果是编辑
+            if (addReq.id && addReq.id > 0) {
+              questionListRespMutate?.();
+            }
           })
           .catch((err) => {
             setAddWarnInfo(<SimpleAlert title="查询题目详情失败" message={err.message} />);
@@ -397,6 +408,7 @@ export default function Add({
       <div>
         <div>1. 图片标识请使用右上角的 快捷工具-上传文件 上传图片后获得</div>
         <div>2. 符合 上传题目 模板的题目可以粘贴到 快捷工具-解析题目 进行解析后点击 填充 会自动填充至左边表单中</div>
+        <div>3. 一道母题只能关联一道课本原题, 变式题不能关联课本原题</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">

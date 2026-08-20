@@ -66,6 +66,7 @@ function QuestionListShow({
                 questionTagDict={questionTagDict}
                 questionDimensionDict={questionDimensionDict}
                 questionId={questionInfo.id}
+                questionRelationType={questionInfo.relationType}
                 eightId={questionInfo.questionCateId}
                 status={questionInfo.status}
                 questionSearch={questionSearch}
