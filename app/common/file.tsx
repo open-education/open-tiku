@@ -1,4 +1,4 @@
-import { FileImage, ImageUp, Loader2, Trash2, X } from "lucide-react";
+import { FileImage, ImageUp, Loader2, Trash2 } from "lucide-react";
 import { useRef, useState, type ChangeEvent } from "react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";

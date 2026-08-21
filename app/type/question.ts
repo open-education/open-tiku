@@ -1,4 +1,4 @@
-import type { TextbookOtherDict } from "./textbook";
+import type { TextbookOtherDict } from "~/type/textbook";
 
 // 题目选项信息
 export interface QuestionOption {
@@ -67,6 +67,7 @@ export interface QuestionBaseInfoResp {
   options?: QuestionOption[];
   optionsLayout?: number;
   steps?: Step[];
+  approveName: string;
   rejectReason?: string; // 拒绝原因
   approveAt?: string; // 审核时间
   createdAt: string; // 创建时间

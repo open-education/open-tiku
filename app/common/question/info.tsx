@@ -9,7 +9,7 @@ import { TitleShow } from "~/common/title";
 import { MultiOptionShow } from "~/common/select";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { DictUtil } from "~/util/object";
-import { SimpleAlert } from "../alert";
+import { SimpleAlert } from "~/common/alert";
 import { QuestionStatus } from "~/type/enum";
 
 // 题目详情样式-预览和详情均使用该样式
@@ -37,8 +37,9 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionD
         <div>作者昵称: {baseInfo.authorName || ""}</div>
         {baseInfo.originalName && <div>创作者昵称: {baseInfo.originalName}</div>}
         {baseInfo.source && <div>来源: {baseInfo.source}</div>}
-        <div>更新时间: {baseInfo.updatedAt}</div>
+        {baseInfo.approveName && <div>审核人: {baseInfo.approveName}</div>}
         {baseInfo.approveAt && <div>审核时间: {baseInfo.approveAt}</div>}
+        <div>更新时间: {baseInfo.updatedAt}</div>
       </div>
 
       {/* 题目 */}

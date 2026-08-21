@@ -83,6 +83,7 @@ export default function Add({
       comment: "",
       difficultyLevel: 1.0,
       status: 0,
+      approveName: "",
       createdAt: "",
       updatedAt: "",
       relationType: 0,
@@ -408,7 +409,8 @@ export default function Add({
       <div>
         <div>1. 图片标识请使用右上角的 快捷工具-上传文件 上传图片后获得</div>
         <div>2. 符合 上传题目 模板的题目可以粘贴到 快捷工具-解析题目 进行解析后点击 填充 会自动填充至左边表单中</div>
-        <div>3. 一道母题只能关联一道课本原题, 变式题不能关联课本原题</div>
+        <div>3. 一道母题只能关联一道课本原题, 变式题本身已是最末级不再关联其它题目</div>
+        <div>4. 标签中的 母题 课本原题 变式题 为特殊标签, 方便你区分当前的题目依赖关系, 这个关系为冗余仅提供给你直觉区分题目类型, 不会做逻辑验证</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -972,6 +974,7 @@ export default function Add({
                       contentPlain: "",
                       createdAt: "",
                       updatedAt: "",
+                      approveName: "",
                       ...addReq,
                     },
                     extraInfo: { ...addReq },
