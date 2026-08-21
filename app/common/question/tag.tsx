@@ -33,6 +33,7 @@ import type { UserInfoResp } from "~/type/user";
 import { useUserInfo } from "~/hooks/use-user";
 import { Slider } from "~/components/ui/slider";
 import type { GenDifficultyLevelRange } from "~/type/paper";
+import { Separator } from "~/components/ui/separator";
 
 /// 题目题目相关标签选择器
 
@@ -514,11 +515,26 @@ function OperateTags({
       buttons.push(
         <Dialog key="myQuestionSubmit" open={openSubmitApprove} onOpenChange={setOpenSubmitApprove}>
           <DialogTrigger render={<Button variant="link">提交审核</Button>} />
-          <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
+          <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
             <DialogHeader>
               <DialogTitle className="text-base font-bold">提交审核</DialogTitle>
               <DialogDescription className="text-sm">请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
             </DialogHeader>
+
+            <Separator />
+
+            <div className="p-4 space-y-3">
+              <div className="text-sm font-semibold">检查步骤</div>
+              <div className="text-sm">
+                <p>1. 题目不能是抄袭的, 避免投诉和版权纠纷</p>
+                <p>2. 题目本身信息要完整</p>
+                <p>3. 图片等信息不能缺失</p>
+                <p>4. 题目和答案本身要符合常识</p>
+              </div>
+            </div>
+
+            <Separator />
+
             <DialogFooter>
               <DialogClose
                 render={
@@ -542,30 +558,44 @@ function OperateTags({
       buttons.push(
         <Dialog key="myReviewApprove" open={openConfirmApprove} onOpenChange={setOpenConfirmApprove}>
           <DialogTrigger render={<Button variant="link">审核</Button>} />
-          <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
+          <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
             <DialogHeader>
               <DialogTitle className="text-base font-bold">题目审核</DialogTitle>
               <DialogDescription className="text-sm">请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
             </DialogHeader>
-            <div className="flex flex-col gap-3 text-sm">
-              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                <div className="md:w-24 shrink-0 font-medium">审核状态:</div>
-                <div className="flex-1 min-w-0">
-                  <StatusSelect defaultValue={approveReq.status} onSelect={(val) => updateApproveReq("status", val)} />
-                </div>
-              </div>
-              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                <div className="md:w-24 shrink-0 font-medium">拒绝理由:</div>
-                <div className="flex-1 min-w-0">
-                  <Textarea
-                    value={approveReq.rejectReason}
-                    className="text-sm md:text-sm"
-                    onChange={(e) => updateApproveReq("rejectReason", e.target.value)}
-                    placeholder="拒绝时需要说明拒绝原因"
-                  />
-                </div>
+
+            <Separator />
+
+            <div className="space-y-3 p-4">
+              <div className="text-sm font-semibold">检查步骤</div>
+              <div className="text-sm">
+                <p>1. 题目不能是抄袭的, 避免投诉和版权纠纷</p>
+                <p>2. 题目本身信息要完整</p>
+                <p>3. 图片等信息不能缺失</p>
+                <p>4. 题目和答案本身要符合常识</p>
+                <p>5. 若你审核通过的题目后续被投诉等纠纷较多, 我们有权利降低你的账号等级</p>
               </div>
             </div>
+
+            <Separator />
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              <div className="grid grid-cols-[100px_1fr] gap-4 items-center">
+                <span className="text-sm text-right">审核状态:</span>
+                <StatusSelect defaultValue={approveReq.status} onSelect={(val) => updateApproveReq("status", val)} />
+
+                <span className="text-sm text-right">拒绝理由:</span>
+                <Textarea
+                  value={approveReq.rejectReason}
+                  className="text-sm"
+                  onChange={(e) => updateApproveReq("rejectReason", e.target.value)}
+                  placeholder="拒绝时需要说明拒绝原因"
+                />
+              </div>
+            </div>
+
+            <Separator />
+
             <DialogFooter>
               <DialogClose
                 render={

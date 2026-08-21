@@ -33,7 +33,7 @@ import { Watermark } from "~/common/watermark";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { PaperStatus } from "~/type/enum";
-import { GenInfoPreview } from "./info";
+import { GenInfoPreview } from "~/paper/gen/info";
 import { ArrayUtil } from "~/util/object";
 
 // 生成试卷

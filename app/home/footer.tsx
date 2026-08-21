@@ -1,8 +1,8 @@
-// 网站脚部信息
-
 import { Link } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+
+// 网站脚部信息
 
 // 配置链接信息
 interface LinkItemProps {

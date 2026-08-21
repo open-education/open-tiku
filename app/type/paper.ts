@@ -1,6 +1,6 @@
-/// 试卷相关的类型
-
 import type { Content, QuestionInfoResp, QuestionOption } from "~/type/question";
+
+/// 试卷相关的类型
 
 // 添加精选试卷请求基础字段
 export interface CommonPaperReq {
