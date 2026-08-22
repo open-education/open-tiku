@@ -15,3 +15,6 @@ target
 # ignore public images and files
 public/files
 public/images
+
+# 公钥不提交到代码库
+public/public_key.pem

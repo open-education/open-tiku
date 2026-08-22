@@ -155,3 +155,43 @@ zhangguangxun@VM-0-4-debian:/var/www/open-tiku$
 ```
 
 线上的 `Caddyfile` 文件内容请参考项目根目录中的 `Caddyfile` 文件内容, 首次部署时自己配置或者直接拷贝类似内容
+
+#### 公钥
+
+公钥文件不提交到代码库, 需从其它环境拷贝放入 `public` 目录中; 首次生成需去 `api` 项目 `README.md` 文档查看生成命令
+
+```text
+public/public_key.pem
+```
+
+打包会删除该文件, 线上环境手动维护该类文件
+
+#### Web Crypto API
+
+```log
+TypeError: Cannot read properties of undefined (reading 'importKey')
+```
+
+`window.crypto.subtle` 对象在当前环境下是 `undefined`
+
+`Web Crypto API` 一个非常经典的安全限制. 浏览器(特别是 `Chrome` 和 `Safari`)为了保护用户的隐私和密码学安全, 规定 `window.crypto.subtle` 只能在安全上下文(`Secure Contexts`)中生效
+
+本地开发阶段的解法浏览器认为以下两种本地地址是绝对安全的:
+
+```text
+http://localhost
+http://127.0.0.1
+```
+
+但实际上因为跨域代理的原因, 很难用上这两个地址
+
+##### 浏览器白名单绕过功能
+
+主流浏览器`Chrome`, `Edge` 等内置了一个极其强大且隐蔽的开发者标志, 允许我们将特定的非安全域名(`HTTP` 局域网/自定义域名)伪装成安全上下文. 开启后, `window.crypto.subtle` 会可用. 具体操作步骤(以 `Chrome / Edge` 为例):
+
+- 在浏览器地址栏输入并回车：`chrome://flags/#unsafely-treat-insecure-origin-as-secure` (`Edge` 浏览器将前面的 `chrome` 换成 `edge`)
+- 找到名为 `Insecure origins treated as secure` 的选项, 将其状态从 `Disabled` 改为 `Enabled`
+- 在下方的文本框中, 输入你开发时正在访问的完整 `HTTP` 域名和端口(例如：`http://myproject.com` 或 `http://192.168.1.105:5173`)
+- 点击浏览器右下角弹出的蓝色 `Relaunch`(重新启动)按钮
+
+线上 `Caddy` 本身已配置了 `HTTPS`, 无需关注
