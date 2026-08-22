@@ -308,7 +308,8 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
       const key = getClassStudentListKey([infoResp.id]);
       await mutate(key);
     } catch (err) {
-      toast.error(<div className="text-red-700">导入班级学生账户出错: {err.message}</div>, {
+      const error = err as Error;
+      toast.error(<div className="text-red-700">导入班级学生账户出错: {error.message}</div>, {
         duration: Infinity,
         action: {
           label: "关闭",
