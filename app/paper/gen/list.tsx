@@ -276,7 +276,7 @@ function MyPaperList({
               onClick={() => {
                 setSheetTitle("发布作业");
                 setSheetDesc("作业只能布置到你管理的班级, 可以发布给任意班级, 或者任意班级内的任意学生");
-                setSheetContent(<PublishHomework genInfoResp={info} />);
+                setSheetContent(<PublishHomework setOpenSheet={setOpenSheet} genInfoResp={info} />);
                 setOpenSheet(true);
               }}
             >

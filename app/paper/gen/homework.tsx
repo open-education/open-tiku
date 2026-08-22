@@ -1,6 +1,7 @@
 import { ListFilterPlus, Save } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import { SimpleAlert } from "~/common/alert";
 import { Loading } from "~/common/load";
 import { SimpleTooltip } from "~/common/tooltip";
@@ -12,22 +13,26 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~
 import { Textarea } from "~/components/ui/textarea";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import type { ClassInfoResp, ClassSearchReq, ClassStudentResp } from "~/type/class";
-import type { CommonPaperResp, PublishHomeworkReq } from "~/type/paper";
+import type { HomeworkAddReq } from "~/type/homework";
+import type { CommonPaperResp } from "~/type/paper";
 import { SearchConfig } from "~/user/class/config";
 import { useClassList, useClassStudentList } from "~/util/fetcher";
-import { ObjectUtil } from "~/util/object";
+import { httpClient } from "~/util/http";
+import { StringValidator } from "~/util/string";
 
 // 布置作业, 只有手动组卷才需要布置作业
 
 interface PublishHomeworkProps {
+  setOpenSheet: (value: boolean) => void;
   genInfoResp: CommonPaperResp;
 }
 
-const defaultPublishHomeworkReq: PublishHomeworkReq = {
+const defaultHomeworkAddReq: HomeworkAddReq = {
+  batchNo: 0,
   paperId: 0,
-  classList: [],
-  label: "",
+  title: "",
   remark: "",
+  classMap: {},
 };
 
 // 搜索默认值
@@ -37,9 +42,16 @@ const defaultSearchReq: ClassSearchReq = {
   semester: "",
 };
 
-function PublishHomework({ genInfoResp }: PublishHomeworkProps) {
-  const [addReq, setAddReq] = useState<PublishHomeworkReq>(defaultPublishHomeworkReq);
-  const updateAddReq = (key: keyof PublishHomeworkReq, val: number | string) => {
+function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
+  const [addReq, setAddReq] = useState<HomeworkAddReq>(defaultHomeworkAddReq);
+
+  useEffect(() => {
+    if (genInfoResp && genInfoResp.id > 0) {
+      setAddReq((prev) => ({ ...prev, paperId: genInfoResp.id }));
+    }
+  }, [genInfoResp]);
+
+  const updateAddReq = (key: keyof HomeworkAddReq, val: number | string) => {
     setAddReq((prev) => ({ ...prev, [key]: val }));
   };
 
@@ -108,6 +120,94 @@ function PublishHomework({ genInfoResp }: PublishHomeworkProps) {
   const [studentListResp, setStudentListResp] = useState<ClassStudentResp[] | null>(null);
   const [defaultSelectIds, setDefaultSelectIds] = useState<number[]>([]);
 
+  // 添加布置作业
+  const [addSaving, setAddSaving] = useState<boolean>(false);
+  const [warnInfo, setWarnInfo] = useState<React.ReactNode>("");
+  const handleSubmit = async () => {
+    setWarnInfo("");
+
+    // 试卷
+    if (addReq.paperId <= 0) {
+      toast.error(<div className="text-red-700">参数错误: 试卷信息不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+
+    // 标题
+    if (!StringValidator.isNonEmpty(addReq.title)) {
+      toast.error(<div className="text-red-700">参数错误: 标题不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    // 班级和班级内学生账户不能为空
+    if (selectedMap.size == 0) {
+      toast.error(<div className="text-red-700">参数错误: 班级不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    for (const value of selectedMap.values()) {
+      if (value.length == 0) {
+        toast.error(<div className="text-red-700">参数错误: 有班级内学生账号为空</div>, {
+          duration: Infinity,
+          action: {
+            label: "关闭",
+            onClick: () => {},
+          },
+        });
+        return;
+      }
+    }
+
+    // 布置作业
+    setAddSaving(true);
+
+    // 获取批次号
+    try {
+      let paperId = addReq.paperId;
+      const batchNo = await httpClient.get<number>(`/homework/${paperId}/batchNo`);
+
+      // 结构出请求参数
+      let req: HomeworkAddReq = {
+        ...addReq,
+        batchNo: batchNo,
+        classMap: Object.fromEntries(selectedMap),
+      };
+      const res = await httpClient.post<boolean>("/homework/add", req);
+
+      // 添加成功则清空选择的默认值
+      if (res) {
+        setAddReq({ ...defaultHomeworkAddReq });
+        setSelectedMap(new Map());
+        setSelectClassInfoResp(null);
+        setStudentListResp(null);
+        setDefaultSelectIds([]);
+
+        // 关闭抽屉
+        setOpenSheet(false);
+      }
+    } catch (error) {
+      const err = error as Error;
+      setWarnInfo(<SimpleAlert title="布置作业失败" message={err.message} />);
+    } finally {
+      setAddSaving(false);
+    }
+  };
+
   return (
     <div className="p-4 space-y-3">
       <div className="text-sm">
@@ -119,11 +219,14 @@ function PublishHomework({ genInfoResp }: PublishHomeworkProps) {
       <Separator />
 
       <div className="flex gap-3">
-        <Button className="text-sm">
+        <Button className="text-sm" disabled={addSaving} onClick={handleSubmit}>
           <Save />
-          保存
+          {addSaving ? "保存中..." : "保存"}
         </Button>
       </div>
+
+      {/* 展示接口提交错误 */}
+      <div>{warnInfo}</div>
 
       <Separator />
 
@@ -145,7 +248,7 @@ function PublishHomework({ genInfoResp }: PublishHomeworkProps) {
       {/* 标题 */}
       <div className="flex gap-3 items-center">
         <div className="text-sm w-20">标题:</div>
-        <Input className="text-sm" value={addReq.label} onChange={(e) => updateAddReq("label", e.target.value)} placeholder="例如 第5批次布置作业" />
+        <Input className="text-sm" value={addReq.title} onChange={(e) => updateAddReq("title", e.target.value)} placeholder="例如 第5批次布置作业" />
       </div>
 
       <Separator />

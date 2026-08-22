@@ -168,7 +168,7 @@ export function useClassList(search: ClassSearchReq, pageNo: number) {
 }
 
 // 班级学生账户列表
-// 使用全局缓存key, 方便跨组件重新 mutate 该数据
+// 使用全局缓存key, 方便跨组件重新 mutate 该数据, 尤其针对不直接关联的兄弟组件
 export const getClassStudentListKey = (classIds: number[]) => {
   const reqPath = "/class/student/list";
   // 排序避免顺序不一致
