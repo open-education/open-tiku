@@ -25,6 +25,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { toast } from "sonner";
 import { SimpleTooltip } from "~/common/tooltip";
 import { ExportPdf } from "~/common/paper/print";
+import { PublishHomework } from "~/paper/gen/homework";
 
 // 试卷列表
 
@@ -266,11 +267,23 @@ function MyPaperList({
           </Dialog>,
         );
       } else if (info.status === PaperStatus.Published) {
-        buttons.push(
-          <Button key="myPaperHomework" variant="link">
-            布置作业
-          </Button>,
-        );
+        // 手动组卷才需要布置作业
+        if (info.paperType === StringConst.paperTypesGen) {
+          buttons.push(
+            <Button
+              key="myPaperHomework"
+              variant="link"
+              onClick={() => {
+                setSheetTitle("发布作业");
+                setSheetDesc("作业只能布置到你管理的班级, 可以发布给任意班级, 或者任意班级内的任意学生");
+                setSheetContent(<PublishHomework genInfoResp={info} />);
+                setOpenSheet(true);
+              }}
+            >
+              布置作业
+            </Button>,
+          );
+        }
       }
     } else {
       // 我的审核

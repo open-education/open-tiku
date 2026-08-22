@@ -64,6 +64,11 @@ export interface StudentAccountParseResult {
   duplicates: string[]; // 重复的账户列表（仅列出重复值）
 }
 
+// 班级学生列表请求
+export interface ClassStudentListReq {
+  classIds: number[];
+}
+
 // 班级学生账户列表
 export interface ClassStudentResp {
   id: number;

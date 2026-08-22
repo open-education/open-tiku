@@ -262,3 +262,17 @@ export interface PaperApproveReq {
 export interface PaperDeleteReq {
   id: number;
 }
+
+// 布置作业请求
+export interface HomeworkClassStudentReq {
+  classId: number;
+  studentIds: number[];
+}
+
+export interface PublishHomeworkReq {
+  id?: number;
+  paperId: number;
+  classList: HomeworkClassStudentReq[];
+  label: string;
+  remark: string;
+}

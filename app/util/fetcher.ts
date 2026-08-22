@@ -7,7 +7,7 @@ import { StringConst, StringValidator } from "~/util/string";
 import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from "~/type/question";
 import type { TaskListReq, TaskListResp } from "~/type/task";
 import type { ChapterKnowledgeResp, QuestionCateResp } from "~/type/question-cate";
-import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentResp } from "~/type/class";
+import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentListReq, ClassStudentResp } from "~/type/class";
 import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from "~/type/user";
 
 /// 使用 SWR 缓存查询组件
@@ -168,9 +168,13 @@ export function useClassList(search: ClassSearchReq, pageNo: number) {
 }
 
 // 班级学生账户列表
-export function useClassStudentList(classId: number, version: number) {
-  const key = classId > 0 ? [`/class/student/${classId}/list`, version] : null;
-  return useSWR<ClassStudentResp[]>(key, ([url]) => httpClient.get(url), defaultErrConfig);
+export function useClassStudentList(classIds: number[], version: number) {
+  const req: ClassStudentListReq = {
+    classIds,
+  };
+  const reqPath = "/class/student/list";
+  const key = [reqPath, JSON.stringify(req), version];
+  return useSWR<Record<number, ClassStudentResp[]>>(key, () => httpClient.post<Record<number, ClassStudentResp[]>>(reqPath, req), defaultErrConfig);
 }
 
 // 第三方登录用户列表

@@ -1,5 +1,5 @@
 import { Pencil, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import type { KeyedMutator } from "swr";
@@ -405,11 +405,17 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
   }, [open]);
 
   const {
-    data: studentListResp = [],
-    isLoading: studentListRespIdLoading,
-    error: studentListRespErr,
-    mutate: studentListRespMutate,
-  } = useClassStudentList(infoResp?.id || 0, version);
+    data: classStudentMapResp = {},
+    isLoading: classStudentMapRespIdLoading,
+    error: classStudentMapRespErr,
+    mutate: classStudentMapRespMutate,
+  } = useClassStudentList([infoResp?.id || 0], version);
+  const studentListResp = useMemo(() => {
+    if (infoResp && infoResp.id > 0) {
+      return classStudentMapResp[infoResp.id] || [];
+    }
+    return [];
+  }, [classStudentMapResp]);
 
   // 判断全选状态
   const totalCount = studentListResp.length;
@@ -451,9 +457,9 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
 
         <Separator />
 
-        {studentListRespErr && <SimpleAlert title="班级学生账户列表获取出错" message={studentListRespErr.message} />}
+        {classStudentMapRespErr && <SimpleAlert title="班级学生账户列表获取出错" message={classStudentMapRespErr.message} />}
 
-        {useDelayedLoading(studentListRespIdLoading) && <Loading />}
+        {useDelayedLoading(classStudentMapRespIdLoading) && <Loading />}
 
         <div className="space-y-4 py-2 overflow-y-auto">
           <Table>
@@ -535,7 +541,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
                 </div>
 
                 {/* 内容区域 */}
-                <StudentAccountEdit setOpen={setEditDialogOpen} infoResp={editInfoResp} studentListRespMutate={studentListRespMutate} />
+                <StudentAccountEdit setOpen={setEditDialogOpen} infoResp={editInfoResp} classStudentMapRespMutate={classStudentMapRespMutate} />
               </div>
             </div>,
             document.body,
@@ -599,7 +605,7 @@ function StudentStatusSelect({ defaultValue = 0, onSelect }: StudentStatusSelect
 interface StudentAccountEditProps {
   setOpen: (val: boolean) => void;
   infoResp: ClassStudentResp;
-  studentListRespMutate: KeyedMutator<ClassStudentResp[]>;
+  classStudentMapRespMutate: KeyedMutator<Record<number, ClassStudentResp[]>>;
 }
 
 const defaultStudentEditReq: ClassStudentEditReq = {
@@ -611,7 +617,7 @@ const defaultStudentEditReq: ClassStudentEditReq = {
   remark: "",
 };
 
-function StudentAccountEdit({ setOpen, infoResp, studentListRespMutate }: StudentAccountEditProps) {
+function StudentAccountEdit({ setOpen, infoResp, classStudentMapRespMutate }: StudentAccountEditProps) {
   // 批量操作示例
   const [editReq, setEditReq] = useState<ClassStudentEditReq>({ ...infoResp, resetPwd: false });
   const updateEditReq = (key: keyof ClassStudentEditReq, value: number | string | boolean) => {
@@ -652,7 +658,7 @@ function StudentAccountEdit({ setOpen, infoResp, studentListRespMutate }: Studen
         setEditReq({ ...defaultStudentEditReq });
 
         // 刷新账户列表, 重新查询列表页面
-        studentListRespMutate();
+        classStudentMapRespMutate();
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">编辑账户信息出错: {err.message}</div>, {

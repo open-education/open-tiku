@@ -56,6 +56,12 @@ rm -rf "$BUILD_DIR/client/files"
 echo "已删除: $BUILD_DIR/client/images"
 echo "已删除: $BUILD_DIR/client/files"
 
+# 清理掉公钥文件, 线上环境手动维护该文件
+echo "清理公钥文件 public_key.pem"
+rm -rf "$BUILD_DIR/client/public_key.pem"
+
+echo "已删除: $BUILD_DIR/client/public_key.pem"
+
 # 创建 target 目录
 mkdir -p "$TARGET_DIR"
 

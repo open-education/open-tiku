@@ -7,9 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { useState } from "react";
-import { YearSelect } from "~/common/paper/year";
-import { GradeSelect } from "~/common/paper/grade";
-import { SemesterSelect } from "~/common/paper/semester";
 import { SimpleAlert } from "~/common/alert";
 import { Loading } from "~/common/load";
 import { SimplePagination } from "~/common/page";
@@ -17,6 +14,7 @@ import { useClassList } from "~/util/fetcher";
 import { StringConst } from "~/util/string";
 import { ClassEdit, StudentAccountList, UploadStudentAccount } from "~/user/class/edit";
 import { SimpleTooltip } from "~/common/tooltip";
+import { SearchConfig } from "~/user/class/config";
 
 // 我的班级
 
@@ -108,48 +106,7 @@ export default function Index() {
 
           {/* 搜索选项 */}
           <div className="text-base mt-3">
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                <div className="md:w-24 shrink-0 font-medium">年份:</div>
-                <div className="flex-1 min-w-0">
-                  <YearSelect value={searchReq.year} onValueChange={(val) => updateSearchReq("year", val ?? "")} placeholder="选择年份" />
-                </div>
-              </div>
-
-              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                <div className="md:w-24 shrink-0 font-medium">年级:</div>
-                <div className="flex-1 min-w-0">
-                  <GradeSelect
-                    value={searchReq.grade}
-                    onValueChange={(val) => {
-                      if (!val || StringConst.searchCondDefaultVal === val) {
-                        updateSearchReq("grade", "");
-                      } else {
-                        updateSearchReq("grade", val);
-                      }
-                    }}
-                    placeholder="选择年级"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                <div className="md:w-24 shrink-0 font-medium">学期:</div>
-                <div className="flex-1 min-w-0">
-                  <SemesterSelect
-                    value={searchReq.semester}
-                    onValueChange={(val) => {
-                      if (!val || StringConst.searchCondDefaultVal === val) {
-                        updateSearchReq("semester", "");
-                      } else {
-                        updateSearchReq("semester", val);
-                      }
-                    }}
-                    placeholder="选择学期"
-                  />
-                </div>
-              </div>
-            </div>
+            <SearchConfig searchReq={searchReq} updateSearchReq={updateSearchReq} />
           </div>
 
           <div className="mt-3">

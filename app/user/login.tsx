@@ -10,6 +10,7 @@ import { UserLoginSource } from "~/type/enum";
 import type { StudentLoginReq, UserInfoResp, UserLoginReq } from "~/type/user";
 import { httpClient } from "~/util/http";
 import { StringValidator } from "~/util/string";
+import { getEncryptPwd } from "~/util/pwd";
 
 // 账户登录
 
@@ -33,7 +34,7 @@ export function Login() {
   };
 
   // 学生登录
-  const handleStudentLogin = () => {
+  const handleStudentLogin = async () => {
     setWarnInfo("");
 
     if (!StringValidator.isNonEmpty(logInReq.account)) {
@@ -45,33 +46,43 @@ export function Login() {
       return;
     }
 
-    // 账户登录
     setStudentLoggingIn(true);
 
-    let req: UserLoginReq = {
-      source: UserLoginSource.Student,
-      account: logInReq.account,
-      password: logInReq.password,
-    };
+    try {
+      // 需公钥加密密码字段 内部包含 fetch 公钥和时间戳校准
+      // 如果加密失败 比如网络断开拿不到公钥 会直接抛出异常进入 catch
+      const genPwd = await getEncryptPwd(logInReq.password);
 
-    httpClient
-      .post<UserInfoResp>("/user/login", req)
-      .then((userInfo) => {
-        // 检查 token 信息
-        if (!StringValidator.isNonEmpty(userInfo.token)) {
-          setWarnInfo(<SimpleAlert title="登录失败" message="账户信息不完整" />);
-          return;
-        }
-        saveAuth(userInfo.token, userInfo);
-        navigate("/", { replace: true }); // 登录成功跳转
-      })
-      .catch((err) => {
-        setWarnInfo(<SimpleAlert title="登录失败" message={err.message} />);
-        clearAuth();
-      })
-      .finally(() => {
-        setStudentLoggingIn(false);
-      });
+      let req: UserLoginReq = {
+        source: UserLoginSource.Student,
+        account: logInReq.account,
+        password: genPwd,
+      };
+
+      httpClient
+        .post<UserInfoResp>("/user/login", req)
+        .then((userInfo) => {
+          // 检查 token 信息
+          if (!StringValidator.isNonEmpty(userInfo.token)) {
+            setWarnInfo(<SimpleAlert title="登录失败" message="账户信息不完整" />);
+            return;
+          }
+          saveAuth(userInfo.token, userInfo);
+          navigate("/", { replace: true }); // 登录成功跳转
+        })
+        .catch((err) => {
+          setWarnInfo(<SimpleAlert title="登录失败" message={err.message} />);
+          clearAuth();
+        })
+        .finally(() => {
+          setStudentLoggingIn(false);
+        });
+    } catch (cryptoError: any) {
+      // 捕获加密阶段的错误 例如公钥接口404 本地Web Crypto不支持等
+      setWarnInfo(<SimpleAlert title="安全初始化失败" message={cryptoError.message || "无法加密密码，请稍后重试"} />);
+      console.log("err: ", cryptoError);
+      setStudentLoggingIn(false);
+    }
   };
 
   // 第三方账户登录
