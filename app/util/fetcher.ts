@@ -168,12 +168,20 @@ export function useClassList(search: ClassSearchReq, pageNo: number) {
 }
 
 // 班级学生账户列表
-export function useClassStudentList(classIds: number[], version: number) {
+// 使用全局缓存key, 方便跨组件重新 mutate 该数据
+export const getClassStudentListKey = (classIds: number[]) => {
+  const reqPath = "/class/student/list";
+  // 排序避免顺序不一致
+  const sortedIds = [...classIds].sort((a, b) => a - b);
+  return [reqPath, JSON.stringify({ sortedIds })];
+};
+
+export function useClassStudentList(classIds: number[]) {
   const req: ClassStudentListReq = {
     classIds,
   };
   const reqPath = "/class/student/list";
-  const key = [reqPath, JSON.stringify(req), version];
+  const key = getClassStudentListKey(classIds);
   return useSWR<Record<number, ClassStudentResp[]>>(key, () => httpClient.post<Record<number, ClassStudentResp[]>>(reqPath, req), defaultErrConfig);
 }
 

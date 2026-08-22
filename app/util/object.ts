@@ -74,4 +74,9 @@ export const ObjectUtil = {
   isError: (error: unknown): error is Error => {
     return error instanceof Error;
   },
+
+  // 生成一个随机字符
+  getRandomStr: (): string => {
+    return Math.random().toString(36).substring(2, 9);
+  },
 };

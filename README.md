@@ -174,9 +174,9 @@ TypeError: Cannot read properties of undefined (reading 'importKey')
 
 `window.crypto.subtle` 对象在当前环境下是 `undefined`
 
-`Web Crypto API` 一个非常经典的安全限制. 浏览器(特别是 `Chrome` 和 `Safari`)为了保护用户的隐私和密码学安全, 规定 `window.crypto.subtle` 只能在安全上下文(`Secure Contexts`)中生效
+`Web Crypto API` 有安全限制, 浏览器(特别是 `Chrome` 和 `Safari`)为了保护用户的隐私和密码学安全, 规定 `window.crypto.subtle` 只能在安全上下文(`Secure Contexts`)中生效
 
-本地开发阶段的解法浏览器认为以下两种本地地址是绝对安全的:
+浏览器认为以下两种本地地址是绝对安全的:
 
 ```text
 http://localhost
@@ -187,7 +187,7 @@ http://127.0.0.1
 
 ##### 浏览器白名单绕过功能
 
-主流浏览器`Chrome`, `Edge` 等内置了一个极其强大且隐蔽的开发者标志, 允许我们将特定的非安全域名(`HTTP` 局域网/自定义域名)伪装成安全上下文. 开启后, `window.crypto.subtle` 会可用. 具体操作步骤(以 `Chrome / Edge` 为例):
+主流浏览器`Chrome`, `Edge` 等内置了一个极其强大且隐蔽的开发者标志, 允许我们将特定的非安全域名(`HTTP` 局域网/自定义域名)伪装成安全上下文. 开启后, `window.crypto.subtle` 可用. 具体操作步骤(以 `Chrome / Edge` 为例):
 
 - 在浏览器地址栏输入并回车：`chrome://flags/#unsafely-treat-insecure-origin-as-secure` (`Edge` 浏览器将前面的 `chrome` 换成 `edge`)
 - 找到名为 `Insecure origins treated as secure` 的选项, 将其状态从 `Disabled` 改为 `Enabled`

@@ -28,9 +28,10 @@ import type {
   ClassStudentReq,
   ClassStudentResp,
 } from "~/type/class";
-import { useClassStudentList } from "~/util/fetcher";
+import { getClassStudentListKey, useClassStudentList } from "~/util/fetcher";
 import { httpClient } from "~/util/http";
 import { StringConst, StringUtil, StringValidator } from "~/util/string";
+import { useSWRConfig } from "swr";
 
 // 班级编辑
 
@@ -220,8 +221,11 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
   const [isIncrementalImport, setIsIncrementalImport] = useState<boolean>(false);
   const [accounts, setAccounts] = useState<string>("");
 
+  // 使用全局 mutate
+  const { mutate } = useSWRConfig();
+
   // 导入学生账户
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // 做必要的检查
     if (!infoResp || infoResp.id <= 0) {
       toast.error(<div className="text-red-700">班级信息不能为空</div>, {
@@ -295,24 +299,25 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
       accounts: accountInfo.commaSeparated,
     };
 
-    httpClient
-      .post<number>("/class/student/add", addReq)
-      .then((res) => {
-        setOpen(false);
-        setAccounts(""); // 导入成功后清除上一次输入的账户内容
-      })
-      .catch((err) => {
-        toast.error(<div className="text-red-700">导入班级学生账户出错: {err.message}</div>, {
-          duration: Infinity,
-          action: {
-            label: "关闭",
-            onClick: () => {},
-          },
-        });
-      })
-      .finally(() => {
-        setProcessIng(false);
+    try {
+      const res = await httpClient.post<number>("/class/student/add", addReq);
+      setOpen(false);
+      setAccounts(""); // 导入成功后清除上一次输入的账户内容
+
+      // 添加了新账户, 需要刷新班级学生列表
+      const key = getClassStudentListKey([infoResp.id]);
+      await mutate(key);
+    } catch (err) {
+      toast.error(<div className="text-red-700">导入班级学生账户出错: {err.message}</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
       });
+    } finally {
+      setProcessIng(false);
+    }
   };
 
   return (
@@ -395,21 +400,12 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
   // 用 Set 存储选中的学生 id
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
-  // 每次弹窗打开时，版本号 +1
-  const [version, setVersion] = useState(0);
-
-  useEffect(() => {
-    if (open) {
-      setVersion((prev) => prev + 1);
-    }
-  }, [open]);
-
   const {
     data: classStudentMapResp = {},
     isLoading: classStudentMapRespIdLoading,
     error: classStudentMapRespErr,
     mutate: classStudentMapRespMutate,
-  } = useClassStudentList([infoResp?.id || 0], version);
+  } = useClassStudentList([infoResp?.id || 0]);
   const studentListResp = useMemo(() => {
     if (infoResp && infoResp.id > 0) {
       return classStudentMapResp[infoResp.id] || [];

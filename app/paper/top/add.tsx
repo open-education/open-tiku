@@ -30,9 +30,6 @@ import { ObjectUtil } from "~/util/object";
 /// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
 /// 但是个人使用比如 DeepSeek 几乎是完全免费的, 因此需要个人借助其它 ai 平台将试卷题目转化为 markdown 格式后拷贝过来上传
 
-// 初始化默认值等信息
-const generateId = () => Math.random().toString(36).substring(2, 9);
-
 const defaultCommonPaperReq: CommonPaperReq = {
   relatedId: 0,
   relatedName: "",
@@ -51,7 +48,7 @@ const defaultCommonPaperReq: CommonPaperReq = {
 
 // 默认的题型类型信息
 const defaultTopPaperGroupInfo = (): TopPaperGroupReq => ({
-  genId: generateId(),
+  genId: ObjectUtil.getRandomStr(),
   typeName: "",
   subTitle: "",
   questions: [],
@@ -59,7 +56,7 @@ const defaultTopPaperGroupInfo = (): TopPaperGroupReq => ({
 
 // 默认的题目信息
 const defaultTopPaperQuestionInfo = (orderNum: number): TopPaperQuestionReq => ({
-  genId: generateId(),
+  genId: ObjectUtil.getRandomStr(),
   orderNum,
   stem: "",
   answer: "",

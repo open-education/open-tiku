@@ -15,6 +15,7 @@ import type { ClassInfoResp, ClassSearchReq, ClassStudentResp } from "~/type/cla
 import type { CommonPaperResp, PublishHomeworkReq } from "~/type/paper";
 import { SearchConfig } from "~/user/class/config";
 import { useClassList, useClassStudentList } from "~/util/fetcher";
+import { ObjectUtil } from "~/util/object";
 
 // 布置作业, 只有手动组卷才需要布置作业
 
@@ -65,7 +66,7 @@ function PublishHomework({ genInfoResp }: PublishHomeworkProps) {
   }, [classListResp]);
 
   // 获取班级的所有学生账户
-  const { data: classStudentMap = {}, isLoading: classStudentMapLoading, error: classStudentMapErr } = useClassStudentList(classIds, 1);
+  const { data: classStudentMap = {}, isLoading: classStudentMapLoading, error: classStudentMapErr } = useClassStudentList(classIds);
 
   // 选中的班级及对应的学生ID列表
   // key: classId, value: studentIds

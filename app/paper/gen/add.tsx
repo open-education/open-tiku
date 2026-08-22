@@ -34,11 +34,9 @@ import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { PaperStatus } from "~/type/enum";
 import { GenInfoPreview } from "~/paper/gen/info";
-import { ArrayUtil } from "~/util/object";
+import { ArrayUtil, ObjectUtil } from "~/util/object";
 
 // 生成试卷
-
-const generateId = () => Math.random().toString(36).substring(2, 9);
 
 const defaultCommonPaperReq: CommonPaperReq = {
   relatedId: 0,
@@ -95,9 +93,6 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
   const updateCommonPaperReq = (key: keyof CommonPaperReq, value: string | number) => {
     setCommonPaperReq((prev) => ({ ...prev, [key]: value }));
   };
-
-  const [genPaperGenConfReq, setGenPaperGenConfReq] = useState<CommonGenPaperGenConf>(initialGenPaperReq.conf);
-  const [genPaperGroupReq, setGenPaperGroupReq] = useState<GenPaperGroupReq[]>(initialGenPaperReq.groups);
 
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks(5);
   // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
@@ -442,7 +437,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       for (let j = 0; j < groupInfo.questions.length; j++) {
         const qInfo = groupInfo.questions[j];
         reqQuestions.push({
-          genId: generateId(),
+          genId: ObjectUtil.getRandomStr(),
           orderNum: qInfo.common.orderNum,
           questionId: qInfo.info.baseInfo.id,
           score: qInfo.common.score,
@@ -450,7 +445,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       }
       const reqGroupInfo: GenPaperGroupReq = {
         questions: reqQuestions,
-        genId: generateId(),
+        genId: ObjectUtil.getRandomStr(),
         typeName: groupInfo.common.typeName,
         subTitle: groupInfo.common.subTitle,
       };
