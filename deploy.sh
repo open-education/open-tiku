@@ -111,16 +111,22 @@ rm -f "$_APP_FILE"
 # 拷贝文件(排除软链接, 只覆盖普通文件)
 echo "拷贝文件到 $DEPLOY_DIR ..."
 
-# 方法1: 使用 rsync (推荐, 自动跳过软链接)
-if command -v rsync >/dev/null 2>&1; then
-    sudo rsync -av --exclude='images' --exclude='files' ./ "$DEPLOY_DIR/"
-else
-    # 方法2: 没有 rsync 时的替代方案
-    # 删除旧文件(保留软链接)
-    find "$DEPLOY_DIR" -mindepth 1 -maxdepth 1 ! -name 'images' ! -name 'files' -exec sudo rm -rf {} +
-    # 拷贝新文件, 需要用户具有 sudo 权限
-    sudo cp -r ./* "$DEPLOY_DIR/"
+# 检查是否存在 rsync
+if ! command -v rsync >/dev/null 2>&1; then
+    echo "==========================================================" >&2
+    echo "错误: 未检测到 rsync 命令！" >&2
+    echo "请在服务器上安装 rsync 后重试(例如: sudo apt install rsync 或 yum install rsync)" >&2
+    echo "==========================================================" >&2
+    exit 1
 fi
+
+# 只有在 rsync 存在时，才会执行核心部署逻辑
+echo "正在使用 rsync 安全部署..."
+sudo rsync -av \
+    --exclude='images' \
+    --exclude='files' \
+    --exclude='public_key.pem' \
+    ./ "$DEPLOY_DIR/"
 
 echo "部署完成, 软链接保持不变: "
 ls -la "$DEPLOY_DIR" | grep -E "images|files"
