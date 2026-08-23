@@ -643,12 +643,14 @@ function OperateTags({
       );
     }
 
-    // 查看变式题, 均可以查看
-    buttons.push(
-      <Button key="similarList" variant="link" onClick={handleSimilarList}>
-        查看变式题
-      </Button>,
-    );
+    // 查看变式题, 只有母题有变式题
+    if (questionRelationType === QuestionRelationType.Base) {
+      buttons.push(
+        <Button key="similarList" variant="link" onClick={handleSimilarList}>
+          查看变式题
+        </Button>,
+      );
+    }
 
     // 我的题目可以删除题目
     if (source === "myQuestion") {
