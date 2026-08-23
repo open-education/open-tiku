@@ -25,7 +25,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { toast } from "sonner";
 import { SimpleTooltip } from "~/common/tooltip";
 import { ExportPdf } from "~/common/paper/print";
-import { PublishHomework } from "~/paper/gen/homework";
+import { HomeworkList, PublishHomework } from "~/paper/gen/homework";
 
 // 试卷列表
 
@@ -281,6 +281,22 @@ function MyPaperList({
               }}
             >
               布置作业
+            </Button>,
+          );
+
+          // 查看作业
+          buttons.push(
+            <Button
+              key="myPaperHomeworkInfo"
+              variant="link"
+              onClick={() => {
+                setSheetTitle("查看作业布置列表");
+                setSheetDesc("点击右边展开查看学生列表");
+                setSheetContent(<HomeworkList paperId={info.id} />);
+                setOpenSheet(true);
+              }}
+            >
+              查看作业
             </Button>,
           );
         }
