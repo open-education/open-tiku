@@ -9,6 +9,7 @@ import type { TaskListReq, TaskListResp } from "~/type/task";
 import type { ChapterKnowledgeResp, QuestionCateResp } from "~/type/question-cate";
 import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentListReq, ClassStudentResp } from "~/type/class";
 import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from "~/type/user";
+import type { HomeworkListSearchReq, HomeworkListResp, HomeworkListReq } from "~/type/homework";
 
 /// 使用 SWR 缓存查询组件
 /// https://swr.vercel.app/
@@ -168,12 +169,20 @@ export function useClassList(search: ClassSearchReq, pageNo: number) {
 }
 
 // 班级学生账户列表
-export function useClassStudentList(classIds: number[], version: number) {
+// 使用全局缓存key, 方便跨组件重新 mutate 该数据, 尤其针对不直接关联的兄弟组件
+export const getClassStudentListKey = (classIds: number[]) => {
+  const reqPath = "/class/student/list";
+  // 排序避免顺序不一致
+  const sortedIds = [...classIds].sort((a, b) => a - b);
+  return [reqPath, JSON.stringify({ sortedIds })];
+};
+
+export function useClassStudentList(classIds: number[]) {
   const req: ClassStudentListReq = {
     classIds,
   };
   const reqPath = "/class/student/list";
-  const key = [reqPath, JSON.stringify(req), version];
+  const key = getClassStudentListKey(classIds);
   return useSWR<Record<number, ClassStudentResp[]>>(key, () => httpClient.post<Record<number, ClassStudentResp[]>>(reqPath, req), defaultErrConfig);
 }
 
@@ -199,4 +208,20 @@ export function useUserSessionList(pageNo: number) {
   const reqPath = "/user/session/list";
   const key = [reqPath, JSON.stringify(req)];
   return useSWR<UserSessionListResp>(key, () => httpClient.post<UserSessionListResp>(reqPath, req), defaultErrConfig);
+}
+
+// 作业布置列表
+export function usePaperHomeworkList(search: HomeworkListSearchReq, pageNo: number) {
+  let req: HomeworkListReq = {
+    paperId: search.paperId,
+    pageNo,
+    pageSize: StringConst.pageSize,
+  };
+  if (search.batchNo && search.batchNo > 0) {
+    req.batchNo = search.batchNo;
+  }
+
+  const reqPath = "/homework/list";
+  const key = req.paperId > 0 ? [reqPath, JSON.stringify(req)] : null;
+  return useSWR<HomeworkListResp>(key, () => httpClient.post<HomeworkListResp>(reqPath, req), defaultErrConfig);
 }

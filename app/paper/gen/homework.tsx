@@ -1,32 +1,40 @@
-import { ListFilterPlus, Save } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ChevronsUpDown, ListFilterPlus, Save } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import { SimpleAlert } from "~/common/alert";
 import { Loading } from "~/common/load";
+import { SimplePagination } from "~/common/page";
 import { SimpleTooltip } from "~/common/tooltip";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { Textarea } from "~/components/ui/textarea";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import type { ClassInfoResp, ClassSearchReq, ClassStudentResp } from "~/type/class";
-import type { CommonPaperResp, PublishHomeworkReq } from "~/type/paper";
+import type { HomeworkAddReq, HomeworkListSearchReq } from "~/type/homework";
+import type { CommonPaperResp } from "~/type/paper";
 import { SearchConfig } from "~/user/class/config";
-import { useClassList, useClassStudentList } from "~/util/fetcher";
+import { useClassList, useClassStudentList, usePaperHomeworkList } from "~/util/fetcher";
+import { httpClient } from "~/util/http";
+import { StringConst, StringValidator } from "~/util/string";
 
 // 布置作业, 只有手动组卷才需要布置作业
 
 interface PublishHomeworkProps {
+  setOpenSheet: (value: boolean) => void;
   genInfoResp: CommonPaperResp;
 }
 
-const defaultPublishHomeworkReq: PublishHomeworkReq = {
+const defaultHomeworkAddReq: HomeworkAddReq = {
+  batchNo: 0,
   paperId: 0,
-  classList: [],
-  label: "",
+  title: "",
   remark: "",
+  classMap: {},
 };
 
 // 搜索默认值
@@ -36,9 +44,16 @@ const defaultSearchReq: ClassSearchReq = {
   semester: "",
 };
 
-function PublishHomework({ genInfoResp }: PublishHomeworkProps) {
-  const [addReq, setAddReq] = useState<PublishHomeworkReq>(defaultPublishHomeworkReq);
-  const updateAddReq = (key: keyof PublishHomeworkReq, val: number | string) => {
+function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
+  const [addReq, setAddReq] = useState<HomeworkAddReq>(defaultHomeworkAddReq);
+
+  useEffect(() => {
+    if (genInfoResp && genInfoResp.id > 0) {
+      setAddReq((prev) => ({ ...prev, paperId: genInfoResp.id }));
+    }
+  }, [genInfoResp]);
+
+  const updateAddReq = (key: keyof HomeworkAddReq, val: number | string) => {
     setAddReq((prev) => ({ ...prev, [key]: val }));
   };
 
@@ -65,7 +80,7 @@ function PublishHomework({ genInfoResp }: PublishHomeworkProps) {
   }, [classListResp]);
 
   // 获取班级的所有学生账户
-  const { data: classStudentMap = {}, isLoading: classStudentMapLoading, error: classStudentMapErr } = useClassStudentList(classIds, 1);
+  const { data: classStudentMap = {}, isLoading: classStudentMapLoading, error: classStudentMapErr } = useClassStudentList(classIds);
 
   // 选中的班级及对应的学生ID列表
   // key: classId, value: studentIds
@@ -107,6 +122,94 @@ function PublishHomework({ genInfoResp }: PublishHomeworkProps) {
   const [studentListResp, setStudentListResp] = useState<ClassStudentResp[] | null>(null);
   const [defaultSelectIds, setDefaultSelectIds] = useState<number[]>([]);
 
+  // 添加布置作业
+  const [addSaving, setAddSaving] = useState<boolean>(false);
+  const [warnInfo, setWarnInfo] = useState<React.ReactNode>("");
+  const handleSubmit = async () => {
+    setWarnInfo("");
+
+    // 试卷
+    if (addReq.paperId <= 0) {
+      toast.error(<div className="text-red-700">参数错误: 试卷信息不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+
+    // 标题
+    if (!StringValidator.isNonEmpty(addReq.title)) {
+      toast.error(<div className="text-red-700">参数错误: 标题不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    // 班级和班级内学生账户不能为空
+    if (selectedMap.size == 0) {
+      toast.error(<div className="text-red-700">参数错误: 班级不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    for (const value of selectedMap.values()) {
+      if (value.length == 0) {
+        toast.error(<div className="text-red-700">参数错误: 有班级内学生账号为空</div>, {
+          duration: Infinity,
+          action: {
+            label: "关闭",
+            onClick: () => {},
+          },
+        });
+        return;
+      }
+    }
+
+    // 布置作业
+    setAddSaving(true);
+
+    // 获取批次号
+    try {
+      let paperId = addReq.paperId;
+      const batchNo = await httpClient.get<number>(`/homework/${paperId}/batchNo`);
+
+      // 结构出请求参数
+      let req: HomeworkAddReq = {
+        ...addReq,
+        batchNo: batchNo,
+        classMap: Object.fromEntries(selectedMap),
+      };
+      const res = await httpClient.post<boolean>("/homework/add", req);
+
+      // 添加成功则清空选择的默认值
+      if (res) {
+        setAddReq({ ...defaultHomeworkAddReq });
+        setSelectedMap(new Map());
+        setSelectClassInfoResp(null);
+        setStudentListResp(null);
+        setDefaultSelectIds([]);
+
+        // 关闭抽屉
+        setOpenSheet(false);
+      }
+    } catch (error) {
+      const err = error as Error;
+      setWarnInfo(<SimpleAlert title="布置作业失败" message={err.message} />);
+    } finally {
+      setAddSaving(false);
+    }
+  };
+
   return (
     <div className="p-4 space-y-3">
       <div className="text-sm">
@@ -118,11 +221,14 @@ function PublishHomework({ genInfoResp }: PublishHomeworkProps) {
       <Separator />
 
       <div className="flex gap-3">
-        <Button className="text-sm">
+        <Button className="text-sm" disabled={addSaving} onClick={handleSubmit}>
           <Save />
-          保存
+          {addSaving ? "保存中..." : "保存"}
         </Button>
       </div>
+
+      {/* 展示接口提交错误 */}
+      <div>{warnInfo}</div>
 
       <Separator />
 
@@ -144,7 +250,12 @@ function PublishHomework({ genInfoResp }: PublishHomeworkProps) {
       {/* 标题 */}
       <div className="flex gap-3 items-center">
         <div className="text-sm w-20">标题:</div>
-        <Input className="text-sm" value={addReq.label} onChange={(e) => updateAddReq("label", e.target.value)} placeholder="例如 第5批次布置作业" />
+        <Input
+          className="text-sm w-full md:w-1/3"
+          value={addReq.title}
+          onChange={(e) => updateAddReq("title", e.target.value)}
+          placeholder="例如 第5批次布置作业"
+        />
       </div>
 
       <Separator />
@@ -271,7 +382,7 @@ function PublishHomework({ genInfoResp }: PublishHomeworkProps) {
       <div className="flex gap-3 items-center">
         <div className="text-sm w-20">备注:</div>
         <Textarea
-          className="text-sm min-h-19 resize-y"
+          className="text-sm min-h-19 resize-y w-full md:w-1/3"
           value={addReq.remark}
           onChange={(e) => updateAddReq("remark", e.target.value)}
           placeholder="请输入备注信息"
@@ -438,4 +549,157 @@ function SelectStudentList({ setSelectStudentDialogOpen, label, studentListResp,
   );
 }
 
-export { PublishHomework };
+// 查看作业列表
+interface HomeworkListProps {
+  paperId: number;
+}
+
+const defaultSearchListReq: HomeworkListSearchReq = {
+  paperId: 0,
+  batchNo: 0,
+};
+
+function HomeworkList({ paperId }: HomeworkListProps) {
+  const [searchReq, setSearchReq] = useState<HomeworkListSearchReq>(defaultSearchListReq);
+  const updateSearchReq = (key: keyof HomeworkListSearchReq, value: number) => {
+    setSearchReq((prev) => ({ ...prev, [key]: value }));
+  };
+
+  useEffect(() => {
+    updateSearchReq("paperId", paperId);
+  }, [paperId]);
+
+  const [pageNo, setPageNo] = useState<number>(1);
+  const {
+    data: listResp = { list: [], pageNo, pageSize: StringConst.pageSize, total: 0 },
+    isLoading: listRespLoading,
+    error: listRespErr,
+  } = usePaperHomeworkList(searchReq, pageNo);
+
+  // 查看学生明细
+  const rowClass = "flex items-center gap-4 px-4 py-2 border-b";
+  const [selectHkId, setSelectHkId] = useState<number>(0);
+
+  return (
+    <div className="p-4 space-y-3 text-sm">
+      <Separator />
+
+      {/* 批次 */}
+      <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+        <div className="md:w-24 shrink-0 font-medium">批次:</div>
+        <div className="flex-1 min-w-0">
+          <Input
+            type="number"
+            value={searchReq.batchNo || 0}
+            onChange={(e) => {
+              updateSearchReq("batchNo", Number(e.target.value));
+            }}
+            className="text-sm md:text-sm w-full md:w-1/3" // 移动端全宽，PC端1/3宽度
+          />
+        </div>
+      </div>
+
+      <div>{useDelayedLoading(listRespLoading) && <Loading />}</div>
+
+      <div>{listRespErr && <SimpleAlert title="作业布置列表查询失败" message={listRespErr.message} />}</div>
+
+      <Separator />
+
+      <div className="min-h-120 overflow-y-auto">
+        <div className={`${rowClass} text-sm font-medium`}>
+          <div className="w-20 shrink-0 font-semibold">批次</div>
+          <div className="flex-1 font-semibold">标题</div>
+          <div className="flex-1 font-semibold">备注</div>
+          <div className="flex-1 font-semibold">创建时间</div>
+          <div className="w-45 shrink-0 font-semibold">操作</div>
+        </div>
+        {listResp.list.length === 0 ? (
+          <div className="text-center text-sm py-8">暂无作业布置列表</div>
+        ) : (
+          listResp.list.map((item) => (
+            <div key={item.id} className="border-b last:border-b-0">
+              <Collapsible open={item.id === selectHkId}>
+                <div className={`${rowClass} text-sm`}>
+                  <div className="w-20 shrink-0">{item.batchNo}</div>
+                  <div className="flex-1">{item.title}</div>
+                  <div className="flex-1">{item.remark}</div>
+                  <div className="flex-1">{item.createdAt}</div>
+                  <div className="w-45 shrink-0">
+                    <CollapsibleTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8"
+                          onClick={() => {
+                            // 二次点击收起
+                            setSelectHkId(selectHkId === item.id ? 0 : item.id);
+                          }}
+                        >
+                          <ChevronsUpDown />
+                          <span className="sr-only">Toggle details</span>
+                        </Button>
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* 学生账户列表 */}
+                <CollapsibleContent className="p-8 bg-gray-50 border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-sm font-semibold">账号</TableHead>
+                        <TableHead className="text-sm font-semibold">状态</TableHead>
+                        <TableHead className="text-sm font-semibold">最后登录时间</TableHead>
+                        <TableHead className="text-sm font-semibold">登录次数</TableHead>
+                        <TableHead className="text-sm font-semibold">备注</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {item.students.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={5} className="h-24 text-center text-sm">
+                            暂无学生账户
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        item.students.map((student) => (
+                          <TableRow key={student.id}>
+                            <TableCell className="text-sm">{student.account}</TableCell>
+                            <TableCell className="text-sm">{student.statusDesc}</TableCell>
+                            <TableCell className="text-sm">{student.lastLoginTime}</TableCell>
+                            <TableCell className="text-sm">{student.loginCount}</TableCell>
+                            <TableCell className="text-sm">
+                              <SimpleTooltip children={student.remark || "-"} />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* 分页 */}
+      {listResp.total > 0 && (
+        <div className="mt-3">
+          <SimplePagination
+            pageNo={listResp.pageNo}
+            pageSize={listResp.pageSize}
+            total={listResp.total}
+            onPageChange={(pageNo) => {
+              setPageNo(pageNo);
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+export { PublishHomework, HomeworkList };

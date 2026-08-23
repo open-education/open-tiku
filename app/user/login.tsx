@@ -50,7 +50,7 @@ export function Login() {
 
     try {
       // 需公钥加密密码字段 内部包含 fetch 公钥和时间戳校准
-      // 如果加密失败 比如网络断开拿不到公钥 会直接抛出异常进入 catch
+      // 如果加密失败 比如网络断开拿不到公钥 会直接抛出异常
       const genPwd = await getEncryptPwd(logInReq.password);
 
       let req: UserLoginReq = {
@@ -68,7 +68,7 @@ export function Login() {
             return;
           }
           saveAuth(userInfo.token, userInfo);
-          navigate("/", { replace: true }); // 登录成功跳转
+          navigate("/", { replace: true });
         })
         .catch((err) => {
           setWarnInfo(<SimpleAlert title="登录失败" message={err.message} />);
@@ -80,7 +80,7 @@ export function Login() {
     } catch (cryptoError: any) {
       // 捕获加密阶段的错误 例如公钥接口404 本地Web Crypto不支持等
       setWarnInfo(<SimpleAlert title="安全初始化失败" message={cryptoError.message || "无法加密密码，请稍后重试"} />);
-      console.log("err: ", cryptoError);
+      clearAuth();
       setStudentLoggingIn(false);
     }
   };
