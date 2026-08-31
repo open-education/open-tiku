@@ -610,6 +610,7 @@ function HomeworkList({ paperId }: HomeworkListProps) {
           <div className="w-20 shrink-0 font-semibold">批次</div>
           <div className="flex-1 font-semibold">标题</div>
           <div className="flex-1 font-semibold">备注</div>
+          <div className="flex-1 font-semibold">班级信息</div>
           <div className="flex-1 font-semibold">创建时间</div>
           <div className="w-45 shrink-0 font-semibold">操作</div>
         </div>
@@ -623,6 +624,9 @@ function HomeworkList({ paperId }: HomeworkListProps) {
                   <div className="w-20 shrink-0">{item.batchNo}</div>
                   <div className="flex-1">{item.title}</div>
                   <div className="flex-1">{item.remark}</div>
+                  <div className="flex-1">
+                    {[item.classInfo.year, item.classInfo.grade, item.classInfo.semester, item.classInfo.label].filter(Boolean).join("-")}
+                  </div>
                   <div className="flex-1">{item.createdAt}</div>
                   <div className="w-45 shrink-0">
                     <CollapsibleTrigger

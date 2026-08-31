@@ -1,4 +1,4 @@
-import type { ClassStudentResp } from "./class";
+import type { ClassInfoResp, ClassStudentResp } from "./class";
 
 // 添加作业请求
 export interface HomeworkAddReq {
@@ -30,6 +30,7 @@ export interface HomeworkInfoResp {
   homeworkId: number;
   paperId: number;
   classId: number;
+  classInfo: ClassInfoResp;
   authorId: number;
   title: string;
   remark: string;
