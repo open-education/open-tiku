@@ -1,30 +1,18 @@
 import { getGreeting } from "~/util/greeting";
 import type { Route } from "./+types/test";
-import {
-  CheckCircle,
-  CheckLine,
-  ChevronRight,
-  FileQuestionMark,
-  Flag,
-  GraduationCap,
-  List,
-  PenTool,
-  RotateCcw,
-  Star,
-  Target,
-  Zap,
-} from "lucide-react";
+import { CheckCircle, CheckLine, ChevronRight, FileQuestionMark, Flag, GraduationCap, PenTool, RotateCcw, Star, Target, Zap } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
 import { SimplePagination } from "~/common/page";
 
-/// 网站首页顶部和底部框架
+/// 学生做题首页
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "开放题库-练习" },
+    { title: "开放题库-题目练习" },
     {
       name: "description",
-      content: "开始做题",
+      content:
+        "查看自己历史期间做题总数、正确率、知识覆盖等训练信息；根据教师布置的作业进行针对性练习；也可以根据一些自动化的个性推荐，训练自己掌握不足的知识点。",
     },
   ];
 }
@@ -143,7 +131,7 @@ export default function Test() {
               >
                 {/* 左侧状态图标容器 */}
                 <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                     isCompleted ? "bg-green-50 text-green-600" : t.urgent ? "bg-rose-50 text-rose-600" : "bg-blue-50 text-blue-600"
                   }`}
                 >
@@ -160,14 +148,14 @@ export default function Test() {
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-medium text-gray-800 truncate">{t.name}</p>
                   <div className="flex items-center gap-2.5 mt-1">
-                    <p className="text-[11px] text-gray-400 flex-shrink-0">
+                    <p className="text-[11px] text-gray-400 shrink-0">
                       {t.by} · {t.done}/{t.total}题
                     </p>
                     {/* 进度条背景 */}
-                    <div className="flex-1 rounded-full h-[3px] bg-gray-100">
+                    <div className="flex-1 rounded-full h-0.75 bg-gray-100">
                       {/* 进度条高亮 */}
                       <div
-                        className="h-[3px] rounded-full bg-blue-500 transition-all duration-300"
+                        className="h-0.75 rounded-full bg-blue-500 transition-all duration-300"
                         style={{ width: `${(t.done / t.total) * 100}%` }}
                       />
                     </div>
@@ -175,8 +163,8 @@ export default function Test() {
                 </div>
 
                 {/* 右侧紧急标签与箭头 */}
-                {t.urgent && <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-semibold flex-shrink-0">截止今天</span>}
-                <ChevronRight size={14} className="text-gray-300 flex-shrink-0" />
+                {t.urgent && <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-semibold shrink-0">截止今天</span>}
+                <ChevronRight size={14} className="text-gray-300 shrink-0" />
               </div>
             );
           })}
@@ -206,7 +194,7 @@ export default function Test() {
               }`}
             >
               {/* 左侧图标 */}
-              <I size={15} className={`flex-shrink-0 ${iconClass}`} />
+              <I size={15} className={`shrink-0 ${iconClass}`} />
 
               {/* 中间文本 */}
               <div className="flex-1 min-w-0">
@@ -215,7 +203,7 @@ export default function Test() {
               </div>
 
               {/* 右侧箭头 */}
-              <ChevronRight size={13} className="text-gray-300 flex-shrink-0" />
+              <ChevronRight size={13} className="text-gray-300 shrink-0" />
             </div>
           ))}
         </div>
@@ -246,7 +234,7 @@ export default function Test() {
               >
                 {/* 左侧状态图标容器 */}
                 <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                     isCompleted ? "bg-green-50 text-green-600" : t.urgent ? "bg-rose-50 text-rose-600" : "bg-blue-50 text-blue-600"
                   }`}
                 >
@@ -263,14 +251,14 @@ export default function Test() {
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-medium text-gray-800 truncate">{t.name}</p>
                   <div className="flex items-center gap-2.5 mt-1">
-                    <p className="text-[11px] text-gray-400 flex-shrink-0">
+                    <p className="text-[11px] text-gray-400 shrink-0">
                       {t.by} · {t.done}/{t.total}题
                     </p>
                     {/* 进度条背景 */}
-                    <div className="flex-1 rounded-full h-[3px] bg-gray-100">
+                    <div className="flex-1 rounded-full h-0.75 bg-gray-100">
                       {/* 进度条高亮 */}
                       <div
-                        className="h-[3px] rounded-full bg-blue-500 transition-all duration-300"
+                        className="h-0.75 rounded-full bg-blue-500 transition-all duration-300"
                         style={{ width: `${(t.done / t.total) * 100}%` }}
                       />
                     </div>
@@ -278,8 +266,8 @@ export default function Test() {
                 </div>
 
                 {/* 右侧紧急标签与箭头 */}
-                {t.urgent && <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-semibold flex-shrink-0">截止今天</span>}
-                <ChevronRight size={14} className="text-gray-300 flex-shrink-0" />
+                {t.urgent && <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-semibold shrink-0">截止今天</span>}
+                <ChevronRight size={14} className="text-gray-300 shrink-0" />
               </div>
             );
           })}
