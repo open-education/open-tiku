@@ -39,5 +39,8 @@ export default [
       route("account/list", "routes/user/account/index.tsx"),
       route("session/list", "routes/user/account/session.tsx"),
     ]),
+
+    // 开始做题
+    route("test", "routes/student/test.tsx"),
   ]),
 ] satisfies RouteConfig;

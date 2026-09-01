@@ -1,7 +1,7 @@
 import { ChapterExpandNav, type LevelProps, type SelectNavProps } from "~/common/nav";
 import { useCallback, useState } from "react";
 import { Button } from "~/components/ui/button";
-import { ArrowRight, FileText, Flame, GraduationCap, TableOfContents, Upload } from "lucide-react";
+import { ArrowRight, FileQuestionMark, FileText, Flame, SquarePen, TableOfContents, Video } from "lucide-react";
 import { Hero } from "~/home/hero";
 import { PaperList } from "~/common/paper/list";
 import { Loading } from "~/common/load";
@@ -80,26 +80,26 @@ export default function Index() {
     <div className="flex flex-wrap items-center justify-end gap-4">
       <div className="flex flex-wrap gap-2.5">
         <Button className="w-32 text-sm" variant="outline" size="lg">
-          <Upload size={14} />
+          <Video size={14} />
           <NavLink to={""} state={{ selectNavProps }}>
             上传视频
           </NavLink>
         </Button>
         <Button className="w-32 text-sm" variant="outline" size="lg">
-          <Upload size={14} />
+          <FileText size={14} />
           <NavLink to={"paper"} state={{ selectNavProps }}>
             上传试卷
           </NavLink>
         </Button>
         <Button className="w-32 text-sm" variant="outline" size="lg">
-          <Upload size={14} />
+          <FileQuestionMark size={14} />
           <NavLink to={"question"} state={{ selectNavProps }}>
             上传题目
           </NavLink>
         </Button>
 
         <Button className="w-32 text-sm" variant="default" size="lg">
-          <GraduationCap size={14} />
+          <SquarePen size={14} />
           <NavLink to={""} state={{ selectNavProps }}>
             开始练题
           </NavLink>
