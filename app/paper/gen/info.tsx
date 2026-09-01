@@ -99,7 +99,7 @@ function GenInfoHead({ commonPaperResp }: GenInfoHeadProps) {
       </div>
 
       {/* 生成标签 */}
-      <div className="flex gap-3 items-center w-full">
+      <div className="flex flex-wrap gap-3 items-center w-full">
         <TagShow
           relatedName={commonPaperResp.relatedName ?? ""}
           tag={commonPaperResp.tag}

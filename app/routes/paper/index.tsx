@@ -22,6 +22,7 @@ import { CommonPaperSearchConf } from "~/common/paper/config";
 import GenAdd from "~/paper/gen/add";
 import { createTextbookPathDict } from "~/util/textbook-dict";
 import { ArrayUtil } from "~/util/object";
+import { UserRoleType } from "~/type/enum";
 
 // 重新网页标题等
 export function meta({}: Route.MetaArgs) {
@@ -151,7 +152,7 @@ export default function Index() {
           <div className="md:w-24 shrink-0 font-medium">操作:</div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap gap-1">
-              {currentUser && (
+              {currentUser && currentUser.role !== UserRoleType.Student && (
                 <>
                   <Button variant="outline" onClick={handlePaperTopAdd} className="text-sm">
                     <Plus className="mr-2 h-4 w-4" />

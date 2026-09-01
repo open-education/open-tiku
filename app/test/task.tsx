@@ -41,7 +41,7 @@ function ListShow({ listResp }: ListShowProps) {
             {/* 中间文本与进度条 */}
             <div className="flex-1 min-w-0 space-y-3">
               {/* 生成标签 */}
-              <div className="flex gap-3 items-center w-full">
+              <div className="flex flex-wrap gap-3 items-center w-full">
                 <TagShow
                   relatedName={item.paperInfo.relatedName ?? ""}
                   tag={item.paperInfo.tag}

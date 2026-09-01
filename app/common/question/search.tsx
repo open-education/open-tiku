@@ -22,7 +22,7 @@ import { Button } from "~/components/ui/button";
 import { Plus, Upload, View } from "lucide-react";
 import type { UserInfoResp } from "~/type/user";
 import { useUserInfo } from "~/hooks/use-user";
-import { QuestionRelationType } from "~/type/enum";
+import { QuestionRelationType, UserRoleType } from "~/type/enum";
 
 // 题目搜索页面
 interface QuestionSearchProps {
@@ -284,7 +284,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
             <div className="md:w-24 shrink-0 font-medium">操作:</div>
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap gap-1">
-                {currentUser && (
+                {currentUser && currentUser.role !== UserRoleType.Student && (
                   <>
                     <Button variant="outline" className="text-sm" onClick={handleQuestionAdd}>
                       <Plus className="mr-2 h-4 w-4" />

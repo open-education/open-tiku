@@ -8,7 +8,7 @@ import { TagShow } from "~/common/paper/tag";
 import TopAdd from "~/paper/top/add";
 import { Button } from "~/components/ui/button";
 import { SquarePen } from "lucide-react";
-import { PaperStatus } from "~/type/enum";
+import { PaperStatus, UserRoleType } from "~/type/enum";
 import { getGroupName } from "~/common/paper/print";
 
 // 试卷详情预览样式
@@ -113,7 +113,7 @@ function TopInfo({
 
   // 显示编辑按钮
   const showEdit = () => {
-    if (!currentUser || infoResp.common.paperType !== StringConst.paperTypeTop) {
+    if (!currentUser || infoResp.common.paperType !== StringConst.paperTypeTop || currentUser.role === UserRoleType.Student) {
       return "";
     }
 

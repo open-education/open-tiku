@@ -201,7 +201,7 @@ export default function Test() {
         <div className="p-3">{historyListResp.total > 0 ? <ListShow listResp={historyListResp.list} /> : <SimpleNoData desc="历史任务为空" />}</div>
 
         {historyListResp.total > 0 && (
-          <div className="mt-3">
+          <div className="my-3">
             <SimplePagination
               pageNo={historyListResp.pageNo}
               pageSize={historyListResp.pageSize}
