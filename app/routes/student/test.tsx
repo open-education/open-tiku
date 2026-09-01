@@ -1,9 +1,17 @@
 import { getGreeting } from "~/util/greeting";
 import type { Route } from "./+types/test";
-import { CheckCircle, CheckLine, ChevronRight, FileQuestionMark, Flag, GraduationCap, PenTool, RotateCcw, Star, Target, Zap } from "lucide-react";
+import { CheckLine, ChevronRight, FileQuestionMark, GraduationCap, RotateCcw, Star, Target, Zap } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
 import { SimplePagination } from "~/common/page";
+import { DateUtil } from "~/util/object";
+import { useTestList } from "~/util/fetcher";
+import { useDelayedLoading } from "~/hooks/delayed-loading";
+import { Loading } from "~/common/load";
+import { SimpleAlert } from "~/common/alert";
+import { useState } from "react";
+import { ListShow } from "~/test/task";
+import { SimpleNoData } from "~/common/empty";
 
 /// 学生做题首页
 export function meta({}: Route.MetaArgs) {
@@ -78,6 +86,23 @@ const STATS: TestStatProps[] = [
 ];
 
 export default function Test() {
+  // 今日任务
+  const { startDate, endDate } = DateUtil.getTodayDate();
+  const {
+    data: todayListResp = { list: [], pageNo: 1, pageSize: 10, total: 0 },
+    isLoading: todayListRespLoading,
+    error: todayListRespErr,
+  } = useTestList(startDate, endDate, 1);
+
+  // 历史任务默认前10天
+  const [pageNo, setPageNo] = useState<number>(1);
+  const { startDate: historyStartDate, endDate: historyEndDate } = DateUtil.getLast10Days();
+  const {
+    data: historyListResp = { list: [], pageNo: 1, pageSize: 10, total: 0 },
+    isLoading: historyListRespLoading,
+    error: historyListRespErr,
+  } = useTestList(historyStartDate, historyEndDate, pageNo);
+
   return (
     <div className="px-4 py-4 sm:px-16 sm:py-4 space-y-4">
       {/* 欢迎 */}
@@ -85,6 +110,10 @@ export default function Test() {
         <div className="text-blue-500 font-semibold">{getGreeting()}</div>
         <div className="text-sm">七年级1班，已累计打卡 12 次</div>
       </div>
+
+      <div>{useDelayedLoading(todayListRespLoading) && <Loading />}</div>
+
+      <div>{todayListRespErr && <SimpleAlert title="今日任务获取失败" message={todayListRespErr.message} />}</div>
 
       {/* 已达成就 */}
       <div className="overflow-hidden border border-gray-100 bg-white shadow-sm">
@@ -115,59 +144,11 @@ export default function Test() {
         </div>
 
         <div className="p-3">
-          {/* 任务列表 */}
-          {[
-            { name: "数轴与有理数练习", by: "张伟老师", total: 15, done: 12, urgent: false },
-            { name: "第9章单元测试", by: "张伟老师", total: 20, done: 0, urgent: true },
-            { name: "错题复习（3道）", by: "系统推荐", total: 3, done: 0, urgent: false },
-          ].map((t, i) => {
-            const isCompleted = t.done === t.total;
-
-            return (
-              <div
-                key={i}
-                onClick={() => {}}
-                className="px-4 py-3 border-t border-gray-100 flex items-center gap-2.5 cursor-pointer transition-colors duration-100 hover:bg-gray-100"
-              >
-                {/* 左侧状态图标容器 */}
-                <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                    isCompleted ? "bg-green-50 text-green-600" : t.urgent ? "bg-rose-50 text-rose-600" : "bg-blue-50 text-blue-600"
-                  }`}
-                >
-                  {isCompleted ? (
-                    <CheckCircle size={15} className="currentColor" />
-                  ) : t.urgent ? (
-                    <Flag size={15} className="currentColor" />
-                  ) : (
-                    <PenTool size={15} className="currentColor" />
-                  )}
-                </div>
-
-                {/* 中间文本与进度条 */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-gray-800 truncate">{t.name}</p>
-                  <div className="flex items-center gap-2.5 mt-1">
-                    <p className="text-[11px] text-gray-400 shrink-0">
-                      {t.by} · {t.done}/{t.total}题
-                    </p>
-                    {/* 进度条背景 */}
-                    <div className="flex-1 rounded-full h-0.75 bg-gray-100">
-                      {/* 进度条高亮 */}
-                      <div
-                        className="h-0.75 rounded-full bg-blue-500 transition-all duration-300"
-                        style={{ width: `${(t.done / t.total) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* 右侧紧急标签与箭头 */}
-                {t.urgent && <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-semibold shrink-0">截止今天</span>}
-                <ChevronRight size={14} className="text-gray-300 shrink-0" />
-              </div>
-            );
-          })}
+          {todayListResp.total > 0 ? (
+            <ListShow listResp={todayListResp.list} />
+          ) : (
+            <SimpleNoData desc="非常好，你还没有今日任务，可以去尝试做做其它的题目。" />
+          )}
         </div>
       </div>
 
@@ -176,7 +157,7 @@ export default function Test() {
         {/* 头部区域 */}
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <h3 className="font-semibold text-blue-600">个性化推荐</h3>
-          <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.5">AI 定制</span>
+          <span className="text-sm px-1.5 py-0.5">AI 定制</span>
         </div>
 
         <div className="p-3">
@@ -214,68 +195,21 @@ export default function Test() {
         {/* 头部区域 */}
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <h3 className="font-semibold text-blue-600">历史任务</h3>
-          <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.5">查看更多</span>
+          <span className="text-sm px-1.5 py-0.5">查看更多</span>
         </div>
 
-        <div className="p-3">
-          {/* 任务列表 */}
-          {[
-            { name: "数轴与有理数练习", by: "张伟老师", total: 15, done: 12, urgent: false },
-            { name: "第9章单元测试", by: "张伟老师", total: 20, done: 0, urgent: true },
-            { name: "错题复习（3道）", by: "系统推荐", total: 3, done: 0, urgent: false },
-          ].map((t, i) => {
-            const isCompleted = t.done === t.total;
+        <div className="p-3">{historyListResp.total > 0 ? <ListShow listResp={historyListResp.list} /> : <SimpleNoData desc="历史任务为空" />}</div>
 
-            return (
-              <div
-                key={i}
-                onClick={() => go("practice")}
-                className="px-4 py-3 border-t border-gray-100 flex items-center gap-2.5 cursor-pointer transition-colors duration-100 hover:bg-gray-100"
-              >
-                {/* 左侧状态图标容器 */}
-                <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                    isCompleted ? "bg-green-50 text-green-600" : t.urgent ? "bg-rose-50 text-rose-600" : "bg-blue-50 text-blue-600"
-                  }`}
-                >
-                  {isCompleted ? (
-                    <CheckCircle size={15} className="currentColor" />
-                  ) : t.urgent ? (
-                    <Flag size={15} className="currentColor" />
-                  ) : (
-                    <PenTool size={15} className="currentColor" />
-                  )}
-                </div>
-
-                {/* 中间文本与进度条 */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-gray-800 truncate">{t.name}</p>
-                  <div className="flex items-center gap-2.5 mt-1">
-                    <p className="text-[11px] text-gray-400 shrink-0">
-                      {t.by} · {t.done}/{t.total}题
-                    </p>
-                    {/* 进度条背景 */}
-                    <div className="flex-1 rounded-full h-0.75 bg-gray-100">
-                      {/* 进度条高亮 */}
-                      <div
-                        className="h-0.75 rounded-full bg-blue-500 transition-all duration-300"
-                        style={{ width: `${(t.done / t.total) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* 右侧紧急标签与箭头 */}
-                {t.urgent && <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-semibold shrink-0">截止今天</span>}
-                <ChevronRight size={14} className="text-gray-300 shrink-0" />
-              </div>
-            );
-          })}
-
+        {historyListResp.total > 0 && (
           <div className="mt-3">
-            <SimplePagination pageNo={1} pageSize={10} total={1} onPageChange={(pageNo) => {}} />
+            <SimplePagination
+              pageNo={historyListResp.pageNo}
+              pageSize={historyListResp.pageSize}
+              total={historyListResp.total}
+              onPageChange={(pageNo) => setPageNo(pageNo)}
+            />
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

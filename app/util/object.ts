@@ -80,3 +80,66 @@ export const ObjectUtil = {
     return Math.random().toString(36).substring(2, 9);
   },
 };
+
+// 日期相关工具
+export const DateUtil = {
+  getTodayDate: (): { startDate: string; endDate: string } => {
+    const today = new Date();
+
+    const formatDate = (date: Date): string => {
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    };
+
+    // 计算明天
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    return {
+      startDate: formatDate(today),
+      endDate: formatDate(tomorrow),
+    };
+  },
+
+  // 获取前10天的日期, endDate 是今天的日期
+  getLast10Days: (): { startDate: string; endDate: string } => {
+    const today = new Date();
+
+    const formatDate = (date: Date): string => {
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    };
+
+    // 1. 因为后端是 < endDate，传今天正好能彻底排除今天的数据
+    const endDate = formatDate(today);
+
+    // 2. 开始日期为今天的 10 天前
+    const tenDaysAgo = new Date(today);
+    tenDaysAgo.setDate(today.getDate() - 10);
+    const startDate = formatDate(tenDaysAgo);
+
+    return {
+      startDate,
+      endDate,
+    };
+  },
+
+  // 字符串格式的日期是否是今天的日期, 不需要严格去处理时区, 就按用户电脑默认时区即可
+  isTodayLocal: (dateStr: string): boolean => {
+    const today = new Date();
+
+    // 1. 获取用户电脑本地的年、月、日并补零
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    // 2. 直接进行字符串全等比对
+    return dateStr === todayStr;
+  },
+};

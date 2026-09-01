@@ -27,7 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { QuestionRelationType, QuestionStatus } from "~/type/enum";
+import { QuestionRelationType, QuestionStatus, UserRoleType } from "~/type/enum";
 import type { KeyedMutator } from "swr";
 import type { UserInfoResp } from "~/type/user";
 import { useUserInfo } from "~/hooks/use-user";
@@ -501,6 +501,7 @@ function OperateTags({
   const renderButtons = (source: string, questionRelationType: number) => {
     // 获取用户信息
     const currentUser: UserInfoResp | null = useUserInfo();
+    const notStudent = currentUser !== null && currentUser.role !== UserRoleType.Student;
 
     // 详情按钮-所有地方均有
     const buttons = [
@@ -614,7 +615,7 @@ function OperateTags({
     }
 
     // 编辑, 审核不能编辑别人的信息, 更不能自己编辑自己审核
-    if (currentUser && pageSource.source !== "myReview") {
+    if (currentUser && pageSource.source !== "myReview" && notStudent) {
       buttons.push(
         <Button key="edit" variant="link" onClick={handleEditInfo}>
           编辑
@@ -623,7 +624,7 @@ function OperateTags({
     }
 
     // 变式题课本原题只有母题可添加
-    if (currentUser && source === "list" && questionRelationType === QuestionRelationType.Base) {
+    if (currentUser && source === "list" && questionRelationType === QuestionRelationType.Base && notStudent) {
       buttons.push(
         <Button key="originalTextbook" variant="link" onClick={handleOriginalTextbookAdd}>
           添加课本原题

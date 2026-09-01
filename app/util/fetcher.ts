@@ -10,6 +10,7 @@ import type { ChapterKnowledgeResp, QuestionCateResp } from "~/type/question-cat
 import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentListReq, ClassStudentResp } from "~/type/class";
 import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from "~/type/user";
 import type { HomeworkListSearchReq, HomeworkListResp, HomeworkListReq } from "~/type/homework";
+import type { TestListReq, TestListResp } from "~/type/test";
 
 /// 使用 SWR 缓存查询组件
 /// https://swr.vercel.app/
@@ -224,4 +225,18 @@ export function usePaperHomeworkList(search: HomeworkListSearchReq, pageNo: numb
   const reqPath = "/homework/list";
   const key = req.paperId > 0 ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<HomeworkListResp>(key, () => httpClient.post<HomeworkListResp>(reqPath, req), defaultErrConfig);
+}
+
+// 学生任务列表
+export function useTestList(startDate: string, endDate: string, pageNo: number) {
+  let req: TestListReq = {
+    startDate,
+    endDate,
+    pageNo,
+    pageSize: StringConst.pageSize,
+  };
+
+  const reqPath = "/test/list";
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<TestListResp>(key, () => httpClient.post<TestListResp>(reqPath, req), defaultErrConfig);
 }
