@@ -20,6 +20,8 @@ import { SimpleFullContent } from "~/common/content";
 import { MultiOptionSelect } from "~/common/select";
 import type { AttemptInfoResp, InProgressLatestAttemptReq } from "~/type/test";
 import { TestMethod } from "~/type/enum";
+import { useDelayedLoading } from "~/hooks/delayed-loading";
+import { Loading } from "~/common/load";
 
 /// 学生做题首页
 export function meta({}: Route.MetaArgs) {
@@ -112,12 +114,15 @@ export default function Index() {
 
   // 试卷详情
   const [genPaperResp, setGenPaperResp] = useState<GenPaperResp>(defaultGenPaperResp);
+  const [genPaperLoading, setGenPaperLoading] = useState<boolean>(false);
 
   // 进行中的最新做题记录, 没有后台初始化默认的做题记录
   const [latestAttemptResp, setLatestAttemptResp] = useState<AttemptInfoResp | null>(null);
+  const [attemptLoading, setAttemptLoading] = useState<boolean>(false);
 
   useEffect(() => {
     // 试卷详情
+    setGenPaperLoading(true);
     httpClient
       .get<GenPaperResp>(`/paper/gen/info/${paperId}`)
       .then((res) => {
@@ -126,9 +131,12 @@ export default function Index() {
       .catch((err) => {
         setWarnInfo(<SimpleAlert title="获取试卷详情失败" message={err.message} />);
       })
-      .finally(() => {});
+      .finally(() => {
+        setGenPaperLoading(false);
+      });
 
     // 进行中的做题记录
+    setAttemptLoading(true);
     let attemptReq: InProgressLatestAttemptReq = {
       id: hId,
       method: Number(examMethod),
@@ -141,8 +149,10 @@ export default function Index() {
       .catch((err) => {
         setWarnInfo(<SimpleAlert title="获取进行中的做题记录失败" message={err.message} />);
       })
-      .finally(() => {});
-  }, [paperId, examMethod]);
+      .finally(() => {
+        setAttemptLoading(false);
+      });
+  }, [paperId, examMethod, hId]);
 
   // 构建第一个 Map：Group ID -> GenPaperGroupResp 中的 common 配置
   const groupCommonMap = useMemo(() => {
@@ -194,8 +204,10 @@ export default function Index() {
   const [showErrorTip, setShowErrorTip] = useState<boolean>(false);
 
   return (
-    <div className="px-4 py-4 sm:px-16 sm:py-4 space-y-4">
-      <div>{warnInfo}</div>
+    <div className="px-4 py-4 sm:px-16 sm:py-4">
+      {useDelayedLoading(genPaperLoading || attemptLoading) && <Loading />}
+
+      {warnInfo}
 
       <ResizablePanelGroup orientation="horizontal" className="min-h-50 border bg-white">
         <ResizablePanel defaultSize="40%">
