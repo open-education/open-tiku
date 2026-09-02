@@ -85,7 +85,7 @@ const STATS: TestStatProps[] = [
   },
 ];
 
-export default function Test() {
+export default function Index() {
   // 今日任务
   const { startDate, endDate } = DateUtil.getTodayDate();
   const {
@@ -111,9 +111,12 @@ export default function Test() {
         <div className="text-sm">七年级1班，已累计打卡 12 次</div>
       </div>
 
-      <div>{useDelayedLoading(todayListRespLoading) && <Loading />}</div>
+      <div>{useDelayedLoading(todayListRespLoading || historyListRespLoading) && <Loading />}</div>
 
-      <div>{todayListRespErr && <SimpleAlert title="今日任务获取失败" message={todayListRespErr.message} />}</div>
+      <div>
+        <div>{todayListRespErr && <SimpleAlert title="今日任务获取失败" message={todayListRespErr.message} />}</div>
+        <div>{historyListRespErr && <SimpleAlert title="历史任务获取失败" message={historyListRespErr.message} />}</div>
+      </div>
 
       {/* 已达成就 */}
       <div className="overflow-hidden border border-gray-100 bg-white shadow-sm">
@@ -157,7 +160,7 @@ export default function Test() {
         {/* 头部区域 */}
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <h3 className="font-semibold text-blue-600">个性化推荐</h3>
-          <span className="text-sm px-1.5 py-0.5">AI 定制</span>
+          <span className="text-xs px-1.5 py-0.5">AI 定制</span>
         </div>
 
         <div className="p-3">
@@ -195,7 +198,7 @@ export default function Test() {
         {/* 头部区域 */}
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <h3 className="font-semibold text-blue-600">历史任务</h3>
-          <span className="text-sm px-1.5 py-0.5">查看更多</span>
+          <span className="text-xs px-1.5 py-0.5">查看更多</span>
         </div>
 
         <div className="p-3">{historyListResp.total > 0 ? <ListShow listResp={historyListResp.list} /> : <SimpleNoData desc="历史任务为空" />}</div>

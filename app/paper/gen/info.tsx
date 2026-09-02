@@ -142,16 +142,6 @@ interface GenInfoPreviewProps {
 }
 
 function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionDimensionDict }: GenInfoPreviewProps) {
-  // 生成题目标题
-  const getQuestionTitle = (orderNum: number, stem: string, images: string[]) => {
-    return <TitleShow no={orderNum} title={stem} comment={""} images={images} />;
-  };
-
-  // 生成题目选项
-  const getQuestionOptions = (optionsLayout: number, options: QuestionOption[]) => {
-    return <MultiOptionShow optionsLayout={optionsLayout} options={options} />;
-  };
-
   // 遮盖层弹框查看试卷详情
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 

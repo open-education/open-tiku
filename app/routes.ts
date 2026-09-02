@@ -42,5 +42,6 @@ export default [
 
     // 开始做题
     route("test", "routes/student/test.tsx"),
+    route("exam/:paperId/:examMethod", "routes/student/exam.tsx"),
   ]),
 ] satisfies RouteConfig;

@@ -1,5 +1,7 @@
 import { CheckCircle, ChevronRight, Flag, PenTool } from "lucide-react";
+import { NavLink } from "react-router";
 import { TagShow } from "~/common/paper/tag";
+import { Button } from "~/components/ui/button";
 import type { TestInfoResp } from "~/type/test";
 import { DateUtil } from "~/util/object";
 
@@ -58,14 +60,22 @@ function ListShow({ listResp }: ListShowProps) {
                 {/* 进度条背景 */}
                 <div className="flex-1 h-0.75 bg-gray-100">
                   {/* 进度条高亮 */}
-                  <div className="h-0.75 bg-blue-500 transition-all duration-300" style={{ width: `${(10 / item.paperInfo.count) * 100}%` }} />
+                  <div className="h-0.75 bg-blue-200 transition-all duration-300" style={{ width: `${(10 / item.paperInfo.count) * 100}%` }} />
                 </div>
               </div>
             </div>
 
+            <div className="flex gap-3 text-xs">
+              <Button variant="link">
+                <NavLink to={`/exam/${item.paperInfo.id}/1`}>练习模式</NavLink>
+              </Button>
+              <Button variant="link">
+                <NavLink to={`/exam/${item.paperInfo.id}/2`}>考试模式</NavLink>
+              </Button>
+            </div>
+
             {/* 右侧紧急标签与箭头 */}
-            {isUrgent && <span className="text-sm px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-semibold shrink-0">截止今天</span>}
-            <ChevronRight size={14} className="text-gray-300 shrink-0" />
+            {isUrgent && <span className="text-xs px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-semibold shrink-0">截止今天</span>}
           </div>
         );
       })}
