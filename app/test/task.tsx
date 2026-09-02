@@ -2,6 +2,7 @@ import { CheckCircle, ChevronRight, Flag, PenTool } from "lucide-react";
 import { NavLink } from "react-router";
 import { TagShow } from "~/common/paper/tag";
 import { Button } from "~/components/ui/button";
+import { TestMethod } from "~/type/enum";
 import type { TestInfoResp } from "~/type/test";
 import { DateUtil } from "~/util/object";
 
@@ -67,10 +68,19 @@ function ListShow({ listResp }: ListShowProps) {
 
             <div className="flex gap-3 text-xs">
               <Button variant="link">
-                <NavLink to={`/exam/${item.paperInfo.id}/1`}>练习模式</NavLink>
+                <NavLink to={`/exam/${item.paperInfo.id}/${TestMethod.Exercise}`} state={{ hId: item.id }}>
+                  练习模式
+                </NavLink>
               </Button>
               <Button variant="link">
-                <NavLink to={`/exam/${item.paperInfo.id}/2`}>考试模式</NavLink>
+                <NavLink to={`/exam/${item.paperInfo.id}/${TestMethod.Exam}`} state={{ hId: item.id }}>
+                  考试模式
+                </NavLink>
+              </Button>
+              <Button variant="link">
+                <NavLink to={`/exam/${item.paperInfo.id}/2/attempt`} state={{ hId: item.id }}>
+                  做题记录
+                </NavLink>
               </Button>
             </div>
 

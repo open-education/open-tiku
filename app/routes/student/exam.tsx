@@ -7,7 +7,7 @@ import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, HelpCircle, Lig
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Textarea } from "~/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/ui/accordion";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { httpClient } from "~/util/http";
 import type { CommonPaperGroupResp, GenPaperQuestionResp, GenPaperResp } from "~/type/paper";
 import { SimpleAlert } from "~/common/alert";
@@ -17,11 +17,14 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/componen
 import { TitleShow } from "~/common/title";
 import { Separator } from "~/components/ui/separator";
 import { SimpleFullContent } from "~/common/content";
+import { MultiOptionSelect } from "~/common/select";
+import type { AttemptInfoResp, InProgressLatestAttemptReq } from "~/type/test";
+import { TestMethod } from "~/type/enum";
 
 /// 学生做题首页
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "开放题库-开始练题" },
+    { title: "开放题库-正在练题" },
     {
       name: "description",
       content:
@@ -102,10 +105,19 @@ export default function Index() {
   // 试卷和做题模式
   const { paperId, examMethod } = useParams();
 
+  const location = useLocation();
+  const { hId } = location.state || {};
+
   const [warnInfo, setWarnInfo] = useState<React.ReactNode>("");
+
+  // 试卷详情
   const [genPaperResp, setGenPaperResp] = useState<GenPaperResp>(defaultGenPaperResp);
 
+  // 进行中的最新做题记录, 没有后台初始化默认的做题记录
+  const [latestAttemptResp, setLatestAttemptResp] = useState<AttemptInfoResp | null>(null);
+
   useEffect(() => {
+    // 试卷详情
     httpClient
       .get<GenPaperResp>(`/paper/gen/info/${paperId}`)
       .then((res) => {
@@ -113,6 +125,21 @@ export default function Index() {
       })
       .catch((err) => {
         setWarnInfo(<SimpleAlert title="获取试卷详情失败" message={err.message} />);
+      })
+      .finally(() => {});
+
+    // 进行中的做题记录
+    let attemptReq: InProgressLatestAttemptReq = {
+      id: hId,
+      method: Number(examMethod),
+    };
+    httpClient
+      .post<AttemptInfoResp>("/test/latest/attempt", attemptReq)
+      .then((res) => {
+        setLatestAttemptResp(res);
+      })
+      .catch((err) => {
+        setWarnInfo(<SimpleAlert title="获取进行中的做题记录失败" message={err.message} />);
       })
       .finally(() => {});
   }, [paperId, examMethod]);
@@ -168,15 +195,18 @@ export default function Index() {
 
   return (
     <div className="px-4 py-4 sm:px-16 sm:py-4 space-y-4">
+      <div>{warnInfo}</div>
+
       <ResizablePanelGroup orientation="horizontal" className="min-h-50 border bg-white">
         <ResizablePanel defaultSize="40%">
           <div className="p-4">
             <Card className="border-slate-200/80">
               <CardHeader className="space-y-3">
-                <div>
+                <div className="flex gap-3">
                   <Badge variant="default" className="tracking-wide">
-                    "模拟考试 (交卷判题)"
+                    {latestAttemptResp?.methodDesc}
                   </Badge>
+                  <div>{latestAttemptResp?.method === TestMethod.Exercise ? "每做完一道题就可以核对答案" : "需要最后交卷后才能查看答案"}</div>
                 </div>
                 <div className="flex flex-wrap gap-3 items-center w-full">
                   <TagShow
@@ -211,7 +241,7 @@ export default function Index() {
                                 className="w-10"
                                 variant={isCurrent ? "default" : "outline"}
                                 onClick={() => {
-                                  setSelectedOpt(""); // 点击题目时清空历史当前选择的选项记录
+                                  setSelectedOpt("");
                                   setCurrentQuestionId(question.common.questionId);
                                 }}
                               >
@@ -242,7 +272,7 @@ export default function Index() {
               <CardContent className="space-y-3">
                 {/* 题目头部状态 */}
                 <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="text-indigo-600 bg-indigo-50/50 border-indigo-200/60 font-semibold px-2.5 py-1">
+                  <Badge variant="outline" className="text-sm bg-blue-50 text-blue-700 border-blue-100">
                     {getCurrentGroupInfo.typeName}
                   </Badge>
                   <span className="text-sm font-medium text-slate-400">
@@ -262,47 +292,16 @@ export default function Index() {
                   />
                 </div>
 
-                <Separator />
-
                 {/* 选项组 */}
-                <div className="space-y-3">
-                  {getCurrentQuestionInfo.info.baseInfo.options?.map((opt) => {
-                    let cardClass = "border-slate-200/70 hover:border-slate-300 hover:bg-slate-50/50";
-                    let badgeVariant: "outline" | "default" | "secondary" = "outline";
-
-                    // 是否选中当前选项
-                    const isSelected = selectedOpt === opt.label;
-
-                    if (isSelected) {
-                      cardClass = "border-indigo-600 bg-indigo-50/20 ring-1 ring-indigo-600 shadow-sm";
-                      badgeVariant = "default";
-                    }
-
-                    // 显示结果是否正确
-                    // if (isSelected) {
-                    //   cardClass = "border-emerald-500 bg-emerald-50/40 ring-1 ring-emerald-500";
-                    // } else {
-                    //   cardClass = "border-rose-400 bg-rose-50/40 ring-1 ring-rose-400";
-                    // }
-
-                    return (
-                      <div
-                        key={opt.label}
-                        onClick={() => {
-                          setSelectedOpt(opt.label);
-                        }}
-                        className={`flex items-center gap-2 p-2 border cursor-pointer transition-all duration-150 ${cardClass}`}
-                      >
-                        <Badge variant={badgeVariant} className="w-7 h-7 flex items-center justify-center p-0 shrink-0">
-                          {opt.label}
-                        </Badge>
-                        <div className="font-medium text-slate-700">
-                          <SimpleFullContent content={opt.content} />
-                        </div>
-                      </div>
-                    );
-                  })}
+                <div>
+                  <MultiOptionSelect
+                    options={getCurrentQuestionInfo.info.baseInfo.options || []}
+                    selectedOpt={selectedOpt}
+                    setSelectedOpt={setSelectedOpt}
+                  />
                 </div>
+
+                <Separator />
 
                 {/* 易错提示 */}
                 <div className="space-y-2">

@@ -48,3 +48,9 @@ export enum AccountStatus {
   Paused = 2, // 2 暂停
   Forbidden = 20, // 20 封禁
 }
+
+// 做题模式
+export enum TestMethod {
+  Exercise = 1, // 练习模式
+  Exam = 2, // 考试模式
+}
