@@ -75,15 +75,18 @@ export interface AttemptInfoResp {
 }
 
 // 添加答案
-export interface TestAnswerAddReq {
-  id?: number;
-  // 做题记录标识
-  attemptId: number;
+export interface AnswerAddReq {
   questionId: number;
   // 用户的最终选择/填写内容
   answer: string;
   // 是否正确 0 未作答 1 正确 2 错误
-  result: 0;
+  result: number;
   // 笔记
   note: string;
+}
+
+export interface TestAnswerAddReq {
+  attemptId: number;
+  status: number;
+  list: AnswerAddReq[];
 }

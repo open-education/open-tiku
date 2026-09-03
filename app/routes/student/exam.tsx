@@ -18,10 +18,11 @@ import { TitleShow } from "~/common/title";
 import { Separator } from "~/components/ui/separator";
 import { SimpleFullContent } from "~/common/content";
 import { MultiOptionSelect } from "~/common/select";
-import type { AttemptInfoResp, InProgressLatestAttemptReq, TestAnswerAddReq } from "~/type/test";
-import { TestMethod, TestResult } from "~/type/enum";
+import type { AnswerAddReq, AttemptInfoResp, InProgressLatestAttemptReq, TestAnswerAddReq } from "~/type/test";
+import { TestMethod, TestResult, TestStatus } from "~/type/enum";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Loading } from "~/common/load";
+import { toast } from "sonner";
 
 /// 学生做题首页
 export function meta({}: Route.MetaArgs) {
@@ -103,6 +104,25 @@ const defaultGenPaperQuestionResp: GenPaperQuestionResp = {
   },
 };
 
+// 默认做题记录明细
+const defaultAttemptInfoResp: AttemptInfoResp = {
+  id: 0,
+  studentId: 0,
+  homeworkId: 0,
+  classId: 0,
+  paperId: 0,
+  attemptNumber: 0,
+  method: 0,
+  methodDesc: "",
+  status: 0,
+  statusDesc: "",
+  score: 0,
+  createdAt: "",
+  updatedAt: "",
+  completedAt: "",
+  answers: [],
+};
+
 export default function Index() {
   // 试卷和做题模式
   const { paperId, examMethod } = useParams();
@@ -117,7 +137,7 @@ export default function Index() {
   const [genPaperLoading, setGenPaperLoading] = useState<boolean>(false);
 
   // 进行中的最新做题记录, 没有后台初始化默认的做题记录
-  const [latestAttemptResp, setLatestAttemptResp] = useState<AttemptInfoResp | null>(null);
+  const [latestAttemptResp, setLatestAttemptResp] = useState<AttemptInfoResp>(defaultAttemptInfoResp);
   const [attemptLoading, setAttemptLoading] = useState<boolean>(false);
 
   // 是否显示题目答案
@@ -210,8 +230,6 @@ export default function Index() {
   const getCurrentGroupInfo =
     (getCurrentQuestionInfo.common.id > 0 ? groupCommonMap.get(getCurrentQuestionInfo.common.groupId) : null) ?? defaultCommonPaperGroupResp;
 
-  // 当前选中的选项
-  const [selectedOpt, setSelectedOpt] = useState<string>("");
   // 易错提示
   const [showErrorTip, setShowErrorTip] = useState<boolean>(false);
 
@@ -221,7 +239,6 @@ export default function Index() {
       const nextId = indexToQuestionIdMap.get(nextIndex) || 0;
       setCurrentIndex(nextIndex);
       setCurrentQuestionId(nextId);
-      setSelectedOpt("");
       setShowAnswer(false);
     }
   };
@@ -232,13 +249,30 @@ export default function Index() {
       const nextId = indexToQuestionIdMap.get(nextIndex) || 0;
       setCurrentIndex(nextIndex);
       setCurrentQuestionId(nextId);
-      setSelectedOpt("");
       setShowAnswer(false);
     }
   };
 
   // 记录用户提交的答案
-  const [answerMap, setAnswerMap] = useState<Map<number, TestAnswerAddReq>>(new Map());
+  const [answerMap, setAnswerMap] = useState<Map<number, AnswerAddReq>>(new Map());
+
+  // 初始化已提交过的答案列表
+  useEffect(() => {
+    if (latestAttemptResp.answers.length > 0) {
+      const newMap = new Map<number, AnswerAddReq>();
+
+      latestAttemptResp.answers.forEach((ans) => {
+        newMap.set(ans.questionId, {
+          questionId: ans.questionId,
+          answer: ans.answer,
+          result: ans.result,
+          note: ans.note,
+        });
+      });
+
+      setAnswerMap(newMap);
+    }
+  }, [latestAttemptResp]);
 
   // 当前问题作答信息
   const currentAnswerReq = answerMap.get(currentQuestionId) || {
@@ -250,11 +284,10 @@ export default function Index() {
   };
 
   // 更新答案明细信息
-  const updateAnswerField = <K extends keyof TestAnswerAddReq>(questionId: number, key: K, value: TestAnswerAddReq[K]) => {
+  const updateAnswerField = <K extends keyof AnswerAddReq>(questionId: number, key: K, value: AnswerAddReq[K]) => {
     setAnswerMap((prevMap) => {
       const newMap = new Map(prevMap);
       const existing = newMap.get(questionId) || {
-        attemptId: hId,
         questionId,
         answer: "",
         result: 0,
@@ -270,8 +303,63 @@ export default function Index() {
     });
   };
 
-  // 提交记录, 最后校验答案
-  const handleSubmit = () => {};
+  // 保存中
+  const [saveDrafting, setSaveDrafting] = useState<boolean>(false);
+  const [saveSubmitting, setSaveSubmitting] = useState<boolean>(false);
+
+  // 提交记录, 最后校验答案, 用户再任何阶段都可以提交记录
+  const handleSubmit = (status: number) => {
+    if (answerMap.size === 0) {
+      toast.error(<div className="text-red-700">参数错误: 没有记录过任何答案</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+
+    if (status === TestStatus.InProgress) {
+      setSaveDrafting(true);
+    } else {
+      setSaveSubmitting(true);
+    }
+
+    // 更新答案正确性
+    let list = Array.from(answerMap.values());
+    for (let i = 0; i < list.length; i++) {
+      let aInfo = list[i];
+      const qInfo = questionMap.get(aInfo.questionId);
+      // 选择直接更新答案, 填空题和解答题后续再看
+      if (qInfo?.info.baseInfo.options && qInfo.info.baseInfo.options.length > 0) {
+        const isEq = aInfo.answer === qInfo.info.extraInfo.answer;
+        aInfo.result = isEq ? TestResult.Correct : TestResult.Incorrect;
+      }
+    }
+
+    const addReq: TestAnswerAddReq = {
+      attemptId: hId,
+      status,
+      list,
+    };
+
+    httpClient
+      .post("/test/answer/add", addReq)
+      .then((res) => {
+        // 保存成功后需要跳转到做题记录明细
+      })
+      .catch((err) => {
+        setWarnInfo(<SimpleAlert title="保存做题记录失败" message={err.message} />);
+      })
+      .finally(() => {
+        if (status === TestStatus.InProgress) {
+          setSaveDrafting(false);
+        } else {
+          setSaveSubmitting(false);
+        }
+      });
+  };
 
   return (
     <div className="px-4 py-4 sm:px-16 sm:py-4">
@@ -284,12 +372,19 @@ export default function Index() {
           <div className="p-4">
             <Card className="border-slate-200/80">
               <CardHeader className="space-y-3">
-                <div className="flex gap-3">
-                  <Badge variant="default" className="tracking-wide">
-                    {latestAttemptResp?.methodDesc}
-                  </Badge>
+                <div className="space-y-3">
                   <div>
-                    {latestAttemptResp?.method === TestMethod.Exercise
+                    <Badge variant="default" className="tracking-wide">
+                      {latestAttemptResp.methodDesc}
+                    </Badge>
+                  </div>
+                  <div>
+                    <Badge variant="outline" className="tracking-wide text-blue-600">
+                      该试卷当前累计（包括练习和考试模式）是第 {latestAttemptResp.attemptNumber} 次尝试
+                    </Badge>
+                  </div>
+                  <div className="text-blue-600">
+                    {latestAttemptResp.method === TestMethod.Exercise
                       ? "每做完一道题就可以核对答案, 不保存结果, 请记得保存"
                       : "需要最后交卷后才会保存并查看答案"}
                   </div>
@@ -304,7 +399,9 @@ export default function Index() {
                   />
                 </div>
                 <CardTitle className="text-base font-bold leading-snug text-slate-900">{genPaperResp.common.title}</CardTitle>
-                <CardDescription>当前进度: 10 / {genPaperResp.common.count}</CardDescription>
+                <CardDescription>
+                  当前进度: {answerMap.size} / {genPaperResp.common.count}
+                </CardDescription>
               </CardHeader>
 
               <CardContent>
@@ -327,7 +424,6 @@ export default function Index() {
                                 className="w-10"
                                 variant={isCurrent ? "default" : "outline"}
                                 onClick={() => {
-                                  setSelectedOpt("");
                                   setShowAnswer(false);
                                   setCurrentQuestionId(question.common.questionId);
                                   setCurrentIndex(questionIdToIndexMap.get(question.common.questionId) || 0);
@@ -344,12 +440,14 @@ export default function Index() {
                 </div>
               </CardContent>
 
-              {/* 考试模式交卷 */}
-              <div className="p-4 space-y-3">
-                <Button className="w-50" onClick={handleSubmit}>
-                  {latestAttemptResp?.method === TestMethod.Exercise ? "保存" : "交卷"}
+              {/* 做题记录提交 */}
+              <div className="flex p-4 space-y-3 gap-3">
+                <Button variant="outline" className="w-30" onClick={() => handleSubmit(TestStatus.InProgress)} disabled={saveDrafting}>
+                  {saveDrafting ? "存入草稿中..." : "存入草稿"}
                 </Button>
-                <div className="text-blue-700 text-sm font-bold">在此之前你的操作记录都仅记录在浏览器，请记得保存或者交卷，否则你的记录会丢失</div>
+                <Button className="w-30" onClick={() => handleSubmit(TestStatus.Done)} disabled={saveSubmitting}>
+                  {latestAttemptResp.method === TestMethod.Exercise ? (saveSubmitting ? "保存中..." : "保存") : saveSubmitting ? "交卷中..." : "交卷"}
+                </Button>
               </div>
             </Card>
           </div>
@@ -464,7 +562,7 @@ export default function Index() {
                   <Textarea
                     value={currentAnswerReq.note}
                     onChange={(e) => {
-                      updateAnswerField(getCurrentQuestionInfo.common.questionId, "answer", e.target.value);
+                      updateAnswerField(getCurrentQuestionInfo.common.questionId, "note", e.target.value);
                     }}
                     placeholder="在此记录您的推导公式、解题思路或错因分析，系统将随答案一并保存归档..."
                     className="min-h-25 resize-y bg-slate-50/30 focus-visible:bg-white transition-colors duration-150 border-slate-200"
@@ -519,7 +617,7 @@ export default function Index() {
                   <ChevronLeft className="w-4 h-4 mr-1" /> 上一题
                 </Button>
 
-                {latestAttemptResp?.method === TestMethod.Exercise && (
+                {latestAttemptResp.method === TestMethod.Exercise && (
                   <Button
                     onClick={() => {
                       setShowAnswer(true);

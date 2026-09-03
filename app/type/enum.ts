@@ -61,3 +61,9 @@ export enum TestResult {
   Correct = 1, // 正确
   Incorrect = 2, // 错误
 }
+
+// 提交做题记录
+export enum TestStatus {
+  InProgress = 1, // 保存草稿
+  Done = 2, // 完成
+}
