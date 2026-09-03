@@ -58,7 +58,7 @@ const studentUserItems: LinkProps[] = [
   {
     id: 1,
     label: "开始练习",
-    url: "/test",
+    url: "/student/test",
     leftIcon: SquarePen,
     rightIcon: ArrowRight,
   },

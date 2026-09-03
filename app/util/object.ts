@@ -103,24 +103,25 @@ export const DateUtil = {
     };
   },
 
+  // 格式化 Date 日期为 yyyy-mm-dd 格式
+  formatDate: (date: Date): string => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  },
+
   // 获取前n天的日期, endDate 是今天的日期
   getLastPrevDays: (prev: number = 10): { startDate: string; endDate: string } => {
     const today = new Date();
 
-    const formatDate = (date: Date): string => {
-      const yyyy = date.getFullYear();
-      const mm = String(date.getMonth() + 1).padStart(2, "0");
-      const dd = String(date.getDate()).padStart(2, "0");
-      return `${yyyy}-${mm}-${dd}`;
-    };
-
     // 1. 因为后端是 < endDate，传今天正好能彻底排除今天的数据
-    const endDate = formatDate(today);
+    const endDate = DateUtil.formatDate(today);
 
     // 2. 开始日期为今天的 n 天前
     const tenDaysAgo = new Date(today);
     tenDaysAgo.setDate(today.getDate() - prev);
-    const startDate = formatDate(tenDaysAgo);
+    const startDate = DateUtil.formatDate(tenDaysAgo);
 
     return {
       startDate,

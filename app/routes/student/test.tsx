@@ -12,6 +12,8 @@ import { SimpleAlert } from "~/common/alert";
 import { useState } from "react";
 import { ListShow } from "~/test/task";
 import { SimpleNoData } from "~/common/empty";
+import { NavLink } from "react-router";
+import { Button } from "~/components/ui/button";
 
 /// 学生做题首页
 export function meta({}: Route.MetaArgs) {
@@ -198,7 +200,11 @@ export default function Index() {
         {/* 头部区域 */}
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <h3 className="font-semibold text-blue-600">历史任务</h3>
-          <span className="text-xs px-1.5 py-0.5">查看更多</span>
+          <Button variant="link">
+            <NavLink to={"/student/history"} className="text-xs px-1.5 py-0.5">
+              查看更多
+            </NavLink>
+          </Button>
         </div>
 
         <div className="p-3">{historyListResp.total > 0 ? <ListShow listResp={historyListResp.list} /> : <SimpleNoData desc="历史任务为空" />}</div>

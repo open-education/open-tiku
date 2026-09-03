@@ -40,8 +40,11 @@ export default [
       route("session/list", "routes/user/account/session.tsx"),
     ]),
 
-    // 开始做题
-    route("test", "routes/student/test.tsx"),
-    route("exam/:paperId/:examMethod", "routes/student/exam.tsx"),
+    // 学生角色个人中心
+    route("student", "routes/student/main.tsx", [
+      route("test", "routes/student/test.tsx"),
+      route("exam/:paperId/:examMethod", "routes/student/exam.tsx"),
+      route("history", "routes/student/history.tsx"),
+    ]),
   ]),
 ] satisfies RouteConfig;
