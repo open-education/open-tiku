@@ -18,8 +18,8 @@ import { TitleShow } from "~/common/title";
 import { Separator } from "~/components/ui/separator";
 import { SimpleFullContent } from "~/common/content";
 import { MultiOptionSelect } from "~/common/select";
-import type { AttemptInfoResp, InProgressLatestAttemptReq } from "~/type/test";
-import { TestMethod } from "~/type/enum";
+import type { AttemptInfoResp, InProgressLatestAttemptReq, TestAnswerAddReq } from "~/type/test";
+import { TestMethod, TestResult } from "~/type/enum";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Loading } from "~/common/load";
 
@@ -120,6 +120,9 @@ export default function Index() {
   const [latestAttemptResp, setLatestAttemptResp] = useState<AttemptInfoResp | null>(null);
   const [attemptLoading, setAttemptLoading] = useState<boolean>(false);
 
+  // 是否显示题目答案
+  const [showAnswer, setShowAnswer] = useState<boolean>(false);
+
   useEffect(() => {
     // 试卷详情
     setGenPaperLoading(true);
@@ -142,7 +145,7 @@ export default function Index() {
       method: Number(examMethod),
     };
     httpClient
-      .post<AttemptInfoResp>("/test/latest/attempt", attemptReq)
+      .post<AttemptInfoResp>("/test/attempt/latest", attemptReq)
       .then((res) => {
         setLatestAttemptResp(res);
       })
@@ -154,41 +157,50 @@ export default function Index() {
       });
   }, [paperId, examMethod, hId]);
 
-  // 构建第一个 Map：Group ID -> GenPaperGroupResp 中的 common 配置
-  const groupCommonMap = useMemo(() => {
-    const map = new Map<number, CommonPaperGroupResp>();
+  const [groupCommonMap, questionMap, indexToQuestionIdMap, questionIdToIndexMap] = useMemo(() => {
+    // Group ID -> GenPaperGroupResp
+    const gMap = new Map<number, CommonPaperGroupResp>();
+    // questionId -> GenPaperQuestionResp
+    const qMap = new Map<number, GenPaperQuestionResp>();
+    // index -> questionId
+    const indexToQuestionIdMap = new Map<number, number>();
+    // questionId -> index
+    const questionIdToIndexMap = new Map<number, number>();
+    let index = 0;
 
-    if (genPaperResp.common.id === 0) return map;
+    if (genPaperResp.common.id === 0) return [gMap, qMap, indexToQuestionIdMap, questionIdToIndexMap];
 
     genPaperResp.groups.forEach((group) => {
       if (group.common?.id) {
-        map.set(group.common.id, group.common);
+        gMap.set(group.common.id, group.common);
       }
-    });
 
-    return map;
-  }, [genPaperResp]);
-
-  // 构建第二个 Map：问题 ID (questionId) -> 问题本身对象 (GenPaperQuestionResp)
-  const questionMap = useMemo(() => {
-    const map = new Map<number, GenPaperQuestionResp>();
-
-    if (genPaperResp.common.id === 0) return map;
-
-    genPaperResp.groups.forEach((group) => {
       group.questions.forEach((question) => {
         const qId = question.common.questionId;
         if (qId) {
-          map.set(qId, question);
+          qMap.set(qId, question);
+          indexToQuestionIdMap.set(index, qId);
+          questionIdToIndexMap.set(qId, index);
+          index++;
         }
       });
     });
 
-    return map;
+    return [gMap, qMap, indexToQuestionIdMap, questionIdToIndexMap];
   }, [genPaperResp]);
 
   // 当前选择的问题标识
   const [currentQuestionId, setCurrentQuestionId] = useState<number>(0);
+  // 当前选择的索引
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+
+  // 更新默认展示的第一题, 否则需要同步更新 currentIndex
+  useEffect(() => {
+    if (indexToQuestionIdMap.size > 0 && currentQuestionId === 0) {
+      const firstQuestionId = indexToQuestionIdMap.get(0) || 0;
+      setCurrentQuestionId(firstQuestionId);
+    }
+  }, [indexToQuestionIdMap, currentQuestionId]);
 
   // 在组件渲染的第一时间，直接从 Map 中取出当前题目的数据
   // 它会随着 currentQuestionId 或 questionMap 的任何变动而自动、同步更新
@@ -202,6 +214,64 @@ export default function Index() {
   const [selectedOpt, setSelectedOpt] = useState<string>("");
   // 易错提示
   const [showErrorTip, setShowErrorTip] = useState<boolean>(false);
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      const nextIndex = currentIndex - 1;
+      const nextId = indexToQuestionIdMap.get(nextIndex) || 0;
+      setCurrentIndex(nextIndex);
+      setCurrentQuestionId(nextId);
+      setSelectedOpt("");
+      setShowAnswer(false);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentIndex < indexToQuestionIdMap.size - 1) {
+      const nextIndex = currentIndex + 1;
+      const nextId = indexToQuestionIdMap.get(nextIndex) || 0;
+      setCurrentIndex(nextIndex);
+      setCurrentQuestionId(nextId);
+      setSelectedOpt("");
+      setShowAnswer(false);
+    }
+  };
+
+  // 记录用户提交的答案
+  const [answerMap, setAnswerMap] = useState<Map<number, TestAnswerAddReq>>(new Map());
+
+  // 当前问题作答信息
+  const currentAnswerReq = answerMap.get(currentQuestionId) || {
+    attemptId: hId,
+    questionId: currentQuestionId,
+    answer: "",
+    result: TestResult.Unanswered,
+    note: "",
+  };
+
+  // 更新答案明细信息
+  const updateAnswerField = <K extends keyof TestAnswerAddReq>(questionId: number, key: K, value: TestAnswerAddReq[K]) => {
+    setAnswerMap((prevMap) => {
+      const newMap = new Map(prevMap);
+      const existing = newMap.get(questionId) || {
+        attemptId: hId,
+        questionId,
+        answer: "",
+        result: 0,
+        note: "",
+      };
+
+      newMap.set(questionId, {
+        ...existing,
+        [key]: value,
+      });
+
+      return newMap;
+    });
+  };
+
+  // 提交记录, 最后校验答案
+  const handleSubmit = () => {};
 
   return (
     <div className="px-4 py-4 sm:px-16 sm:py-4">
@@ -218,7 +288,11 @@ export default function Index() {
                   <Badge variant="default" className="tracking-wide">
                     {latestAttemptResp?.methodDesc}
                   </Badge>
-                  <div>{latestAttemptResp?.method === TestMethod.Exercise ? "每做完一道题就可以核对答案" : "需要最后交卷后才能查看答案"}</div>
+                  <div>
+                    {latestAttemptResp?.method === TestMethod.Exercise
+                      ? "每做完一道题就可以核对答案, 不保存结果, 请记得保存"
+                      : "需要最后交卷后才会保存并查看答案"}
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-3 items-center w-full">
                   <TagShow
@@ -254,7 +328,9 @@ export default function Index() {
                                 variant={isCurrent ? "default" : "outline"}
                                 onClick={() => {
                                   setSelectedOpt("");
+                                  setShowAnswer(false);
                                   setCurrentQuestionId(question.common.questionId);
+                                  setCurrentIndex(questionIdToIndexMap.get(question.common.questionId) || 0);
                                 }}
                               >
                                 {question.common.orderNum}
@@ -269,10 +345,11 @@ export default function Index() {
               </CardContent>
 
               {/* 考试模式交卷 */}
-              <div className="p-4">
-                <Button className="w-50" onClick={() => {}}>
-                  交卷
+              <div className="p-4 space-y-3">
+                <Button className="w-50" onClick={handleSubmit}>
+                  {latestAttemptResp?.method === TestMethod.Exercise ? "保存" : "交卷"}
                 </Button>
+                <div className="text-blue-700 text-sm font-bold">在此之前你的操作记录都仅记录在浏览器，请记得保存或者交卷，否则你的记录会丢失</div>
               </div>
             </Card>
           </div>
@@ -288,7 +365,11 @@ export default function Index() {
                     {getCurrentGroupInfo.typeName}
                   </Badge>
                   <span className="text-sm font-medium text-slate-400">
-                    题目 <span className="text-slate-800">5</span> / {genPaperResp.common.count}
+                    题目位置
+                    <span className="text-slate-800 ml-3">
+                      {currentIndex + 1 >= genPaperResp.common.count ? genPaperResp.common.count : currentIndex + 1}
+                    </span>{" "}
+                    / {genPaperResp.common.count}
                   </span>
                 </div>
 
@@ -306,11 +387,24 @@ export default function Index() {
 
                 {/* 选项组 */}
                 <div>
-                  <MultiOptionSelect
-                    options={getCurrentQuestionInfo.info.baseInfo.options || []}
-                    selectedOpt={selectedOpt}
-                    setSelectedOpt={setSelectedOpt}
-                  />
+                  {getCurrentQuestionInfo.info.baseInfo.options && getCurrentQuestionInfo.info.baseInfo.options.length > 0 ? (
+                    <MultiOptionSelect
+                      options={getCurrentQuestionInfo.info.baseInfo.options || []}
+                      selectedOpt={currentAnswerReq.answer}
+                      setSelectedOpt={(val) => updateAnswerField(getCurrentQuestionInfo.common.questionId, "answer", val)}
+                      showAnswer={showAnswer}
+                      referAnswer={getCurrentQuestionInfo.info.extraInfo.answer || ""}
+                    />
+                  ) : (
+                    <Textarea
+                      value={currentAnswerReq.answer}
+                      onChange={(e) => {
+                        updateAnswerField(getCurrentQuestionInfo.common.questionId, "answer", e.target.value);
+                      }}
+                      placeholder="请填写你的答案..."
+                      className="min-h-25 resize-y bg-slate-50/30 focus-visible:bg-white transition-colors duration-150 border-slate-200"
+                    />
+                  )}
                 </div>
 
                 <Separator />
@@ -368,67 +462,79 @@ export default function Index() {
                     </Badge>
                   </label>
                   <Textarea
-                    value={""}
-                    onChange={(e) => {}}
+                    value={currentAnswerReq.note}
+                    onChange={(e) => {
+                      updateAnswerField(getCurrentQuestionInfo.common.questionId, "answer", e.target.value);
+                    }}
                     placeholder="在此记录您的推导公式、解题思路或错因分析，系统将随答案一并保存归档..."
                     className="min-h-25 resize-y bg-slate-50/30 focus-visible:bg-white transition-colors duration-150 border-slate-200"
                   />
                 </div>
 
                 {/* 经典微渐变题目解析面板 */}
-                <Alert className="bg-slate-50 border-slate-200/80 p-6 space-y-4 animate-in fade-in duration-200">
-                  <div className="flex items-center gap-6 text-sm font-semibold border-b border-slate-200/60 pb-3">
-                    <div className="flex items-center">
-                      <span className="text-slate-400 mr-2 font-normal">正确答案</span>
-                      <div>
-                        <SimpleFullContent content={getCurrentQuestionInfo.info.extraInfo.answer || ""} />
+                {showAnswer && (
+                  <Alert className="bg-slate-50 border-slate-200/80 p-6 space-y-4 animate-in fade-in duration-200">
+                    <div className="flex items-center gap-6 text-sm font-semibold border-b border-slate-200/60 pb-3">
+                      <div className="flex items-center">
+                        <span className="text-slate-400 mr-2 font-normal">正确答案</span>
+                        <div>
+                          <SimpleFullContent content={getCurrentQuestionInfo.info.extraInfo.answer || ""} />
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-blue-600 mr-2 font-bold">您的答案</span>
+                        <div>
+                          <SimpleFullContent content={currentAnswerReq.answer} />
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center">
-                      <span className="text-slate-400 mr-2 font-normal">您的答案</span>
-                      <div>todo 你的答案</div>
+                    <div className="text-sm leading-relaxed text-slate-600">
+                      <span className="font-bold text-slate-800 block mb-1.5 items-center gap-1">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 解题分析
+                      </span>
+                      <div>
+                        <SimpleFullContent content={getCurrentQuestionInfo.info.extraInfo.analysis?.content || ""} />
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-sm leading-relaxed text-slate-600">
-                    <span className="font-bold text-slate-800 block mb-1.5 items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 解题分析
-                    </span>
-                    <div>
-                      <SimpleFullContent content={getCurrentQuestionInfo.info.extraInfo.analysis?.content || ""} />
+                    <div className="text-sm leading-relaxed text-slate-600">
+                      <span className="font-bold text-slate-800 block mb-1.5 items-center gap-1">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 解题过程
+                      </span>
+                      <div>
+                        <SimpleFullContent content={getCurrentQuestionInfo.info.extraInfo.process?.content || ""} />
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-sm leading-relaxed text-slate-600">
-                    <span className="font-bold text-slate-800 block mb-1.5 items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 解题过程
-                    </span>
-                    <div>
-                      <SimpleFullContent content={getCurrentQuestionInfo.info.extraInfo.process?.content || ""} />
-                    </div>
-                  </div>
-                </Alert>
+                  </Alert>
+                )}
               </CardContent>
 
-              {/* 底部悬浮控制栏 */}
+              {/* 控制栏 */}
               <div className="border-t border-slate-100 p-6 bg-white flex items-center justify-between">
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    setSelectedOpt("");
-                  }}
-                  className="px-5 border-slate-200 hover:border-slate-300 text-slate-600 font-medium"
+                  className="border-slate-300 text-slate-700 bg-white hover:border-slate-400 hover:bg-slate-50 font-medium"
+                  disabled={currentIndex <= 0}
+                  onClick={handlePrev}
                 >
                   <ChevronLeft className="w-4 h-4 mr-1" /> 上一题
                 </Button>
 
-                <Button onClick={() => {}} className="px-6 bg-amber-500 hover:bg-amber-600 text-white font-medium">
-                  核对本题答案
-                </Button>
+                {latestAttemptResp?.method === TestMethod.Exercise && (
+                  <Button
+                    onClick={() => {
+                      setShowAnswer(true);
+                    }}
+                    className="px-6 bg-amber-500 hover:bg-amber-600 text-white font-medium shadow-sm shadow-amber-100"
+                  >
+                    核对本题答案
+                  </Button>
+                )}
 
                 <Button
-                  onClick={() => {
-                    setSelectedOpt("");
-                  }}
-                  className="px-5 bg-slate-900 hover:bg-slate-800 text-white font-medium"
+                  variant="outline"
+                  className="border-indigo-600 text-indigo-600 bg-white hover:bg-indigo-50 font-semibold shadow-sm"
+                  disabled={currentIndex >= indexToQuestionIdMap.size - 1}
+                  onClick={handleNext}
                 >
                   下一题 <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>

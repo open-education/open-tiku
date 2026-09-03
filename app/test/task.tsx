@@ -79,7 +79,7 @@ function ListShow({ listResp }: ListShowProps) {
               </Button>
               <Button variant="link">
                 <NavLink to={`/exam/${item.paperInfo.id}/2/attempt`} state={{ hId: item.id }}>
-                  做题记录
+                  历史记录
                 </NavLink>
               </Button>
             </div>

@@ -96,7 +96,7 @@ export default function Index() {
 
   // 历史任务默认前10天
   const [pageNo, setPageNo] = useState<number>(1);
-  const { startDate: historyStartDate, endDate: historyEndDate } = DateUtil.getLast10Days();
+  const { startDate: historyStartDate, endDate: historyEndDate } = DateUtil.getLastPrevDays(15);
   const {
     data: historyListResp = { list: [], pageNo: 1, pageSize: 10, total: 0 },
     isLoading: historyListRespLoading,

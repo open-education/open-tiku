@@ -103,8 +103,8 @@ export const DateUtil = {
     };
   },
 
-  // 获取前10天的日期, endDate 是今天的日期
-  getLast10Days: (): { startDate: string; endDate: string } => {
+  // 获取前n天的日期, endDate 是今天的日期
+  getLastPrevDays: (prev: number = 10): { startDate: string; endDate: string } => {
     const today = new Date();
 
     const formatDate = (date: Date): string => {
@@ -117,9 +117,9 @@ export const DateUtil = {
     // 1. 因为后端是 < endDate，传今天正好能彻底排除今天的数据
     const endDate = formatDate(today);
 
-    // 2. 开始日期为今天的 10 天前
+    // 2. 开始日期为今天的 n 天前
     const tenDaysAgo = new Date(today);
-    tenDaysAgo.setDate(today.getDate() - 10);
+    tenDaysAgo.setDate(today.getDate() - prev);
     const startDate = formatDate(tenDaysAgo);
 
     return {

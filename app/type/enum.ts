@@ -54,3 +54,10 @@ export enum TestMethod {
   Exercise = 1, // 练习模式
   Exam = 2, // 考试模式
 }
+
+// 答案判断
+export enum TestResult {
+  Unanswered = 0, // 未作答
+  Correct = 1, // 正确
+  Incorrect = 2, // 错误
+}
