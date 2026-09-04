@@ -1,4 +1,4 @@
-import { CheckCircle, ChevronRight, Flag, PenTool } from "lucide-react";
+import { CheckCircle, Flag, PenTool } from "lucide-react";
 import { NavLink } from "react-router";
 import { TagShow } from "~/common/paper/tag";
 import { Button } from "~/components/ui/button";

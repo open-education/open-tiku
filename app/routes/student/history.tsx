@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SimpleNoData } from "~/common/empty";
 import { SimplePagination } from "~/common/page";
-import { ListShow } from "~/test/task";
+import { ListShow } from "~/student/test/task";
 import { useTestList } from "~/util/fetcher";
 import { DateUtil } from "~/util/object";
 import type { Route } from "./+types/history";

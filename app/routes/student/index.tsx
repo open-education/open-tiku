@@ -10,7 +10,7 @@ import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Loading } from "~/common/load";
 import { SimpleAlert } from "~/common/alert";
 import { useState } from "react";
-import { ListShow } from "~/test/task";
+import { ListShow } from "~/student/test/task";
 import { SimpleNoData } from "~/common/empty";
 import { NavLink } from "react-router";
 import { Button } from "~/components/ui/button";

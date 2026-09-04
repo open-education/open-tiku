@@ -129,7 +129,7 @@ export default function Index() {
       </div>
 
       {/* 关键导航 */}
-      <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
+      <div className="mt-3 sm:mt-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-primary">
@@ -152,7 +152,7 @@ export default function Index() {
       </div>
 
       {/* 精选试卷 */}
-      <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
+      <div className="mt-3 sm:mt-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-blue-500">
@@ -181,7 +181,7 @@ export default function Index() {
       </div>
 
       {/* 统计面板 */}
-      <div className="mx-4 mt-3 sm:mx-16 sm:mt-4">
+      <div className="mt-3 sm:mt-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-red-500">
@@ -198,7 +198,7 @@ export default function Index() {
       </div>
 
       {/* 网站碎碎念 */}
-      <div className="mx-4 my-3 sm:mx-16 sm:mt-4">
+      <div className="my-3 sm:mt-4">
         <Note />
       </div>
 
