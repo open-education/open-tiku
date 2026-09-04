@@ -45,8 +45,9 @@ export default [
     // 学生角色个人中心
     route("student", "routes/student/main.tsx", [
       index("routes/student/index.tsx"),
-      route("exam/:paperId/:examMethod", "routes/student/exam.tsx"),
+      route("exam", "routes/student/exam.tsx"),
       route("history", "routes/student/history.tsx"),
+      route("attempt", "routes/student/attempt.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;

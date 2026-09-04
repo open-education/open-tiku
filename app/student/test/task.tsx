@@ -72,17 +72,17 @@ function ListShow({ listResp }: ListShowProps) {
               {allowExam ? (
                 <div>
                   <Button variant="link">
-                    <NavLink to={`/student/exam/${item.paperInfo.id}/${TestMethod.Exercise}`} state={{ hId: item.id }}>
+                    <NavLink to={"/student/exam"} state={{ hId: item.id, paperId: item.paperInfo.id, examMethod: TestMethod.Exercise }}>
                       练习模式
                     </NavLink>
                   </Button>
                   <Button variant="link">
-                    <NavLink to={`/student/exam/${item.paperInfo.id}/${TestMethod.Exam}`} state={{ hId: item.id }}>
+                    <NavLink to={"/student/exam"} state={{ hId: item.id, paperId: item.paperInfo.id, examMethod: TestMethod.Exam }}>
                       考试模式
                     </NavLink>
                   </Button>
                   <Button variant="link">
-                    <NavLink to={`/student/exam/${item.paperInfo.id}/2/attempt`} state={{ hId: item.id }}>
+                    <NavLink to={"/student/attempt"} state={{ hId: item.id, paperId: item.paperInfo.id }}>
                       历史记录
                     </NavLink>
                   </Button>

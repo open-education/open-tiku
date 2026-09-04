@@ -7,7 +7,7 @@ import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, HelpCircle, Lig
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Textarea } from "~/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/ui/accordion";
-import { useLocation, useParams } from "react-router";
+import { useLocation } from "react-router";
 import { httpClient } from "~/util/http";
 import type { CommonPaperGroupResp, GenPaperQuestionResp, GenPaperResp } from "~/type/paper";
 import { SimpleAlert } from "~/common/alert";
@@ -124,11 +124,8 @@ const defaultAttemptInfoResp: AttemptInfoResp = {
 };
 
 export default function Index() {
-  // 试卷和做题模式
-  const { paperId, examMethod } = useParams();
-
   const location = useLocation();
-  const { hId } = location.state || {};
+  const { hId, paperId, examMethod } = location.state || {};
 
   const [warnInfo, setWarnInfo] = useState<React.ReactNode>("");
 
