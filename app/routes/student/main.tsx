@@ -1,4 +1,5 @@
 import { Outlet } from "react-router";
+import { PermissionDenied } from "~/common/error";
 import { useUserInfo } from "~/hooks/use-user";
 import { UserRoleType } from "~/type/enum";
 
@@ -10,7 +11,7 @@ export default function Index() {
 
   // 学生用户才加载首页
   if (!currentUser || currentUser.role !== UserRoleType.Student) {
-    return <div></div>;
+    return <PermissionDenied />;
   }
 
   return (

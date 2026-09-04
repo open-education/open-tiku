@@ -18,7 +18,7 @@ import type {
 import type { Textbook } from "~/type/textbook";
 import { useQuestionCates, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
 import { createTextbookPathDict } from "~/util/textbook-dict";
-import { GenPaperGenTypeConfig } from "~/paper/gen/config";
+import { GenPaperGenTypeConfig } from "~/home/paper/gen/config";
 import { Button } from "~/components/ui/button";
 import { Eye, Save, Send, Settings2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
@@ -33,7 +33,7 @@ import { Watermark } from "~/common/watermark";
 import { httpClient } from "~/util/http";
 import { toast } from "sonner";
 import { PaperStatus } from "~/type/enum";
-import { GenInfoPreview } from "~/paper/gen/info";
+import { GenInfoPreview } from "~/home/paper/gen/info";
 import { ArrayUtil, ObjectUtil } from "~/util/object";
 
 // 生成试卷

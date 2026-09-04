@@ -22,6 +22,7 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import { Button } from "~/components/ui/button";
 import { useUserInfo } from "~/hooks/use-user";
 import { UserRoleType } from "~/type/enum";
+import { PermissionDenied } from "~/common/error";
 
 // 个人中心首页
 
@@ -141,11 +142,20 @@ navigationItems.forEach((item) => {
   });
 });
 
-// 个人中心布局首页
-export default function Index() {
+// 权限守卫
+export default function Guard() {
   // 未登录用户不渲染任何子页面
   const currentUser = useUserInfo();
+  // 教师才加载该路由, 暂时是不等于学生即为 非学生账户
+  if (!currentUser || currentUser.role === UserRoleType.Student) {
+    return <PermissionDenied />;
+  }
 
+  return <Index />;
+}
+
+// 个人中心布局首页
+function Index() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
 
@@ -251,20 +261,16 @@ export default function Index() {
   if (isDesktop) {
     return (
       <div className="flex h-full text-base">
-        {currentUser && (
-          <>
-            <aside className="flex w-64 flex-col border bg-background/95">
-              <ScrollArea className="flex-1">
-                <div className="py-2">{navContent}</div>
-              </ScrollArea>
-            </aside>
-            <main className="flex-1 overflow-auto bg-muted/30">
-              <div className="mx-auto">
-                <Outlet />
-              </div>
-            </main>
-          </>
-        )}
+        <aside className="flex w-64 flex-col border bg-background/95">
+          <ScrollArea className="flex-1">
+            <div className="py-2">{navContent}</div>
+          </ScrollArea>
+        </aside>
+        <main className="flex-1 overflow-auto bg-muted/30">
+          <div className="mx-auto">
+            <Outlet />
+          </div>
+        </main>
       </div>
     );
   }
@@ -272,40 +278,36 @@ export default function Index() {
   // ----- 移动端布局 -----
   return (
     <div className="flex flex-col h-full text-base">
-      {currentUser && currentUser.role === UserRoleType.Teacher && (
-        <>
-          {/* 顶部导航栏（汉堡按钮 + 标题） */}
-          <div className="sticky top-0 z-20 border bg-background/95 backdrop-blur-sm">
-            <div className="flex items-center gap-3 px-4 py-2.5">
-              <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-              <span className="text-sm font-semibold">导航</span>
-            </div>
-            {/* 展开的菜单（推动内容下移） */}
-            <div
-              className={cn(
-                "overflow-hidden transition-all duration-300 ease-in-out",
-                isMobileMenuOpen ? "max-h-[70vh] opacity-100" : "max-h-0 opacity-0",
-              )}
-            >
-              <ScrollArea className="max-h-[calc(70vh-56px)]">
-                <div className="px-2 py-1">{navContent}</div>
-              </ScrollArea>
-            </div>
-          </div>
+      {/* 顶部导航栏（汉堡按钮 + 标题） */}
+      <div className="sticky top-0 z-20 border bg-background/95 backdrop-blur-sm">
+        <div className="flex items-center gap-3 px-4 py-2.5">
+          <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+          <span className="text-sm font-semibold">导航</span>
+        </div>
+        {/* 展开的菜单（推动内容下移） */}
+        <div
+          className={cn(
+            "overflow-hidden transition-all duration-300 ease-in-out",
+            isMobileMenuOpen ? "max-h-[70vh] opacity-100" : "max-h-0 opacity-0",
+          )}
+        >
+          <ScrollArea className="max-h-[calc(70vh-56px)]">
+            <div className="px-2 py-1">{navContent}</div>
+          </ScrollArea>
+        </div>
+      </div>
 
-          {/* 内容区域 */}
-          <main className="flex-1 overflow-auto bg-muted/30">
-            <div className="mx-auto">
-              <Outlet />
-            </div>
-          </main>
+      {/* 内容区域 */}
+      <main className="flex-1 overflow-auto bg-muted/30">
+        <div className="mx-auto">
+          <Outlet />
+        </div>
+      </main>
 
-          {/* 遮罩层（点击关闭） */}
-          {isMobileMenuOpen && <div className="fixed inset-0 z-10 bg-black/20 backdrop-blur-sm" onClick={closeMobileMenu} />}
-        </>
-      )}
+      {/* 遮罩层（点击关闭） */}
+      {isMobileMenuOpen && <div className="fixed inset-0 z-10 bg-black/20 backdrop-blur-sm" onClick={closeMobileMenu} />}
     </div>
   );
 }

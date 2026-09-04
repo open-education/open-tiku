@@ -194,4 +194,11 @@ http://127.0.0.1
 - 在下方的文本框中, 输入你开发时正在访问的完整 `HTTP` 域名和端口(例如：`http://myproject.com` 或 `http://192.168.1.105:5173`)
 - 点击浏览器右下角弹出的蓝色 `Relaunch`(重新启动)按钮
 
+Firefox 要特殊一些
+
+- 在 Firefox 地址栏中输入 about:config, 按回车
+- 页面会弹出 "接受风险并继续" 的警告提示, 点击 "接受风险并继续"
+- 在顶部的搜索框中, 输入关键字: network.proxy.allow_hijacking_localhost, 确保将其值设置为 false; 如果你使用 localhost 一类的域名需要设置为 true
+- 接下来, 在搜索框中输入最核心的这个标志: dom.securecontext.allowlist, 选择 String 类型, 编辑填入域名即可
+
 线上 `Caddy` 本身已配置了 `HTTPS`, 无需关注

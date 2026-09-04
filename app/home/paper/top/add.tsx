@@ -23,7 +23,7 @@ import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Loading } from "~/common/load";
 import { PaperStatus } from "~/type/enum";
 import { CommonPaperConf } from "~/common/paper/config";
-import { TopInfo, TopInfoPreview } from "~/paper/top/info";
+import { TopInfo, TopInfoPreview } from "~/home/paper/top/info";
 import { ObjectUtil } from "~/util/object";
 
 /// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑

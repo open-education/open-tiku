@@ -86,21 +86,23 @@ export const DateUtil = {
   getTodayDate: (): { startDate: string; endDate: string } => {
     const today = new Date();
 
-    const formatDate = (date: Date): string => {
-      const yyyy = date.getFullYear();
-      const mm = String(date.getMonth() + 1).padStart(2, "0");
-      const dd = String(date.getDate()).padStart(2, "0");
-      return `${yyyy}-${mm}-${dd}`;
-    };
-
     // 计算明天
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
 
     return {
-      startDate: formatDate(today),
-      endDate: formatDate(tomorrow),
+      startDate: DateUtil.formatDate(today),
+      endDate: DateUtil.formatDate(tomorrow),
     };
+  },
+
+  // 今天的日期字符串
+  getTodayStrDate: (): string => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
   },
 
   // 格式化 Date 日期为 yyyy-mm-dd 格式
@@ -131,16 +133,15 @@ export const DateUtil = {
 
   // 字符串格式的日期是否是今天的日期, 不需要严格去处理时区, 就按用户电脑默认时区即可
   isTodayLocal: (dateStr: string): boolean => {
-    const today = new Date();
-
     // 1. 获取用户电脑本地的年、月、日并补零
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-    const dd = String(today.getDate()).padStart(2, "0");
-
-    const todayStr = `${yyyy}-${mm}-${dd}`;
+    const todayStr = DateUtil.getTodayStrDate();
 
     // 2. 直接进行字符串全等比对
     return dateStr === todayStr;
+  },
+
+  // 判断是否是今天之前
+  isBeforeToday: (dateStr: string): boolean => {
+    return dateStr < DateUtil.getTodayStrDate();
   },
 };

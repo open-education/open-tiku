@@ -11,8 +11,8 @@ import type {
 import type { TextbookOtherDict } from "~/type/textbook";
 import { httpClient } from "~/util/http";
 import { QuestionInfo } from "~/common/question/info";
-import { SimilarQuestionList } from "~/question/similar";
-import Add from "~/question/add";
+import { SimilarQuestionList } from "~/home/question/similar";
+import Add from "~/home/question/add";
 import { toast } from "sonner";
 import { StringConst } from "~/util/string";
 import { useState } from "react";

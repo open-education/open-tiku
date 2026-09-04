@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { httpClient } from "~/util/http";
 import type { UserInfoResp } from "~/type/user";
 import { toast } from "sonner";
-import { Footer } from "~/home/footer";
 import { UserLoginSource } from "~/type/enum";
 import { clearAuth, saveAuth } from "~/util/user";
 
@@ -75,9 +74,6 @@ export default function Main() {
       <div className="flex-1 overflow-auto">
         <Outlet />
       </div>
-
-      {/* 网站底部 */}
-      <Footer />
     </div>
   );
 }

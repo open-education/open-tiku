@@ -17,7 +17,7 @@ import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Loading } from "~/common/load";
 import { SimpleAlert } from "~/common/alert";
 
-/// 学生做题首页
+/// 历史任务
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "开放题库-历史任务" },

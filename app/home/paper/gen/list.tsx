@@ -4,8 +4,8 @@ import type { CommonPaperResp, CommonPaperSearchReq, GenPaperResp, PaperApproveR
 import { PaperStatus } from "~/type/enum";
 import { httpClient } from "~/util/http";
 import { StringConst } from "~/util/string";
-import { GenInfo, GenInfoPreview } from "~/paper/gen/info";
-import { TopInfo } from "~/paper/top/info";
+import { GenInfo, GenInfoPreview } from "~/home/paper/gen/info";
+import { TopInfo } from "~/home/paper/top/info";
 import React, { useState } from "react";
 import { SimpleAlert } from "~/common/alert";
 import type { TextbookOtherDict } from "~/type/textbook";
@@ -25,7 +25,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { toast } from "sonner";
 import { SimpleTooltip } from "~/common/tooltip";
 import { ExportPdf } from "~/common/paper/print";
-import { HomeworkList, PublishHomework } from "~/paper/gen/homework";
+import { HomeworkList, PublishHomework } from "~/home/paper/gen/homework";
 
 // 试卷列表
 

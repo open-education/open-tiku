@@ -1,4 +1,6 @@
-import { ChevronsUpDown, ListFilterPlus, Save } from "lucide-react";
+import { format } from "date-fns";
+import { zhCN } from "date-fns/locale";
+import { CalendarIcon, ChevronsUpDown, ListFilterPlus, Save } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
@@ -7,9 +9,11 @@ import { Loading } from "~/common/load";
 import { SimplePagination } from "~/common/page";
 import { SimpleTooltip } from "~/common/tooltip";
 import { Button } from "~/components/ui/button";
+import { Calendar } from "~/components/ui/calendar";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { Input } from "~/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Separator } from "~/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { Textarea } from "~/components/ui/textarea";
@@ -20,6 +24,7 @@ import type { CommonPaperResp } from "~/type/paper";
 import { SearchConfig } from "~/user/class/config";
 import { useClassList, useClassStudentList, usePaperHomeworkList } from "~/util/fetcher";
 import { httpClient } from "~/util/http";
+import { DateUtil } from "~/util/object";
 import { StringConst, StringValidator } from "~/util/string";
 
 // 布置作业, 只有手动组卷才需要布置作业
@@ -33,6 +38,7 @@ const defaultHomeworkAddReq: HomeworkAddReq = {
   batchNo: 0,
   paperId: 0,
   title: "",
+  deadline: "",
   remark: "",
   classMap: {},
 };
@@ -56,6 +62,9 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
   const updateAddReq = (key: keyof HomeworkAddReq, val: number | string) => {
     setAddReq((prev) => ({ ...prev, [key]: val }));
   };
+
+  // 截止日期
+  const [deadline, setDeadline] = useState<Date | undefined>(new Date());
 
   // 获取我的班级
   const [searchReq, setSearchReq] = useState<ClassSearchReq>(defaultSearchReq);
@@ -151,6 +160,17 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
       });
       return;
     }
+    // 截止日期
+    if (!deadline) {
+      toast.error(<div className="text-red-700">参数错误: 截止日期不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: "关闭",
+          onClick: () => {},
+        },
+      });
+      return;
+    }
     // 班级和班级内学生账户不能为空
     if (selectedMap.size == 0) {
       toast.error(<div className="text-red-700">参数错误: 班级不能为空</div>, {
@@ -186,6 +206,7 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
       // 结构出请求参数
       let req: HomeworkAddReq = {
         ...addReq,
+        deadline: DateUtil.formatDate(deadline),
         batchNo: batchNo,
         classMap: Object.fromEntries(selectedMap),
       };
@@ -378,6 +399,27 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
       </div>
 
       <Separator />
+
+      {/* 截止日期 */}
+      <div className="flex gap-3 items-center">
+        <div className="text-sm w-20">截止日期:</div>
+        <Popover>
+          <PopoverTrigger
+            render={
+              <Button
+                variant="outline"
+                className="justify-start text-left font-normal border-slate-300 text-slate-700 bg-white hover:border-slate-400 hover:bg-slate-50 shadow-sm"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {deadline ? format(deadline, "yyyy-MM-dd", { locale: zhCN }) : <span>截止日期</span>}
+              </Button>
+            }
+          />
+          <PopoverContent className="w-auto p-0 border border-slate-200 shadow-md bg-white block z-50" align="start">
+            <Calendar mode="single" selected={deadline} onSelect={(date) => setDeadline(date)} locale={zhCN} />
+          </PopoverContent>
+        </Popover>
+      </div>
 
       <div className="flex gap-3 items-center">
         <div className="text-sm w-20">备注:</div>

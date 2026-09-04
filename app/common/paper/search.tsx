@@ -8,7 +8,7 @@ import { Separator } from "~/components/ui/separator";
 import { SimpleAlert } from "~/common/alert";
 import { useDelayedLoading } from "~/hooks/delayed-loading";
 import { Loading } from "~/common/load";
-import { MyPaperList } from "~/paper/gen/list";
+import { MyPaperList } from "~/home/paper/gen/list";
 import { SimplePagination } from "~/common/page";
 import { SimpleSheet } from "~/common/sheet";
 

@@ -58,7 +58,7 @@ const studentUserItems: LinkProps[] = [
   {
     id: 1,
     label: "开始练习",
-    url: "/student/test",
+    url: "/student",
     leftIcon: SquarePen,
     rightIcon: ArrowRight,
   },
@@ -245,7 +245,7 @@ function Header() {
                       </Button>
                     }
                   />
-                  <DropdownMenuContent className="px-8 py-4 w-60">
+                  <DropdownMenuContent className="p-4 w-60">
                     {get_current_items().map((item) => (
                       <DropdownMenuItem key={item.id}>
                         <NavLink to={item.url} className="text-sm flex items-center gap-4 w-full">

@@ -4,7 +4,7 @@ import { type SelectNavProps } from "~/common/nav";
 import { PaperList } from "~/common/paper/list";
 import { Button } from "~/components/ui/button";
 import type { CommonPaperSearchReq } from "~/type/paper";
-import TopAdd from "~/paper/top/add";
+import TopAdd from "~/home/paper/top/add";
 import { StringValidator } from "~/util/string";
 import { SimplePagination } from "~/common/page";
 import { Separator } from "~/components/ui/separator";
@@ -19,14 +19,17 @@ import { Plus } from "lucide-react";
 import type { UserInfoResp } from "~/type/user";
 import { useUserInfo } from "~/hooks/use-user";
 import { CommonPaperSearchConf } from "~/common/paper/config";
-import GenAdd from "~/paper/gen/add";
+import GenAdd from "~/home/paper/gen/add";
 import { createTextbookPathDict } from "~/util/textbook-dict";
 import { ArrayUtil } from "~/util/object";
 import { UserRoleType } from "~/type/enum";
 
 // 重新网页标题等
 export function meta({}: Route.MetaArgs) {
-  return [{ title: "试卷库" }, { name: "description", content: "精选历年高考，中考试卷；收录名校期末和月考试卷；根据学情和章节考点进行自主组卷。" }];
+  return [
+    { title: "开放题库-试卷库" },
+    { name: "description", content: "精选历年高考，中考试卷；收录名校期末和月考试卷；根据学情和章节考点进行自主组卷。" },
+  ];
 }
 
 // 默认的搜索属性
@@ -143,7 +146,7 @@ export default function Index() {
   };
 
   return (
-    <div className="px-4 py-4 sm:px-16 sm:py-4">
+    <div>
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
         <CommonPaperSearchConf textbooks={textbooks} search={searchReq} updateCommonPaperSearchReq={updateSearchReq} />

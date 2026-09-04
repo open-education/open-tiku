@@ -5,7 +5,7 @@ import type { QuestionInfoResp, QuestionSearch } from "~/type/question";
 import { PaperStatus } from "~/type/enum";
 import { useQuestionList } from "~/util/fetcher";
 import { StringConst } from "~/util/string";
-import { GenInfoReplaceList } from "~/paper/gen/info";
+import { GenInfoReplaceList } from "~/home/paper/gen/info";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { SimpleAlert } from "~/common/alert";
 import { useDelayedLoading } from "~/hooks/delayed-loading";

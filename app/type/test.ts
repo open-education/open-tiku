@@ -1,4 +1,4 @@
-import type { CommonPaperResp } from "./paper";
+import type { CommonPaperResp } from "~/type/paper";
 
 // 学生作业列表请求
 export interface TestListReq {

@@ -9,8 +9,8 @@ import type {
   GenPaperResp,
   ReplaceQuestionReq,
 } from "~/type/paper";
-import { GenSortableQuestionList } from "~/paper/gen/question";
-import type { QuestionBaseInfoResp, QuestionInfoResp, QuestionOption } from "~/type/question";
+import { GenSortableQuestionList } from "~/home/paper/gen/question";
+import type { QuestionBaseInfoResp, QuestionInfoResp } from "~/type/question";
 import React, { useState } from "react";
 import { FileQuestionMark, GraduationCap, List, Save, Star } from "lucide-react";
 import { Button } from "~/components/ui/button";
@@ -20,7 +20,7 @@ import { MultiOptionShow } from "~/common/select";
 import { QuestionInfo } from "~/common/question/info";
 import type { TextbookOtherDict } from "~/type/textbook";
 import { createPortal } from "react-dom";
-import { ReplaceQuestion } from "~/paper/gen/replace";
+import { ReplaceQuestion } from "~/home/paper/gen/replace";
 import { httpClient } from "~/util/http";
 import { SimpleAlert } from "~/common/alert";
 import { toast } from "sonner";

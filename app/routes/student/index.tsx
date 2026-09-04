@@ -1,5 +1,5 @@
 import { getGreeting } from "~/util/greeting";
-import type { Route } from "./+types/test";
+import type { Route } from "./+types/index";
 import { CheckLine, ChevronRight, FileQuestionMark, GraduationCap, RotateCcw, Star, Target, Zap } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import { cn } from "~/lib/utils";

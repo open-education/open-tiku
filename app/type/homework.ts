@@ -5,6 +5,7 @@ export interface HomeworkAddReq {
   batchNo: number;
   paperId: number;
   title: string;
+  deadline: string;
   remark: string;
   classMap: Record<number, number[]>;
 }

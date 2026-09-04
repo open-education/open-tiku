@@ -16,8 +16,8 @@ import { Loading } from "~/common/load";
 import { QuestionListShow } from "~/common/question/list";
 import { SimplePagination } from "~/common/page";
 import { SimpleSheet } from "~/common/sheet";
-import Add from "~/question/add";
-import { TaskAdd, TaskListShow } from "~/question/task";
+import Add from "~/home/question/add";
+import { TaskAdd, TaskListShow } from "~/home/question/task";
 import { Button } from "~/components/ui/button";
 import { Plus, Upload, View } from "lucide-react";
 import type { UserInfoResp } from "~/type/user";
@@ -31,7 +31,7 @@ interface QuestionSearchProps {
   className?: string;
 }
 
-function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4 sm:px-16 sm:py-4" }: QuestionSearchProps) {
+function QuestionSearchPage({ selectNavProps, pageSource, className = "" }: QuestionSearchProps) {
   // 获取用户信息
   const currentUser: UserInfoResp | null = useUserInfo();
 

@@ -19,6 +19,8 @@ function ListShow({ listResp }: ListShowProps) {
         const isCompleted = 0 == item.paperInfo.count;
         // 是否截止今日
         const isUrgent = DateUtil.isTodayLocal(item.deadline);
+        // 是否允许继续做题
+        const allowExam = !DateUtil.isBeforeToday(item.deadline);
 
         return (
           <div
@@ -67,21 +69,27 @@ function ListShow({ listResp }: ListShowProps) {
             </div>
 
             <div className="flex gap-3 text-xs">
-              <Button variant="link">
-                <NavLink to={`/student/exam/${item.paperInfo.id}/${TestMethod.Exercise}`} state={{ hId: item.id }}>
-                  练习模式
-                </NavLink>
-              </Button>
-              <Button variant="link">
-                <NavLink to={`/student/exam/${item.paperInfo.id}/${TestMethod.Exam}`} state={{ hId: item.id }}>
-                  考试模式
-                </NavLink>
-              </Button>
-              <Button variant="link">
-                <NavLink to={`/student/exam/${item.paperInfo.id}/2/attempt`} state={{ hId: item.id }}>
-                  历史记录
-                </NavLink>
-              </Button>
+              {allowExam ? (
+                <div>
+                  <Button variant="link">
+                    <NavLink to={`/student/exam/${item.paperInfo.id}/${TestMethod.Exercise}`} state={{ hId: item.id }}>
+                      练习模式
+                    </NavLink>
+                  </Button>
+                  <Button variant="link">
+                    <NavLink to={`/student/exam/${item.paperInfo.id}/${TestMethod.Exam}`} state={{ hId: item.id }}>
+                      考试模式
+                    </NavLink>
+                  </Button>
+                  <Button variant="link">
+                    <NavLink to={`/student/exam/${item.paperInfo.id}/2/attempt`} state={{ hId: item.id }}>
+                      历史记录
+                    </NavLink>
+                  </Button>
+                </div>
+              ) : (
+                <span className="text-xs px-1.5 py-0.5 rounded bg-rose-50 text-blue-600 font-semibold shrink-0">已截止</span>
+              )}
             </div>
 
             {/* 右侧紧急标签与箭头 */}
