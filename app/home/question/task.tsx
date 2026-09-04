@@ -1,26 +1,26 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import type { TaskListReq, TaskSaveReq } from "~/type/task";
-import { Separator } from "~/components/ui/separator";
-import { FileUpload } from "~/common/file";
-import { ChapterDropdownNav } from "~/common/nav";
-import type { QuestionSearch } from "~/type/question";
-import { useQuestionCates, useTaskList, useTextbooks } from "~/util/fetcher";
-import type { Textbook } from "~/type/textbook";
-import { createTextbookPathDict } from "~/util/textbook-dict";
-import { StringConst, StringValidator } from "~/util/string";
-import { Loading } from "~/common/load";
-import { SimpleAlert } from "~/common/alert";
-import { httpClient } from "~/util/http";
-import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { Badge } from "~/components/ui/badge";
-import { CalendarDays, Clock, FileImage, FileText, Mail, User } from "lucide-react";
-import { SimplePagination } from "~/common/page";
-import { QuickToolList } from "~/common/tool";
-import { SimpleNoData } from "~/common/empty";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
+import React, { useEffect, useMemo, useState } from 'react';
+import { Button } from '~/components/ui/button';
+import { Input } from '~/components/ui/input';
+import type { TaskListReq, TaskSaveReq } from '~/type/task';
+import { Separator } from '~/components/ui/separator';
+import { FileUpload } from '~/common/file';
+import { ChapterDropdownNav } from '~/common/nav';
+import type { QuestionSearch } from '~/type/question';
+import { useQuestionCates, useTaskList, useTextbooks } from '~/util/fetcher';
+import type { Textbook } from '~/type/textbook';
+import { createTextbookPathDict } from '~/util/textbook-dict';
+import { StringConst, StringValidator } from '~/util/string';
+import { Loading } from '~/common/load';
+import { SimpleAlert } from '~/common/alert';
+import { httpClient } from '~/util/http';
+import { toast } from 'sonner';
+import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
+import { Badge } from '~/components/ui/badge';
+import { CalendarDays, Clock, FileImage, FileText, Mail, User } from 'lucide-react';
+import { SimplePagination } from '~/common/page';
+import { QuickToolList } from '~/common/tool';
+import { SimpleNoData } from '~/common/empty';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
 
 /// 题目上传任务
 
@@ -40,9 +40,9 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
     const initAddDefault: TaskSaveReq = {
       questionCateId: 0,
       taskType: StringConst.taskTypeUploadQuestion,
-      name: "",
-      url: "",
-      email: "",
+      name: '',
+      url: '',
+      email: '',
       textbookId: 0,
     };
 
@@ -71,14 +71,14 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
     // 很明显 fiveLevelId 是选择下拉菜单触发的优先级最高
     const nodes = pathMap.get(fiveLevelId.toString()) ?? [];
     const twoLevelId = nodes.length > 2 ? nodes[1].id : 0;
-    updateAddReq("textbookId", twoLevelId);
+    updateAddReq('textbookId', twoLevelId);
   }, [fiveLevelId]);
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [warnInfo, setWarnInfo] = useState<React.ReactNode>("");
+  const [warnInfo, setWarnInfo] = useState<React.ReactNode>('');
 
   // 添加任务
   const handleAddTask = () => {
@@ -87,7 +87,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
       toast.error(<div className="text-red-700">章节/考点不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -97,7 +97,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
       toast.error(<div className="text-red-700">第8级菜单题型不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -107,7 +107,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
       toast.error(<div className="text-red-700">文件名称不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -117,7 +117,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
       toast.error(<div className="text-red-700">文件标识不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -126,11 +126,11 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
 
     setIsLoading(true);
     httpClient
-      .post<number>("/task/add", addReq)
+      .post<number>('/task/add', addReq)
       .then((taskId) => {
         // 添加成功后调整到任务列表
-        setSheetTitle?.("任务列表");
-        setSheetDesc?.("任务执行周期大概是每5分钟执行一次, 请稍微等待查看任务执行结果");
+        setSheetTitle?.('任务列表');
+        setSheetDesc?.('任务执行周期大概是每5分钟执行一次, 请稍微等待查看任务执行结果');
         setSheetContent?.(<TaskListShow questionSearch={questionSearch} />);
       })
       .catch((err) => setWarnInfo(<SimpleAlert title="任务添加失败" message={err.message} />))
@@ -157,7 +157,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
         <QuickToolList
           tools={[
             {
-              id: "tool-file-upload",
+              id: 'tool-file-upload',
               label: (
                 <div className="flex items-center gap-2">
                   <FileImage className="h-4 w-4 text-primary" />
@@ -212,18 +212,18 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
               textbooks={questionCates}
               onSelect={(selectedItems: Textbook[]) => {
                 if (!selectedItems) {
-                  updateAddReq("questionCateId", 0);
+                  updateAddReq('questionCateId', 0);
                   return;
                 }
 
                 const current: Textbook = selectedItems[selectedItems.length - 1];
                 // 必须选择题型
                 if (current.tableName !== StringConst.questionCateTableName) {
-                  updateAddReq("questionCateId", 0);
+                  updateAddReq('questionCateId', 0);
                   return;
                 }
 
-                updateAddReq("questionCateId", current.id);
+                updateAddReq('questionCateId', current.id);
               }}
               defaultSelectedKeys={questionSearch.eightLevelSelectKeys || []}
               placeholder="请选择题型"
@@ -242,7 +242,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
               placeholder="例如 题型S-1-1-1 有理数的概念.md"
               value={addReq.name}
               onChange={(e) => {
-                updateAddReq("name", e.target.value);
+                updateAddReq('name', e.target.value);
               }}
             />
           </div>
@@ -259,7 +259,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
               placeholder="文件标识, 右上角上传文件获得"
               value={addReq.url}
               onChange={(e) => {
-                updateAddReq("url", e.target.value);
+                updateAddReq('url', e.target.value);
               }}
             />
           </div>
@@ -276,7 +276,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
               placeholder="邮箱地址"
               value={addReq.email}
               onChange={(e) => {
-                updateAddReq("email", e.target.value);
+                updateAddReq('email', e.target.value);
               }}
             />
           </div>
@@ -295,15 +295,15 @@ interface TaskListShowProps {
 const getStatusBadgeClasses = (status: number): string => {
   switch (status) {
     case 1:
-      return "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-100"; // 待处理 - 中性灰
+      return 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-100'; // 待处理 - 中性灰
     case 2:
-      return "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-100"; // 处理中 - 动感蓝
+      return 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-100'; // 处理中 - 动感蓝
     case 3:
-      return "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100"; // 成功 - 自然绿
+      return 'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100'; // 成功 - 自然绿
     case 10:
-      return "bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-100"; // 失败 - 警示红
+      return 'bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-100'; // 失败 - 警示红
     default:
-      return "bg-gray-100 text-gray-500 border-gray-200"; // 未知状态兜底
+      return 'bg-gray-100 text-gray-500 border-gray-200'; // 未知状态兜底
   }
 };
 function TaskListShow({ questionSearch }: TaskListShowProps) {
@@ -393,12 +393,12 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
               textbooks={questionCates}
               onSelect={(selectedItems: Textbook[]) => {
                 if (!selectedItems) {
-                  updateListReq("questionCateId", 0);
+                  updateListReq('questionCateId', 0);
                   return;
                 }
 
                 const current: Textbook = selectedItems[selectedItems.length - 1];
-                updateListReq("questionCateId", current.id);
+                updateListReq('questionCateId', current.id);
               }}
               defaultSelectedKeys={questionSearch.eightLevelSelectKeys || []}
               placeholder="请选择题型"
@@ -460,7 +460,7 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
             pageNo={listReq.pageNo}
             pageSize={StringConst.pageSize}
             total={listResp.total}
-            onPageChange={(val) => updateListReq("pageNo", val)}
+            onPageChange={(val) => updateListReq('pageNo', val)}
           />
         </div>
       )}

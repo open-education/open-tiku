@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
-import { StringConst, StringValidator } from "~/util/string";
+import { useState } from 'react';
+import { Badge } from '~/components/ui/badge';
+import { Button } from '~/components/ui/button';
+import { StringConst, StringValidator } from '~/util/string';
 
 /// 标签选择器
 
@@ -13,18 +13,18 @@ interface TagSelectProps {
   /** 选中标签时的回调，返回选中的文本 */
   onSelect?: (value: string) => void;
   /** 按钮变体，默认 outline */
-  variant?: "default" | "outline" | "secondary" | "ghost" | "link" | "destructive";
+  variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link' | 'destructive';
 }
 
 // 搜索编辑等标签选择器
-function TagSelect({ options, defaultValue = "", onSelect, variant = "outline" }: TagSelectProps) {
+function TagSelect({ options, defaultValue = '', onSelect, variant = 'outline' }: TagSelectProps) {
   const [selected, setSelected] = useState<string>(defaultValue);
 
   const handleSelect = (value: string) => {
     // 如果点击的是同一个，取消选中（可选行为）
     if (selected === value) {
-      setSelected("");
-      onSelect?.("");
+      setSelected('');
+      onSelect?.('');
       return;
     }
 
@@ -33,12 +33,12 @@ function TagSelect({ options, defaultValue = "", onSelect, variant = "outline" }
   };
 
   return (
-    <div className={"flex flex-wrap gap-2"}>
+    <div className={'flex flex-wrap gap-2'}>
       {options.map((option) => {
         return (
           <Button
             key={option}
-            variant={selected && selected === option ? "default" : variant}
+            variant={selected && selected === option ? 'default' : variant}
             className="text-sm"
             onClick={() => handleSelect(option)}
           >
@@ -75,11 +75,11 @@ function TagShow({ relatedName, tag, year, grade, semester }: TagShowProps) {
       tags.push(year);
     }
 
-    if (StringValidator.isNonEmpty(grade) && grade !== "不选") {
+    if (StringValidator.isNonEmpty(grade) && grade !== '不选') {
       tags.push(grade);
     }
 
-    if (StringValidator.isNonEmpty(semester) && semester !== "不选") {
+    if (StringValidator.isNonEmpty(semester) && semester !== '不选') {
       tags.push(semester);
     }
 
@@ -112,7 +112,7 @@ function StatusSelect({ defaultValue = 0, onSelect }: StatusSelectProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {StringConst.paperStatusList.map(({ id, value, label }) => (
-        <Button key={id} className="text-sm" variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
+        <Button key={id} className="text-sm" variant={defaultValue === value ? 'default' : 'outline'} onClick={() => handleSelect(value)}>
           {label}
         </Button>
       ))}

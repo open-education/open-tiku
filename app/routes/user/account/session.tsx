@@ -1,23 +1,23 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import type { Route } from "./+types/session";
-import { useState } from "react";
-import { useUserSessionList } from "~/util/fetcher";
-import { StringConst } from "~/util/string";
-import { SimpleAlert } from "~/common/alert";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { Loading } from "~/common/load";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { SimplePagination } from "~/common/page";
-import { SimpleTooltip } from "~/common/tooltip";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import type { Route } from './+types/session';
+import { useState } from 'react';
+import { useUserSessionList } from '~/util/fetcher';
+import { StringConst } from '~/util/string';
+import { SimpleAlert } from '~/common/alert';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { Loading } from '~/common/load';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import { SimplePagination } from '~/common/page';
+import { SimpleTooltip } from '~/common/tooltip';
 
 // 活跃用户 Session 列表
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "用户-活跃用户 Session 列表" },
+    { title: '用户-活跃用户 Session 列表' },
     {
-      name: "description",
-      content: "个人中心用户 Session 管理; 活跃用户 Session 列表",
+      name: 'description',
+      content: '个人中心用户 Session 管理; 活跃用户 Session 列表',
     },
   ];
 }

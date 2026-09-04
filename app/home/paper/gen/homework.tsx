@@ -1,31 +1,31 @@
-import { format } from "date-fns";
-import { zhCN } from "date-fns/locale";
-import { CalendarIcon, ChevronsUpDown, ListFilterPlus, Save } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
-import { toast } from "sonner";
-import { SimpleAlert } from "~/common/alert";
-import { Loading } from "~/common/load";
-import { SimplePagination } from "~/common/page";
-import { SimpleTooltip } from "~/common/tooltip";
-import { Button } from "~/components/ui/button";
-import { Calendar } from "~/components/ui/calendar";
-import { Checkbox } from "~/components/ui/checkbox";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { Input } from "~/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
-import { Separator } from "~/components/ui/separator";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { Textarea } from "~/components/ui/textarea";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import type { ClassInfoResp, ClassSearchReq, ClassStudentResp } from "~/type/class";
-import type { HomeworkAddReq, HomeworkListSearchReq } from "~/type/homework";
-import type { CommonPaperResp } from "~/type/paper";
-import { SearchConfig } from "~/user/class/config";
-import { useClassList, useClassStudentList, usePaperHomeworkList } from "~/util/fetcher";
-import { httpClient } from "~/util/http";
-import { DateUtil } from "~/util/object";
-import { StringConst, StringValidator } from "~/util/string";
+import { format } from 'date-fns';
+import { zhCN } from 'date-fns/locale';
+import { CalendarIcon, ChevronsUpDown, ListFilterPlus, Save } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { toast } from 'sonner';
+import { SimpleAlert } from '~/common/alert';
+import { Loading } from '~/common/load';
+import { SimplePagination } from '~/common/page';
+import { SimpleTooltip } from '~/common/tooltip';
+import { Button } from '~/components/ui/button';
+import { Calendar } from '~/components/ui/calendar';
+import { Checkbox } from '~/components/ui/checkbox';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '~/components/ui/collapsible';
+import { Input } from '~/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
+import { Separator } from '~/components/ui/separator';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import { Textarea } from '~/components/ui/textarea';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import type { ClassInfoResp, ClassSearchReq, ClassStudentResp } from '~/type/class';
+import type { HomeworkAddReq, HomeworkListSearchReq } from '~/type/homework';
+import type { CommonPaperResp } from '~/type/paper';
+import { SearchConfig } from '~/user/class/config';
+import { useClassList, useClassStudentList, usePaperHomeworkList } from '~/util/fetcher';
+import { httpClient } from '~/util/http';
+import { DateUtil } from '~/util/object';
+import { StringConst, StringValidator } from '~/util/string';
 
 // 布置作业, 只有手动组卷才需要布置作业
 
@@ -37,17 +37,17 @@ interface PublishHomeworkProps {
 const defaultHomeworkAddReq: HomeworkAddReq = {
   batchNo: 0,
   paperId: 0,
-  title: "",
-  deadline: "",
-  remark: "",
+  title: '',
+  deadline: '',
+  remark: '',
   classMap: {},
 };
 
 // 搜索默认值
 const defaultSearchReq: ClassSearchReq = {
-  year: "",
-  grade: "",
-  semester: "",
+  year: '',
+  grade: '',
+  semester: '',
 };
 
 function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
@@ -133,16 +133,16 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
 
   // 添加布置作业
   const [addSaving, setAddSaving] = useState<boolean>(false);
-  const [warnInfo, setWarnInfo] = useState<React.ReactNode>("");
+  const [warnInfo, setWarnInfo] = useState<React.ReactNode>('');
   const handleSubmit = async () => {
-    setWarnInfo("");
+    setWarnInfo('');
 
     // 试卷
     if (addReq.paperId <= 0) {
       toast.error(<div className="text-red-700">参数错误: 试卷信息不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -154,7 +154,7 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
       toast.error(<div className="text-red-700">参数错误: 标题不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -165,7 +165,7 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
       toast.error(<div className="text-red-700">参数错误: 截止日期不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -176,7 +176,7 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
       toast.error(<div className="text-red-700">参数错误: 班级不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -187,7 +187,7 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
         toast.error(<div className="text-red-700">参数错误: 有班级内学生账号为空</div>, {
           duration: Infinity,
           action: {
-            label: "关闭",
+            label: '关闭',
             onClick: () => {},
           },
         });
@@ -210,7 +210,7 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
         batchNo: batchNo,
         classMap: Object.fromEntries(selectedMap),
       };
-      const res = await httpClient.post<boolean>("/homework/add", req);
+      const res = await httpClient.post<boolean>('/homework/add', req);
 
       // 添加成功则清空选择的默认值
       if (res) {
@@ -244,7 +244,7 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
       <div className="flex gap-3">
         <Button className="text-sm" disabled={addSaving} onClick={handleSubmit}>
           <Save />
-          {addSaving ? "保存中..." : "保存"}
+          {addSaving ? '保存中...' : '保存'}
         </Button>
       </div>
 
@@ -274,7 +274,7 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
         <Input
           className="text-sm w-full md:w-1/3"
           value={addReq.title}
-          onChange={(e) => updateAddReq("title", e.target.value)}
+          onChange={(e) => updateAddReq('title', e.target.value)}
           placeholder="例如 第5批次布置作业"
         />
       </div>
@@ -411,7 +411,7 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
                 className="justify-start text-left font-normal border-slate-300 text-slate-700 bg-white hover:border-slate-400 hover:bg-slate-50 shadow-sm"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {deadline ? format(deadline, "yyyy-MM-dd", { locale: zhCN }) : <span>截止日期</span>}
+                {deadline ? format(deadline, 'yyyy-MM-dd', { locale: zhCN }) : <span>截止日期</span>}
               </Button>
             }
           />
@@ -426,7 +426,7 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
         <Textarea
           className="text-sm min-h-19 resize-y w-full md:w-1/3"
           value={addReq.remark}
-          onChange={(e) => updateAddReq("remark", e.target.value)}
+          onChange={(e) => updateAddReq('remark', e.target.value)}
           placeholder="请输入备注信息"
         />
       </div>
@@ -547,7 +547,7 @@ function SelectStudentList({ setSelectStudentDialogOpen, label, studentListResp,
               </TableRow>
             ) : (
               studentListResp.map((student) => (
-                <TableRow key={student.id} className={selectedIds.has(student.id) ? "bg-muted/50" : ""}>
+                <TableRow key={student.id} className={selectedIds.has(student.id) ? 'bg-muted/50' : ''}>
                   <TableCell className="text-sm">
                     <Checkbox checked={selectedIds.has(student.id)} onCheckedChange={() => toggleOne(student.id)} aria-label="选择行" />
                   </TableCell>
@@ -556,7 +556,7 @@ function SelectStudentList({ setSelectStudentDialogOpen, label, studentListResp,
                   <TableCell className="text-sm">{student.lastLoginTime}</TableCell>
                   <TableCell className="text-sm">{student.loginCount}</TableCell>
                   <TableCell className="text-sm">
-                    <SimpleTooltip children={student.remark || "-"} />
+                    <SimpleTooltip children={student.remark || '-'} />
                   </TableCell>
                 </TableRow>
               ))
@@ -608,7 +608,7 @@ function HomeworkList({ paperId }: HomeworkListProps) {
   };
 
   useEffect(() => {
-    updateSearchReq("paperId", paperId);
+    updateSearchReq('paperId', paperId);
   }, [paperId]);
 
   const [pageNo, setPageNo] = useState<number>(1);
@@ -619,7 +619,7 @@ function HomeworkList({ paperId }: HomeworkListProps) {
   } = usePaperHomeworkList(searchReq, pageNo);
 
   // 查看学生明细
-  const rowClass = "flex items-center gap-4 px-4 py-2 border-b";
+  const rowClass = 'flex items-center gap-4 px-4 py-2 border-b';
   const [selectHkId, setSelectHkId] = useState<number>(0);
 
   return (
@@ -634,7 +634,7 @@ function HomeworkList({ paperId }: HomeworkListProps) {
             type="number"
             value={searchReq.batchNo || 0}
             onChange={(e) => {
-              updateSearchReq("batchNo", Number(e.target.value));
+              updateSearchReq('batchNo', Number(e.target.value));
             }}
             className="text-sm md:text-sm w-full md:w-1/3" // 移动端全宽，PC端1/3宽度
           />
@@ -667,7 +667,7 @@ function HomeworkList({ paperId }: HomeworkListProps) {
                   <div className="flex-1">{item.title}</div>
                   <div className="flex-1">{item.remark}</div>
                   <div className="flex-1">
-                    {[item.classInfo.year, item.classInfo.grade, item.classInfo.semester, item.classInfo.label].filter(Boolean).join("-")}
+                    {[item.classInfo.year, item.classInfo.grade, item.classInfo.semester, item.classInfo.label].filter(Boolean).join('-')}
                   </div>
                   <div className="flex-1">{item.createdAt}</div>
                   <div className="w-45 shrink-0">
@@ -717,7 +717,7 @@ function HomeworkList({ paperId }: HomeworkListProps) {
                             <TableCell className="text-sm">{student.lastLoginTime}</TableCell>
                             <TableCell className="text-sm">{student.loginCount}</TableCell>
                             <TableCell className="text-sm">
-                              <SimpleTooltip children={student.remark || "-"} />
+                              <SimpleTooltip children={student.remark || '-'} />
                             </TableCell>
                           </TableRow>
                         ))

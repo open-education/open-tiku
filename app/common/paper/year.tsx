@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { useState } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
 
 /// 年选择器
 
@@ -16,10 +16,10 @@ interface YearSelectProps {
 function YearSelect({
   value,
   onValueChange,
-  placeholder = "选择年份",
+  placeholder = '选择年份',
   startYear = 2000,
   endYear = new Date().getFullYear(),
-  className = "w-50",
+  className = 'w-50',
   disabled = false,
 }: YearSelectProps) {
   const [internalValue, setInternalValue] = useState<string | null>(null);

@@ -1,37 +1,37 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import type { Route } from "./+types/exam";
-import React, { useEffect, useMemo, useState } from "react";
-import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
-import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, HelpCircle, Lightbulb } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
-import { Textarea } from "~/components/ui/textarea";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/ui/accordion";
-import { useLocation } from "react-router";
-import { httpClient } from "~/util/http";
-import type { CommonPaperGroupResp, GenPaperQuestionResp, GenPaperResp } from "~/type/paper";
-import { SimpleAlert } from "~/common/alert";
-import { TagShow } from "~/common/paper/tag";
-import { getGroupName } from "~/common/paper/print";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
-import { TitleShow } from "~/common/title";
-import { Separator } from "~/components/ui/separator";
-import { SimpleFullContent } from "~/common/content";
-import { MultiOptionSelect } from "~/common/select";
-import type { AnswerAddReq, AttemptInfoResp, InProgressLatestAttemptReq, TestAnswerAddReq } from "~/type/test";
-import { TestMethod, TestResult, TestStatus } from "~/type/enum";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { Loading } from "~/common/load";
-import { toast } from "sonner";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import type { Route } from './+types/exam';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Badge } from '~/components/ui/badge';
+import { Button } from '~/components/ui/button';
+import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, HelpCircle, Lightbulb } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
+import { Textarea } from '~/components/ui/textarea';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/components/ui/accordion';
+import { useLocation } from 'react-router';
+import { httpClient } from '~/util/http';
+import type { CommonPaperGroupResp, GenPaperQuestionResp, GenPaperResp } from '~/type/paper';
+import { SimpleAlert } from '~/common/alert';
+import { TagShow } from '~/common/paper/tag';
+import { getGroupName } from '~/common/paper/print';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '~/components/ui/resizable';
+import { TitleShow } from '~/common/title';
+import { Separator } from '~/components/ui/separator';
+import { SimpleFullContent } from '~/common/content';
+import { MultiOptionSelect } from '~/common/select';
+import type { AnswerAddReq, AttemptInfoResp, InProgressLatestAttemptReq, TestAnswerAddReq } from '~/type/test';
+import { TestMethod, TestResult, TestStatus } from '~/type/enum';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { Loading } from '~/common/load';
+import { toast } from 'sonner';
 
 /// 学生做题首页
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "开放题库-正在练题" },
+    { title: '开放题库-正在练题' },
     {
-      name: "description",
+      name: 'description',
       content:
-        "选择你要做的作业，练习模式为快速刷题，可实时查看答案等说明巩固知识；考试模式需要交卷后可查看答案；你可以记录自己做题的感悟或笔记，方便后续复习该题。",
+        '选择你要做的作业，练习模式为快速刷题，可实时查看答案等说明巩固知识；考试模式需要交卷后可查看答案；你可以记录自己做题的感悟或笔记，方便后续复习该题。',
     },
   ];
 }
@@ -41,23 +41,23 @@ const defaultGenPaperResp: GenPaperResp = {
   common: {
     id: 0,
     relatedId: 0,
-    relatedName: "",
+    relatedName: '',
     paperType: 0,
-    tag: "",
-    year: "",
-    grade: "",
-    semester: "",
-    title: "",
+    tag: '',
+    year: '',
+    grade: '',
+    semester: '',
+    title: '',
     score: 0,
-    source: "",
-    remark: "",
-    authorName: "",
+    source: '',
+    remark: '',
+    authorName: '',
     count: 0,
     status: 0,
-    statusDesc: "",
-    remarkExt: "",
-    createdAt: "",
-    updatedAt: "",
+    statusDesc: '',
+    remarkExt: '',
+    createdAt: '',
+    updatedAt: '',
   },
   conf: {
     questionCateIds: [],
@@ -69,9 +69,9 @@ const defaultGenPaperResp: GenPaperResp = {
 const defaultCommonPaperGroupResp: CommonPaperGroupResp = {
   id: 0,
   paperId: 0,
-  genId: "",
-  typeName: "",
-  subTitle: "",
+  genId: '',
+  typeName: '',
+  subTitle: '',
 };
 
 // 默认题目信息
@@ -80,7 +80,7 @@ const defaultGenPaperQuestionResp: GenPaperQuestionResp = {
     id: 0,
     paperId: 0,
     groupId: 0,
-    genId: "",
+    genId: '',
     orderNum: 0,
     questionId: 0,
     score: 0,
@@ -91,14 +91,14 @@ const defaultGenPaperQuestionResp: GenPaperQuestionResp = {
       questionCateId: 0,
       questionTypeId: 0,
       relationType: 0,
-      originalName: "",
+      originalName: '',
       status: 0,
-      title: "",
-      contentPlain: "",
+      title: '',
+      contentPlain: '',
       difficultyLevel: 0,
-      approveName: "",
-      createdAt: "",
-      updatedAt: "",
+      approveName: '',
+      createdAt: '',
+      updatedAt: '',
     },
     extraInfo: {},
   },
@@ -113,13 +113,13 @@ const defaultAttemptInfoResp: AttemptInfoResp = {
   paperId: 0,
   attemptNumber: 0,
   method: 0,
-  methodDesc: "",
+  methodDesc: '',
   status: 0,
-  statusDesc: "",
+  statusDesc: '',
   score: 0,
-  createdAt: "",
-  updatedAt: "",
-  completedAt: "",
+  createdAt: '',
+  updatedAt: '',
+  completedAt: '',
   answers: [],
 };
 
@@ -127,7 +127,7 @@ export default function Index() {
   const location = useLocation();
   const { hId, paperId, examMethod } = location.state || {};
 
-  const [warnInfo, setWarnInfo] = useState<React.ReactNode>("");
+  const [warnInfo, setWarnInfo] = useState<React.ReactNode>('');
 
   // 试卷详情
   const [genPaperResp, setGenPaperResp] = useState<GenPaperResp>(defaultGenPaperResp);
@@ -162,7 +162,7 @@ export default function Index() {
       method: Number(examMethod),
     };
     httpClient
-      .post<AttemptInfoResp>("/test/attempt/latest", attemptReq)
+      .post<AttemptInfoResp>('/test/attempt/latest', attemptReq)
       .then((res) => {
         setLatestAttemptResp(res);
       })
@@ -275,9 +275,9 @@ export default function Index() {
   const currentAnswerReq = answerMap.get(currentQuestionId) || {
     attemptId: hId,
     questionId: currentQuestionId,
-    answer: "",
+    answer: '',
     result: TestResult.Unanswered,
-    note: "",
+    note: '',
   };
 
   // 更新答案明细信息
@@ -286,9 +286,9 @@ export default function Index() {
       const newMap = new Map(prevMap);
       const existing = newMap.get(questionId) || {
         questionId,
-        answer: "",
+        answer: '',
         result: 0,
-        note: "",
+        note: '',
       };
 
       newMap.set(questionId, {
@@ -310,7 +310,7 @@ export default function Index() {
       toast.error(<div className="text-red-700">参数错误: 没有记录过任何答案</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -342,7 +342,7 @@ export default function Index() {
     };
 
     httpClient
-      .post("/test/answer/add", addReq)
+      .post('/test/answer/add', addReq)
       .then((res) => {
         // 保存成功后需要跳转到做题记录明细
       })
@@ -382,17 +382,17 @@ export default function Index() {
                   </div>
                   <div className="text-blue-600">
                     {latestAttemptResp.method === TestMethod.Exercise
-                      ? "每做完一道题就可以核对答案, 不保存结果, 请记得保存"
-                      : "需要最后交卷后才会保存并查看答案"}
+                      ? '每做完一道题就可以核对答案, 不保存结果, 请记得保存'
+                      : '需要最后交卷后才会保存并查看答案'}
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-3 items-center w-full">
                   <TagShow
-                    relatedName={genPaperResp.common.relatedName ?? ""}
+                    relatedName={genPaperResp.common.relatedName ?? ''}
                     tag={genPaperResp.common.tag}
                     year={genPaperResp.common.year}
-                    grade={genPaperResp.common.grade ?? ""}
-                    semester={genPaperResp.common.semester ?? ""}
+                    grade={genPaperResp.common.grade ?? ''}
+                    semester={genPaperResp.common.semester ?? ''}
                   />
                 </div>
                 <CardTitle className="text-base font-bold leading-snug text-slate-900">{genPaperResp.common.title}</CardTitle>
@@ -419,7 +419,7 @@ export default function Index() {
                               <Button
                                 key={question.info.baseInfo.id}
                                 className="w-10"
-                                variant={isCurrent ? "default" : "outline"}
+                                variant={isCurrent ? 'default' : 'outline'}
                                 onClick={() => {
                                   setShowAnswer(false);
                                   setCurrentQuestionId(question.common.questionId);
@@ -440,10 +440,10 @@ export default function Index() {
               {/* 做题记录提交 */}
               <div className="flex p-4 space-y-3 gap-3">
                 <Button variant="outline" className="w-30" onClick={() => handleSubmit(TestStatus.InProgress)} disabled={saveDrafting}>
-                  {saveDrafting ? "存入草稿中..." : "存入草稿"}
+                  {saveDrafting ? '存入草稿中...' : '存入草稿'}
                 </Button>
                 <Button className="w-30" onClick={() => handleSubmit(TestStatus.Done)} disabled={saveSubmitting}>
-                  {latestAttemptResp.method === TestMethod.Exercise ? (saveSubmitting ? "保存中..." : "保存") : saveSubmitting ? "交卷中..." : "交卷"}
+                  {latestAttemptResp.method === TestMethod.Exercise ? (saveSubmitting ? '保存中...' : '保存') : saveSubmitting ? '交卷中...' : '交卷'}
                 </Button>
               </div>
             </Card>
@@ -463,7 +463,7 @@ export default function Index() {
                     题目位置
                     <span className="text-slate-800 ml-3">
                       {currentIndex + 1 >= genPaperResp.common.count ? genPaperResp.common.count : currentIndex + 1}
-                    </span>{" "}
+                    </span>{' '}
                     / {genPaperResp.common.count}
                   </span>
                 </div>
@@ -475,7 +475,7 @@ export default function Index() {
                   <TitleShow
                     no={getCurrentQuestionInfo.common.orderNum}
                     title={getCurrentQuestionInfo.info.baseInfo.title}
-                    comment={getCurrentQuestionInfo.info.baseInfo.comment || ""}
+                    comment={getCurrentQuestionInfo.info.baseInfo.comment || ''}
                     images={getCurrentQuestionInfo.info.baseInfo.images || []}
                   />
                 </div>
@@ -486,15 +486,15 @@ export default function Index() {
                     <MultiOptionSelect
                       options={getCurrentQuestionInfo.info.baseInfo.options || []}
                       selectedOpt={currentAnswerReq.answer}
-                      setSelectedOpt={(val) => updateAnswerField(getCurrentQuestionInfo.common.questionId, "answer", val)}
+                      setSelectedOpt={(val) => updateAnswerField(getCurrentQuestionInfo.common.questionId, 'answer', val)}
                       showAnswer={showAnswer}
-                      referAnswer={getCurrentQuestionInfo.info.extraInfo.answer || ""}
+                      referAnswer={getCurrentQuestionInfo.info.extraInfo.answer || ''}
                     />
                   ) : (
                     <Textarea
                       value={currentAnswerReq.answer}
                       onChange={(e) => {
-                        updateAnswerField(getCurrentQuestionInfo.common.questionId, "answer", e.target.value);
+                        updateAnswerField(getCurrentQuestionInfo.common.questionId, 'answer', e.target.value);
                       }}
                       placeholder="请填写你的答案..."
                       className="min-h-25 resize-y bg-slate-50/30 focus-visible:bg-white transition-colors duration-150 border-slate-200"
@@ -513,7 +513,7 @@ export default function Index() {
                     className="text-amber-600 border-amber-200 hover:bg-amber-50 bg-amber-50/20"
                   >
                     <AlertTriangle className="w-4 h-4 mr-1.5" />
-                    {showErrorTip ? "隐藏易错提示" : "查看易错提示"}
+                    {showErrorTip ? '隐藏易错提示' : '查看易错提示'}
                   </Button>
 
                   {showErrorTip && (
@@ -521,7 +521,7 @@ export default function Index() {
                       <HelpCircle className="h-4 w-4 text-amber-600" />
                       <AlertTitle className="font-bold text-amber-800">易错点拨</AlertTitle>
                       <AlertDescription className="text-amber-700 text-sm mt-1">
-                        {getCurrentQuestionInfo.info.extraInfo.remark || "暂无易错提示"}
+                        {getCurrentQuestionInfo.info.extraInfo.remark || '暂无易错提示'}
                       </AlertDescription>
                     </Alert>
                   )}
@@ -559,7 +559,7 @@ export default function Index() {
                   <Textarea
                     value={currentAnswerReq.note}
                     onChange={(e) => {
-                      updateAnswerField(getCurrentQuestionInfo.common.questionId, "note", e.target.value);
+                      updateAnswerField(getCurrentQuestionInfo.common.questionId, 'note', e.target.value);
                     }}
                     placeholder="在此记录您的推导公式、解题思路或错因分析，系统将随答案一并保存归档..."
                     className="min-h-25 resize-y bg-slate-50/30 focus-visible:bg-white transition-colors duration-150 border-slate-200"
@@ -573,7 +573,7 @@ export default function Index() {
                       <div className="flex items-center">
                         <span className="text-slate-400 mr-2 font-normal">正确答案</span>
                         <div>
-                          <SimpleFullContent content={getCurrentQuestionInfo.info.extraInfo.answer || ""} />
+                          <SimpleFullContent content={getCurrentQuestionInfo.info.extraInfo.answer || ''} />
                         </div>
                       </div>
                       <div className="flex items-center">
@@ -588,7 +588,7 @@ export default function Index() {
                         <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 解题分析
                       </span>
                       <div>
-                        <SimpleFullContent content={getCurrentQuestionInfo.info.extraInfo.analysis?.content || ""} />
+                        <SimpleFullContent content={getCurrentQuestionInfo.info.extraInfo.analysis?.content || ''} />
                       </div>
                     </div>
                     <div className="text-sm leading-relaxed text-slate-600">
@@ -596,7 +596,7 @@ export default function Index() {
                         <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 解题过程
                       </span>
                       <div>
-                        <SimpleFullContent content={getCurrentQuestionInfo.info.extraInfo.process?.content || ""} />
+                        <SimpleFullContent content={getCurrentQuestionInfo.info.extraInfo.process?.content || ''} />
                       </div>
                     </div>
                   </Alert>

@@ -1,10 +1,10 @@
-import { CheckCircle, Flag, PenTool } from "lucide-react";
-import { NavLink } from "react-router";
-import { TagShow } from "~/common/paper/tag";
-import { Button } from "~/components/ui/button";
-import { TestMethod } from "~/type/enum";
-import type { TestInfoResp } from "~/type/test";
-import { DateUtil } from "~/util/object";
+import { CheckCircle, Flag, PenTool } from 'lucide-react';
+import { NavLink } from 'react-router';
+import { TagShow } from '~/common/paper/tag';
+import { Button } from '~/components/ui/button';
+import { TestMethod } from '~/type/enum';
+import type { TestInfoResp } from '~/type/test';
+import { DateUtil } from '~/util/object';
 
 // 一个任务列表
 interface ListShowProps {
@@ -31,7 +31,7 @@ function ListShow({ listResp }: ListShowProps) {
             {/* 左侧状态图标容器 */}
             <div
               className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                isCompleted ? "bg-green-50 text-green-600" : isUrgent ? "bg-rose-50 text-rose-600" : "bg-blue-50 text-blue-600"
+                isCompleted ? 'bg-green-50 text-green-600' : isUrgent ? 'bg-rose-50 text-rose-600' : 'bg-blue-50 text-blue-600'
               }`}
             >
               {isCompleted ? (
@@ -48,11 +48,11 @@ function ListShow({ listResp }: ListShowProps) {
               {/* 生成标签 */}
               <div className="flex flex-wrap gap-3 items-center w-full">
                 <TagShow
-                  relatedName={item.paperInfo.relatedName ?? ""}
+                  relatedName={item.paperInfo.relatedName ?? ''}
                   tag={item.paperInfo.tag}
                   year={item.paperInfo.year}
-                  grade={item.paperInfo.grade ?? ""}
-                  semester={item.paperInfo.semester ?? ""}
+                  grade={item.paperInfo.grade ?? ''}
+                  semester={item.paperInfo.semester ?? ''}
                 />
               </div>
               <p className="font-medium text-gray-800 truncate">{item.paperInfo.title}</p>
@@ -72,17 +72,17 @@ function ListShow({ listResp }: ListShowProps) {
               {allowExam ? (
                 <div>
                   <Button variant="link">
-                    <NavLink to={"/student/exam"} state={{ hId: item.id, paperId: item.paperInfo.id, examMethod: TestMethod.Exercise }}>
+                    <NavLink to={'/student/exam'} state={{ hId: item.id, paperId: item.paperInfo.id, examMethod: TestMethod.Exercise }}>
                       练习模式
                     </NavLink>
                   </Button>
                   <Button variant="link">
-                    <NavLink to={"/student/exam"} state={{ hId: item.id, paperId: item.paperInfo.id, examMethod: TestMethod.Exam }}>
+                    <NavLink to={'/student/exam'} state={{ hId: item.id, paperId: item.paperInfo.id, examMethod: TestMethod.Exam }}>
                       考试模式
                     </NavLink>
                   </Button>
                   <Button variant="link">
-                    <NavLink to={"/student/attempt"} state={{ hId: item.id, paperId: item.paperInfo.id }}>
+                    <NavLink to={'/student/attempt'} state={{ hId: item.id, paperId: item.paperInfo.id }}>
                       历史记录
                     </NavLink>
                   </Button>

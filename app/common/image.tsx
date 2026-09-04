@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { createPortal } from "react-dom";
-import { cn } from "~/lib/utils";
-import { ImagePlus, Plus, Trash2, X } from "lucide-react";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
+import { cn } from '~/lib/utils';
+import { ImagePlus, Plus, Trash2, X } from 'lucide-react';
+import { Button } from '~/components/ui/button';
+import { Input } from '~/components/ui/input';
+import { Label } from '~/components/ui/label';
 
 /// 图片相关组件
 
@@ -15,26 +15,26 @@ interface ImageZoomProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   className?: string; // 缩略图样式
   maxWidth?: string; // 预览图最大宽度，默认 "95vw"
   maxHeight?: string; // 预览图最大高度，默认 "90vh"
-  closePosition?: "top-right" | "bottom-right";
+  closePosition?: 'top-right' | 'bottom-right';
 }
 
 function ImageZoom({
   imageName,
-  alt = "图片",
+  alt = '图片',
   className,
-  maxWidth = "95vw",
-  maxHeight = "90vh",
-  closePosition = "top-right",
+  maxWidth = '95vw',
+  maxHeight = '90vh',
+  closePosition = 'top-right',
   ...props
 }: ImageZoomProps) {
   // 如果图片名称为空否则不渲染页面
   if (!imageName) {
-    return "";
+    return '';
   }
 
   const [open, setOpen] = useState(false);
 
-  const positionClass = closePosition === "top-right" ? "top-4 right-4" : "bottom-4 right-4";
+  const positionClass = closePosition === 'top-right' ? 'top-4 right-4' : 'bottom-4 right-4';
 
   const imageSrc = `/images/${imageName}`;
 
@@ -44,7 +44,7 @@ function ImageZoom({
       <img
         src={imageSrc}
         alt={alt}
-        className={cn("cursor-pointer rounded-lg transition-transform duration-200 hover:scale-105 active:scale-95", className)}
+        className={cn('cursor-pointer rounded-lg transition-transform duration-200 hover:scale-105 active:scale-95', className)}
         onClick={() => setOpen(true)}
         {...props}
       />
@@ -67,9 +67,9 @@ function ImageZoom({
               {/* 关闭按钮 */}
               <button
                 className={cn(
-                  "absolute rounded-full bg-black/60 p-2.5 text-white",
-                  "hover:bg-black/80 hover:scale-105 active:scale-95",
-                  "transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/60",
+                  'absolute rounded-full bg-black/60 p-2.5 text-white',
+                  'hover:bg-black/80 hover:scale-105 active:scale-95',
+                  'transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/60',
                   positionClass,
                 )}
                 onClick={() => setOpen(false)}

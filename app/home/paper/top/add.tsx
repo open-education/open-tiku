@@ -1,30 +1,30 @@
-import React, { useMemo, useState } from "react";
-import { Button } from "~/components/ui/button";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
-import { Separator } from "~/components/ui/separator";
-import { StringConst, StringValidator } from "~/util/string";
-import { Watermark } from "~/common/watermark";
-import { Textarea } from "~/components/ui/textarea";
-import { Input } from "~/components/ui/input";
-import type { CommonPaperReq, CommonPaperSearchReq, TopPaperGroupReq, TopPaperQuestionReq, TopPaperReq, TopPaperResp } from "~/type/paper";
-import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { FileImage, Plus, Save, Send, Trash2, X } from "lucide-react";
-import { Label } from "~/components/ui/label";
-import type { Content, QuestionOption } from "~/type/question";
-import { httpClient } from "~/util/http";
-import { toast } from "sonner";
-import { SimpleAlert } from "~/common/alert";
-import { ImageAdd } from "~/common/image";
-import { useTextbooks } from "~/util/fetcher";
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
-import { FileUpload } from "~/common/file";
-import { QuickToolList } from "~/common/tool";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { Loading } from "~/common/load";
-import { PaperStatus } from "~/type/enum";
-import { CommonPaperConf } from "~/common/paper/config";
-import { TopInfo, TopInfoPreview } from "~/home/paper/top/info";
-import { ObjectUtil } from "~/util/object";
+import React, { useMemo, useState } from 'react';
+import { Button } from '~/components/ui/button';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '~/components/ui/resizable';
+import { Separator } from '~/components/ui/separator';
+import { StringConst, StringValidator } from '~/util/string';
+import { Watermark } from '~/common/watermark';
+import { Textarea } from '~/components/ui/textarea';
+import { Input } from '~/components/ui/input';
+import type { CommonPaperReq, CommonPaperSearchReq, TopPaperGroupReq, TopPaperQuestionReq, TopPaperReq, TopPaperResp } from '~/type/paper';
+import { Card, CardContent, CardHeader } from '~/components/ui/card';
+import { FileImage, Plus, Save, Send, Trash2, X } from 'lucide-react';
+import { Label } from '~/components/ui/label';
+import type { Content, QuestionOption } from '~/type/question';
+import { httpClient } from '~/util/http';
+import { toast } from 'sonner';
+import { SimpleAlert } from '~/common/alert';
+import { ImageAdd } from '~/common/image';
+import { useTextbooks } from '~/util/fetcher';
+import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
+import { FileUpload } from '~/common/file';
+import { QuickToolList } from '~/common/tool';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { Loading } from '~/common/load';
+import { PaperStatus } from '~/type/enum';
+import { CommonPaperConf } from '~/common/paper/config';
+import { TopInfo, TopInfoPreview } from '~/home/paper/top/info';
+import { ObjectUtil } from '~/util/object';
 
 /// 添加试卷, 因为修改的内容比较集中, 故添加修改使用同一个页面和逻辑
 /// 直接上传图片解析为试卷的方式因为要接入 ai api 要走付费模式, 即使相对便宜
@@ -32,16 +32,16 @@ import { ObjectUtil } from "~/util/object";
 
 const defaultCommonPaperReq: CommonPaperReq = {
   relatedId: 0,
-  relatedName: "",
+  relatedName: '',
   paperType: StringConst.paperTypeTop,
-  tag: "",
-  year: "",
-  grade: "",
-  semester: "",
-  title: "",
+  tag: '',
+  year: '',
+  grade: '',
+  semester: '',
+  title: '',
   score: 0,
-  source: "",
-  remark: "",
+  source: '',
+  remark: '',
   count: 0,
   status: PaperStatus.Drafing,
 };
@@ -49,8 +49,8 @@ const defaultCommonPaperReq: CommonPaperReq = {
 // 默认的题型类型信息
 const defaultTopPaperGroupInfo = (): TopPaperGroupReq => ({
   genId: ObjectUtil.getRandomStr(),
-  typeName: "",
-  subTitle: "",
+  typeName: '',
+  subTitle: '',
   questions: [],
 });
 
@@ -58,10 +58,10 @@ const defaultTopPaperGroupInfo = (): TopPaperGroupReq => ({
 const defaultTopPaperQuestionInfo = (orderNum: number): TopPaperQuestionReq => ({
   genId: ObjectUtil.getRandomStr(),
   orderNum,
-  stem: "",
-  answer: "",
+  stem: '',
+  answer: '',
   analysis: {
-    content: "",
+    content: '',
   },
   score: 0,
 });
@@ -85,12 +85,12 @@ export default function TopAdd({ searchReq, infoResp, setSheetTitle, setSheetDes
     }
 
     const updates: Partial<CommonPaperReq> = {};
-    const fields = ["relatedId", "relatedName", "tag", "year", "grade", "semester"] as const;
+    const fields = ['relatedId', 'relatedName', 'tag', 'year', 'grade', 'semester'] as const;
 
     fields.forEach((field) => {
       const value = searchReq[field as keyof typeof searchReq];
       // relatedId 是 number
-      if (field === "relatedId") {
+      if (field === 'relatedId') {
         const rid = value as number;
         if (rid > 0) {
           updates[field] = rid;
@@ -113,7 +113,7 @@ export default function TopAdd({ searchReq, infoResp, setSheetTitle, setSheetDes
   // 题型类型分组维护
   const [topPaperGroupReq, setTopPaperGroupReq] = useState<TopPaperGroupReq[]>(initialPaperReq.groups);
 
-  const [addWarnInfo, setAddWarnInfo] = useState<React.ReactNode>("");
+  const [addWarnInfo, setAddWarnInfo] = useState<React.ReactNode>('');
 
   // 获取前5层导航信息
   const { data: textbooks = [], isLoading: textbooksIdLoading, error: textbooksErr } = useTextbooks(5);
@@ -183,7 +183,7 @@ export default function TopAdd({ searchReq, infoResp, setSheetTitle, setSheetDes
             const newLabel = String.fromCharCode(65 + (q.options?.length || 0));
             const newOption: QuestionOption = {
               label: newLabel,
-              content: "",
+              content: '',
               order: q.options?.length || 0, // 通常 order 从 0 开始，你也可以用 q.options.length
             };
             return {
@@ -246,7 +246,7 @@ export default function TopAdd({ searchReq, infoResp, setSheetTitle, setSheetDes
       toast.error(<div className="text-red-700">学段/考点不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -256,7 +256,7 @@ export default function TopAdd({ searchReq, infoResp, setSheetTitle, setSheetDes
       toast.error(<div className="text-red-700">标签不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -266,19 +266,19 @@ export default function TopAdd({ searchReq, infoResp, setSheetTitle, setSheetDes
       toast.error(<div className="text-red-700">年份不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
       return;
     }
 
-    if (!confirm(commonPaperReq.id && commonPaperReq.id > 0 ? "确定要更新试卷吗？" : "确定要新增试卷吗？")) {
+    if (!confirm(commonPaperReq.id && commonPaperReq.id > 0 ? '确定要更新试卷吗？' : '确定要新增试卷吗？')) {
       return;
     }
 
     // 每次提交都清空题型信息, 等接口决定是否再次显示
-    setAddWarnInfo("");
+    setAddWarnInfo('');
 
     if (status === 0) {
       setDrafting(true);
@@ -297,14 +297,14 @@ export default function TopAdd({ searchReq, infoResp, setSheetTitle, setSheetDes
     };
 
     httpClient
-      .post<number>("/paper/top/add", topPaperReq)
+      .post<number>('/paper/top/add', topPaperReq)
       .then((resId) => {
         // 获取详情渲染Sheet为试卷详情
         httpClient
           .get<TopPaperResp>(`/paper/top/info/${resId}`)
           .then((res) => {
-            setSheetTitle?.("试卷详情");
-            setSheetDesc?.("仅为详情预览, 需审核通过后其他人可见, 可去 我的试卷 查看");
+            setSheetTitle?.('试卷详情');
+            setSheetDesc?.('仅为详情预览, 需审核通过后其他人可见, 可去 我的试卷 查看');
             setSheetContent?.(<TopInfo infoResp={res} />);
           })
           .catch((err) => {
@@ -330,11 +330,11 @@ export default function TopAdd({ searchReq, infoResp, setSheetTitle, setSheetDes
       <div className="mt-3 flex flex-wrap gap-2">
         <Button variant="default" className="text-sm" onClick={() => handleAddPaper(0)} disabled={drafting}>
           <Save className="mr-2 h-4 w-4" />
-          {drafting ? "存为草稿中..." : "存为草稿"}
+          {drafting ? '存为草稿中...' : '存为草稿'}
         </Button>
         <Button variant="outline" className="text-sm" onClick={() => handleAddPaper(1)} disabled={approving}>
           <Send className="mr-2 h-4 w-4" />
-          {approving ? "提交审核中..." : "提交审核"}
+          {approving ? '提交审核中...' : '提交审核'}
         </Button>
       </div>
 
@@ -350,7 +350,7 @@ export default function TopAdd({ searchReq, infoResp, setSheetTitle, setSheetDes
         <QuickToolList
           tools={[
             {
-              id: "tool-file-upload",
+              id: 'tool-file-upload',
               label: (
                 <div className="flex items-center gap-2">
                   <FileImage className="h-4 w-4 text-primary" />
@@ -448,13 +448,13 @@ function GroupCard({
           <span className="font-bold text-primary min-w-4">{StringConst.groupNumberMap[index] || index + 1}</span>
           <Input
             value={group.typeName}
-            onChange={(e) => onUpdateGroup("typeName", e.target.value)}
+            onChange={(e) => onUpdateGroup('typeName', e.target.value)}
             placeholder="题型名称，如：选择题、填空题、解答题..."
             className="w-48 text-sm md:text-sm"
           />
           <Input
             value={group.subTitle}
-            onChange={(e) => onUpdateGroup("subTitle", e.target.value)}
+            onChange={(e) => onUpdateGroup('subTitle', e.target.value)}
             placeholder="题型描述, 如: 本题共8小题, 每小题5分"
             className="flex-1 min-w-50 text-sm md:text-sm"
           />
@@ -512,7 +512,7 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
         <Label className="text-sm">题干</Label>
         <Textarea
           value={question.stem}
-          onChange={(e) => onUpdate("stem", e.target.value)}
+          onChange={(e) => onUpdate('stem', e.target.value)}
           placeholder="从 Markdown 中复制题干粘贴到这里..."
           className="min-h-15 text-sm md:text-sm"
         />
@@ -524,18 +524,18 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
         images={question.images || []}
         add={() => {
           // 添加图片即是在图片后面追加一个空地址
-          onUpdate("images", [...(question.images || []), ""]);
+          onUpdate('images', [...(question.images || []), '']);
         }}
         update={(idx, val) => {
           const newImages = [...(question.images || [])];
           newImages[idx] = val;
-          onUpdate("images", newImages);
+          onUpdate('images', newImages);
         }}
         remove={(idx) => {
           // 移除下标对应的图片标识
           const newImages = [...(question.images || [])];
           const filtered = newImages.filter((_, index) => index !== idx);
-          onUpdate("images", filtered);
+          onUpdate('images', filtered);
         }}
       />
 
@@ -547,7 +547,7 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
             <span className="text-sm">选项布局</span>
             <RadioGroup
               value={question.optionsLayout ?? 1}
-              onValueChange={(val) => onUpdate("optionsLayout", Number(val))}
+              onValueChange={(val) => onUpdate('optionsLayout', Number(val))}
               className="flex gap-4 w-fit"
             >
               {StringConst.selectLayoutList.map(({ id, value, label }) => (
@@ -599,7 +599,7 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
                     // 原来图片的基础上追加一个空字符串代表图片
                     onUpdateOption(optIdx, {
                       ...opt,
-                      images: [...(opt.images || []), ""],
+                      images: [...(opt.images || []), ''],
                     });
                   }}
                   update={(idx, val) => {
@@ -640,7 +640,7 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
           <Textarea
             value={question.answer}
             onChange={(e) => {
-              onUpdate("answer", e.target.value);
+              onUpdate('answer', e.target.value);
             }}
             placeholder="如: A 或 ABD 或 2 或 略"
             className="min-h-12.5 text-sm md:text-sm"
@@ -652,7 +652,7 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
             type="number"
             className="text-sm md:text-sm"
             value={question.score}
-            onChange={(e) => onUpdate("score", Number(e.target.value))}
+            onChange={(e) => onUpdate('score', Number(e.target.value))}
             placeholder="5"
           />
         </div>
@@ -664,7 +664,7 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
         <Textarea
           value={question.analysis.content}
           onChange={(e) => {
-            onUpdate("analysis", { ...question.analysis, content: e.target.value });
+            onUpdate('analysis', { ...question.analysis, content: e.target.value });
           }}
           placeholder="从 Markdown 中复制解析内容粘贴到这里..."
           className="min-h-12.5 text-sm md:text-sm"
@@ -676,20 +676,20 @@ function QuestionItem({ question, onRemove, onUpdate, onAddOption, onUpdateOptio
           images={question.analysis.images || []}
           add={() => {
             // 原来图片的基础上追加一个空字符串代表图片
-            onUpdate("analysis", {
+            onUpdate('analysis', {
               ...question.analysis,
-              images: [...(question.analysis.images || []), ""],
+              images: [...(question.analysis.images || []), ''],
             });
           }}
           update={(idx, val) => {
             // 原来图片的基础上添加当前图片值
             const newImages = [...(question.analysis.images || [])];
             newImages[idx] = val;
-            onUpdate("analysis", { ...question.analysis, images: newImages });
+            onUpdate('analysis', { ...question.analysis, images: newImages });
           }}
           remove={(idx) => {
             // 移除现有图片中当前索引的图片
-            onUpdate("analysis", {
+            onUpdate('analysis', {
               ...question.analysis,
               images: (question.analysis.images || []).filter((_, i) => i !== idx),
             });

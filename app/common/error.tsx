@@ -1,7 +1,7 @@
-import { ArrowRight, FileQuestionMark, FileText, House } from "lucide-react";
-import type React from "react";
-import { NavLink } from "react-router";
-import { Button } from "~/components/ui/button";
+import { ArrowRight, FileQuestionMark, FileText, House } from 'lucide-react';
+import type React from 'react';
+import { NavLink } from 'react-router';
+import { Button } from '~/components/ui/button';
 
 // 错误页面
 
@@ -24,8 +24,8 @@ interface LinkProps {
 const mainNavLinks: LinkProps[] = [
   {
     id: 1,
-    title: "返回首页",
-    href: "/",
+    title: '返回首页',
+    href: '/',
     leftIcon: House,
     rightIcon: ArrowRight,
   },
@@ -35,15 +35,15 @@ const mainNavLinks: LinkProps[] = [
 const secondNavLinks: LinkProps[] = [
   {
     id: 1,
-    title: "题目库",
-    href: "/question",
+    title: '题目库',
+    href: '/question',
     leftIcon: FileQuestionMark,
     rightIcon: ArrowRight,
   },
   {
     id: 2,
-    title: "试卷库",
-    href: "/paper",
+    title: '试卷库',
+    href: '/paper',
     leftIcon: FileText,
     rightIcon: ArrowRight,
   },

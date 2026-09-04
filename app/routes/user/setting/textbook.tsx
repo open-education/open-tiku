@@ -1,31 +1,31 @@
-import type { Route } from "./+types/textbook";
-import { CheckCircle2Icon, ChevronsUpDown, Edit, InfoIcon, Menu, Plus, X } from "lucide-react";
-import React, { useState } from "react";
-import { type KeyedMutator } from "swr";
-import { SimpleAlert } from "~/common/alert";
-import { Loading } from "~/common/load";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
-import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import { Input } from "~/components/ui/input";
-import { Separator } from "~/components/ui/separator";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import type { Textbook, CreateTextbookReq } from "~/type/textbook";
-import { useTextbooks, useTextbookLevel } from "~/util/fetcher";
-import { httpClient } from "~/util/http";
-import { StringConst, StringValidator } from "~/util/string";
+import type { Route } from './+types/textbook';
+import { CheckCircle2Icon, ChevronsUpDown, Edit, InfoIcon, Menu, Plus, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { type KeyedMutator } from 'swr';
+import { SimpleAlert } from '~/common/alert';
+import { Loading } from '~/common/load';
+import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
+import { Badge } from '~/components/ui/badge';
+import { Button } from '~/components/ui/button';
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '~/components/ui/collapsible';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog';
+import { Input } from '~/components/ui/input';
+import { Separator } from '~/components/ui/separator';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import type { Textbook, CreateTextbookReq } from '~/type/textbook';
+import { useTextbooks, useTextbookLevel } from '~/util/fetcher';
+import { httpClient } from '~/util/http';
+import { StringConst, StringValidator } from '~/util/string';
 
 /// 网站首页顶部和底部框架
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "系统设置-章节/考点" },
+    { title: '系统设置-章节/考点' },
     {
-      name: "description",
-      content: "个人中心, 系统设置, 维护7级教材目录章节和考点层级关系",
+      name: 'description',
+      content: '个人中心, 系统设置, 维护7级教材目录章节和考点层级关系',
     },
   ];
 }
@@ -34,13 +34,13 @@ export function meta({}: Route.MetaArgs) {
 export default function Index() {
   // 第一级菜单
   const [firstCollapsibleOpen, setFirstCollapsibleOpen] = useState<boolean>(true);
-  const firstLevelName = "第 1 级菜单";
+  const firstLevelName = '第 1 级菜单';
   const { data: firstLevels = [], isLoading: firstLevelsLoading, error: firstLevelsErr, mutate: firstLevelsMutate } = useTextbooks(1);
 
   // 第二级菜单
   const [secondCollapsibleOpen, setSecondCollapsibleOpen] = useState<boolean>(true);
   const [secondLevelParentId, setSecondLevelParentId] = useState<number>(0);
-  const secondLevelName = "第 2 级菜单";
+  const secondLevelName = '第 2 级菜单';
   const {
     data: secondLevels = [],
     isLoading: secondLevelsLoading,
@@ -51,7 +51,7 @@ export default function Index() {
   // 第三级菜单
   const [thirdCollapsibleOpen, setThirdCollapsibleOpen] = useState<boolean>(true);
   const [thirdLevelParentId, setThildLevelParentId] = useState<number>(0);
-  const thirdLevelName = "第 3 级菜单";
+  const thirdLevelName = '第 3 级菜单';
   const {
     data: thirdLevels = [],
     isLoading: thirdLevelsLoading,
@@ -62,7 +62,7 @@ export default function Index() {
   // 第四级菜单
   const [forthCollapsibleOpen, setForthCollapsibleOpen] = useState<boolean>(true);
   const [forthLevelParentId, setForthLevelParentId] = useState<number>(0);
-  const forthLevelName = "第 4 级菜单";
+  const forthLevelName = '第 4 级菜单';
   const {
     data: forthLevels = [],
     isLoading: forthLevelsLoading,
@@ -73,7 +73,7 @@ export default function Index() {
   // 第五级菜单
   const [fifthCollapsibleOpen, setFifthCollapsibleOpen] = useState<boolean>(true);
   const [fifthLevelParentId, setFifthLevelParentId] = useState<number>(0);
-  const fifthLevelName = "第 5 级菜单";
+  const fifthLevelName = '第 5 级菜单';
   const {
     data: fifthLevels = [],
     isLoading: fifthLevelsLoading,
@@ -84,7 +84,7 @@ export default function Index() {
   // 第六级菜单
   const [sixthCollapsibleOpen, setSixthCollapsibleOpen] = useState<boolean>(true);
   const [sixthLevelParentId, setSixthLevelParentId] = useState<number>(0);
-  const sixthLevelName = "第 6 级菜单";
+  const sixthLevelName = '第 6 级菜单';
   const {
     data: sixthLevels = [],
     isLoading: sixthLevelsLoading,
@@ -95,7 +95,7 @@ export default function Index() {
   // 第七级菜单
   const [seventhCollapsibleOpen, setSeventhCollapsibleOpen] = useState<boolean>(true);
   const [seventhLevelParentId, setSeventhLevelParentId] = useState<number>(0);
-  const seventhLevelName = "第 7 级菜单";
+  const seventhLevelName = '第 7 级菜单';
   const {
     data: seventhLevels = [],
     isLoading: seventhLevelsLoading,
@@ -105,15 +105,15 @@ export default function Index() {
 
   // 对话框弹框
   const [dailogOpen, setDailogOpen] = useState<boolean>(false);
-  const [dailogTitle, setDailogTitle] = useState<string>("");
-  const [dailogDesc, setDailogDesc] = useState<string>("");
+  const [dailogTitle, setDailogTitle] = useState<string>('');
+  const [dailogDesc, setDailogDesc] = useState<string>('');
   // 需要自己包含操作按钮
-  const [dailogContent, setDailogContent] = useState<React.ReactNode>("");
+  const [dailogContent, setDailogContent] = useState<React.ReactNode>('');
 
   // 添加菜单
   const handleAdd = (levelName: string, pathDepth: number, path: string, mutateCallback: KeyedMutator<Textbook[]>, parentId?: number) => {
     setDailogOpen(true);
-    setDailogTitle("添加菜单");
+    setDailogTitle('添加菜单');
     setDailogDesc(`追加 ${levelName} 的子菜单`);
     setDailogContent(<Add parentId={parentId} pathDepth={pathDepth} path={path} onClose={setDailogOpen} mutateCallback={mutateCallback} />);
   };
@@ -121,7 +121,7 @@ export default function Index() {
   // 编辑菜单
   const handleEdit = (levelName: string, pathDepth: number, item: Textbook, mutateCallback: KeyedMutator<Textbook[]>, parentId?: number) => {
     setDailogOpen(true);
-    setDailogTitle("编辑菜单");
+    setDailogTitle('编辑菜单');
     setDailogDesc(`编辑 ${levelName} 的子菜单`);
     setDailogContent(<Add parentId={parentId} pathDepth={pathDepth} item={item} onClose={setDailogOpen} mutateCallback={mutateCallback} />);
   };
@@ -129,7 +129,7 @@ export default function Index() {
   // 删除菜单
   const handleDelete = (levelName: string, item: Textbook, mutateCallback: KeyedMutator<Textbook[]>) => {
     setDailogOpen(true);
-    setDailogTitle("删除菜单");
+    setDailogTitle('删除菜单');
     setDailogDesc(`删除 ${levelName} 的子菜单`);
     setDailogContent(<Delete item={item} onClose={setDailogOpen} mutateCallback={mutateCallback} />);
   };
@@ -180,7 +180,7 @@ export default function Index() {
             }}
             onEdit={(item) => handleEdit(firstLevelName, 1, item, firstLevelsMutate)}
             onDelete={(item) => handleDelete(firstLevelName, item, firstLevelsMutate)}
-            onAdd={() => handleAdd(firstLevelName, 1, "", firstLevelsMutate)}
+            onAdd={() => handleAdd(firstLevelName, 1, '', firstLevelsMutate)}
           />
         </div>
 
@@ -434,7 +434,7 @@ function Item({ isSelected = false, item, onViewList, onEdit, onDelete }: ItemPr
         <CardDescription className="text-sm">排序: {item.sortOrder}</CardDescription>
         <CardAction>
           {item.pathDepth < 7 && (
-            <Button className="text-sm" variant={isSelected ? "default" : "outline"} onClick={() => onViewList(item.id)}>
+            <Button className="text-sm" variant={isSelected ? 'default' : 'outline'} onClick={() => onViewList(item.id)}>
               <Menu />
               子菜单
             </Button>
@@ -447,9 +447,9 @@ function Item({ isSelected = false, item, onViewList, onEdit, onDelete }: ItemPr
           <div>父标识: {item.parentId}</div>
           <div>深度: {item.pathDepth}</div>
           <div>
-            类型:{" "}
+            类型:{' '}
             <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-              {StringConst.textbookPathTypeNames.get(item.pathType) || ""}
+              {StringConst.textbookPathTypeNames.get(item.pathType) || ''}
             </Badge>
           </div>
         </div>
@@ -480,12 +480,12 @@ interface AddProps {
   onClose: (val: boolean) => void; // 取消暂时什么都不做
   mutateCallback?: KeyedMutator<Textbook[]>; // 操作完毕后是否需要请求回调刷新缓存
 }
-function Add({ parentId, pathDepth, path = "", item, onClose, mutateCallback }: AddProps) {
+function Add({ parentId, pathDepth, path = '', item, onClose, mutateCallback }: AddProps) {
   // 添加和编辑请求
   const defaultAddReq: CreateTextbookReq = item
     ? { ...item }
     : {
-        label: "",
+        label: '',
         sortOrder: 1,
         pathDepth,
         path,
@@ -495,7 +495,7 @@ function Add({ parentId, pathDepth, path = "", item, onClose, mutateCallback }: 
     setAddReq((prev) => ({ ...prev, [key]: val }));
   };
 
-  const [warnInfo, setWarnInfo] = useState<React.ReactNode>("");
+  const [warnInfo, setWarnInfo] = useState<React.ReactNode>('');
   const [submittIng, setSubmittIng] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
 
@@ -516,7 +516,7 @@ function Add({ parentId, pathDepth, path = "", item, onClose, mutateCallback }: 
     }
     // 前两层类型为 common
     if (pathDepth === 1 || pathDepth === 2) {
-      if (addReq.pathType !== "common") {
+      if (addReq.pathType !== 'common') {
         setWarnInfo(<SimpleAlert title="必填检查" message="前2层节点类型只能为 公共" />);
         return;
       }
@@ -524,10 +524,10 @@ function Add({ parentId, pathDepth, path = "", item, onClose, mutateCallback }: 
 
     setSubmittIng(true);
     setSuccess(false);
-    setWarnInfo("");
+    setWarnInfo('');
 
     httpClient
-      .post("/textbook/add", addReq)
+      .post('/textbook/add', addReq)
       .then((res) => {
         // 刷新列表
         mutateCallback?.();
@@ -552,7 +552,7 @@ function Add({ parentId, pathDepth, path = "", item, onClose, mutateCallback }: 
         <Input
           className="text-sm md:text-sm"
           value={addReq.label}
-          onChange={(e) => updateAddReq("label", e.target.value)}
+          onChange={(e) => updateAddReq('label', e.target.value)}
           placeholder="请输入菜单名称"
         />
       </div>
@@ -560,7 +560,7 @@ function Add({ parentId, pathDepth, path = "", item, onClose, mutateCallback }: 
       {/* 菜单类型 */}
       <div className="space-y-1">
         <label className="text-sm leading-none">类型</label>
-        <PathTypeSelect defaultValue={addReq.pathType} onSelect={(val) => updateAddReq("pathType", val)} />
+        <PathTypeSelect defaultValue={addReq.pathType} onSelect={(val) => updateAddReq('pathType', val)} />
       </div>
 
       {/* 顺序 */}
@@ -571,7 +571,7 @@ function Add({ parentId, pathDepth, path = "", item, onClose, mutateCallback }: 
           type="number"
           min="0"
           value={addReq.sortOrder}
-          onChange={(e) => updateAddReq("sortOrder", Number(e.target.value))}
+          onChange={(e) => updateAddReq('sortOrder', Number(e.target.value))}
         />
       </div>
 
@@ -591,7 +591,7 @@ function Add({ parentId, pathDepth, path = "", item, onClose, mutateCallback }: 
           取消
         </Button>
         <Button className="text-sm" onClick={handleSubmit} disabled={submittIng}>
-          {addReq.id && addReq.id > 0 ? (submittIng ? "更新中..." : "更新") : submittIng ? "保存中..." : "保存"}
+          {addReq.id && addReq.id > 0 ? (submittIng ? '更新中...' : '更新') : submittIng ? '保存中...' : '保存'}
         </Button>
       </DialogFooter>
     </div>
@@ -607,11 +607,11 @@ interface DeleteProps {
 function Delete({ item, onClose, mutateCallback }: DeleteProps) {
   const [submittIng, setSubmittIng] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
-  const [warnInfo, setWarnInfo] = useState<React.ReactNode>("");
+  const [warnInfo, setWarnInfo] = useState<React.ReactNode>('');
 
   const handleSubmit = () => {
     setSubmittIng(true);
-    setWarnInfo("");
+    setWarnInfo('');
 
     httpClient
       .get<boolean>(`/textbook/delete/${item.id}`)
@@ -658,7 +658,7 @@ function Delete({ item, onClose, mutateCallback }: DeleteProps) {
           取消
         </Button>
         <Button className="text-sm" onClick={handleSubmit} disabled={submittIng}>
-          {submittIng ? "删除中..." : "删除"}
+          {submittIng ? '删除中...' : '删除'}
         </Button>
       </DialogFooter>
     </div>
@@ -682,7 +682,7 @@ function PathTypeSelect({ defaultValue, onSelect }: PathTypeProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {StringConst.textbookPathTypes.map(({ id, value, label }) => (
-        <Button key={id} className="text-sm" variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
+        <Button key={id} className="text-sm" variant={defaultValue === value ? 'default' : 'outline'} onClick={() => handleSelect(value)}>
           {label}
         </Button>
       ))}

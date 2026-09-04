@@ -1,21 +1,21 @@
-import type { Route } from "./+types/main";
-import { Header } from "~/home/header";
-import { Outlet, useNavigate } from "react-router";
-import { useEffect } from "react";
-import { httpClient } from "~/util/http";
-import type { UserInfoResp } from "~/type/user";
-import { toast } from "sonner";
-import { UserLoginSource } from "~/type/enum";
-import { clearAuth, saveAuth } from "~/util/user";
+import type { Route } from './+types/main';
+import { Header } from '~/home/header';
+import { Outlet, useNavigate } from 'react-router';
+import { useEffect } from 'react';
+import { httpClient } from '~/util/http';
+import type { UserInfoResp } from '~/type/user';
+import { toast } from 'sonner';
+import { UserLoginSource } from '~/type/enum';
+import { clearAuth, saveAuth } from '~/util/user';
 
 /// 网站首页顶部和底部框架
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "开放题库-以素养为导向的精准教学平台" },
+    { title: '开放题库-以素养为导向的精准教学平台' },
     {
-      name: "description",
+      name: 'description',
       content:
-        "根据中小学教材章节和教育部发布的考点进行选题，精选历年高考中考和名校期末月考等试卷，手动根据需要和学情自主组卷，辅助教学视频等提供以素养为导向的精准教学、练题平台。",
+        '根据中小学教材章节和教育部发布的考点进行选题，精选历年高考中考和名校期末月考等试卷，手动根据需要和学情自主组卷，辅助教学视频等提供以素养为导向的精准教学、练题平台。',
     },
   ];
 }
@@ -27,20 +27,20 @@ export default function Main() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const tempToken = params.get("token");
+    const tempToken = params.get('token');
 
     if (tempToken) {
       // 临时换票流程
       httpClient
-        .post<string>("/user/exchange", { tempToken })
+        .post<string>('/user/exchange', { tempToken })
         .then((realToken) =>
           httpClient
-            .post<UserInfoResp>("/user/login", { source: UserLoginSource.User, token: realToken })
+            .post<UserInfoResp>('/user/login', { source: UserLoginSource.User, token: realToken })
             .then((userInfo) => ({ realToken, userInfo })),
         )
         .then(({ realToken, userInfo }) => {
           saveAuth(realToken, userInfo);
-          navigate("/", { replace: true }); // 登录成功跳转
+          navigate('/', { replace: true }); // 登录成功跳转
         })
         .catch((err) => {
           toast.error(err.message);
@@ -48,13 +48,13 @@ export default function Main() {
         });
     } else {
       // 静默登录：检查本地 token 是否有效, 所以同一时刻只能登录一个账户, 后续看是否支持多账户登录, 因为 token 虽然生效但是被强制替换了
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       if (token) {
         httpClient
           .get<UserInfoResp>(`/user/info/${token}`)
           .then((userInfo) => {
-            localStorage.setItem("user", JSON.stringify(userInfo));
-            window.dispatchEvent(new Event("user-update"));
+            localStorage.setItem('user', JSON.stringify(userInfo));
+            window.dispatchEvent(new Event('user-update'));
           })
           .catch(() => {
             clearAuth(); // token 失效，清除

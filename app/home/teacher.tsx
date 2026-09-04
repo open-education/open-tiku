@@ -1,4 +1,4 @@
-import { Button } from "~/components/ui/button";
+import { Button } from '~/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -8,8 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
-import { Separator } from "~/components/ui/separator";
+} from '~/components/ui/dialog';
+import { Separator } from '~/components/ui/separator';
 
 function Teacher() {
   return (

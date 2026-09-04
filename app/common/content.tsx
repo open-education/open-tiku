@@ -1,11 +1,11 @@
-import { StringValidator } from "~/util/string";
-import Markdown from "react-markdown";
-import rehypeKatex from "rehype-katex";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
-import remarkMath from "remark-math";
-import { table } from "~/common/table";
+import { StringValidator } from '~/util/string';
+import Markdown from 'react-markdown';
+import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
+import remarkMath from 'remark-math';
+import { table } from '~/common/table';
 
 /// 简单的 markdown 内容
 
@@ -22,7 +22,7 @@ function SimpleFullContent(props: SimpleFullContentProps) {
       {StringValidator.isNonEmpty(content) && (
         <Markdown
           remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]}
-          rehypePlugins={[rehypeRaw, [rehypeKatex, { output: "html" }]]}
+          rehypePlugins={[rehypeRaw, [rehypeKatex, { output: 'html' }]]}
           components={table}
         >
           {content}

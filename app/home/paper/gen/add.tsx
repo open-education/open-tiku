@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { ChapterDropdownNav, ChapterTreeCheckboxNav, type CheckboxTreeNode } from "~/common/nav";
-import { MultiTagSelect, ShowDifficultyLevelRange } from "~/common/question/tag";
+import React, { useEffect, useMemo, useState } from 'react';
+import { ChapterDropdownNav, ChapterTreeCheckboxNav, type CheckboxTreeNode } from '~/common/nav';
+import { MultiTagSelect, ShowDifficultyLevelRange } from '~/common/question/tag';
 import type {
   GenPaperSearchReq,
   CommonPaperSearchReq,
@@ -14,42 +14,42 @@ import type {
   GenPaperResp,
   GenPaperGroupResp,
   GenDifficultyLevelRange,
-} from "~/type/paper";
-import type { Textbook } from "~/type/textbook";
-import { useQuestionCates, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
-import { createTextbookPathDict } from "~/util/textbook-dict";
-import { GenPaperGenTypeConfig } from "~/home/paper/gen/config";
-import { Button } from "~/components/ui/button";
-import { Eye, Save, Send, Settings2 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Separator } from "~/components/ui/separator";
-import { StringConst, StringValidator } from "~/util/string";
-import { CommonPaperConf } from "~/common/paper/config";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { Loading } from "~/common/load";
-import { SimpleAlert } from "~/common/alert";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
-import { Watermark } from "~/common/watermark";
-import { httpClient } from "~/util/http";
-import { toast } from "sonner";
-import { PaperStatus } from "~/type/enum";
-import { GenInfoPreview } from "~/home/paper/gen/info";
-import { ArrayUtil, ObjectUtil } from "~/util/object";
+} from '~/type/paper';
+import type { Textbook } from '~/type/textbook';
+import { useQuestionCates, useQuestionOtherDicts, useTextbooks } from '~/util/fetcher';
+import { createTextbookPathDict } from '~/util/textbook-dict';
+import { GenPaperGenTypeConfig } from '~/home/paper/gen/config';
+import { Button } from '~/components/ui/button';
+import { Eye, Save, Send, Settings2 } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import { Separator } from '~/components/ui/separator';
+import { StringConst, StringValidator } from '~/util/string';
+import { CommonPaperConf } from '~/common/paper/config';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { Loading } from '~/common/load';
+import { SimpleAlert } from '~/common/alert';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '~/components/ui/resizable';
+import { Watermark } from '~/common/watermark';
+import { httpClient } from '~/util/http';
+import { toast } from 'sonner';
+import { PaperStatus } from '~/type/enum';
+import { GenInfoPreview } from '~/home/paper/gen/info';
+import { ArrayUtil, ObjectUtil } from '~/util/object';
 
 // 生成试卷
 
 const defaultCommonPaperReq: CommonPaperReq = {
   relatedId: 0,
-  relatedName: "",
+  relatedName: '',
   paperType: StringConst.paperTypesGen,
-  tag: "",
-  year: "",
-  grade: "",
-  semester: "",
-  title: "",
+  tag: '',
+  year: '',
+  grade: '',
+  semester: '',
+  title: '',
   score: 0,
-  source: "",
-  remark: "",
+  source: '',
+  remark: '',
   count: 0,
   status: PaperStatus.Drafing,
 };
@@ -70,12 +70,12 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
   // 计算初始值, 编辑时也是更新这个初始化值
   const initialGenPaperReq = useMemo<GenPaperReq>(() => {
     const updates: Partial<CommonPaperReq> = {};
-    const fields = ["relatedId", "relatedName", "tag", "year", "grade", "semester"] as const;
+    const fields = ['relatedId', 'relatedName', 'tag', 'year', 'grade', 'semester'] as const;
 
     fields.forEach((field) => {
       const value = searchReq[field as keyof typeof searchReq];
       // relatedId 是 number
-      if (field === "relatedId") {
+      if (field === 'relatedId') {
         const rid = value as number;
         if (rid > 0) {
           updates[field] = rid;
@@ -121,7 +121,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
 
     const nodes = pathMap.get(genPaperSearchReq.fiveLevelId.toString()) ?? [];
     const twoLevelId = nodes.length >= 2 ? nodes[1].id : 0;
-    updateGenPaperSearchReq("twoLevelId", twoLevelId);
+    updateGenPaperSearchReq('twoLevelId', twoLevelId);
   }, [genPaperSearchReq.fiveLevelId, pathMap]);
 
   // 查询题目类型和标签
@@ -129,43 +129,41 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
     data: questionTypes = [],
     isLoading: questionTypesLoading,
     error: questionTypesErr,
-  } = useQuestionOtherDicts(genPaperSearchReq.twoLevelId, "question_type");
-  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, "id"), [questionTypes]);
+  } = useQuestionOtherDicts(genPaperSearchReq.twoLevelId, 'question_type');
+  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, 'id'), [questionTypes]);
 
   // 添加状态来维护题型配置
   const [genPaperGenTypes, setGenPaperGenTypes] = useState<GenPaperGenType[]>([]);
 
   // 当 questionTypes 变化时，初始化 genPaperGenTypes
   useEffect(() => {
-    const initialList = questionTypes.map(
-      (info): GenPaperGenType => ({
-        id: info.id,
-        label: info.itemValue,
-        num: 0,
-        score: 0,
-      }),
-    );
+    const initialList = questionTypes.map((info): GenPaperGenType => ({
+      id: info.id,
+      label: info.itemValue,
+      num: 0,
+      score: 0,
+    }));
     setGenPaperGenTypes(initialList);
   }, [questionTypes]);
 
   const handleGenPaperGenTypesChange = (newList: GenPaperGenType[]) => {
     setGenPaperGenTypes(newList);
-    updateGenPaperSearchReq("genPaperGenTypes", newList);
+    updateGenPaperSearchReq('genPaperGenTypes', newList);
   };
 
   const {
     data: questionTags = [],
     isLoading: questionTagsLoading,
     error: questionTagsErr,
-  } = useQuestionOtherDicts(genPaperSearchReq.twoLevelId, "question_tag");
-  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
+  } = useQuestionOtherDicts(genPaperSearchReq.twoLevelId, 'question_tag');
+  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, 'id'), [questionTags]);
 
   const {
     data: questionDimensions = [],
     isLoading: questionDimensionsLoading,
     error: questionDimensionsErr,
-  } = useQuestionOtherDicts(genPaperSearchReq.twoLevelId, "question_dimension");
-  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
+  } = useQuestionOtherDicts(genPaperSearchReq.twoLevelId, 'question_dimension');
+  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, 'id'), [questionDimensions]);
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(genPaperSearchReq.fiveLevelId);
@@ -180,23 +178,23 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
     common: {
       id: 0,
       relatedId: 0,
-      relatedName: "",
+      relatedName: '',
       paperType: 0,
-      tag: "",
-      year: "",
-      grade: "",
-      semester: "",
-      title: "",
+      tag: '',
+      year: '',
+      grade: '',
+      semester: '',
+      title: '',
       score: 0,
-      source: "",
-      remark: "",
-      authorName: "",
+      source: '',
+      remark: '',
+      authorName: '',
       count: 0,
       status: 0,
-      statusDesc: "",
-      remarkExt: "",
-      createdAt: "",
-      updatedAt: "",
+      statusDesc: '',
+      remarkExt: '',
+      createdAt: '',
+      updatedAt: '',
     },
     conf: {
       questionCateIds: [],
@@ -211,13 +209,13 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
 
   // 生成试卷预览
   const handleGenPaper = () => {
-    setWarnInfo("");
+    setWarnInfo('');
 
     if (!genPaperSearchReq.questionCateIds || genPaperSearchReq.questionCateIds.length == 0) {
       toast.error(<div className="text-red-700">题目选择： 第8级菜单题型配置不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -227,7 +225,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       toast.error(<div className="text-red-700">题目选择： 题型题量配置不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -237,7 +235,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       toast.error(<div className="text-red-700">基础设置: 学段/考点 和 题目选择: 章节/考点 不一致</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -261,7 +259,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
     setPreviewing(true);
 
     httpClient
-      .post<GenPaperResp>("/paper/gen/preview", req)
+      .post<GenPaperResp>('/paper/gen/preview', req)
       .then((res) => {
         setGenPaperPreviewInfo(res);
       })
@@ -275,14 +273,14 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
 
   // 保存试卷
   const handleSavePaper = (status: number) => {
-    setWarnInfo("");
+    setWarnInfo('');
 
     // 检查必填参数是否为空
     if (commonPaperReq.relatedId <= 0) {
       toast.error(<div className="text-red-700">学段/考点不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -292,7 +290,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       toast.error(<div className="text-red-700">标签不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -302,7 +300,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       toast.error(<div className="text-red-700">年份不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -313,7 +311,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       toast.error(<div className="text-red-700">题目选择： 第8级菜单题型配置不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -323,7 +321,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       toast.error(<div className="text-red-700">题目选择： 题型题量配置不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -333,7 +331,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       toast.error(<div className="text-red-700">基础设置: 学段/考点 和 题目选择: 章节/考点 不一致</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -346,7 +344,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       toast.error(<div className="text-red-700">需要先生成预览, 验证试卷完整性后再保存</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -368,7 +366,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
         toast.error(<div className="text-red-700">题型题量配置 [${item.label}] 分数不能小于等于0</div>, {
           duration: Infinity,
           action: {
-            label: "关闭",
+            label: '关闭',
             onClick: () => {},
           },
         });
@@ -381,7 +379,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
           toast.error(<div className="text-red-700">题型题量配置 [{item.label}] 在预览结果中数量不匹配</div>, {
             duration: Infinity,
             action: {
-              label: "关闭",
+              label: '关闭',
               onClick: () => {},
             },
           });
@@ -391,7 +389,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
         toast.error(<div className="text-red-700">题型题量配置 [{item.label}] 在预览结果中不存在</div>, {
           duration: Infinity,
           action: {
-            label: "关闭",
+            label: '关闭',
             onClick: () => {},
           },
         });
@@ -399,7 +397,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       }
     }
 
-    if (!confirm("确定保存预览数据?")) {
+    if (!confirm('确定保存预览数据?')) {
       return;
     }
 
@@ -461,15 +459,15 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
     };
 
     httpClient
-      .post<number>("/paper/gen/add", req)
+      .post<number>('/paper/gen/add', req)
       .then((resId) => {
         // 保存试卷成功则跳转到详情页面即可
         // 获取详情渲染Sheet为试卷详情
         httpClient
           .get<GenPaperResp>(`/paper/gen/info/${resId}`)
           .then((res) => {
-            setSheetTitle("预览试卷详情");
-            setSheetDesc("仅为详情预览, 需审核通过后其他人可见, 需去 我的试卷 查看");
+            setSheetTitle('预览试卷详情');
+            setSheetDesc('仅为详情预览, 需审核通过后其他人可见, 需去 我的试卷 查看');
             setSheetContent(
               <GenInfoPreview
                 infoResp={genPaperPreviewInfo}
@@ -503,15 +501,15 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       <div className="mt-3 flex flex-wrap gap-2">
         <Button variant="outline" className="text-sm" onClick={handleGenPaper} disabled={previewing}>
           <Eye className="mr-2 h-4 w-4" />
-          {previewing ? "生成预览中" : "生成预览"}
+          {previewing ? '生成预览中' : '生成预览'}
         </Button>
         <Button variant="default" className="text-sm" onClick={() => handleSavePaper(0)} disabled={drafting}>
           <Save className="mr-2 h-4 w-4" />
-          {drafting ? "存为草稿中..." : "存为草稿"}
+          {drafting ? '存为草稿中...' : '存为草稿'}
         </Button>
         <Button variant="outline" className="text-sm" onClick={() => handleSavePaper(1)} disabled={approving}>
           <Send className="mr-2 h-4 w-4" />
-          {approving ? "提交审核中..." : "提交审核"}
+          {approving ? '提交审核中...' : '提交审核'}
         </Button>
       </div>
 
@@ -564,14 +562,14 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
                             textbooks={textbooks}
                             onSelect={(selectedItems: Textbook[]) => {
                               if (!selectedItems) {
-                                updateGenPaperSearchReq("fiveLevelId", 0);
-                                updateGenPaperSearchReq("fiveLevelSelectKeys", []);
+                                updateGenPaperSearchReq('fiveLevelId', 0);
+                                updateGenPaperSearchReq('fiveLevelSelectKeys', []);
                                 return;
                               }
                               const current: Textbook = selectedItems[selectedItems.length - 1];
-                              updateGenPaperSearchReq("fiveLevelId", current.id);
+                              updateGenPaperSearchReq('fiveLevelId', current.id);
                               updateGenPaperSearchReq(
-                                "fiveLevelSelectKeys",
+                                'fiveLevelSelectKeys',
                                 selectedItems.map((item) => item.key),
                               );
                             }}
@@ -589,14 +587,14 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
                             textbooks={questionCates}
                             onSelect={(selectedItems: CheckboxTreeNode[]) => {
                               if (!selectedItems) {
-                                updateGenPaperSearchReq("questionCateIds", []);
+                                updateGenPaperSearchReq('questionCateIds', []);
                                 return;
                               }
                               // tableName: "question_cate" 对应的为题型标识
                               const questionCateIds = selectedItems
                                 .filter((item) => item.tableName === StringConst.questionCateTableName)
                                 .map((item) => item.id);
-                              updateGenPaperSearchReq("questionCateIds", questionCateIds);
+                              updateGenPaperSearchReq('questionCateIds', questionCateIds);
                             }}
                             maxDepth={7}
                           />
@@ -611,7 +609,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
                             options={questionTags}
                             value={genPaperSearchReq.tagIds || []}
                             onChange={(val) => {
-                              updateGenPaperSearchReq("tagIds", val);
+                              updateGenPaperSearchReq('tagIds', val);
                             }}
                           />
                         </div>
@@ -625,7 +623,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
                             options={questionDimensions}
                             value={genPaperSearchReq.dimensionIds || []}
                             onChange={(val) => {
-                              updateGenPaperSearchReq("dimensionIds", val);
+                              updateGenPaperSearchReq('dimensionIds', val);
                             }}
                           />
                         </div>

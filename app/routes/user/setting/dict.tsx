@@ -1,30 +1,30 @@
-import type { Route } from "./+types/dict";
-import { Pencil, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { SimpleAlert } from "~/common/alert";
-import { Loading } from "~/common/load";
-import { ChapterDropdownNav } from "~/common/nav";
-import { OtherDictSelect } from "~/common/question/tag";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import { Input } from "~/components/ui/input";
-import { Separator } from "~/components/ui/separator";
-import { Switch } from "~/components/ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import type { Textbook, TextbookOtherDict } from "~/type/textbook";
-import { useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
-import { StringConst, StringValidator } from "~/util/string";
-import { toast } from "sonner";
-import { httpClient } from "~/util/http";
+import type { Route } from './+types/dict';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { SimpleAlert } from '~/common/alert';
+import { Loading } from '~/common/load';
+import { ChapterDropdownNav } from '~/common/nav';
+import { OtherDictSelect } from '~/common/question/tag';
+import { Button } from '~/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog';
+import { Input } from '~/components/ui/input';
+import { Separator } from '~/components/ui/separator';
+import { Switch } from '~/components/ui/switch';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import type { Textbook, TextbookOtherDict } from '~/type/textbook';
+import { useQuestionOtherDicts, useTextbooks } from '~/util/fetcher';
+import { StringConst, StringValidator } from '~/util/string';
+import { toast } from 'sonner';
+import { httpClient } from '~/util/http';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "系统设置-通用字典维护" },
+    { title: '系统设置-通用字典维护' },
     {
-      name: "description",
-      content: "个人中心, 系统设置, 题目类型, 标签, 核心素养等通用字典维护",
+      name: 'description',
+      content: '个人中心, 系统设置, 题目类型, 标签, 核心素养等通用字典维护',
     },
   ];
 }
@@ -34,8 +34,8 @@ export default function Index() {
   const [addReq, setAddReq] = useState<TextbookOtherDict>({
     id: 0,
     textbookId: 0,
-    typeCode: "",
-    itemValue: "",
+    typeCode: '',
+    itemValue: '',
     sortOrder: 0,
     isSelect: false,
   });
@@ -58,7 +58,7 @@ export default function Index() {
 
   // 点击添加按钮,  新增需要默认值
   const handleAdd = () => {
-    setAddReq({ ...addReq, id: 0, itemValue: "", sortOrder: 0, isSelect: false });
+    setAddReq({ ...addReq, id: 0, itemValue: '', sortOrder: 0, isSelect: false });
     setDialogOpen(true);
   };
 
@@ -74,7 +74,7 @@ export default function Index() {
       toast.error(<div className="text-red-700">科目不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -84,7 +84,7 @@ export default function Index() {
       toast.error(<div className="text-red-700">类型不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -94,7 +94,7 @@ export default function Index() {
       toast.error(<div className="text-red-700">名称不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -104,10 +104,10 @@ export default function Index() {
     setProcessIng(true);
 
     httpClient
-      .post("other/dict/add", addReq)
+      .post('other/dict/add', addReq)
       .then((res) => {
         // 添加成功则清除表单其它项
-        setAddReq({ ...addReq, id: 0, itemValue: "", sortOrder: 0, isSelect: false });
+        setAddReq({ ...addReq, id: 0, itemValue: '', sortOrder: 0, isSelect: false });
         setDialogOpen(false);
         // 同时要重新刷新字典列表
         otherDictsMutate();
@@ -116,7 +116,7 @@ export default function Index() {
         toast.error(<div className="text-red-700">{err.message}</div>, {
           duration: Infinity,
           action: {
-            label: "关闭",
+            label: '关闭',
             onClick: () => {},
           },
         });
@@ -131,7 +131,7 @@ export default function Index() {
     toast.error(<div className="text-red-700">暂不支持删除</div>, {
       duration: Infinity,
       action: {
-        label: "关闭",
+        label: '关闭',
         onClick: () => {},
       },
     });
@@ -159,11 +159,11 @@ export default function Index() {
                     textbooks={textbooks}
                     onSelect={(selectedItems: Textbook[]) => {
                       if (!selectedItems) {
-                        updateAddReq("textbookId", 0);
+                        updateAddReq('textbookId', 0);
                         return;
                       }
                       const current: Textbook = selectedItems[selectedItems.length - 1];
-                      updateAddReq("textbookId", current.id);
+                      updateAddReq('textbookId', current.id);
                     }}
                     defaultSelectedKeys={[]}
                     placeholder="请选择科目"
@@ -174,7 +174,7 @@ export default function Index() {
               <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
                 <div className="md:w-24 shrink-0 font-medium">类型:</div>
                 <div className="flex-1 min-w-0">
-                  <OtherDictSelect defaultValue={addReq.typeCode} onSelect={(val) => updateAddReq("typeCode", val)} />
+                  <OtherDictSelect defaultValue={addReq.typeCode} onSelect={(val) => updateAddReq('typeCode', val)} />
                 </div>
               </div>
             </div>
@@ -215,7 +215,7 @@ export default function Index() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-106.25">
           <DialogHeader>
-            <DialogTitle className="text-base font-medium">{addReq.id > 0 ? "编辑" : "添加"}</DialogTitle>
+            <DialogTitle className="text-base font-medium">{addReq.id > 0 ? '编辑' : '添加'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             {/* 名称 */}
@@ -224,7 +224,7 @@ export default function Index() {
               <Input
                 className="text-sm md:text-sm"
                 value={addReq.itemValue}
-                onChange={(e) => updateAddReq("itemValue", e.target.value)}
+                onChange={(e) => updateAddReq('itemValue', e.target.value)}
                 placeholder="例如 选择题"
               />
             </div>
@@ -237,7 +237,7 @@ export default function Index() {
                 type="number"
                 min="0"
                 value={addReq.sortOrder}
-                onChange={(e) => updateAddReq("sortOrder", Number(e.target.value))}
+                onChange={(e) => updateAddReq('sortOrder', Number(e.target.value))}
               />
             </div>
 
@@ -246,7 +246,7 @@ export default function Index() {
               <div className="space-y-0.5">
                 <label className="text-sm">是否为选择题</label>
               </div>
-              <Switch checked={addReq.isSelect} onCheckedChange={(val) => updateAddReq("isSelect", val)} />
+              <Switch checked={addReq.isSelect} onCheckedChange={(val) => updateAddReq('isSelect', val)} />
             </div>
           </div>
           <DialogFooter>
@@ -260,7 +260,7 @@ export default function Index() {
               取消
             </Button>
             <Button className="text-sm" onClick={handleSubmit} disabled={processIng}>
-              {addReq.id > 0 ? (processIng ? "更新中..." : "更新") : processIng ? "保存中..." : "保存"}
+              {addReq.id > 0 ? (processIng ? '更新中...' : '更新') : processIng ? '保存中...' : '保存'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -288,10 +288,10 @@ function OtherDictListShow({ list, onEdit, onDelete }: OtherDictListShowProps) {
         list.map((item) => (
           <TableRow key={item.id}>
             <TableCell className="text-sm">{item.id}</TableCell>
-            <TableCell className="text-sm">{StringConst.questionOtherDictNames.get(item.typeCode) || ""}</TableCell>
+            <TableCell className="text-sm">{StringConst.questionOtherDictNames.get(item.typeCode) || ''}</TableCell>
             <TableCell className="text-sm">{item.itemValue}</TableCell>
             <TableCell className="text-sm">{item.sortOrder}</TableCell>
-            <TableCell className="text-sm">{item.isSelect ? "是" : "否"}</TableCell>
+            <TableCell className="text-sm">{item.isSelect ? '是' : '否'}</TableCell>
             <TableCell>
               <Button variant="ghost" size="icon" onClick={() => onEdit(item)} className="h-8 w-8">
                 <Pencil className="h-4 w-4" />

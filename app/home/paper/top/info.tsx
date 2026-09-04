@@ -1,15 +1,15 @@
-import { Separator } from "~/components/ui/separator";
-import { useUserInfo } from "~/hooks/use-user";
-import type { CommonPaperSearchReq, TopPaperReq, TopPaperResp } from "~/type/paper";
-import type { UserInfoResp } from "~/type/user";
-import { StringConst } from "~/util/string";
-import { TopQuestionInfo } from "~/home/paper/top/question";
-import { TagShow } from "~/common/paper/tag";
-import TopAdd from "~/home/paper/top/add";
-import { Button } from "~/components/ui/button";
-import { SquarePen } from "lucide-react";
-import { PaperStatus, UserRoleType } from "~/type/enum";
-import { getGroupName } from "~/common/paper/print";
+import { Separator } from '~/components/ui/separator';
+import { useUserInfo } from '~/hooks/use-user';
+import type { CommonPaperSearchReq, TopPaperReq, TopPaperResp } from '~/type/paper';
+import type { UserInfoResp } from '~/type/user';
+import { StringConst } from '~/util/string';
+import { TopQuestionInfo } from '~/home/paper/top/question';
+import { TagShow } from '~/common/paper/tag';
+import TopAdd from '~/home/paper/top/add';
+import { Button } from '~/components/ui/button';
+import { SquarePen } from 'lucide-react';
+import { PaperStatus, UserRoleType } from '~/type/enum';
+import { getGroupName } from '~/common/paper/print';
 
 // 试卷详情预览样式
 interface TopInfoPreviewProps {
@@ -44,11 +44,11 @@ function TopInfoPreview({ req }: TopInfoPreviewProps) {
       {/* 生成标签 */}
       <div className="flex gap-3 items-center w-full">
         <TagShow
-          relatedName={req.common.relatedName ?? ""}
+          relatedName={req.common.relatedName ?? ''}
           tag={req.common.tag}
           year={req.common.year}
-          grade={req.common.grade ?? ""}
-          semester={req.common.semester ?? ""}
+          grade={req.common.grade ?? ''}
+          semester={req.common.semester ?? ''}
         />
       </div>
 
@@ -87,14 +87,14 @@ function TopInfo({
   infoResp,
   search = {
     relatedId: 0,
-    relatedName: "",
+    relatedName: '',
     selectedKeys: [],
-    tag: "",
-    year: "",
-    grade: "",
-    semester: "",
+    tag: '',
+    year: '',
+    grade: '',
+    semester: '',
     paperType: 0,
-    source: "",
+    source: '',
   },
   setSheetTitle,
   setSheetDesc,
@@ -104,8 +104,8 @@ function TopInfo({
   const currentUser: UserInfoResp | null = useUserInfo();
 
   const handleEdit = () => {
-    setSheetTitle?.("编辑试卷");
-    setSheetDesc?.("当前为编辑试卷模式, 提交后会覆盖历史数据, 请谨慎操作");
+    setSheetTitle?.('编辑试卷');
+    setSheetDesc?.('当前为编辑试卷模式, 提交后会覆盖历史数据, 请谨慎操作');
     setSheetContent?.(
       <TopAdd searchReq={search} infoResp={infoResp} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
     );
@@ -114,12 +114,12 @@ function TopInfo({
   // 显示编辑按钮
   const showEdit = () => {
     if (!currentUser || infoResp.common.paperType !== StringConst.paperTypeTop || currentUser.role === UserRoleType.Student) {
-      return "";
+      return '';
     }
 
     const status = infoResp.common.status;
     if (status !== PaperStatus.Drafing && status != PaperStatus.Pending) {
-      return "";
+      return '';
     }
 
     return (
@@ -163,11 +163,11 @@ function TopInfo({
       {/* 生成标签 */}
       <div className="flex gap-3 items-center w-full">
         <TagShow
-          relatedName={infoResp.common.relatedName ?? ""}
+          relatedName={infoResp.common.relatedName ?? ''}
           tag={infoResp.common.tag}
           year={infoResp.common.year}
-          grade={infoResp.common.grade ?? ""}
-          semester={infoResp.common.semester ?? ""}
+          grade={infoResp.common.grade ?? ''}
+          semester={infoResp.common.semester ?? ''}
         />
       </div>
 

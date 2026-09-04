@@ -1,14 +1,14 @@
-import { Button } from "~/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import type { CommonPaperResp, CommonPaperSearchReq, GenPaperResp, PaperApproveReq, PaperDeleteReq, PaperListResp, TopPaperResp } from "~/type/paper";
-import { PaperStatus } from "~/type/enum";
-import { httpClient } from "~/util/http";
-import { StringConst } from "~/util/string";
-import { GenInfo, GenInfoPreview } from "~/home/paper/gen/info";
-import { TopInfo } from "~/home/paper/top/info";
-import React, { useState } from "react";
-import { SimpleAlert } from "~/common/alert";
-import type { TextbookOtherDict } from "~/type/textbook";
+import { Button } from '~/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import type { CommonPaperResp, CommonPaperSearchReq, GenPaperResp, PaperApproveReq, PaperDeleteReq, PaperListResp, TopPaperResp } from '~/type/paper';
+import { PaperStatus } from '~/type/enum';
+import { httpClient } from '~/util/http';
+import { StringConst } from '~/util/string';
+import { GenInfo, GenInfoPreview } from '~/home/paper/gen/info';
+import { TopInfo } from '~/home/paper/top/info';
+import React, { useState } from 'react';
+import { SimpleAlert } from '~/common/alert';
+import type { TextbookOtherDict } from '~/type/textbook';
 import {
   Dialog,
   DialogClose,
@@ -18,14 +18,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
-import type { KeyedMutator } from "swr";
-import { StatusSelect } from "~/common/paper/tag";
-import { Textarea } from "~/components/ui/textarea";
-import { toast } from "sonner";
-import { SimpleTooltip } from "~/common/tooltip";
-import { ExportPdf } from "~/common/paper/print";
-import { HomeworkList, PublishHomework } from "~/home/paper/gen/homework";
+} from '~/components/ui/dialog';
+import type { KeyedMutator } from 'swr';
+import { StatusSelect } from '~/common/paper/tag';
+import { Textarea } from '~/components/ui/textarea';
+import { toast } from 'sonner';
+import { SimpleTooltip } from '~/common/tooltip';
+import { ExportPdf } from '~/common/paper/print';
+import { HomeworkList, PublishHomework } from '~/home/paper/gen/homework';
 
 // 试卷列表
 
@@ -64,7 +64,7 @@ function MyPaperList({
 
   // 查看详情如果是精选试卷保留原有逻辑, 如果是手动组卷需要支持替换和重新排序题目
   const handlePaperInfo = (paperType: number, id: number, isExport: boolean) => {
-    setWarnInfo("");
+    setWarnInfo('');
 
     if (paperType === StringConst.paperTypesGen) {
       httpClient
@@ -72,13 +72,13 @@ function MyPaperList({
         .then((res) => {
           // 我的试卷才有编辑功能
           if (isExport) {
-            setSheetTitle("下载PDF文件");
-            setSheetDesc("下载PDF文件预览样式, 没问题后确认下载即可");
+            setSheetTitle('下载PDF文件');
+            setSheetDesc('下载PDF文件预览样式, 没问题后确认下载即可');
             setSheetContent(<ExportPdf genInfoResp={res} />);
           } else {
-            setSheetTitle("查看详情");
-            if (res.common.status === PaperStatus.Drafing && search.source === "myPaper") {
-              setSheetDesc("当前为可编辑状态");
+            setSheetTitle('查看详情');
+            if (res.common.status === PaperStatus.Drafing && search.source === 'myPaper') {
+              setSheetDesc('当前为可编辑状态');
               setSheetContent(
                 <GenInfo
                   infoResp={res}
@@ -89,7 +89,7 @@ function MyPaperList({
                 />,
               );
             } else {
-              setSheetDesc("当前为不可编辑状态");
+              setSheetDesc('当前为不可编辑状态');
               setSheetContent(
                 <GenInfoPreview
                   infoResp={res}
@@ -112,12 +112,12 @@ function MyPaperList({
         .then((res) => {
           // 打印预览
           if (isExport) {
-            setSheetTitle("下载PDF文件");
-            setSheetDesc("下载PDF文件预览样式, 没问题后确认下载即可");
+            setSheetTitle('下载PDF文件');
+            setSheetDesc('下载PDF文件预览样式, 没问题后确认下载即可');
             setSheetContent(<ExportPdf topInfoResp={res} />);
           } else {
-            setSheetTitle("查看详情");
-            setSheetDesc("如需修改直接编辑即可");
+            setSheetTitle('查看详情');
+            setSheetDesc('如需修改直接编辑即可');
             setSheetContent(
               <TopInfo infoResp={res} search={search} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
             );
@@ -143,10 +143,10 @@ function MyPaperList({
     const req: PaperApproveReq = {
       id: paperId,
       status: PaperStatus.Pending,
-      rejectReason: "",
+      rejectReason: '',
     };
     httpClient
-      .post("/edit/paper/status", req)
+      .post('/edit/paper/status', req)
       .then((res) => {
         paperListRespMutate();
         setOpenSubmitApprove(false);
@@ -164,7 +164,7 @@ function MyPaperList({
   const [openConfirmApprove, setOpenConfirmApprove] = useState<boolean>(false);
   const [confirmApproving, setConfirmApproving] = useState<boolean>(false);
 
-  const defaultApproveReq: PaperApproveReq = { id: 0, status: PaperStatus.Drafing, rejectReason: "" };
+  const defaultApproveReq: PaperApproveReq = { id: 0, status: PaperStatus.Drafing, rejectReason: '' };
   const [approveReq, setApproveReq] = useState<PaperApproveReq>(defaultApproveReq);
 
   const updateApproveReq = (key: keyof PaperApproveReq, value: number | string) => {
@@ -178,7 +178,7 @@ function MyPaperList({
     let req: PaperApproveReq = { ...approveReq, id: paperId };
 
     httpClient
-      .post("/edit/paper/status", req)
+      .post('/edit/paper/status', req)
       .then((res) => {
         paperListRespMutate();
         setOpenConfirmApprove(false);
@@ -206,7 +206,7 @@ function MyPaperList({
     };
 
     httpClient
-      .post("/paper/delete", req)
+      .post('/paper/delete', req)
       .then((res) => {
         paperListRespMutate();
         setOpenDelete(false);
@@ -229,7 +229,7 @@ function MyPaperList({
       </Button>,
     ];
 
-    if (search.source === "myPaper") {
+    if (search.source === 'myPaper') {
       // 我的试卷
       if (info.status === PaperStatus.Drafing) {
         buttons.push(
@@ -243,7 +243,7 @@ function MyPaperList({
               <DialogFooter>
                 <DialogClose render={<Button variant="outline">Cancel</Button>} />
                 <Button className="text-sm" onClick={() => handleSubmitApprove(info.id)} disabled={submitApproving}>
-                  {submitApproving ? "提交审核中" : "提交审核"}
+                  {submitApproving ? '提交审核中' : '提交审核'}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -260,7 +260,7 @@ function MyPaperList({
               <DialogFooter>
                 <DialogClose render={<Button variant="outline">Cancel</Button>} />
                 <Button className="text-sm" onClick={() => handleDelete(info.id)} disabled={deleting}>
-                  {deleting ? "删除中" : "删除"}
+                  {deleting ? '删除中' : '删除'}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -274,8 +274,8 @@ function MyPaperList({
               key="myPaperHomework"
               variant="link"
               onClick={() => {
-                setSheetTitle("发布作业");
-                setSheetDesc("作业只能布置到你管理的班级, 可以发布给任意班级, 或者任意班级内的任意学生");
+                setSheetTitle('发布作业');
+                setSheetDesc('作业只能布置到你管理的班级, 可以发布给任意班级, 或者任意班级内的任意学生');
                 setSheetContent(<PublishHomework setOpenSheet={setOpenSheet} genInfoResp={info} />);
                 setOpenSheet(true);
               }}
@@ -290,8 +290,8 @@ function MyPaperList({
               key="myPaperHomeworkInfo"
               variant="link"
               onClick={() => {
-                setSheetTitle("查看作业布置列表");
-                setSheetDesc("点击右边展开查看学生列表");
+                setSheetTitle('查看作业布置列表');
+                setSheetDesc('点击右边展开查看学生列表');
                 setSheetContent(<HomeworkList paperId={info.id} />);
                 setOpenSheet(true);
               }}
@@ -316,7 +316,7 @@ function MyPaperList({
                 <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
                   <div className="md:w-24 shrink-0 font-medium">审核状态:</div>
                   <div className="flex-1 min-w-0">
-                    <StatusSelect defaultValue={approveReq.status} onSelect={(val) => updateApproveReq("status", val)} />
+                    <StatusSelect defaultValue={approveReq.status} onSelect={(val) => updateApproveReq('status', val)} />
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
@@ -325,7 +325,7 @@ function MyPaperList({
                     <Textarea
                       value={approveReq.rejectReason}
                       className="text-sm md:text-sm"
-                      onChange={(e) => updateApproveReq("rejectReason", e.target.value)}
+                      onChange={(e) => updateApproveReq('rejectReason', e.target.value)}
                       placeholder="拒绝时需要说明拒绝原因"
                     />
                   </div>
@@ -334,7 +334,7 @@ function MyPaperList({
               <DialogFooter>
                 <DialogClose render={<Button variant="outline">Cancel</Button>} />
                 <Button className="text-sm" onClick={() => handleApprove(info.id)} disabled={confirmApproving}>
-                  {confirmApproving ? "审核中" : "审核"}
+                  {confirmApproving ? '审核中' : '审核'}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -378,7 +378,7 @@ function MyPaperList({
                 </TableCell>
                 <TableCell className="text-sm">{info.tag}</TableCell>
                 <TableCell className="text-sm">{info.year}</TableCell>
-                <TableCell className="text-sm">{StringConst.paperTypeNames.get(info.paperType) || ""}</TableCell>
+                <TableCell className="text-sm">{StringConst.paperTypeNames.get(info.paperType) || ''}</TableCell>
                 <TableCell className="text-sm">{info.statusDesc}</TableCell>
                 <TableCell className="text-sm">{info.authorName}</TableCell>
                 <TableCell className="text-sm text-right">

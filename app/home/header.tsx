@@ -1,15 +1,15 @@
-import { ArrowRight, BarChart3, BookX, FileQuestionMark, FileText, LogOutIcon, Menu, School, Settings, SquarePen, UserKey } from "lucide-react";
-import React, { useState } from "react";
-import { NavLink, type NavLinkProps } from "react-router";
-import { Button } from "~/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
-import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "~/components/ui/popover";
-import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet";
-import { useUserInfo } from "~/hooks/use-user";
-import { UserRoleType } from "~/type/enum";
-import type { UserInfoResp } from "~/type/user";
-import { Login } from "~/user/login";
-import { httpClient } from "~/util/http";
+import { ArrowRight, BarChart3, BookX, FileQuestionMark, FileText, LogOutIcon, Menu, School, Settings, SquarePen, UserKey } from 'lucide-react';
+import React, { useState } from 'react';
+import { NavLink, type NavLinkProps } from 'react-router';
+import { Button } from '~/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '~/components/ui/dropdown-menu';
+import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from '~/components/ui/popover';
+import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet';
+import { useUserInfo } from '~/hooks/use-user';
+import { UserRoleType } from '~/type/enum';
+import type { UserInfoResp } from '~/type/user';
+import { Login } from '~/user/login';
+import { httpClient } from '~/util/http';
 
 /// 网站头部导航
 
@@ -25,29 +25,29 @@ interface LinkProps {
 const teacherUserItems: LinkProps[] = [
   {
     id: 1,
-    label: "教材章节/考点",
-    url: "/user/setting/textbook",
+    label: '教材章节/考点',
+    url: '/user/setting/textbook',
     leftIcon: Settings,
     rightIcon: ArrowRight,
   },
   {
     id: 2,
-    label: "我的题目",
-    url: "/user/question/my",
+    label: '我的题目',
+    url: '/user/question/my',
     leftIcon: FileQuestionMark,
     rightIcon: ArrowRight,
   },
   {
     id: 3,
-    label: "我的试卷",
-    url: "/user/paper/my",
+    label: '我的试卷',
+    url: '/user/paper/my',
     leftIcon: FileText,
     rightIcon: ArrowRight,
   },
   {
     id: 4,
-    label: "我的班级",
-    url: "/user/class/my",
+    label: '我的班级',
+    url: '/user/class/my',
     leftIcon: School,
     rightIcon: ArrowRight,
   },
@@ -57,22 +57,22 @@ const teacherUserItems: LinkProps[] = [
 const studentUserItems: LinkProps[] = [
   {
     id: 1,
-    label: "开始练习",
-    url: "/student",
+    label: '开始练习',
+    url: '/student',
     leftIcon: SquarePen,
     rightIcon: ArrowRight,
   },
   {
     id: 2,
-    label: "错题本",
-    url: "",
+    label: '错题本',
+    url: '',
     leftIcon: BookX,
     rightIcon: ArrowRight,
   },
   {
     id: 3,
-    label: "我的学情",
-    url: "",
+    label: '我的学情',
+    url: '',
     leftIcon: BarChart3,
     rightIcon: ArrowRight,
   },
@@ -86,7 +86,7 @@ function Header() {
   const [sheetOpen, setSheetOpen] = useState(false);
 
   // 实际从你的状态中获取
-  const username = currentUser?.email || currentUser?.username || "";
+  const username = currentUser?.email || currentUser?.username || '';
 
   // 根据用户角色获取当前展示菜单
   const get_current_items = () => {
@@ -111,34 +111,34 @@ function Header() {
   // 退出登录
   const handleLogout = () => {
     httpClient
-      .get<boolean>("/user/logout")
+      .get<boolean>('/user/logout')
       .then(() => {
-        window.dispatchEvent(new Event("user-update"));
+        window.dispatchEvent(new Event('user-update'));
       })
       .catch((err) => {
         console.log(err);
       })
       .finally(() => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        window.location.href = "/";
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/';
       });
   };
 
   // 导航样式
-  const pcLinkClass: NavLinkProps["className"] = ({ isActive }) =>
-    `px-2 py-2 text-base transition-all ${isActive ? "font-bold underline underline-offset-4" : "text-gray-600 hover:text-gray-900"}`;
+  const pcLinkClass: NavLinkProps['className'] = ({ isActive }) =>
+    `px-2 py-2 text-base transition-all ${isActive ? 'font-bold underline underline-offset-4' : 'text-gray-600 hover:text-gray-900'}`;
 
-  const mobileLinkClass: NavLinkProps["className"] = ({ isActive }) =>
+  const mobileLinkClass: NavLinkProps['className'] = ({ isActive }) =>
     `block w-full px-3 py-2 text-sm rounded-md transition-all ${
-      isActive ? "font-bold underline underline-offset-4" : "text-gray-600 hover:text-gray-900"
+      isActive ? 'font-bold underline underline-offset-4' : 'text-gray-600 hover:text-gray-900'
     }`;
 
   return (
     <header className="flex items-center sticky top-0 z-50 h-16 border-b border-border bg-background/95 backdrop-blur-sm px-2 sm:px-4">
       <div className="flex items-center justify-between gap-2 sm:gap-6 w-full">
         {/* Logo */}
-        <NavLink to={"/"}>
+        <NavLink to={'/'}>
           <div className="flex items-center gap-2.5 shrink-0">
             <div className="w-12 h-12 rounded flex items-center justify-center">
               <img src="/logo.png" />
@@ -149,10 +149,10 @@ function Header() {
 
         {/* 中等以上屏幕导航 Nav links */}
         <nav className="hidden md:flex items-center gap-1 flex-1">
-          <NavLink to={"question"} className={pcLinkClass}>
+          <NavLink to={'question'} className={pcLinkClass}>
             题目库
           </NavLink>
-          <NavLink to={"paper"} className={pcLinkClass}>
+          <NavLink to={'paper'} className={pcLinkClass}>
             试卷库
           </NavLink>
         </nav>

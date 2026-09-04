@@ -1,28 +1,28 @@
-import { getGreeting } from "~/util/greeting";
-import type { Route } from "./+types/index";
-import { CheckLine, ChevronRight, FileQuestionMark, GraduationCap, RotateCcw, Star, Target, Zap } from "lucide-react";
-import { Card, CardContent } from "~/components/ui/card";
-import { cn } from "~/lib/utils";
-import { SimplePagination } from "~/common/page";
-import { DateUtil } from "~/util/object";
-import { useTestList } from "~/util/fetcher";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { Loading } from "~/common/load";
-import { SimpleAlert } from "~/common/alert";
-import { useState } from "react";
-import { ListShow } from "~/student/test/task";
-import { SimpleNoData } from "~/common/empty";
-import { NavLink } from "react-router";
-import { Button } from "~/components/ui/button";
+import { getGreeting } from '~/util/greeting';
+import type { Route } from './+types/index';
+import { CheckLine, ChevronRight, FileQuestionMark, GraduationCap, RotateCcw, Star, Target, Zap } from 'lucide-react';
+import { Card, CardContent } from '~/components/ui/card';
+import { cn } from '~/lib/utils';
+import { SimplePagination } from '~/common/page';
+import { DateUtil } from '~/util/object';
+import { useTestList } from '~/util/fetcher';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { Loading } from '~/common/load';
+import { SimpleAlert } from '~/common/alert';
+import { useState } from 'react';
+import { ListShow } from '~/student/test/task';
+import { SimpleNoData } from '~/common/empty';
+import { NavLink } from 'react-router';
+import { Button } from '~/components/ui/button';
 
 /// 学生做题首页
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "开放题库-题目练习" },
+    { title: '开放题库-题目练习' },
     {
-      name: "description",
+      name: 'description',
       content:
-        "查看自己历史期间做题总数、正确率、知识覆盖等训练信息；根据教师布置的作业进行针对性练习；也可以根据一些自动化的个性推荐，训练自己掌握不足的知识点。",
+        '查看自己历史期间做题总数、正确率、知识覆盖等训练信息；根据教师布置的作业进行针对性练习；也可以根据一些自动化的个性推荐，训练自己掌握不足的知识点。',
     },
   ];
 }
@@ -40,50 +40,50 @@ const STATS: TestStatProps[] = [
   {
     id: 1,
     icon: FileQuestionMark,
-    count: "12",
-    className: "text-green-600",
-    title: "今日练题",
-    desc: "今天之内已做的题目数量之和",
+    count: '12',
+    className: 'text-green-600',
+    title: '今日练题',
+    desc: '今天之内已做的题目数量之和',
   },
   {
     id: 2,
     icon: FileQuestionMark,
-    count: "170",
-    className: "text-blue-600",
-    title: "历史练题",
-    desc: "历史已做题目数量之和",
+    count: '170',
+    className: 'text-blue-600',
+    title: '历史练题',
+    desc: '历史已做题目数量之和',
   },
   {
     id: 3,
     icon: Star,
-    count: "3.2",
-    className: "text-red-600",
-    title: "平均难度",
-    desc: "所有已做题目的难度之和 / 题目数量, 保留一位小数",
+    count: '3.2',
+    className: 'text-red-600',
+    title: '平均难度',
+    desc: '所有已做题目的难度之和 / 题目数量, 保留一位小数',
   },
   {
     id: 4,
     icon: CheckLine,
-    count: "80%",
-    className: "text-pink-600",
-    title: "本周正确率",
-    desc: "本周已做题目正确数 / 本周应做题目总数, 保留两位小数",
+    count: '80%',
+    className: 'text-pink-600',
+    title: '本周正确率',
+    desc: '本周已做题目正确数 / 本周应做题目总数, 保留两位小数',
   },
   {
     id: 5,
     icon: CheckLine,
-    count: "80%",
-    className: "text-pink-600",
-    title: "历史正确率",
-    desc: "历史已做题目正确数 / 历史应做题目总数, 保留两位小数",
+    count: '80%',
+    className: 'text-pink-600',
+    title: '历史正确率',
+    desc: '历史已做题目正确数 / 历史应做题目总数, 保留两位小数',
   },
   {
     id: 6,
     icon: GraduationCap,
-    count: "17/120",
-    className: "text-blue-600",
-    title: "已掌握知识点",
-    desc: "知识点下题目完成正确率达 90% 以上的知识点数量之和",
+    count: '17/120',
+    className: 'text-blue-600',
+    title: '已掌握知识点',
+    desc: '知识点下题目完成正确率达 90% 以上的知识点数量之和',
   },
 ];
 
@@ -132,7 +132,7 @@ export default function Index() {
             <Card key={item.id} className="border-0 text-center">
               <CardContent>
                 <item.icon className={item.className} />
-                <h2 className={cn("text-4xl font-bold", item.className)}>{item.count}</h2>
+                <h2 className={cn('text-4xl font-bold', item.className)}>{item.count}</h2>
                 <h6 className="mt-4 mb-2 text-base font-semibold">{item.title}</h6>
                 <p className="text-foreground max-w-sm text-balance">{item.desc}</p>
               </CardContent>
@@ -168,15 +168,15 @@ export default function Index() {
         <div className="p-3">
           {/* 列表区域 */}
           {[
-            { I: Target, l: "薄弱点强化", d: "有理数运算 · 3题", iconClass: "text-rose-500" },
-            { I: RotateCcw, l: "错题复习", d: "遗忘曲线提醒 · 5题", iconClass: "text-amber-500" },
-            { I: Zap, l: "挑战拓展题", d: "几何证明入门 · 2题", iconClass: "text-purple-600" },
+            { I: Target, l: '薄弱点强化', d: '有理数运算 · 3题', iconClass: 'text-rose-500' },
+            { I: RotateCcw, l: '错题复习', d: '遗忘曲线提醒 · 5题', iconClass: 'text-amber-500' },
+            { I: Zap, l: '挑战拓展题', d: '几何证明入门 · 2题', iconClass: 'text-purple-600' },
           ].map(({ I, l, d, iconClass }, i) => (
             <div
               key={i}
               onClick={() => {}}
               className={`flex items-center gap-2.5 py-2.5 cursor-pointer transition-colors duration-100 hover:bg-gray-100 px-1 -mx-1 ${
-                i > 0 ? "border-t border-gray-100" : ""
+                i > 0 ? 'border-t border-gray-100' : ''
               }`}
             >
               {/* 左侧图标 */}
@@ -201,7 +201,7 @@ export default function Index() {
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <h3 className="font-semibold text-blue-600">历史任务</h3>
           <Button variant="link">
-            <NavLink to={"/student/history"} className="text-xs px-1.5 py-0.5">
+            <NavLink to={'/student/history'} className="text-xs px-1.5 py-0.5">
               查看更多
             </NavLink>
           </Button>

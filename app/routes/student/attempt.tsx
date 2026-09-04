@@ -1,20 +1,20 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router";
-import type { Route } from "./+types/attempt";
-import type { GenPaperResp } from "~/type/paper";
-import { httpClient } from "~/util/http";
-import { SimpleAlert } from "~/common/alert";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { Loading } from "~/common/load";
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router';
+import type { Route } from './+types/attempt';
+import type { GenPaperResp } from '~/type/paper';
+import { httpClient } from '~/util/http';
+import { SimpleAlert } from '~/common/alert';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { Loading } from '~/common/load';
 
 // 做题记录列表
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "开放题库-做题记录列表" },
+    { title: '开放题库-做题记录列表' },
     {
-      name: "description",
-      content: "做题记录列表，你可以查看自己历史期间做题的感悟或笔记，方便后续复习该题。",
+      name: 'description',
+      content: '做题记录列表，你可以查看自己历史期间做题的感悟或笔记，方便后续复习该题。',
     },
   ];
 }
@@ -24,23 +24,23 @@ const defaultGenPaperResp: GenPaperResp = {
   common: {
     id: 0,
     relatedId: 0,
-    relatedName: "",
+    relatedName: '',
     paperType: 0,
-    tag: "",
-    year: "",
-    grade: "",
-    semester: "",
-    title: "",
+    tag: '',
+    year: '',
+    grade: '',
+    semester: '',
+    title: '',
     score: 0,
-    source: "",
-    remark: "",
-    authorName: "",
+    source: '',
+    remark: '',
+    authorName: '',
     count: 0,
     status: 0,
-    statusDesc: "",
-    remarkExt: "",
-    createdAt: "",
-    updatedAt: "",
+    statusDesc: '',
+    remarkExt: '',
+    createdAt: '',
+    updatedAt: '',
   },
   conf: {
     questionCateIds: [],
@@ -53,7 +53,7 @@ export default function Index() {
   const location = useLocation();
   const { hId, paperId } = location.state || {};
 
-  const [warnInfo, setWarnInfo] = useState<React.ReactNode>("");
+  const [warnInfo, setWarnInfo] = useState<React.ReactNode>('');
 
   // 试卷详情
   const [genPaperResp, setGenPaperResp] = useState<GenPaperResp>(defaultGenPaperResp);

@@ -1,4 +1,4 @@
-import type { ApiResponse } from "~/type/response";
+import type { ApiResponse } from '~/type/response';
 
 class HttpClient {
   private readonly baseURL: string;
@@ -9,7 +9,7 @@ class HttpClient {
 
   // 拼接完整 URL
   private buildUrl(path: string): string {
-    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
     return `${this.baseURL}${normalizedPath}`;
   }
 
@@ -25,9 +25,9 @@ class HttpClient {
     };
 
     // 从 localStorage 获取 token
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
+      headers['Authorization'] = `Bearer ${token}`;
     }
 
     return headers;
@@ -39,7 +39,7 @@ class HttpClient {
     const headers = this.buildHeaders(options?.headers);
 
     const response = await fetch(url, {
-      method: "GET",
+      method: 'GET',
       ...options,
       headers,
     });
@@ -55,13 +55,13 @@ class HttpClient {
 
     // 如果不是文件上传，设置 Content-Type 为 application/json
     if (!fileUpload) {
-      (headers as Record<string, string>)["Content-Type"] = "application/json";
+      (headers as Record<string, string>)['Content-Type'] = 'application/json';
     }
     // 如果是文件上传，不设置 Content-Type，浏览器会自动添加 multipart/form-data
 
     // 构造请求参数
     const requestInit: RequestInit = {
-      method: "POST",
+      method: 'POST',
       headers,
       ...options,
     };
@@ -87,7 +87,7 @@ class HttpClient {
 
     const apiResponse = (await response.json()) as ApiResponse<T>;
     if (apiResponse.code !== 0) {
-      throw new Error(apiResponse.msg || "Request failed");
+      throw new Error(apiResponse.msg || 'Request failed');
     }
     return apiResponse.data as T;
   }

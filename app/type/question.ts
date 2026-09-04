@@ -1,4 +1,4 @@
-import type { TextbookOtherDict } from "~/type/textbook";
+import type { TextbookOtherDict } from '~/type/textbook';
 
 // 题目选项信息
 export interface QuestionOption {
@@ -146,7 +146,7 @@ export interface QuestionSnippetReq {
 // 题目搜索页面
 export interface QuestionPageSourceProps {
   // 页面来源 list: 普通的搜索列表 myQuestion: 我的题目, 只有查看和编辑 myReview: 我的审核 只有查看
-  source: "list" | "myQuestion" | "myReview";
+  source: 'list' | 'myQuestion' | 'myReview';
 }
 
 // 题目审核

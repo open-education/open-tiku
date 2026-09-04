@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { SimplePagination } from "~/common/page";
-import type { CommonGenPaperGenConf } from "~/type/paper";
-import type { QuestionInfoResp, QuestionSearch } from "~/type/question";
-import { PaperStatus } from "~/type/enum";
-import { useQuestionList } from "~/util/fetcher";
-import { StringConst } from "~/util/string";
-import { GenInfoReplaceList } from "~/home/paper/gen/info";
-import type { TextbookOtherDict } from "~/type/textbook";
-import { SimpleAlert } from "~/common/alert";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { Loading } from "~/common/load";
+import { useState } from 'react';
+import { SimplePagination } from '~/common/page';
+import type { CommonGenPaperGenConf } from '~/type/paper';
+import type { QuestionInfoResp, QuestionSearch } from '~/type/question';
+import { PaperStatus } from '~/type/enum';
+import { useQuestionList } from '~/util/fetcher';
+import { StringConst } from '~/util/string';
+import { GenInfoReplaceList } from '~/home/paper/gen/info';
+import type { TextbookOtherDict } from '~/type/textbook';
+import { SimpleAlert } from '~/common/alert';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { Loading } from '~/common/load';
 
 // 替换题目, 其实筛选条件是固定的，就是继续展示其它题目
 
@@ -42,7 +42,7 @@ function ReplaceQuestion({ conf, questionTypeId, questionTypeDict, questionTagDi
     data: questionListResp = { list: [], pageNo: pageNo, pageSize: StringConst.pageSize, total: 0 },
     isLoading: questionListRespLoading,
     error: questionListRespErr,
-  } = useQuestionList("list", search, pageNo);
+  } = useQuestionList('list', search, pageNo);
 
   return (
     <div>

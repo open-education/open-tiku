@@ -1,5 +1,5 @@
-import { NotepadTextDashed } from "lucide-react";
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "~/components/ui/empty";
+import { NotepadTextDashed } from 'lucide-react';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '~/components/ui/empty';
 
 /// 空的提示信息
 

@@ -1,24 +1,24 @@
-import { Pencil, Trash2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
-import { toast } from "sonner";
-import type { KeyedMutator } from "swr";
-import { SimpleAlert } from "~/common/alert";
-import { Loading } from "~/common/load";
-import { GradeSelect } from "~/common/paper/grade";
-import { SemesterSelect } from "~/common/paper/semester";
-import { YearSelect } from "~/common/paper/year";
-import { SimpleTooltip } from "~/common/tooltip";
-import { Button } from "~/components/ui/button";
-import { Checkbox } from "~/components/ui/checkbox";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel } from "~/components/ui/field";
-import { Input } from "~/components/ui/input";
-import { Separator } from "~/components/ui/separator";
-import { Switch } from "~/components/ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { Textarea } from "~/components/ui/textarea";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
+import { Pencil, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { toast } from 'sonner';
+import type { KeyedMutator } from 'swr';
+import { SimpleAlert } from '~/common/alert';
+import { Loading } from '~/common/load';
+import { GradeSelect } from '~/common/paper/grade';
+import { SemesterSelect } from '~/common/paper/semester';
+import { YearSelect } from '~/common/paper/year';
+import { SimpleTooltip } from '~/common/tooltip';
+import { Button } from '~/components/ui/button';
+import { Checkbox } from '~/components/ui/checkbox';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog';
+import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel } from '~/components/ui/field';
+import { Input } from '~/components/ui/input';
+import { Separator } from '~/components/ui/separator';
+import { Switch } from '~/components/ui/switch';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import { Textarea } from '~/components/ui/textarea';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
 import type {
   ClassInfoReq,
   ClassInfoResp,
@@ -27,23 +27,23 @@ import type {
   ClassStudentEditReq,
   ClassStudentReq,
   ClassStudentResp,
-} from "~/type/class";
-import { getClassStudentListKey, useClassStudentList } from "~/util/fetcher";
-import { httpClient } from "~/util/http";
-import { StringConst, StringUtil, StringValidator } from "~/util/string";
-import { useSWRConfig } from "swr";
+} from '~/type/class';
+import { getClassStudentListKey, useClassStudentList } from '~/util/fetcher';
+import { httpClient } from '~/util/http';
+import { StringConst, StringUtil, StringValidator } from '~/util/string';
+import { useSWRConfig } from 'swr';
 
 // 班级编辑
 
 // 班级新建默认值
 const defaultAddReq: ClassInfoReq = {
-  year: "",
-  grade: "",
-  semester: "",
-  label: "",
-  email: "",
+  year: '',
+  grade: '',
+  semester: '',
+  label: '',
+  email: '',
   sortOrder: 0,
-  remark: "",
+  remark: '',
 };
 
 interface ClassEditProps {
@@ -82,7 +82,7 @@ function ClassEdit({ open, setOpen, searchReq, infoResp, classListMutate }: Clas
       toast.error(<div className="text-red-700">年份不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -92,7 +92,7 @@ function ClassEdit({ open, setOpen, searchReq, infoResp, classListMutate }: Clas
       toast.error(<div className="text-red-700">班级名称不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -102,7 +102,7 @@ function ClassEdit({ open, setOpen, searchReq, infoResp, classListMutate }: Clas
       toast.error(<div className="text-red-700">排序顺序不能小于等于0</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -112,7 +112,7 @@ function ClassEdit({ open, setOpen, searchReq, infoResp, classListMutate }: Clas
     setProcessIng(true);
 
     httpClient
-      .post("/class/add", addReq)
+      .post('/class/add', addReq)
       .then((res) => {
         // 添加成功则清除表单其它项
         setAddReq({ ...addReq, ...searchReq });
@@ -124,7 +124,7 @@ function ClassEdit({ open, setOpen, searchReq, infoResp, classListMutate }: Clas
         toast.error(<div className="text-red-700">{err.message}</div>, {
           duration: Infinity,
           action: {
-            label: "关闭",
+            label: '关闭',
             onClick: () => {},
           },
         });
@@ -138,7 +138,7 @@ function ClassEdit({ open, setOpen, searchReq, infoResp, classListMutate }: Clas
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-base font-semibold">{addReq.id && addReq.id > 0 ? "编辑班级信息" : "添加班级信息"}</DialogTitle>
+          <DialogTitle className="text-base font-semibold">{addReq.id && addReq.id > 0 ? '编辑班级信息' : '添加班级信息'}</DialogTitle>
           <DialogDescription className="text-sm">个人邮箱用于接收班级学生账户密码</DialogDescription>
         </DialogHeader>
 
@@ -149,23 +149,23 @@ function ClassEdit({ open, setOpen, searchReq, infoResp, classListMutate }: Clas
           <div className="grid grid-cols-[100px_1fr] gap-4 items-center">
             {/* 年份 */}
             <span className="text-sm text-right">选择年份:</span>
-            <YearSelect value={addReq.year} onValueChange={(val) => updateAddReq("year", val ?? "")} placeholder="选择年份" />
+            <YearSelect value={addReq.year} onValueChange={(val) => updateAddReq('year', val ?? '')} placeholder="选择年份" />
 
             {/* 年级 */}
             <span className="text-sm text-right">选择年级:</span>
-            <GradeSelect value={addReq.grade} onValueChange={(val) => updateAddReq("grade", val ?? "")} placeholder="选择年级" />
+            <GradeSelect value={addReq.grade} onValueChange={(val) => updateAddReq('grade', val ?? '')} placeholder="选择年级" />
 
             {/* 学期 */}
             <span className="text-sm text-right">选择学期:</span>
-            <SemesterSelect value={addReq.semester} onValueChange={(val) => updateAddReq("semester", val ?? "")} placeholder="选择学期" />
+            <SemesterSelect value={addReq.semester} onValueChange={(val) => updateAddReq('semester', val ?? '')} placeholder="选择学期" />
 
             {/* 班级名称 */}
             <span className="text-sm text-right">班级名称:</span>
-            <Input className="text-sm" value={addReq.label} onChange={(e) => updateAddReq("label", e.target.value)} placeholder="例如 3班" />
+            <Input className="text-sm" value={addReq.label} onChange={(e) => updateAddReq('label', e.target.value)} placeholder="例如 3班" />
 
             {/* 个人邮箱 */}
             <span className="text-sm text-right">个人邮箱:</span>
-            <Input className="text-sm" value={addReq.email} onChange={(e) => updateAddReq("email", e.target.value)} placeholder="例如 xx@xx.com" />
+            <Input className="text-sm" value={addReq.email} onChange={(e) => updateAddReq('email', e.target.value)} placeholder="例如 xx@xx.com" />
 
             {/* 顺序 */}
             <span className="text-sm text-right">顺序:</span>
@@ -174,7 +174,7 @@ function ClassEdit({ open, setOpen, searchReq, infoResp, classListMutate }: Clas
               type="number"
               min="0"
               value={addReq.sortOrder}
-              onChange={(e) => updateAddReq("sortOrder", Number(e.target.value))}
+              onChange={(e) => updateAddReq('sortOrder', Number(e.target.value))}
             />
 
             {/* 备注 - 让标签和文本域顶部对齐 */}
@@ -182,7 +182,7 @@ function ClassEdit({ open, setOpen, searchReq, infoResp, classListMutate }: Clas
             <Textarea
               className="text-sm min-h-19 resize-y"
               value={addReq.remark}
-              onChange={(e) => updateAddReq("remark", e.target.value)}
+              onChange={(e) => updateAddReq('remark', e.target.value)}
               placeholder="请输入备注信息"
             />
           </div>
@@ -201,7 +201,7 @@ function ClassEdit({ open, setOpen, searchReq, infoResp, classListMutate }: Clas
             取消
           </Button>
           <Button className="text-sm" onClick={handleSubmit} disabled={processIng}>
-            {addReq.id && addReq.id > 0 ? (processIng ? "更新中..." : "更新") : processIng ? "保存中..." : "保存"}
+            {addReq.id && addReq.id > 0 ? (processIng ? '更新中...' : '更新') : processIng ? '保存中...' : '保存'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -219,7 +219,7 @@ interface UploadStudentAccountProps {
 function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountProps) {
   const [processIng, setProcessIng] = useState<boolean>(false);
   const [isIncrementalImport, setIsIncrementalImport] = useState<boolean>(false);
-  const [accounts, setAccounts] = useState<string>("");
+  const [accounts, setAccounts] = useState<string>('');
 
   // 使用全局 mutate
   const { mutate } = useSWRConfig();
@@ -231,7 +231,7 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
       toast.error(<div className="text-red-700">班级信息不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -241,7 +241,7 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
       toast.error(<div className="text-red-700">没有配置个人邮箱, 无法接收账户登录密码等信息</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -251,7 +251,7 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
       toast.error(<div className="text-red-700">账户列表不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -262,10 +262,10 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
     const accountInfo = StringUtil.getStudentAccount(accounts);
     // 如果有重复则提示是否输入错误
     if (accountInfo.duplicates.length > 0) {
-      toast.error(<div className="text-red-700">下列账户输入重复: {accountInfo.duplicates.join(", ")}, 请确认是否输入错误</div>, {
+      toast.error(<div className="text-red-700">下列账户输入重复: {accountInfo.duplicates.join(', ')}, 请确认是否输入错误</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -275,15 +275,15 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
       toast.error(<div className="text-red-700">账户列表有效账户为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
       return;
     }
-    let notice = "确定全量导入学生账户? 班级内已有的学生账户会被全部清除";
+    let notice = '确定全量导入学生账户? 班级内已有的学生账户会被全部清除';
     if (isIncrementalImport) {
-      notice = "确定增量导入学生账户? 班级内已有的学生账户不会被清除";
+      notice = '确定增量导入学生账户? 班级内已有的学生账户不会被清除';
     }
     // 最后做提示导入行为
     if (!confirm(notice)) {
@@ -300,9 +300,9 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
     };
 
     try {
-      const res = await httpClient.post<number>("/class/student/add", addReq);
+      const res = await httpClient.post<number>('/class/student/add', addReq);
       setOpen(false);
-      setAccounts(""); // 导入成功后清除上一次输入的账户内容
+      setAccounts(''); // 导入成功后清除上一次输入的账户内容
 
       // 添加了新账户, 需要刷新班级学生列表
       const key = getClassStudentListKey([infoResp.id]);
@@ -312,7 +312,7 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
       toast.error(<div className="text-red-700">导入班级学生账户出错: {error.message}</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -363,7 +363,7 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
                 onChange={(e) => {
                   setAccounts(e.target.value);
                 }}
-                placeholder={"请输入班级学生账户, 一行一个"}
+                placeholder={'请输入班级学生账户, 一行一个'}
               />
             </Field>
           </FieldGroup>
@@ -382,7 +382,7 @@ function UploadStudentAccount({ open, setOpen, infoResp }: UploadStudentAccountP
             取消
           </Button>
           <Button className="text-sm" onClick={handleSubmit} disabled={processIng}>
-            {processIng ? "保存中..." : "保存"}
+            {processIng ? '保存中...' : '保存'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -482,7 +482,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
                 </TableRow>
               ) : (
                 studentListResp.map((student) => (
-                  <TableRow key={student.id} className={selectedIds.has(student.id) ? "bg-muted/50" : ""}>
+                  <TableRow key={student.id} className={selectedIds.has(student.id) ? 'bg-muted/50' : ''}>
                     <TableCell className="text-sm">
                       <Checkbox checked={selectedIds.has(student.id)} onCheckedChange={() => toggleOne(student.id)} aria-label="选择行" />
                     </TableCell>
@@ -491,7 +491,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
                     <TableCell className="text-sm">{student.lastLoginTime}</TableCell>
                     <TableCell className="text-sm">{student.loginCount}</TableCell>
                     <TableCell className="text-sm">
-                      <SimpleTooltip children={student.remark || "-"} />
+                      <SimpleTooltip children={student.remark || '-'} />
                     </TableCell>
                     <TableCell className="text-sm">
                       <Button
@@ -508,7 +508,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => alert("删除暂未实现")}
+                        onClick={() => alert('删除暂未实现')}
                         className="h-8 w-8 text-destructive hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -562,7 +562,7 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
             variant="outline"
             className="text-sm"
             onClick={() => {
-              alert("批量操作后续支持");
+              alert('批量操作后续支持');
             }}
           >
             批量删除
@@ -590,7 +590,7 @@ function StudentStatusSelect({ defaultValue = 0, onSelect }: StudentStatusSelect
   return (
     <div className="flex flex-wrap gap-2 justify-start">
       {StringConst.studentStatusList.map(({ id, value, label }) => (
-        <Button key={id} className="text-sm" variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
+        <Button key={id} className="text-sm" variant={defaultValue === value ? 'default' : 'outline'} onClick={() => handleSelect(value)}>
           {label}
         </Button>
       ))}
@@ -608,10 +608,10 @@ interface StudentAccountEditProps {
 const defaultStudentEditReq: ClassStudentEditReq = {
   id: 0,
   classId: 0,
-  account: "",
+  account: '',
   resetPwd: false,
   status: 0,
-  remark: "",
+  remark: '',
 };
 
 function StudentAccountEdit({ setOpen, infoResp, classStudentMapRespMutate }: StudentAccountEditProps) {
@@ -628,7 +628,7 @@ function StudentAccountEdit({ setOpen, infoResp, classStudentMapRespMutate }: St
       toast.error(<div className="text-red-700">没有选择学生账户</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -638,7 +638,7 @@ function StudentAccountEdit({ setOpen, infoResp, classStudentMapRespMutate }: St
       toast.error(<div className="text-red-700">账户为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -649,7 +649,7 @@ function StudentAccountEdit({ setOpen, infoResp, classStudentMapRespMutate }: St
 
     // 请求编辑账户更新
     httpClient
-      .post<boolean>("/class/student/edit", editReq)
+      .post<boolean>('/class/student/edit', editReq)
       .then((res) => {
         setOpen(false);
         setEditReq({ ...defaultStudentEditReq });
@@ -661,7 +661,7 @@ function StudentAccountEdit({ setOpen, infoResp, classStudentMapRespMutate }: St
         toast.error(<div className="text-red-700">编辑账户信息出错: {err.message}</div>, {
           duration: Infinity,
           action: {
-            label: "关闭",
+            label: '关闭',
             onClick: () => {},
           },
         });
@@ -681,7 +681,7 @@ function StudentAccountEdit({ setOpen, infoResp, classStudentMapRespMutate }: St
         <Input
           className="flex-1 text-sm md:text-sm"
           value={editReq.account}
-          onChange={(e) => updateEditReq("account", e.target.value)}
+          onChange={(e) => updateEditReq('account', e.target.value)}
           placeholder="请输入新的账户名称"
         />
       </div>
@@ -689,14 +689,14 @@ function StudentAccountEdit({ setOpen, infoResp, classStudentMapRespMutate }: St
       {/* 状态 */}
       <div className="flex items-center gap-4">
         <label className="text-sm w-20 shrink-0">状态:</label>
-        <StudentStatusSelect defaultValue={editReq.status} onSelect={(val) => updateEditReq("status", val)} />
+        <StudentStatusSelect defaultValue={editReq.status} onSelect={(val) => updateEditReq('status', val)} />
       </div>
 
       {/* 重置密码 */}
       <div className="flex items-center gap-4">
         <label className="text-sm w-20 shrink-0">重置密码:</label>
         <div className="flex-1 flex items-center justify-between">
-          <Switch checked={editReq.resetPwd} onCheckedChange={(val) => updateEditReq("resetPwd", val)} />
+          <Switch checked={editReq.resetPwd} onCheckedChange={(val) => updateEditReq('resetPwd', val)} />
         </div>
       </div>
 
@@ -706,7 +706,7 @@ function StudentAccountEdit({ setOpen, infoResp, classStudentMapRespMutate }: St
         <Textarea
           className="flex-1 text-sm md:text-sm"
           value={editReq.remark}
-          onChange={(e) => updateEditReq("remark", e.target.value)}
+          onChange={(e) => updateEditReq('remark', e.target.value)}
           placeholder="请输入备注信息"
         />
       </div>
@@ -726,7 +726,7 @@ function StudentAccountEdit({ setOpen, infoResp, classStudentMapRespMutate }: St
           取消
         </Button>
         <Button className="text-sm" onClick={handleEdit} disabled={editProcessIng}>
-          {editProcessIng ? "更新中..." : "更新"}
+          {editProcessIng ? '更新中...' : '更新'}
         </Button>
       </div>
     </div>

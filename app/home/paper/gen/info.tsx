@@ -1,5 +1,5 @@
-import { TagShow } from "~/common/paper/tag";
-import { Separator } from "~/components/ui/separator";
+import { TagShow } from '~/common/paper/tag';
+import { Separator } from '~/components/ui/separator';
 import type {
   CommonPaperResp,
   GenPaperGenQuestionReq,
@@ -8,25 +8,25 @@ import type {
   GenPaperReq,
   GenPaperResp,
   ReplaceQuestionReq,
-} from "~/type/paper";
-import { GenSortableQuestionList } from "~/home/paper/gen/question";
-import type { QuestionBaseInfoResp, QuestionInfoResp } from "~/type/question";
-import React, { useState } from "react";
-import { FileQuestionMark, GraduationCap, List, Save, Star } from "lucide-react";
-import { Button } from "~/components/ui/button";
-import { ArrayUtil } from "~/util/object";
-import { TitleShow } from "~/common/title";
-import { MultiOptionShow } from "~/common/select";
-import { QuestionInfo } from "~/common/question/info";
-import type { TextbookOtherDict } from "~/type/textbook";
-import { createPortal } from "react-dom";
-import { ReplaceQuestion } from "~/home/paper/gen/replace";
-import { httpClient } from "~/util/http";
-import { SimpleAlert } from "~/common/alert";
-import { toast } from "sonner";
-import { Card, CardContent } from "~/components/ui/card";
-import { cn } from "~/lib/utils";
-import { getGroupName } from "~/common/paper/print";
+} from '~/type/paper';
+import { GenSortableQuestionList } from '~/home/paper/gen/question';
+import type { QuestionBaseInfoResp, QuestionInfoResp } from '~/type/question';
+import React, { useState } from 'react';
+import { FileQuestionMark, GraduationCap, List, Save, Star } from 'lucide-react';
+import { Button } from '~/components/ui/button';
+import { ArrayUtil } from '~/util/object';
+import { TitleShow } from '~/common/title';
+import { MultiOptionShow } from '~/common/select';
+import { QuestionInfo } from '~/common/question/info';
+import type { TextbookOtherDict } from '~/type/textbook';
+import { createPortal } from 'react-dom';
+import { ReplaceQuestion } from '~/home/paper/gen/replace';
+import { httpClient } from '~/util/http';
+import { SimpleAlert } from '~/common/alert';
+import { toast } from 'sonner';
+import { Card, CardContent } from '~/components/ui/card';
+import { cn } from '~/lib/utils';
+import { getGroupName } from '~/common/paper/print';
 
 // 手动组卷试卷详情
 
@@ -48,34 +48,34 @@ const STATS: PaperStatProps[] = [
   {
     id: 1,
     icon: GraduationCap,
-    count: "30%",
-    className: "text-green-600",
-    title: "知识点覆盖",
-    desc: "所有题目关联的知识点 / 选择的所有知识点, 保留两位小数",
+    count: '30%',
+    className: 'text-green-600',
+    title: '知识点覆盖',
+    desc: '所有题目关联的知识点 / 选择的所有知识点, 保留两位小数',
   },
   {
     id: 2,
     icon: Star,
-    count: "3.2",
-    className: "text-red-600",
-    title: "平均难度",
-    desc: "所有题目的难度之和 / 题目数量, 保留一位小数",
+    count: '3.2',
+    className: 'text-red-600',
+    title: '平均难度',
+    desc: '所有题目的难度之和 / 题目数量, 保留一位小数',
   },
   {
     id: 3,
     icon: List,
-    count: "80%",
-    className: "text-pink-600",
-    title: "题型占比",
-    desc: "所有关联题目的题型 / 所有知识点涉及的题型, 保留两位小数",
+    count: '80%',
+    className: 'text-pink-600',
+    title: '题型占比',
+    desc: '所有关联题目的题型 / 所有知识点涉及的题型, 保留两位小数',
   },
   {
     id: 4,
     icon: FileQuestionMark,
-    count: "17",
-    className: "text-blue-600",
-    title: "题目总数",
-    desc: "所有题目数量之和",
+    count: '17',
+    className: 'text-blue-600',
+    title: '题目总数',
+    desc: '所有题目数量之和',
   },
 ];
 
@@ -101,11 +101,11 @@ function GenInfoHead({ commonPaperResp }: GenInfoHeadProps) {
       {/* 生成标签 */}
       <div className="flex flex-wrap gap-3 items-center w-full">
         <TagShow
-          relatedName={commonPaperResp.relatedName ?? ""}
+          relatedName={commonPaperResp.relatedName ?? ''}
           tag={commonPaperResp.tag}
           year={commonPaperResp.year}
-          grade={commonPaperResp.grade ?? ""}
-          semester={commonPaperResp.semester ?? ""}
+          grade={commonPaperResp.grade ?? ''}
+          semester={commonPaperResp.semester ?? ''}
         />
       </div>
 
@@ -120,7 +120,7 @@ function GenInfoHead({ commonPaperResp }: GenInfoHeadProps) {
               <Card key={item.id} className="border-0 text-center">
                 <CardContent>
                   <item.icon className={item.className} />
-                  <h2 className={cn("text-4xl font-bold", item.className)}>{item.count}</h2>
+                  <h2 className={cn('text-4xl font-bold', item.className)}>{item.count}</h2>
                   <h6 className="mt-4 mb-2 text-base font-semibold">{item.title}</h6>
                   <p className="text-foreground mx-auto max-w-sm text-balance">{item.desc}</p>
                 </CardContent>
@@ -182,7 +182,7 @@ function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionD
                       <TitleShow
                         no={question.common.orderNum}
                         title={question.info.baseInfo.title}
-                        comment={""}
+                        comment={''}
                         images={question.info.baseInfo.images || []}
                       />
                     </div>
@@ -220,7 +220,7 @@ function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionD
 
               <div className="flex-1 overflow-y-auto pt-4">
                 <QuestionInfo
-                  pageSource={{ source: "list" }}
+                  pageSource={{ source: 'list' }}
                   questionTypeDict={questionTypeDict}
                   questionTagDict={questionTagDict}
                   questionDimensionDict={questionDimensionDict}
@@ -267,7 +267,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
 
   // 展示遮盖层显示详情和替换窗口
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const [dialogTitle, setDialogTitle] = useState<string>("");
+  const [dialogTitle, setDialogTitle] = useState<string>('');
 
   const [showViewQuestionInfo, setShowViewQuestionInfo] = useState<boolean>(false);
   const [showReplaceQuestion, setShowReplaceQuestion] = useState<boolean>(false);
@@ -275,7 +275,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
   // 查看详情窗口
   const [viewQuestionInfo, setViewQuestionInfo] = useState<QuestionInfoResp | null>(null);
   const handleViewQuestionInfo = (info: QuestionInfoResp) => {
-    setDialogTitle("题目详情");
+    setDialogTitle('题目详情');
     setShowReplaceQuestion(false);
     setOpenDialog(true);
     setShowViewQuestionInfo(true);
@@ -292,7 +292,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
   const [replaceQuestionReq, setReplaceQuestionReq] = useState<ReplaceQuestionReq>(defaultReplaceQuestionReq);
 
   const handleReplaceQuestion = (groupId: number, index: number, question: GenPaperQuestionResp) => {
-    setDialogTitle("题目替换");
+    setDialogTitle('题目替换');
     setShowViewQuestionInfo(false);
     setOpenDialog(true);
     setShowReplaceQuestion(true);
@@ -324,7 +324,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
           toast.error(<div className="text-red-700">题目指定位置不匹配, 不能进行替换</div>, {
             duration: Infinity,
             action: {
-              label: "关闭",
+              label: '关闭',
               onClick: () => {},
             },
           });
@@ -359,7 +359,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
         if (g.common.id !== groupId) return g;
         return {
           ...g,
-          questions: g.questions.map((q) => (q.common.questionId === questionId ? { ...q, common: { ...q.common, ["score"]: newScore } } : q)),
+          questions: g.questions.map((q) => (q.common.questionId === questionId ? { ...q, common: { ...q.common, ['score']: newScore } } : q)),
         };
       }),
     }));
@@ -394,7 +394,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
           toast.error(<div className="text-red-700">题目标题: [{qInfo.info.baseInfo.title}] 重复, 不能提交更新</div>, {
             duration: Infinity,
             action: {
-              label: "关闭",
+              label: '关闭',
               onClick: () => {},
             },
           });
@@ -427,7 +427,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
     };
 
     httpClient
-      .post<number>("/paper/gen/add", req)
+      .post<number>('/paper/gen/add', req)
       .then((resId) => {
         // 成功了回到列表页面
         setOpenSheet(false);
@@ -453,7 +453,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
       <div>
         <Button className="text-sm" onClick={handleEdit} disabled={saving}>
           <Save className="mr-2 h-4 w-4" />
-          {saving ? "更新中..." : "更新"}
+          {saving ? '更新中...' : '更新'}
         </Button>
       </div>
 
@@ -517,7 +517,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
                 {showViewQuestionInfo && viewQuestionInfo && (
                   <div className="mt-3">
                     <QuestionInfo
-                      pageSource={{ source: "list" }}
+                      pageSource={{ source: 'list' }}
                       questionTypeDict={questionTypeDict}
                       questionTagDict={questionTagDict}
                       questionDimensionDict={questionDimensionDict}
@@ -567,7 +567,7 @@ function GenInfoReplaceList({ listResp, questionTypeDict, questionTagDict, quest
 
   // 执行题目替换, 需要查询详情
   const handleReplaceQuestion = (id: number) => {
-    if (!confirm("确认替换该题?")) {
+    if (!confirm('确认替换该题?')) {
       return;
     }
 
@@ -596,7 +596,7 @@ function GenInfoReplaceList({ listResp, questionTypeDict, questionTagDict, quest
             {/* 题目主体 */}
             <div className="flex-[0_0_90%]">
               <div>
-                <TitleShow no={question.id} title={question.title} comment={""} images={question.images || []} />
+                <TitleShow no={question.id} title={question.title} comment={''} images={question.images || []} />
               </div>
               <div className="mt-2.5">
                 <MultiOptionShow optionsLayout={question.optionsLayout || 1} options={question.options || []} />
@@ -637,7 +637,7 @@ function GenInfoReplaceList({ listResp, questionTypeDict, questionTagDict, quest
 
               <div className="flex-1 overflow-y-auto pt-4">
                 <QuestionInfo
-                  pageSource={{ source: "list" }}
+                  pageSource={{ source: 'list' }}
                   questionTypeDict={questionTypeDict}
                   questionTagDict={questionTagDict}
                   questionDimensionDict={questionDimensionDict}

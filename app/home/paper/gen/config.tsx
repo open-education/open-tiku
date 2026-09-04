@@ -1,6 +1,6 @@
-import { Minus, Plus } from "lucide-react";
-import { useMemo } from "react";
-import type { GenPaperGenType } from "~/type/paper";
+import { Minus, Plus } from 'lucide-react';
+import { useMemo } from 'react';
+import type { GenPaperGenType } from '~/type/paper';
 
 // 生成试卷配置
 

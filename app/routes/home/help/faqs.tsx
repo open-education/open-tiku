@@ -1,16 +1,16 @@
-import { Separator } from "~/components/ui/separator";
-import type { Route } from "./+types/faqs";
-import { StringConst } from "~/util/string";
+import { Separator } from '~/components/ui/separator';
+import type { Route } from './+types/faqs';
+import { StringConst } from '~/util/string';
 
 // FAQs
 // 对关键的问题直接编写即可, 不再做其它的维护
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "帮助中心-FAQs" },
+    { title: '帮助中心-FAQs' },
     {
-      name: "description",
-      content: "收集整理网站常见的疑问和做一些适当的说明",
+      name: 'description',
+      content: '收集整理网站常见的疑问和做一些适当的说明',
     },
   ];
 }

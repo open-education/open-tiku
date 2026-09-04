@@ -1,5 +1,5 @@
-import { Outlet } from "react-router";
-import { Footer } from "~/home/footer";
+import { Outlet } from 'react-router';
+import { Footer } from '~/home/footer';
 
 // 前台页包含网站 Footer
 export default function Layout() {

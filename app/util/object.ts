@@ -1,5 +1,5 @@
-import type { TopPaperReq, TopPaperResp } from "~/type/paper";
-import type { Textbook, TextbookOption, TextbookOtherDict } from "~/type/textbook";
+import type { TopPaperReq, TopPaperResp } from '~/type/paper';
+import type { Textbook, TextbookOption, TextbookOtherDict } from '~/type/textbook';
 
 // 数组相关操作工具
 export const ArrayUtil = {
@@ -47,7 +47,7 @@ export const ArrayUtil = {
 // 字典相关工具函数
 export const DictUtil = {
   getQuestionTypeName: (typeId: number, dict: Record<number, TextbookOtherDict>): string => {
-    return dict[typeId]?.itemValue ?? "";
+    return dict[typeId]?.itemValue ?? '';
   },
 
   getQuestionTagNames: (tagIds: number[], dict: Record<number, TextbookOtherDict>): string[] => {
@@ -100,16 +100,16 @@ export const DateUtil = {
   getTodayStrDate: (): string => {
     const today = new Date();
     const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   },
 
   // 格式化 Date 日期为 yyyy-mm-dd 格式
   formatDate: (date: Date): string => {
     const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const dd = String(date.getDate()).padStart(2, "0");
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   },
 

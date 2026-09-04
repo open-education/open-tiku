@@ -1,5 +1,5 @@
-import { Badge } from "~/components/ui/badge";
-import { cn } from "~/lib/utils";
+import { Badge } from '~/components/ui/badge';
+import { cn } from '~/lib/utils';
 
 /// 统计相关
 
@@ -14,27 +14,27 @@ interface CountStatProps {
 const STATS: CountStatProps[] = [
   {
     id: 1,
-    count: "12",
-    className: "text-orange-600",
-    title: "教材总数",
+    count: '12',
+    className: 'text-orange-600',
+    title: '教材总数',
   },
   {
     id: 2,
-    count: "3200",
-    className: "text-green-600",
-    title: "题目总数",
+    count: '3200',
+    className: 'text-green-600',
+    title: '题目总数',
   },
   {
     id: 3,
-    count: "1300",
-    className: "text-blue-600",
-    title: "试卷套数",
+    count: '1300',
+    className: 'text-blue-600',
+    title: '试卷套数',
   },
   {
     id: 4,
-    count: "35",
-    className: "text-pink-600",
-    title: "教师人数",
+    count: '35',
+    className: 'text-pink-600',
+    title: '教师人数',
   },
 ];
 
@@ -59,7 +59,7 @@ function Hero() {
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 w-fit mx-auto justify-items-center">
             {STATS.map((item) => (
               <div key={item.id} className="flex flex-col items-center justify-center p-4 text-center">
-                <h2 className={cn("text-2xl font-bold", item.className)}>{item.count}</h2>
+                <h2 className={cn('text-2xl font-bold', item.className)}>{item.count}</h2>
                 <h6 className="text-muted-foreground text-sm">{item.title}</h6>
               </div>
             ))}

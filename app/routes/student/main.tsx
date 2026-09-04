@@ -1,7 +1,7 @@
-import { Outlet } from "react-router";
-import { PermissionDenied } from "~/common/error";
-import { useUserInfo } from "~/hooks/use-user";
-import { UserRoleType } from "~/type/enum";
+import { Outlet } from 'react-router';
+import { PermissionDenied } from '~/common/error';
+import { useUserInfo } from '~/hooks/use-user';
+import { UserRoleType } from '~/type/enum';
 
 // 学生用户个人中心
 

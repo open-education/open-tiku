@@ -1,48 +1,48 @@
-import type { Route } from "./+types/index";
-import React, { useEffect, useMemo, useState } from "react";
-import { type SelectNavProps } from "~/common/nav";
-import { PaperList } from "~/common/paper/list";
-import { Button } from "~/components/ui/button";
-import type { CommonPaperSearchReq } from "~/type/paper";
-import TopAdd from "~/home/paper/top/add";
-import { StringValidator } from "~/util/string";
-import { SimplePagination } from "~/common/page";
-import { Separator } from "~/components/ui/separator";
-import { Loading } from "~/common/load";
-import { usePaperList, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
-import { useLocation } from "react-router";
-import { SimpleAlert } from "~/common/alert";
-import { SimpleSheet } from "~/common/sheet";
-import { SimpleNoData } from "~/common/empty";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { Plus } from "lucide-react";
-import type { UserInfoResp } from "~/type/user";
-import { useUserInfo } from "~/hooks/use-user";
-import { CommonPaperSearchConf } from "~/common/paper/config";
-import GenAdd from "~/home/paper/gen/add";
-import { createTextbookPathDict } from "~/util/textbook-dict";
-import { ArrayUtil } from "~/util/object";
-import { UserRoleType } from "~/type/enum";
+import type { Route } from './+types/index';
+import React, { useEffect, useMemo, useState } from 'react';
+import { type SelectNavProps } from '~/common/nav';
+import { PaperList } from '~/common/paper/list';
+import { Button } from '~/components/ui/button';
+import type { CommonPaperSearchReq } from '~/type/paper';
+import TopAdd from '~/home/paper/top/add';
+import { StringValidator } from '~/util/string';
+import { SimplePagination } from '~/common/page';
+import { Separator } from '~/components/ui/separator';
+import { Loading } from '~/common/load';
+import { usePaperList, useQuestionOtherDicts, useTextbooks } from '~/util/fetcher';
+import { useLocation } from 'react-router';
+import { SimpleAlert } from '~/common/alert';
+import { SimpleSheet } from '~/common/sheet';
+import { SimpleNoData } from '~/common/empty';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { Plus } from 'lucide-react';
+import type { UserInfoResp } from '~/type/user';
+import { useUserInfo } from '~/hooks/use-user';
+import { CommonPaperSearchConf } from '~/common/paper/config';
+import GenAdd from '~/home/paper/gen/add';
+import { createTextbookPathDict } from '~/util/textbook-dict';
+import { ArrayUtil } from '~/util/object';
+import { UserRoleType } from '~/type/enum';
 
 // 重新网页标题等
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "开放题库-试卷库" },
-    { name: "description", content: "精选历年高考，中考试卷；收录名校期末和月考试卷；根据学情和章节考点进行自主组卷。" },
+    { title: '开放题库-试卷库' },
+    { name: 'description', content: '精选历年高考，中考试卷；收录名校期末和月考试卷；根据学情和章节考点进行自主组卷。' },
   ];
 }
 
 // 默认的搜索属性
 const defaultSearch: CommonPaperSearchReq = {
   relatedId: 0,
-  relatedName: "",
-  tag: "",
-  year: "",
-  grade: "",
-  semester: "",
+  relatedName: '',
+  tag: '',
+  year: '',
+  grade: '',
+  semester: '',
   selectedKeys: [],
   paperType: 0,
-  source: "list",
+  source: 'list',
 };
 
 // 试卷管理首页
@@ -92,18 +92,18 @@ export default function Index() {
   }, [searchReq.relatedId, pathMap]);
 
   // 查询题目类型和标签 核心素养
-  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionOtherDicts(twoLevelId, "question_type");
-  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, "id"), [questionTypes]);
+  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionOtherDicts(twoLevelId, 'question_type');
+  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, 'id'), [questionTypes]);
 
-  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionOtherDicts(twoLevelId, "question_tag");
-  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
+  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionOtherDicts(twoLevelId, 'question_tag');
+  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, 'id'), [questionTags]);
 
   const {
     data: questionDimensions = [],
     isLoading: questionDimensionsLoading,
     error: questionDimensionsErr,
-  } = useQuestionOtherDicts(twoLevelId, "question_dimension");
-  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
+  } = useQuestionOtherDicts(twoLevelId, 'question_dimension');
+  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, 'id'), [questionDimensions]);
 
   const [warnInfo, setWarnInfo] = useState<React.ReactNode>(null);
   // 列表相关错误信息展示
@@ -125,22 +125,22 @@ export default function Index() {
 
   // Sheet相关操作变量
   const [openSheet, setOpenSheet] = useState<boolean>(false);
-  const [sheetTitle, setSheetTitle] = useState<string>("");
-  const [sheetDesc, setSheetDesc] = useState<string>("");
-  const [sheetContent, setSheetContent] = useState<React.ReactNode>("");
+  const [sheetTitle, setSheetTitle] = useState<string>('');
+  const [sheetDesc, setSheetDesc] = useState<string>('');
+  const [sheetContent, setSheetContent] = useState<React.ReactNode>('');
 
   // 添加试卷Sheet
   const handlePaperTopAdd = () => {
-    setSheetTitle("精选试卷");
-    setSheetDesc("精选历年高考，中考试卷；收录名校期末和月考试卷。");
+    setSheetTitle('精选试卷');
+    setSheetDesc('精选历年高考，中考试卷；收录名校期末和月考试卷。');
     setSheetContent(<TopAdd searchReq={searchReq} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
     setOpenSheet(true);
   };
 
   // 生成试卷
   const handlePapgerGenAdd = () => {
-    setSheetTitle("手动组卷");
-    setSheetDesc("根据你选择的条件进行自动组卷, 生成试卷后请回到列表查看和修改");
+    setSheetTitle('手动组卷');
+    setSheetDesc('根据你选择的条件进行自动组卷, 生成试卷后请回到列表查看和修改');
     setSheetContent(<GenAdd searchReq={searchReq} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />);
     setOpenSheet(true);
   };

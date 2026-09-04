@@ -1,0 +1,17 @@
+# 每行最大宽度：利用大屏优势
+printWidth: 150
+
+# 缩进宽度：TypeScript 社区标准
+tabWidth: 2
+
+# 强制使用空格缩进, 按 Tab 键打出对应数量的空格
+useTabs: false
+
+# 使用单引号, TypeScript/JavaScript 社区普遍更偏爱单引号
+singleQuote: true
+
+# 语句末尾加分号, 绝大多数公司规范如 Airbnb、Google 都强制要求加分号
+semi: true
+
+# 多行结构末尾加逗号, 现代 Git 工作流的最佳实践
+trailingComma: 'all'

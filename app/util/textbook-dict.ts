@@ -1,5 +1,5 @@
-import type { Textbook } from "~/type/textbook";
-import { StringConst } from "~/util/string";
+import type { Textbook } from '~/type/textbook';
+import { StringConst } from '~/util/string';
 
 /**
  * 构建 ID 到 完整节点路径数组 的映射

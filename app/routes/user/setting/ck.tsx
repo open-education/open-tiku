@@ -1,10 +1,10 @@
-import type { Route } from "./+types/ck";
-import { CheckCircle2Icon, Link2, Link2Off, List } from "lucide-react";
-import React, { useMemo, useState } from "react";
-import { SimpleAlert } from "~/common/alert";
-import { Loading } from "~/common/load";
-import { ChapterDropdownNav } from "~/common/nav";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import type { Route } from './+types/ck';
+import { CheckCircle2Icon, Link2, Link2Off, List } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { SimpleAlert } from '~/common/alert';
+import { Loading } from '~/common/load';
+import { ChapterDropdownNav } from '~/common/nav';
+import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,27 +15,27 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
-import { Button } from "~/components/ui/button";
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import { Separator } from "~/components/ui/separator";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import type { Textbook } from "~/type/textbook";
-import { useChapterKnowledgeList, useTextbooks } from "~/util/fetcher";
-import { createTextbookPathDict } from "~/util/textbook-dict";
-import { toast } from "sonner";
-import type { CreateChapterKnowledgeReq, ChapterKnowledgeResp, RemoveChapterKnowledgeReq } from "~/type/question-cate";
-import { httpClient } from "~/util/http";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { QuestionCateListShow } from "~/user/setting/cate";
+} from '~/components/ui/alert-dialog';
+import { Button } from '~/components/ui/button';
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog';
+import { Separator } from '~/components/ui/separator';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import type { Textbook } from '~/type/textbook';
+import { useChapterKnowledgeList, useTextbooks } from '~/util/fetcher';
+import { createTextbookPathDict } from '~/util/textbook-dict';
+import { toast } from 'sonner';
+import type { CreateChapterKnowledgeReq, ChapterKnowledgeResp, RemoveChapterKnowledgeReq } from '~/type/question-cate';
+import { httpClient } from '~/util/http';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '~/components/ui/collapsible';
+import { QuestionCateListShow } from '~/user/setting/cate';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "系统设置-挂载题型" },
+    { title: '系统设置-挂载题型' },
     {
-      name: "description",
-      content: "个人中心, 系统设置, 关联教材章节和知识点考点的关联关系",
+      name: 'description',
+      content: '个人中心, 系统设置, 关联教材章节和知识点考点的关联关系',
     },
   ];
 }
@@ -65,7 +65,7 @@ export default function Index() {
   const [relationNodeNames, setRelationNodeNames] = useState<string[]>([]);
   const [relationTextbook, setRelationTextbook] = useState<Textbook | null>(null);
   const [relationSuccess, setRelationSuccess] = useState<boolean>(false);
-  const [relationWarnInfo, setRelationWarnInfo] = useState<React.ReactNode>("");
+  const [relationWarnInfo, setRelationWarnInfo] = useState<React.ReactNode>('');
   const [relationLinkIng, setRelationLinkIng] = useState<boolean>(false);
 
   // 打开关联对话框
@@ -74,7 +74,7 @@ export default function Index() {
       toast.error(<div className="text-red-700">请先选择第7级菜单后再建立关联</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -83,7 +83,7 @@ export default function Index() {
 
     setRelationTextbook(null);
     setRelationSuccess(false);
-    setRelationWarnInfo("");
+    setRelationWarnInfo('');
     setRelationLinkIng(false);
     setRelationNodeNames([]);
 
@@ -95,7 +95,7 @@ export default function Index() {
       toast.error(<div className="text-red-700">页面第7级菜单不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -105,7 +105,7 @@ export default function Index() {
       toast.error(<div className="text-red-700">页面只支持第7级菜单做题型关联</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -115,7 +115,7 @@ export default function Index() {
       toast.error(<div className="text-red-700">关联对话框第7级菜单不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -125,7 +125,7 @@ export default function Index() {
       toast.error(<div className="text-red-700">关联对话框只支持第7级菜单做题型关联</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -137,7 +137,7 @@ export default function Index() {
       toast.error(<div className="text-red-700">两个节点的类型相同, 不允许建立关联关系</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -145,16 +145,16 @@ export default function Index() {
     }
 
     setRelationSuccess(false);
-    setRelationWarnInfo("");
+    setRelationWarnInfo('');
     setRelationLinkIng(true);
 
     const req: CreateChapterKnowledgeReq = {
-      chapterId: currentTextbook.pathType === "chapter" ? currentTextbook.id : relationTextbook.id,
-      knowledgeId: relationTextbook.pathType === "knowledge" ? relationTextbook.id : currentTextbook.id,
+      chapterId: currentTextbook.pathType === 'chapter' ? currentTextbook.id : relationTextbook.id,
+      knowledgeId: relationTextbook.pathType === 'knowledge' ? relationTextbook.id : currentTextbook.id,
     };
 
     httpClient
-      .post<number>("/chapter-knowledge/add", req)
+      .post<number>('/chapter-knowledge/add', req)
       .then((res) => {
         ckListMutate();
         setRelationSuccess(true);
@@ -168,7 +168,7 @@ export default function Index() {
 
   // 解除关联关系
   const [removeSuccess, setRemoveSuccess] = useState<boolean>(false);
-  const [removeWarnInfo, setRemoveWarnInfo] = useState<React.ReactNode>("");
+  const [removeWarnInfo, setRemoveWarnInfo] = useState<React.ReactNode>('');
   const [removeDialogOpen, setRemoveDialogOpen] = useState<boolean>(false);
 
   const handleSubmitUnlink = (item: ChapterKnowledgeResp) => {
@@ -177,10 +177,10 @@ export default function Index() {
     };
 
     setRemoveSuccess(false);
-    setRemoveWarnInfo("");
+    setRemoveWarnInfo('');
 
     httpClient
-      .post("/chapter-knowledge/remove", req)
+      .post('/chapter-knowledge/remove', req)
       .then((res) => {
         ckListMutate();
         setRemoveSuccess(true);
@@ -192,7 +192,7 @@ export default function Index() {
 
   // 设置选中的行标识
   const [selectCkId, setSelectCkId] = useState<number>(0);
-  const rowClass = "flex items-center gap-4 px-4 py-2 border-b";
+  const rowClass = 'flex items-center gap-4 px-4 py-2 border-b';
 
   return (
     <div className="p-4">
@@ -421,7 +421,7 @@ export default function Index() {
                     取消
                   </Button>
                   <Button className="text-sm" onClick={handleSubmitLink} disabled={relationLinkIng}>
-                    {relationLinkIng ? "关联中..." : "关联"}
+                    {relationLinkIng ? '关联中...' : '关联'}
                   </Button>
                 </DialogFooter>
               </DialogContent>

@@ -1,9 +1,9 @@
-import { CheckCircle2Icon, Pencil, Plus, Trash2 } from "lucide-react";
-import React, { useState } from "react";
-import { toast } from "sonner";
-import { SimpleAlert } from "~/common/alert";
-import { Loading } from "~/common/load";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { CheckCircle2Icon, Pencil, Plus, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
+import { SimpleAlert } from '~/common/alert';
+import { Loading } from '~/common/load';
+import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,17 +14,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
-import { Button } from "~/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import { Input } from "~/components/ui/input";
-import { Separator } from "~/components/ui/separator";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import type { ChapterKnowledgeResp, CreateQuestionCateReq, QuestionCateResp } from "~/type/question-cate";
-import { useQuestionCateList } from "~/util/fetcher";
-import { httpClient } from "~/util/http";
-import { StringValidator } from "~/util/string";
+} from '~/components/ui/alert-dialog';
+import { Button } from '~/components/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog';
+import { Input } from '~/components/ui/input';
+import { Separator } from '~/components/ui/separator';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import type { ChapterKnowledgeResp, CreateQuestionCateReq, QuestionCateResp } from '~/type/question-cate';
+import { useQuestionCateList } from '~/util/fetcher';
+import { httpClient } from '~/util/http';
+import { StringValidator } from '~/util/string';
 
 // 题型列表展示
 interface QuestionCateListShowProps {
@@ -37,7 +37,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [addReq, setAddReq] = useState<CreateQuestionCateReq>({
     relatedId: ck.id,
-    label: "",
+    label: '',
     sortOrder: 1,
   });
   const updateAddReq = (key: keyof CreateQuestionCateReq, value: string | number) => {
@@ -46,12 +46,12 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
 
   const [processIng, setProcessIng] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
-  const [warnInfo, setWarnInfo] = useState<React.ReactNode>("");
+  const [warnInfo, setWarnInfo] = useState<React.ReactNode>('');
 
   // 新增
   const handleAdd = () => {
-    setAddReq({ ...addReq, id: 0, label: "", sortOrder: 1 });
-    setWarnInfo("");
+    setAddReq({ ...addReq, id: 0, label: '', sortOrder: 1 });
+    setWarnInfo('');
     setSuccess(false);
     setDialogOpen(true);
   };
@@ -59,7 +59,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
   // 编辑
   const handleEdit = (item: QuestionCateResp) => {
     setAddReq({ ...item });
-    setWarnInfo("");
+    setWarnInfo('');
     setSuccess(false);
     setDialogOpen(true);
   };
@@ -69,7 +69,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
       toast.error(<div className="text-red-700">第7级菜单不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -80,7 +80,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
       toast.error(<div className="text-red-700">题型名称不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -88,7 +88,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
     }
 
     setProcessIng(true);
-    setWarnInfo("");
+    setWarnInfo('');
     setSuccess(false);
 
     // 如果主键为0则删除
@@ -97,7 +97,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
     }
 
     httpClient
-      .post<number>("/question-cate/add", addReq)
+      .post<number>('/question-cate/add', addReq)
       .then((res) => {
         catesMutate();
         setSuccess(true);
@@ -113,11 +113,11 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
 
   // 删除
   const [removeDialogOpen, setRemoveDialogOpen] = useState<boolean>(false);
-  const [removeWarnInfo, setRemoveWarnInfo] = useState<React.ReactNode>("");
+  const [removeWarnInfo, setRemoveWarnInfo] = useState<React.ReactNode>('');
   const [removeSuccess, setRemoveSuccess] = useState<boolean>(false);
 
   const handleSubmitRemove = (item: QuestionCateResp) => {
-    setRemoveWarnInfo("");
+    setRemoveWarnInfo('');
     setRemoveSuccess(false);
 
     httpClient
@@ -238,7 +238,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-106.25">
           <DialogHeader>
-            <DialogTitle className="text-base font-medium">{addReq.id && addReq.id > 0 ? "编辑" : "添加"}</DialogTitle>
+            <DialogTitle className="text-base font-medium">{addReq.id && addReq.id > 0 ? '编辑' : '添加'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             {/* 名称 */}
@@ -247,7 +247,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
               <Input
                 className="text-sm md:text-sm"
                 value={addReq.label}
-                onChange={(e) => updateAddReq("label", e.target.value)}
+                onChange={(e) => updateAddReq('label', e.target.value)}
                 placeholder="请输入题型名称"
               />
             </div>
@@ -260,7 +260,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
                 type="number"
                 min="0"
                 value={addReq.sortOrder}
-                onChange={(e) => updateAddReq("sortOrder", Number(e.target.value))}
+                onChange={(e) => updateAddReq('sortOrder', Number(e.target.value))}
               />
             </div>
 
@@ -287,7 +287,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
               取消
             </Button>
             <Button className="text-sm" onClick={handleSubmit} disabled={processIng}>
-              {addReq.id && addReq.id > 0 ? (processIng ? "更新中..." : "更新") : processIng ? "保存中..." : "保存"}
+              {addReq.id && addReq.id > 0 ? (processIng ? '更新中...' : '更新') : processIng ? '保存中...' : '保存'}
             </Button>
           </DialogFooter>
         </DialogContent>

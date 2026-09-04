@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { SimpleAlert } from "~/common/alert";
-import { SimpleNoData } from "~/common/empty";
-import { Loading } from "~/common/load";
-import { SimplePagination } from "~/common/page";
-import { SimilarQuestionListShow } from "~/common/question/list";
-import { Separator } from "~/components/ui/separator";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import type { TextbookOtherDict } from "~/type/textbook";
-import { useSimilarList } from "~/util/fetcher";
-import { StringConst } from "~/util/string";
+import { useState } from 'react';
+import { SimpleAlert } from '~/common/alert';
+import { SimpleNoData } from '~/common/empty';
+import { Loading } from '~/common/load';
+import { SimplePagination } from '~/common/page';
+import { SimilarQuestionListShow } from '~/common/question/list';
+import { Separator } from '~/components/ui/separator';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import type { TextbookOtherDict } from '~/type/textbook';
+import { useSimilarList } from '~/util/fetcher';
+import { StringConst } from '~/util/string';
 
 /// 变式题列表, 暂时未设计详情
 
@@ -61,7 +61,7 @@ export function SimilarQuestionList({ questionTypeDict, questionTagDict, questio
       {/* 题目列表 */}
       <div className="text-sm">
         <SimilarQuestionListShow
-          pageSource={{ source: "list" }}
+          pageSource={{ source: 'list' }}
           questionTypeDict={questionTypeDict}
           questionTagDict={questionTagDict}
           questionDimensionDict={questionDimensionDict}

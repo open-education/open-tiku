@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
-import { Button } from "~/components/ui/button";
-import { Label } from "~/components/ui/label";
-import { Badge } from "~/components/ui/badge";
-import { Separator } from "~/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import React, { useEffect, useMemo, useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import { Input } from '~/components/ui/input';
+import { Textarea } from '~/components/ui/textarea';
+import { Button } from '~/components/ui/button';
+import { Label } from '~/components/ui/label';
+import { Badge } from '~/components/ui/badge';
+import { Separator } from '~/components/ui/separator';
+import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
 import {
   FileText,
   Settings2,
@@ -22,29 +22,29 @@ import {
   NotebookPen,
   Send,
   Save,
-} from "lucide-react";
-import type { Content, CreateQuestionReq, QuestionInfoResp, QuestionListResp, QuestionOption, QuestionSearch } from "~/type/question";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
-import { Watermark } from "~/common/watermark";
-import type { Textbook } from "~/type/textbook";
-import { ChapterDropdownNav } from "~/common/nav";
-import { MultiTagSelect, TypeSelect } from "~/common/question/tag";
-import { StringConst, StringValidator } from "~/util/string";
-import { ArrayUtil } from "~/util/object";
-import { useQuestionCates, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
-import { SimpleAlert } from "~/common/alert";
-import { Loading } from "~/common/load";
-import { toast } from "sonner";
-import { QuestionInfo } from "~/common/question/info";
-import { httpClient } from "~/util/http";
-import { createTextbookPathDict } from "~/util/textbook-dict";
-import { ImageAdd } from "~/common/image";
-import { QuickToolList } from "~/common/tool";
-import { FileUpload } from "~/common/file";
-import { ParseQuestion } from "~/common/text";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import type { QuestionRelationType } from "~/type/enum";
-import type { KeyedMutator } from "swr";
+} from 'lucide-react';
+import type { Content, CreateQuestionReq, QuestionInfoResp, QuestionListResp, QuestionOption, QuestionSearch } from '~/type/question';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '~/components/ui/resizable';
+import { Watermark } from '~/common/watermark';
+import type { Textbook } from '~/type/textbook';
+import { ChapterDropdownNav } from '~/common/nav';
+import { MultiTagSelect, TypeSelect } from '~/common/question/tag';
+import { StringConst, StringValidator } from '~/util/string';
+import { ArrayUtil } from '~/util/object';
+import { useQuestionCates, useQuestionOtherDicts, useTextbooks } from '~/util/fetcher';
+import { SimpleAlert } from '~/common/alert';
+import { Loading } from '~/common/load';
+import { toast } from 'sonner';
+import { QuestionInfo } from '~/common/question/info';
+import { httpClient } from '~/util/http';
+import { createTextbookPathDict } from '~/util/textbook-dict';
+import { ImageAdd } from '~/common/image';
+import { QuickToolList } from '~/common/tool';
+import { FileUpload } from '~/common/file';
+import { ParseQuestion } from '~/common/text';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import type { QuestionRelationType } from '~/type/enum';
+import type { KeyedMutator } from 'swr';
 
 /// 题目添加和编辑
 
@@ -77,15 +77,15 @@ export default function Add({
       id: 0,
       questionCateId: 0,
       questionTypeId: 0,
-      originalName: "",
-      title: "",
-      contentPlain: "",
-      comment: "",
+      originalName: '',
+      title: '',
+      contentPlain: '',
+      comment: '',
       difficultyLevel: 1.0,
       status: 0,
-      approveName: "",
-      createdAt: "",
-      updatedAt: "",
+      approveName: '',
+      createdAt: '',
+      updatedAt: '',
       relationType: 0,
     },
     extraInfo: {},
@@ -107,11 +107,11 @@ export default function Add({
     const initAddDefault: CreateQuestionReq = {
       questionCateId: 0,
       questionTypeId: 0,
-      originalName: "",
-      title: "",
+      originalName: '',
+      title: '',
       difficultyLevel: 1.0,
       optionsLayout: 1,
-      source: "",
+      source: '',
       status: 0,
       relationType: addRelationType || 0, // 不存在传入非法的值
     };
@@ -156,18 +156,18 @@ export default function Add({
   }, [fiveLevelId]);
 
   // 查询题目类型和标签
-  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionOtherDicts(twoLevelId, "question_type");
-  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, "id"), [questionTypes]);
+  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionOtherDicts(twoLevelId, 'question_type');
+  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, 'id'), [questionTypes]);
 
-  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionOtherDicts(twoLevelId, "question_tag");
-  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
+  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionOtherDicts(twoLevelId, 'question_tag');
+  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, 'id'), [questionTags]);
 
   const {
     data: questionDimensions = [],
     isLoading: questionDimensionsLoading,
     error: questionDimensionsErr,
-  } = useQuestionOtherDicts(twoLevelId, "question_dimension");
-  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
+  } = useQuestionOtherDicts(twoLevelId, 'question_dimension');
+  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, 'id'), [questionDimensions]);
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
@@ -183,19 +183,19 @@ export default function Add({
     // 填充的字段如下赋值
     setAddReq((prev) => ({
       ...prev,
-      ["title"]: fillReq.title,
-      ["options"]: fillReq.options || [],
-      ["difficultyLevel"]: Number(fillReq.difficultyLevel),
-      ["questionTypeId"]: fillReq.questionTypeId,
-      ["questionTagIds"]: fillReq.questionTagIds || [],
-      ["knowledge"]: fillReq.knowledge || "",
-      ["answer"]: fillReq.answer || "",
-      ["analysis"]: fillReq.analysis || {
-        content: "",
+      ['title']: fillReq.title,
+      ['options']: fillReq.options || [],
+      ['difficultyLevel']: Number(fillReq.difficultyLevel),
+      ['questionTypeId']: fillReq.questionTypeId,
+      ['questionTagIds']: fillReq.questionTagIds || [],
+      ['knowledge']: fillReq.knowledge || '',
+      ['answer']: fillReq.answer || '',
+      ['analysis']: fillReq.analysis || {
+        content: '',
         images: [],
       },
-      ["process"]: fillReq.process || {
-        content: "",
+      ['process']: fillReq.process || {
+        content: '',
         images: [],
       },
     }));
@@ -205,10 +205,10 @@ export default function Add({
   const [drafing, setDrafing] = useState<boolean>(false);
   const [approving, setApproving] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [addWarnInfo, setAddWarnInfo] = useState<React.ReactNode>("");
+  const [addWarnInfo, setAddWarnInfo] = useState<React.ReactNode>('');
 
   // 更新解题分析和解题过程
-  const updateContent = (field: "analysis" | "process", key: keyof Content, value: string | string[]) => {
+  const updateContent = (field: 'analysis' | 'process', key: keyof Content, value: string | string[]) => {
     setAddReq((prev) => ({
       ...prev,
       [field]: {
@@ -224,7 +224,7 @@ export default function Add({
     const newLabel = String.fromCharCode(65 + current.length);
     setAddReq((prev) => ({
       ...prev,
-      options: [...current, { label: newLabel, content: "", images: [], order: current.length }],
+      options: [...current, { label: newLabel, content: '', images: [], order: current.length }],
     }));
   };
 
@@ -250,7 +250,7 @@ export default function Add({
     const current = addReq.steps || [];
     setAddReq((prev) => ({
       ...prev,
-      steps: [...current, { id: current.length + 1, content: "" }],
+      steps: [...current, { id: current.length + 1, content: '' }],
     }));
   };
   const removeStep = (index: number) => {
@@ -268,30 +268,30 @@ export default function Add({
   };
 
   // 图片增删简写
-  const addImageToField = (field: "images" | "analysis.images" | "process.images", url: string) => {
-    if (field === "images") setAddReq((p) => ({ ...p, images: [...(p.images || []), url] }));
-    else if (field === "analysis.images") {
+  const addImageToField = (field: 'images' | 'analysis.images' | 'process.images', url: string) => {
+    if (field === 'images') setAddReq((p) => ({ ...p, images: [...(p.images || []), url] }));
+    else if (field === 'analysis.images') {
       const current = (addReq.analysis?.images as string[]) || [];
-      updateContent("analysis", "images", [...current, url]);
+      updateContent('analysis', 'images', [...current, url]);
     } else {
       const current = (addReq.process?.images as string[]) || [];
-      updateContent("process", "images", [...current, url]);
+      updateContent('process', 'images', [...current, url]);
     }
   };
-  const removeImageFromField = (field: "images" | "analysis.images" | "process.images", index: number) => {
-    if (field === "images") setAddReq((p) => ({ ...p, images: p.images?.filter((_, i) => i !== index) || [] }));
-    else if (field === "analysis.images") {
+  const removeImageFromField = (field: 'images' | 'analysis.images' | 'process.images', index: number) => {
+    if (field === 'images') setAddReq((p) => ({ ...p, images: p.images?.filter((_, i) => i !== index) || [] }));
+    else if (field === 'analysis.images') {
       const current = (addReq.analysis?.images as string[]) || [];
       updateContent(
-        "analysis",
-        "images",
+        'analysis',
+        'images',
         current.filter((_, i) => i !== index),
       );
     } else {
       const current = (addReq.process?.images as string[]) || [];
       updateContent(
-        "process",
-        "images",
+        'process',
+        'images',
         current.filter((_, i) => i !== index),
       );
     }
@@ -304,7 +304,7 @@ export default function Add({
       toast.error(<div className="text-red-700">第8级菜单题型不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -314,7 +314,7 @@ export default function Add({
       toast.error(<div className="text-red-700">类型不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -324,7 +324,7 @@ export default function Add({
       toast.error(<div className="text-red-700">难度系数不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -334,7 +334,7 @@ export default function Add({
       toast.error(<div className="text-red-700">题目标题不能为空</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -344,18 +344,18 @@ export default function Add({
       toast.error(<div className="text-red-700">选择题至少需要两个选项</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
       return;
     }
 
-    if (!confirm(addReq.id && addReq.id > 0 ? "确定要更新题目吗？" : "确定要新增题目吗？")) {
+    if (!confirm(addReq.id && addReq.id > 0 ? '确定要更新题目吗？' : '确定要新增题目吗？')) {
       return;
     }
 
-    setAddWarnInfo("");
+    setAddWarnInfo('');
     setIsLoading(true);
 
     if (status == 0) {
@@ -368,16 +368,16 @@ export default function Add({
 
     // 添加题目成功并预览详情, 未提交的题目只能在 我的题目 中可见
     httpClient
-      .post<number>("/question/add", addReq)
+      .post<number>('/question/add', addReq)
       .then((addId) => {
         httpClient
           .get(`/question/info/${addId}`)
           .then((res) => {
-            setSheetTitle("题目详情");
-            setSheetDesc("当前仅是预览状态, 需管理员审核通过后题目方可被搜索展示");
+            setSheetTitle('题目详情');
+            setSheetDesc('当前仅是预览状态, 需管理员审核通过后题目方可被搜索展示');
             setSheetContent(
               <QuestionInfo
-                pageSource={{ source: "list" }}
+                pageSource={{ source: 'list' }}
                 questionTypeDict={questionTypeDict}
                 questionTagDict={questionTagDict}
                 questionDimensionDict={questionDimensionDict}
@@ -416,11 +416,11 @@ export default function Add({
       <div className="mt-3 flex flex-wrap gap-2">
         <Button variant="default" className="text-sm" onClick={() => handleAddSubmit(0)} disabled={drafing}>
           <Save className="mr-2 h-4 w-4" />
-          {drafing ? "存为草稿中..." : "存为草稿"}
+          {drafing ? '存为草稿中...' : '存为草稿'}
         </Button>
         <Button variant="outline" className="text-sm" onClick={() => handleAddSubmit(1)} disabled={approving}>
           <Send className="mr-2 h-4 w-4" />
-          {approving ? "提交审核中..." : "提交审核"}
+          {approving ? '提交审核中...' : '提交审核'}
         </Button>
       </div>
 
@@ -467,7 +467,7 @@ export default function Add({
         <QuickToolList
           tools={[
             {
-              id: "tool-file-upload",
+              id: 'tool-file-upload',
               label: (
                 <div className="flex items-center gap-2">
                   <FileImage className="h-4 w-4 text-primary" />
@@ -477,7 +477,7 @@ export default function Add({
               content: <FileUpload isImage={true} />,
             },
             {
-              id: "tool-text-parse",
+              id: 'tool-text-parse',
               label: (
                 <div className="flex items-center gap-2">
                   <NotebookPen className="h-4 w-4 text-primary" />
@@ -540,18 +540,18 @@ export default function Add({
                           textbooks={questionCates}
                           onSelect={(selectedItems: Textbook[]) => {
                             if (!selectedItems) {
-                              updateAddReq("questionCateId", 0);
+                              updateAddReq('questionCateId', 0);
                               return;
                             }
 
                             const current: Textbook = selectedItems[selectedItems.length - 1];
                             // 必须选择题型
                             if (current.tableName !== StringConst.questionCateTableName) {
-                              updateAddReq("questionCateId", 0);
+                              updateAddReq('questionCateId', 0);
                               return;
                             }
 
-                            updateAddReq("questionCateId", current.id);
+                            updateAddReq('questionCateId', current.id);
                           }}
                           defaultSelectedKeys={questionSearch.eightLevelSelectKeys || []}
                           placeholder="请选择题型"
@@ -568,7 +568,7 @@ export default function Add({
                           options={questionTypes}
                           value={addReq.questionTypeId}
                           onSelect={(val) => {
-                            updateAddReq("questionTypeId", val);
+                            updateAddReq('questionTypeId', val);
                             setIsChoice(questionTypeDict[val]?.isSelect);
                           }}
                         />
@@ -581,7 +581,7 @@ export default function Add({
                         <MultiTagSelect
                           options={questionTags}
                           value={addReq.questionTagIds ?? []}
-                          onChange={(val) => updateAddReq("questionTagIds", val)}
+                          onChange={(val) => updateAddReq('questionTagIds', val)}
                         />
                       </div>
                     </div>
@@ -592,7 +592,7 @@ export default function Add({
                         <MultiTagSelect
                           options={questionDimensions}
                           value={addReq.questionDimensionIds ?? []}
-                          onChange={(val) => updateAddReq("questionDimensionIds", val)}
+                          onChange={(val) => updateAddReq('questionDimensionIds', val)}
                         />
                       </div>
                     </div>
@@ -604,7 +604,7 @@ export default function Add({
                           id="originalName"
                           className="text-sm md:text-sm"
                           value={addReq.originalName}
-                          onChange={(e) => updateAddReq("originalName", e.target.value)}
+                          onChange={(e) => updateAddReq('originalName', e.target.value)}
                           placeholder="请输入原创者代号, 不要填写真实信息, 保护他人隐私"
                         />
                       </div>
@@ -617,7 +617,7 @@ export default function Add({
                           id="source"
                           className="text-sm md:text-sm"
                           value={addReq.source}
-                          onChange={(e) => updateAddReq("source", e.target.value)}
+                          onChange={(e) => updateAddReq('source', e.target.value)}
                           placeholder="请输入题目来源, 标注版权信息"
                         />
                       </div>
@@ -634,8 +634,8 @@ export default function Add({
                               key={optionValue}
                               className="text-sm md:text-sm w-10 text-center"
                               type="button"
-                              variant={addReq.difficultyLevel === optionValue ? "default" : "outline"}
-                              onClick={() => updateAddReq("difficultyLevel", optionValue)}
+                              variant={addReq.difficultyLevel === optionValue ? 'default' : 'outline'}
+                              onClick={() => updateAddReq('difficultyLevel', optionValue)}
                             >
                               {label}
                             </Button>
@@ -665,8 +665,8 @@ export default function Add({
                     <Textarea
                       id="title"
                       className="min-h-25 resize-y text-sm md:text-sm"
-                      value={addReq.title || ""}
-                      onChange={(e) => updateAddReq("title", e.target.value)}
+                      value={addReq.title || ''}
+                      onChange={(e) => updateAddReq('title', e.target.value)}
                       placeholder="输入题目正文..."
                     />
                   </div>
@@ -677,8 +677,8 @@ export default function Add({
                     <Textarea
                       id="comment"
                       className="min-h-15 resize-y text-sm md:text-sm"
-                      value={addReq.comment || ""}
-                      onChange={(e) => updateAddReq("comment", e.target.value)}
+                      value={addReq.comment || ''}
+                      onChange={(e) => updateAddReq('comment', e.target.value)}
                       placeholder="例如：题目背景、特殊约束等"
                     />
                   </div>
@@ -688,15 +688,15 @@ export default function Add({
                     name="题干图片"
                     images={addReq.images || []}
                     add={() => {
-                      addImageToField("images", "");
+                      addImageToField('images', '');
                     }}
                     update={(idx, val) => {
                       const newImages = [...(addReq.images || [])];
                       newImages[idx] = val;
-                      updateAddReq("images", newImages);
+                      updateAddReq('images', newImages);
                     }}
                     remove={(idx) => {
-                      removeImageFromField("images", idx);
+                      removeImageFromField('images', idx);
                     }}
                   />
                 </CardContent>
@@ -722,7 +722,7 @@ export default function Add({
                       <span className="text-sm">选项布局</span>
                       <RadioGroup
                         value={addReq.optionsLayout}
-                        onValueChange={(val) => updateAddReq("optionsLayout", val)}
+                        onValueChange={(val) => updateAddReq('optionsLayout', val)}
                         defaultValue={addReq.optionsLayout || 1}
                         className="flex gap-4 w-fit"
                       >
@@ -760,7 +760,7 @@ export default function Add({
 
                           <Textarea
                             value={opt.content}
-                            onChange={(e) => updateOption(optIdx, "content", e.target.value)}
+                            onChange={(e) => updateOption(optIdx, 'content', e.target.value)}
                             placeholder="输入选项内容"
                             className="text-sm md:text-sm min-h-15 bg-background/60"
                           />
@@ -770,16 +770,16 @@ export default function Add({
                             name="选项图片"
                             images={opt.images || []}
                             add={() => {
-                              updateOption(optIdx, "images", [...(opt.images || []), ""]);
+                              updateOption(optIdx, 'images', [...(opt.images || []), '']);
                             }}
                             update={(idx, val) => {
                               const newImages = [...(opt.images || [])];
                               newImages[idx] = val;
-                              updateOption(optIdx, "images", newImages);
+                              updateOption(optIdx, 'images', newImages);
                             }}
                             remove={(idx) => {
                               const newImages = (opt.images || []).filter((_, i) => i !== idx);
-                              updateOption(optIdx, "images", newImages);
+                              updateOption(optIdx, 'images', newImages);
                             }}
                           />
                         </div>
@@ -809,8 +809,8 @@ export default function Add({
                     <Textarea
                       id="answer"
                       className="min-h-17.5 text-sm md:text-sm"
-                      value={addReq.answer || ""}
-                      onChange={(e) => updateAddReq("answer", e.target.value)}
+                      value={addReq.answer || ''}
+                      onChange={(e) => updateAddReq('answer', e.target.value)}
                       placeholder="输入参考答案"
                     />
                   </div>
@@ -822,8 +822,8 @@ export default function Add({
                     <Textarea
                       id="knowledge"
                       className="min-h-17.5 text-sm md:text-sm"
-                      value={addReq.knowledge || ""}
-                      onChange={(e) => updateAddReq("knowledge", e.target.value)}
+                      value={addReq.knowledge || ''}
+                      onChange={(e) => updateAddReq('knowledge', e.target.value)}
                       placeholder="输入知识点，多个可用逗号分隔"
                     />
                   </div>
@@ -841,8 +841,8 @@ export default function Add({
                 <Separator />
                 <CardContent>
                   <Textarea
-                    value={addReq.analysis?.content || ""}
-                    onChange={(e) => updateContent("analysis", "content", e.target.value)}
+                    value={addReq.analysis?.content || ''}
+                    onChange={(e) => updateContent('analysis', 'content', e.target.value)}
                     placeholder="详细的解题分析..."
                     className="min-h-20 text-sm md:text-sm"
                   />
@@ -851,16 +851,16 @@ export default function Add({
                     name="分析图片"
                     images={addReq.analysis?.images || []}
                     add={() => {
-                      addImageToField("analysis.images", "");
+                      addImageToField('analysis.images', '');
                     }}
                     update={(idx, val) => {
                       const current = (addReq.analysis?.images as string[]) || [];
                       const newImages = [...current];
                       newImages[idx] = val;
-                      updateContent("analysis", "images", newImages);
+                      updateContent('analysis', 'images', newImages);
                     }}
                     remove={(idx) => {
-                      removeImageFromField("analysis.images", idx);
+                      removeImageFromField('analysis.images', idx);
                     }}
                   />
                 </CardContent>
@@ -877,8 +877,8 @@ export default function Add({
                 <Separator />
                 <CardContent>
                   <Textarea
-                    value={addReq.process?.content || ""}
-                    onChange={(e) => updateContent("process", "content", e.target.value)}
+                    value={addReq.process?.content || ''}
+                    onChange={(e) => updateContent('process', 'content', e.target.value)}
                     placeholder="详细的解题步骤过程..."
                     className="min-h-20 text-sm md:text-sm"
                   />
@@ -887,16 +887,16 @@ export default function Add({
                     name="过程图片"
                     images={addReq.process?.images || []}
                     add={() => {
-                      addImageToField("process.images", "");
+                      addImageToField('process.images', '');
                     }}
                     update={(idx, val) => {
                       const current = (addReq.process?.images as string[]) || [];
                       const newImages = [...current];
                       newImages[idx] = val;
-                      updateContent("process", "images", newImages);
+                      updateContent('process', 'images', newImages);
                     }}
                     remove={(idx) => {
-                      removeImageFromField("process.images", idx);
+                      removeImageFromField('process.images', idx);
                     }}
                   />
                 </CardContent>
@@ -950,8 +950,8 @@ export default function Add({
                 <Separator />
                 <CardContent>
                   <Textarea
-                    value={addReq.remark || ""}
-                    onChange={(e) => updateAddReq("remark", e.target.value)}
+                    value={addReq.remark || ''}
+                    onChange={(e) => updateAddReq('remark', e.target.value)}
                     placeholder="例如：易错题型、解题技巧提醒等"
                     className="min-h-17.5 text-sm md:text-sm"
                   />
@@ -964,17 +964,17 @@ export default function Add({
             <Watermark className="h-full w-full bg-slate-50">
               <div className="pt-4 pb-4">
                 <QuestionInfo
-                  pageSource={{ source: "list" }}
+                  pageSource={{ source: 'list' }}
                   questionTypeDict={questionTypeDict}
                   questionTagDict={questionTagDict}
                   questionDimensionDict={questionDimensionDict}
                   infoResp={{
                     baseInfo: {
                       id: 0,
-                      contentPlain: "",
-                      createdAt: "",
-                      updatedAt: "",
-                      approveName: "",
+                      contentPlain: '',
+                      createdAt: '',
+                      updatedAt: '',
+                      approveName: '',
                       ...addReq,
                     },
                     extraInfo: { ...addReq },

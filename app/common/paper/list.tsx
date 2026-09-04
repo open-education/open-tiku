@@ -1,15 +1,15 @@
-import { Badge } from "~/components/ui/badge";
-import { Card, CardContent } from "~/components/ui/card";
-import { Separator } from "~/components/ui/separator";
-import { cn } from "~/lib/utils";
-import type { CommonPaperSearchReq, CommonPaperResp, TopPaperResp, GenPaperResp } from "~/type/paper";
-import { StringConst, StringConstUtil } from "~/util/string";
-import { httpClient } from "~/util/http";
-import { TopInfo } from "~/home/paper/top/info";
-import { GenInfoPreview } from "~/home/paper/gen/info";
-import React from "react";
-import { SimpleAlert } from "~/common/alert";
-import type { TextbookOtherDict } from "~/type/textbook";
+import { Badge } from '~/components/ui/badge';
+import { Card, CardContent } from '~/components/ui/card';
+import { Separator } from '~/components/ui/separator';
+import { cn } from '~/lib/utils';
+import type { CommonPaperSearchReq, CommonPaperResp, TopPaperResp, GenPaperResp } from '~/type/paper';
+import { StringConst, StringConstUtil } from '~/util/string';
+import { httpClient } from '~/util/http';
+import { TopInfo } from '~/home/paper/top/info';
+import { GenInfoPreview } from '~/home/paper/gen/info';
+import React from 'react';
+import { SimpleAlert } from '~/common/alert';
+import type { TextbookOtherDict } from '~/type/textbook';
 
 /// 试卷元数据
 
@@ -56,8 +56,8 @@ function PaperList({
       httpClient
         .get<GenPaperResp>(`/paper/gen/info/${id}`)
         .then((res) => {
-          setSheetTitle("查看详情");
-          setSheetDesc("该处仅能查看明细, 如需修改请去 我的试卷 修改");
+          setSheetTitle('查看详情');
+          setSheetDesc('该处仅能查看明细, 如需修改请去 我的试卷 修改');
           setSheetContent(
             <GenInfoPreview
               infoResp={res}
@@ -78,8 +78,8 @@ function PaperList({
       httpClient
         .get<TopPaperResp>(`/paper/top/info/${id}`)
         .then((res) => {
-          setSheetTitle("查看详情");
-          setSheetDesc("如需修改直接编辑即可");
+          setSheetTitle('查看详情');
+          setSheetDesc('如需修改直接编辑即可');
           setSheetContent(
             <TopInfo infoResp={res} search={search} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
           );
@@ -106,7 +106,7 @@ function PaperList({
         >
           <CardContent className="px-4 py-3.5 flex flex-col h-full">
             <div className="flex items-start justify-between gap-2 mb-2.5 text-sm">
-              <Badge className={cn("text-sm", StringConstUtil.getExamTagClass(paper.tag))}>{paper.tag}</Badge>
+              <Badge className={cn('text-sm', StringConstUtil.getExamTagClass(paper.tag))}>{paper.tag}</Badge>
               {paper.year && <Badge className="text-sm bg-sky-50 text-sky-700 border-sky-100">{paper.year}</Badge>}
               {paper.grade && <Badge className="text-sm bg-sky-50 text-sky-700 border-sky-100">{paper.grade}</Badge>}
               {paper.semester && <Badge className="text-sm bg-sky-50 text-sky-700 border-sky-100">{paper.semester}</Badge>}

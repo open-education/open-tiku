@@ -1,14 +1,14 @@
-import type { Route } from "./+types/index";
-import { type SelectNavProps } from "~/common/nav";
-import { useLocation } from "react-router";
-import { QuestionSearchPage } from "~/common/question/search";
+import type { Route } from './+types/index';
+import { type SelectNavProps } from '~/common/nav';
+import { useLocation } from 'react-router';
+import { QuestionSearchPage } from '~/common/question/search';
 
 /// 题目首页
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "开放题库-题目库" },
-    { name: "description", content: "对中小学教材按章节、考点进行分类，精选各学科、各类型的原创题目，整理、解析或归类已有的题目。" },
+    { title: '开放题库-题目库' },
+    { name: 'description', content: '对中小学教材按章节、考点进行分类，精选各学科、各类型的原创题目，整理、解析或归类已有的题目。' },
   ];
 }
 
@@ -18,5 +18,5 @@ export default function Home() {
   // 首页可能传递过来已经选择好的导航级联信息keys列表
   const selectNavProps: SelectNavProps = location.state?.selectNavProps ?? {};
 
-  return <QuestionSearchPage selectNavProps={selectNavProps} pageSource={{ source: "list" }} />;
+  return <QuestionSearchPage selectNavProps={selectNavProps} pageSource={{ source: 'list' }} />;
 }

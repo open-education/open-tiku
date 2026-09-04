@@ -1,29 +1,29 @@
-import { useState } from "react";
-import { SimpleNoData } from "~/common/empty";
-import { SimplePagination } from "~/common/page";
-import { ListShow } from "~/student/test/task";
-import { useTestList } from "~/util/fetcher";
-import { DateUtil } from "~/util/object";
-import type { Route } from "./+types/history";
-import React from "react";
-import type { DateRange } from "react-day-picker";
-import { Calendar } from "~/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
-import { Button } from "~/components/ui/button";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { zhCN } from "date-fns/locale";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { Loading } from "~/common/load";
-import { SimpleAlert } from "~/common/alert";
+import { useState } from 'react';
+import { SimpleNoData } from '~/common/empty';
+import { SimplePagination } from '~/common/page';
+import { ListShow } from '~/student/test/task';
+import { useTestList } from '~/util/fetcher';
+import { DateUtil } from '~/util/object';
+import type { Route } from './+types/history';
+import React from 'react';
+import type { DateRange } from 'react-day-picker';
+import { Calendar } from '~/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
+import { Button } from '~/components/ui/button';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { zhCN } from 'date-fns/locale';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { Loading } from '~/common/load';
+import { SimpleAlert } from '~/common/alert';
 
 /// 历史任务
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "开放题库-历史任务" },
+    { title: '开放题库-历史任务' },
     {
-      name: "description",
-      content: "查看自己历史期间已布置的作业列表。",
+      name: 'description',
+      content: '查看自己历史期间已布置的作业列表。',
     },
   ];
 }
@@ -42,7 +42,7 @@ export default function Index() {
     data: historyListResp = { list: [], pageNo: 1, pageSize: 10, total: 0 },
     isLoading: historyListRespLoading,
     error: historyListRespErr,
-  } = useTestList(dateRange?.from ? DateUtil.formatDate(dateRange.from) : "", dateRange?.to ? DateUtil.formatDate(dateRange.to) : "", pageNo);
+  } = useTestList(dateRange?.from ? DateUtil.formatDate(dateRange.from) : '', dateRange?.to ? DateUtil.formatDate(dateRange.to) : '', pageNo);
 
   return (
     <div className="px-4 py-4 sm:px-16 sm:py-4 space-y-4">
@@ -59,7 +59,7 @@ export default function Index() {
                     className="justify-start text-left font-normal border-slate-300 text-slate-700 bg-white hover:border-slate-400 hover:bg-slate-50 shadow-sm"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange?.from ? format(dateRange.from, "yyyy-MM-dd", { locale: zhCN }) : <span>开始日期</span>}
+                    {dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd', { locale: zhCN }) : <span>开始日期</span>}
                   </Button>
                 }
               />
@@ -83,7 +83,7 @@ export default function Index() {
                     className="justify-start text-left font-normal border-slate-300 text-slate-700 bg-white hover:border-slate-400 hover:bg-slate-50 shadow-sm"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange?.to ? format(dateRange.to, "yyyy-MM-dd", { locale: zhCN }) : <span>结束日期</span>}
+                    {dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd', { locale: zhCN }) : <span>结束日期</span>}
                   </Button>
                 }
               />

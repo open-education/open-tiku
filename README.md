@@ -93,6 +93,8 @@ Workbench › Tree: Indent 目录缩进默认8太窄, 加宽更容易区分
 
 Prettier: Print Width 用户空间设置 150 个字符宽度, 现在显示器都比较宽 默认的 80 个字符宽度代码反而到处折行
 
+格式化文件统一维护在 [.prettierrc.yaml](.prettierrc.yaml) 配置文件中
+
 ### 构建部署
 
 目前没有 `CI/CD` 等流水线, 本地构建后借助 `github` 平台完成产出物的发布和部署

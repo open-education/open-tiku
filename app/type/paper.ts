@@ -1,4 +1,4 @@
-import type { Content, QuestionInfoResp, QuestionOption } from "~/type/question";
+import type { Content, QuestionInfoResp, QuestionOption } from '~/type/question';
 
 /// 试卷相关的类型
 
@@ -248,7 +248,7 @@ export interface ReplaceQuestionReq {
 
 // 试卷搜索页面
 export interface PaperPageSourceProps {
-  source: "list" | "myPaper" | "myReview";
+  source: 'list' | 'myPaper' | 'myReview';
 }
 
 // 试卷审核

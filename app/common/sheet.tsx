@@ -1,5 +1,5 @@
-import type React from "react";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "~/components/ui/sheet";
+import type React from 'react';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet';
 
 /// Sheet 样式统一管理
 
@@ -17,7 +17,7 @@ function SimpleSheet({
   sheetTitle,
   sheetDesc,
   sheetContent,
-  className = "w-[90vw]! max-w-[90vw]! sm:w-[70vw]! md:w-[80vw]! lg:w-[90vw]! overflow-y-auto",
+  className = 'w-[90vw]! max-w-[90vw]! sm:w-[70vw]! md:w-[80vw]! lg:w-[90vw]! overflow-y-auto',
 }: SimpleSheetProps) {
   return (
     <Sheet open={openSheet} onOpenChange={setOpenSheet}>

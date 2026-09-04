@@ -1,10 +1,10 @@
-import type { QuestionBaseInfoResp, QuestionListResp, QuestionPageSourceProps, QuestionSearch } from "~/type/question";
-import type { TextbookOtherDict } from "~/type/textbook";
-import { OperateTags, TagShow } from "~/common/question/tag";
-import { DictUtil } from "~/util/object";
-import { TitleShow } from "~/common/title";
-import { MultiOptionShow } from "~/common/select";
-import type { KeyedMutator } from "swr";
+import type { QuestionBaseInfoResp, QuestionListResp, QuestionPageSourceProps, QuestionSearch } from '~/type/question';
+import type { TextbookOtherDict } from '~/type/textbook';
+import { OperateTags, TagShow } from '~/common/question/tag';
+import { DictUtil } from '~/util/object';
+import { TitleShow } from '~/common/title';
+import { MultiOptionShow } from '~/common/select';
+import type { KeyedMutator } from 'swr';
 
 /// 题库题目列表展示
 
@@ -116,7 +116,7 @@ function SingleQuestionCommonPart({
 
       {/* 标题 */}
       <div className="mt-2.5">
-        {<TitleShow id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment || ""} images={questionInfo.images} />}
+        {<TitleShow id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment || ''} images={questionInfo.images} />}
       </div>
 
       {/* 选项内容 */}

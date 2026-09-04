@@ -1,12 +1,12 @@
-import { GripVertical, RotateCcw } from "lucide-react";
-import { MultiOptionShow } from "~/common/select";
-import { TitleShow } from "~/common/title";
-import type { GenPaperQuestionResp } from "~/type/paper";
-import type { QuestionInfoResp, QuestionOption } from "~/type/question";
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
-import { useSortable, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { Button } from "~/components/ui/button";
-import { CSS } from "@dnd-kit/utilities";
+import { GripVertical, RotateCcw } from 'lucide-react';
+import { MultiOptionShow } from '~/common/select';
+import { TitleShow } from '~/common/title';
+import type { GenPaperQuestionResp } from '~/type/paper';
+import type { QuestionInfoResp, QuestionOption } from '~/type/question';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { useSortable, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { Button } from '~/components/ui/button';
+import { CSS } from '@dnd-kit/utilities';
 
 // 一组题目拖拽列表
 interface GenSortableQuestionListProps {
@@ -76,7 +76,7 @@ function GenQuestionInfo({ groupId, index, question, onReplace, onUpdateScore, o
 
   // 生成题目标题
   const getQuestionTitle = (orderNum: number, stem: string, images: string[]) => {
-    return <TitleShow no={orderNum} title={stem} comment={""} images={images} />;
+    return <TitleShow no={orderNum} title={stem} comment={''} images={images} />;
   };
 
   // 生成题目选项
