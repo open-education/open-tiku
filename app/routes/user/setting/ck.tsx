@@ -195,7 +195,7 @@ export default function Index() {
   const rowClass = 'flex items-center gap-4 px-4 py-2 border-b';
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-muted">
       <Card>
         <CardHeader>
           <CardTitle className="text-base font-bold">建立 章节/考点 第7级 关联关系, 挂载题型</CardTitle>

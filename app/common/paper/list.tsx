@@ -1,7 +1,6 @@
 import { Badge } from '~/components/ui/badge';
 import { Card, CardContent } from '~/components/ui/card';
 import { Separator } from '~/components/ui/separator';
-import { cn } from '~/lib/utils';
 import type { CommonPaperSearchReq, CommonPaperResp, TopPaperResp, GenPaperResp } from '~/type/paper';
 import { StringConst, StringConstUtil } from '~/util/string';
 import { httpClient } from '~/util/http';
@@ -10,6 +9,7 @@ import { GenInfoPreview } from '~/home/paper/gen/info';
 import React from 'react';
 import { SimpleAlert } from '~/common/alert';
 import type { TextbookOtherDict } from '~/type/textbook';
+import { cn } from 'cn';
 
 /// 试卷元数据
 

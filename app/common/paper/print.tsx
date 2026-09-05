@@ -122,7 +122,7 @@ function ExportPdf({ topInfoResp, genInfoResp }: ExportPdfProps) {
   };
 
   return (
-    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-gray-100">
+    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-muted">
       <div className="mt-3">
         <Button onClick={confirmExportPdf} className="text-sm">
           确认下载
@@ -151,7 +151,7 @@ function PdfContent({ title, groups }: { title: string; groups: NormalizedGroup[
           {group.questions.map((question) => (
             <div
               key={question.id}
-              className="text-base mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
+              className="text-base mt-4 p-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
             >
               <div className="pb-2">
                 <div>

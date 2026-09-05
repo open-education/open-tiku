@@ -93,7 +93,7 @@ function MyPaperSearchList({ pageSource }: MyPaperSearchListProps) {
   const [sheetContent, setSheetContent] = useState<React.ReactNode>('');
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-muted">
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
         <CommonPaperSearchConf textbooks={textbooks} search={searchReq} updateCommonPaperSearchReq={updateSearchReq} />
@@ -136,7 +136,7 @@ function MyPaperSearchList({ pageSource }: MyPaperSearchListProps) {
       ) && <Loading />}
 
       {/* 试卷列表 */}
-      <div className="mt-3 bg-gray-50">
+      <div className="mt-3">
         <MyPaperList
           search={searchReq}
           paperList={paperListResp.list}

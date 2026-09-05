@@ -9,6 +9,7 @@ import { ObjectUtil } from '~/util/object';
 import katexStyles from 'katex/dist/katex.min.css?url';
 import { TooltipProvider } from '~/components/ui/tooltip';
 import { InitLoading } from '~/common/load';
+import { ThemeProvider } from 'next-themes';
 
 // 使用该方式引入 katex css 文件
 export function links(): Route.LinkDescriptors {
@@ -42,7 +43,11 @@ export function HydrateFallback() {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme" attribute="class">
+      <Outlet />
+    </ThemeProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

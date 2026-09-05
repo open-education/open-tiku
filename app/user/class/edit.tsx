@@ -526,11 +526,11 @@ function StudentAccountList({ open, setOpen, infoResp }: StudentAccountListProps
           editInfoResp &&
           editInfoResp.id > 0 &&
           createPortal(
-            <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center" onClick={() => setEditDialogOpen(false)}>
-              <div className="bg-white w-[40vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="fixed inset-0 z-60 bg-background flex items-center justify-center" onClick={() => setEditDialogOpen(false)}>
+              <div className="bg-muted w-[40vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 shrink-0">
-                  <div className="text-base font-semibold text-gray-800">账户修改</div>
-                  <button className="text-gray-400 hover:text-gray-600 focus:outline-none" onClick={() => setEditDialogOpen(false)} aria-label="关闭">
+                  <div className="text-base font-semibold">账户修改</div>
+                  <button className="hover:text-gray-600 focus:outline-none" onClick={() => setEditDialogOpen(false)} aria-label="关闭">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -672,7 +672,7 @@ function StudentAccountEdit({ setOpen, infoResp, classStudentMapRespMutate }: St
   };
 
   return (
-    <div className="flex-1 overflow-y-auto space-y-4 py-4 px-8">
+    <div className="flex-1 overflow-y-auto space-y-4 py-4 px-8 bg-muted">
       <div className="text-sm text-gray-500">若重置密码, 更新成功后会将新的密码发送到你的个人邮箱中</div>
 
       {/* 账户名称 */}

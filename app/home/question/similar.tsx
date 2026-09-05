@@ -36,7 +36,7 @@ export function SimilarQuestionList({ questionTypeDict, questionTagDict, questio
   } = useSimilarList(questionId, eightId, pageNo);
 
   return (
-    <div className="p-4 bg-gray-100">
+    <div className="p-4 bg-muted">
       <div>
         <Separator />
       </div>

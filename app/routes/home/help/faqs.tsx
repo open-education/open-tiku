@@ -17,8 +17,8 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Index() {
   return (
-    <section className="px-4 py-4 sm:px-16 sm:py-4 mx-auto">
-      <div className="w-full p-8 bg-white">
+    <section className="mx-auto">
+      <div className="w-full p-4 bg-muted">
         <div className="text-center">
           <h2 className="mb-4 text-3xl font-bold">常见问题</h2>
           <p className="text-muted-foreground mx-auto max-w-2xl text-base">常见问题整理和注意事项补充说明</p>

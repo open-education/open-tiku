@@ -25,7 +25,7 @@ import { httpClient } from '~/util/http';
 import { SimpleAlert } from '~/common/alert';
 import { toast } from 'sonner';
 import { Card, CardContent } from '~/components/ui/card';
-import { cn } from '~/lib/utils';
+import { cn } from 'cn';
 import { getGroupName } from '~/common/paper/print';
 
 // 手动组卷试卷详情
@@ -154,7 +154,7 @@ function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionD
   };
 
   return (
-    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-gray-100">
+    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-muted">
       <div>
         <Separator />
       </div>
@@ -174,7 +174,7 @@ function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionD
               return (
                 <div
                   key={question.common.genId}
-                  className="flex text-base mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
+                  className="flex text-base mt-4 p-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
                 >
                   {/* 题目主体 */}
                   <div className="flex-[0_0_95%]">
@@ -207,11 +207,11 @@ function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionD
       {openDialog &&
         viewQuestionInfo &&
         createPortal(
-          <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center" onClick={() => setOpenDialog(false)}>
-            <div className="bg-white h-[70vh] w-[70vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <div className="fixed inset-0 z-60 bg-background flex items-center justify-center" onClick={() => setOpenDialog(false)}>
+            <div className="bg-muted h-[70vh] w-[70vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 shrink-0">
-                <div className="text-base font-semibold text-gray-800">题目详情</div>
-                <button className="text-gray-400 hover:text-gray-600 focus:outline-none" onClick={() => setOpenDialog(false)} aria-label="关闭">
+                <div className="text-base font-semibold">题目详情</div>
+                <button className="hover:text-gray-600 focus:outline-none" onClick={() => setOpenDialog(false)} aria-label="关闭">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -441,7 +441,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
   };
 
   return (
-    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-gray-100">
+    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-muted">
       <div className="text-sm mt-3">
         <div>1. 拖拽排序仅限同一题型内, 比如选择题, 填空题内, 跨题型不支持题型也不对应;</div>
         <div>2. 同一题型下可重新分配分值, 注意该题型总分数不能发生变化;</div>
@@ -583,7 +583,7 @@ function GenInfoReplaceList({ listResp, questionTypeDict, questionTagDict, quest
   };
 
   return (
-    <div className="flex flex-col gap-3 p-4 bg-gray-100">
+    <div className="flex flex-col gap-3 p-4 bg-muted">
       <div>{warnInfo}</div>
 
       {/* 题目列表 */}

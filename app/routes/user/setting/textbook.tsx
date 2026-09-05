@@ -135,7 +135,7 @@ export default function Index() {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-muted">
       {/* 加载中提示 */}
       {useDelayedLoading(
         firstLevelsLoading ||
@@ -156,7 +156,7 @@ export default function Index() {
       {sixthLevelsErr && <SimpleAlert title="教材章节/考点名称获取失败" message={sixthLevelsErr.message} />}
       {seventhLevelsErr && <SimpleAlert title="教材小节/考点名称获取失败" message={seventhLevelsErr.message} />}
 
-      <div className="space-y-6 min-h-200 p-4 bg-gray-50">
+      <div className="space-y-6 min-h-200 p-4">
         <div className="text-base font-bold">七级菜单维护</div>
 
         <Separator />

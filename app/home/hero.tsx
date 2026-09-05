@@ -1,5 +1,5 @@
 import { Badge } from '~/components/ui/badge';
-import { cn } from '~/lib/utils';
+import { cn } from 'cn';
 
 /// 统计相关
 
@@ -41,7 +41,7 @@ const STATS: CountStatProps[] = [
 // 使命界面
 function Hero() {
   return (
-    <section className="bg-green-50">
+    <section>
       <div className="container mx-auto px-4 py-12 md:py-20 lg:py-28">
         <div className="mb-16 text-center">
           <Badge variant="secondary" className="mb-6 gap-1.5 px-3 py-1.5">

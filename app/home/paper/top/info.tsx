@@ -131,7 +131,7 @@ function TopInfo({
   };
 
   return (
-    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-gray-100">
+    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-muted">
       {/* 编辑模式查看详情时才有 */}
 
       <div>

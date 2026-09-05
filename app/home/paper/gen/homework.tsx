@@ -232,7 +232,7 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
   };
 
   return (
-    <div className="p-4 space-y-3">
+    <div className="p-4 space-y-3 bg-muted">
       <div className="text-sm">
         <div>1. 作业每次布置都是新的任务, 不会覆盖也不会删除历史布置的作业任务</div>
         <div>2. 默认只展示最新的 30 条班级信息, 如果你管理的班级较多请增加搜索条件, 如果还是不展示可以反馈给网站管理员</div>
@@ -408,14 +408,14 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
             render={
               <Button
                 variant="outline"
-                className="justify-start text-left font-normal border-slate-300 text-slate-700 bg-white hover:border-slate-400 hover:bg-slate-50 shadow-sm"
+                className="justify-start text-left font-normal border-slate-300 hover:border-slate-400 hover:bg-slate-50 shadow-sm"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {deadline ? format(deadline, 'yyyy-MM-dd', { locale: zhCN }) : <span>截止日期</span>}
               </Button>
             }
           />
-          <PopoverContent className="w-auto p-0 border border-slate-200 shadow-md bg-white block z-50" align="start">
+          <PopoverContent className="w-auto p-0 border border-slate-200 shadow-md block z-50" align="start">
             <Calendar mode="single" selected={deadline} onSelect={(date) => setDeadline(date)} locale={zhCN} />
           </PopoverContent>
         </Popover>
@@ -438,10 +438,10 @@ function PublishHomework({ setOpenSheet, genInfoResp }: PublishHomeworkProps) {
         studentListResp &&
         studentListResp.length > 0 &&
         createPortal(
-          <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center" onClick={() => setSelectStudentDialogOpen(false)}>
-            <div className="bg-white w-[70vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <div className="fixed inset-0 z-60 bg-background flex items-center justify-center" onClick={() => setSelectStudentDialogOpen(false)}>
+            <div className="bg-muted w-[70vw] flex flex-col shadow-lg" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 shrink-0">
-                <div className="text-base font-semibold text-gray-800">选择学生</div>
+                <div className="text-base font-semibold">选择学生</div>
                 <button
                   className="text-gray-400 hover:text-gray-600 focus:outline-none"
                   onClick={() => setSelectStudentDialogOpen(false)}
@@ -515,7 +515,7 @@ function SelectStudentList({ setSelectStudentDialogOpen, label, studentListResp,
   };
 
   return (
-    <div className="p-4 space-y-3 text-sm">
+    <div className="p-4 space-y-3 text-sm bg-muted">
       <div className="space-y-3">
         <p>
           已选择班级：<span className="text-base font-semibold">{label}</span>
@@ -623,7 +623,7 @@ function HomeworkList({ paperId }: HomeworkListProps) {
   const [selectHkId, setSelectHkId] = useState<number>(0);
 
   return (
-    <div className="p-4 space-y-3 text-sm">
+    <div className="p-4 space-y-3 text-sm bg-muted">
       <Separator />
 
       {/* 批次 */}
@@ -691,7 +691,7 @@ function HomeworkList({ paperId }: HomeworkListProps) {
                 </div>
 
                 {/* 学生账户列表 */}
-                <CollapsibleContent className="p-8 bg-gray-50 border">
+                <CollapsibleContent className="p-8 bg-card border">
                   <Table>
                     <TableHeader>
                       <TableRow>

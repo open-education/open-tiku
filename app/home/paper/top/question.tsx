@@ -5,7 +5,7 @@ import { MultiOptionShow } from '~/common/select';
 import { TitleShow } from '~/common/title';
 import { Button } from '~/components/ui/button';
 import { Badge, CheckCircle, ChevronDown, Lightbulb } from 'lucide-react';
-import { cn } from '~/lib/utils';
+import { cn } from 'cn';
 
 /// 试卷题目样式
 
@@ -25,7 +25,7 @@ function TopQuestionInfo(props: TopQuestionInfoProps) {
   };
 
   return (
-    <div className="text-base mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60">
+    <div className="text-base mt-4 p-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60">
       {/* 题目主体 */}
       <div className="pb-2">
         <div>

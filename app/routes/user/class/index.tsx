@@ -69,7 +69,7 @@ export default function Index() {
   const [viewInfoDialogOpen, setViewInfoDialogOpen] = useState<boolean>(false);
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-muted">
       <Card className="w-full">
         <CardHeader className="flex flex-row justify-between space-y-0 pb-4">
           <CardTitle className="text-base font-medium">我的班级管理</CardTitle>

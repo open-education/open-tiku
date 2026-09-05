@@ -1,6 +1,6 @@
 import { BookOpen, Clock, TrendingUp, Upload, Users } from 'lucide-react';
 import { Badge } from '~/components/ui/badge';
-import { cn } from '~/lib/utils';
+import { cn } from 'cn';
 
 /// 统计面板
 /// 统计面板的数据需要延后生成, 避免每次都重复计算且可能拖慢网站速度
@@ -62,7 +62,7 @@ function Board() {
     <section>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* 最新上传 */}
-        <div className="bg-white border">
+        <div className="bg-card border">
           <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
             <Clock size={16} />
             最新上传
@@ -84,7 +84,7 @@ function Board() {
         </div>
 
         {/* 热门题目 */}
-        <div className="bg-white">
+        <div className="bg-card">
           <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
             <TrendingUp size={16} />
             热门题目
@@ -106,7 +106,7 @@ function Board() {
         </div>
 
         {/* 热门教材 */}
-        <div className="bg-white">
+        <div className="bg-card">
           <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
             <BookOpen size={16} />
             热门教材
@@ -126,7 +126,7 @@ function Board() {
         </div>
 
         {/* 活跃教师 */}
-        <div className="bg-white">
+        <div className="bg-card">
           <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
             <Upload size={16} />
             活跃教师
@@ -146,7 +146,7 @@ function Board() {
         </div>
 
         {/* 活跃学生 */}
-        <div className="bg-white">
+        <div className="bg-card">
           <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
             <Users size={16} />
             活跃学生

@@ -2,7 +2,7 @@ import type { QuestionOption } from '~/type/question';
 import { SimpleFullContent } from '~/common/content';
 import { StringValidator } from '~/util/string';
 import { ImageZoom } from '~/common/image';
-import { cn } from '~/lib/utils';
+import { cn } from 'cn';
 
 /// 选择题选项样式
 

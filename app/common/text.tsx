@@ -3,7 +3,7 @@ import { Textarea } from '~/components/ui/textarea';
 import { Alert, AlertDescription } from '~/components/ui/alert';
 import { AlertCircle, CheckCircle2, Loader2, NotebookText } from 'lucide-react';
 import { useState } from 'react';
-import { cn } from '~/lib/utils';
+import { cn } from 'cn';
 import type { TextbookOtherDict } from '~/type/textbook';
 import { httpClient } from '~/util/http';
 import type { CreateQuestionReq, QuestionSnippetReq } from '~/type/question';

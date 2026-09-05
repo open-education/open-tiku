@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from '~/components/ui/popover';
 import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet';
 import { useUserInfo } from '~/hooks/use-user';
+import { ModeToggle } from '~/common/theme';
 import { UserRoleType } from '~/type/enum';
 import type { UserInfoResp } from '~/type/user';
 import { Login } from '~/user/login';
@@ -135,7 +136,7 @@ function Header() {
     }`;
 
   return (
-    <header className="flex items-center sticky top-0 z-50 h-16 border-b border-border bg-background/95 backdrop-blur-sm px-2 sm:px-4">
+    <header className="flex items-center sticky top-0 z-50 h-16 border-b border-border bg-muted backdrop-blur-sm px-2 sm:px-4">
       <div className="flex items-center justify-between gap-2 sm:gap-6 w-full">
         {/* Logo */}
         <NavLink to={'/'}>
@@ -295,6 +296,10 @@ function Header() {
               </Popover>
             </div>
           )}
+
+          <div>
+            <ModeToggle />
+          </div>
         </div>
       </div>
     </header>

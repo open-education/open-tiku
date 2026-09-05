@@ -13,6 +13,8 @@ export interface TestInfoResp {
   homeworkId: number;
   studentId: number;
   deadline: string;
+  createdAt: string;
+  updatedAt: string;
   paperInfo: CommonPaperResp;
 }
 

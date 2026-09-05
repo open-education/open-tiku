@@ -4,7 +4,7 @@ import { Progress } from '~/components/ui/progress';
 import { Button } from '~/components/ui/button';
 import { Separator } from '~/components/ui/separator';
 import type { Textbook } from '~/type/textbook';
-import { cn } from '~/lib/utils';
+import { cn } from 'cn';
 import {
   DropdownMenu,
   DropdownMenuContent,

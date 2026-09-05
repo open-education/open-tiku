@@ -42,7 +42,7 @@ const links: LinksProps[] = [
 
 function Footer() {
   return (
-    <footer className="bg-white px-8 py-4">
+    <footer className="bg-muted px-8 py-4">
       <div className="mb-4">
         <Separator />
       </div>

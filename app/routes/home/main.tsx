@@ -66,7 +66,7 @@ export default function Main() {
   }, []);
 
   return (
-    <div className="text-foreground bg-gray-100 min-h-screen flex flex-col">
+    <div className="text-foreground bg-background min-h-screen flex flex-col">
       {/* 网站首页头部 */}
       <Header />
 

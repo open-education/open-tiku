@@ -45,7 +45,7 @@ export default function Index() {
   const [editInfoResp, setEditInfoResp] = useState<UserIdentityInfoResp | null>(null);
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-muted">
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-base font-semibold">第三方登录账户管理</CardTitle>

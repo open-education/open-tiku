@@ -23,6 +23,7 @@ import { Plus, Upload, View } from 'lucide-react';
 import type { UserInfoResp } from '~/type/user';
 import { useUserInfo } from '~/hooks/use-user';
 import { QuestionRelationType, UserRoleType } from '~/type/enum';
+import { cn } from 'cn';
 
 // 题目搜索页面
 interface QuestionSearchProps {
@@ -149,7 +150,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
   };
 
   return (
-    <div className={className}>
+    <div className={cn('bg-muted p-4', className)}>
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
         {/* 章节/考点 */}

@@ -25,7 +25,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionD
   const { baseInfo, extraInfo } = infoResp;
 
   return (
-    <div className="space-y-4 pl-4 pb-4 pr-4">
+    <div className="space-y-4 pl-4 pb-4 pr-4 bg-muted">
       {/* 我的题目审核如果被拒绝要显示拒绝原因, 修改后重新提交审核 */}
       {baseInfo.status === QuestionStatus.Rejected && (
         <SimpleAlert title="你的题目审核被拒绝, 请按拒绝原因修改后重新提交审核" message={baseInfo.rejectReason || ''} />

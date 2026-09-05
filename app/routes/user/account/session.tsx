@@ -37,7 +37,7 @@ export default function Index() {
   } = useUserSessionList(pageNo);
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-muted">
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-base font-semibold">活跃用户 Session 列表</CardTitle>

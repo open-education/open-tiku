@@ -47,7 +47,7 @@ function QuestionListShow({
         return (
           <div
             key={questionInfo.id}
-            className="mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
+            className="mt-4 p-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
           >
             {/* 题干选项等部分 */}
             <SingleQuestionCommonPart
@@ -144,7 +144,7 @@ function SimilarQuestionListShow({ pageSource, questionTypeDict, questionTagDict
         return (
           <div
             key={questionInfo.id}
-            className="mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
+            className="mt-4 p-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
           >
             {/* 题干选项等部分 */}
             <SingleQuestionCommonPart

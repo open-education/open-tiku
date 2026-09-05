@@ -146,7 +146,7 @@ export default function Index() {
   };
 
   return (
-    <div>
+    <div className="bg-muted p-4">
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
         <CommonPaperSearchConf textbooks={textbooks} search={searchReq} updateCommonPaperSearchReq={updateSearchReq} />

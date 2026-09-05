@@ -7,7 +7,7 @@ import { TestMethod } from '~/type/enum';
 import type { GenPaperResp } from '~/type/paper';
 import type { AttemptInfoResp, TestInfoResp } from '~/type/test';
 import { DateUtil } from '~/util/object';
-import { PreviewEaxm } from './exam';
+import { PreviewEaxm } from '~/student/test/exam';
 
 // 一个任务列表
 interface ListShowProps {
@@ -29,7 +29,7 @@ function ListShow({ listResp }: ListShowProps) {
           <div
             key={item.id}
             onClick={() => {}}
-            className="px-4 py-3 border-t border-gray-100 flex items-center gap-2.5 cursor-pointer transition-colors duration-100 hover:bg-gray-100"
+            className="px-4 py-3 border-t border-gray-100 flex items-center gap-2.5 cursor-pointer transition-colors duration-100 hover:bg-accent"
           >
             {/* 左侧状态图标容器 */}
             <div
@@ -46,10 +46,10 @@ function ListShow({ listResp }: ListShowProps) {
               )}
             </div>
 
-            {/* 中间文本与进度条 */}
+            {/* 中间文本 */}
             <InfoShow infoResp={item} />
 
-            <div className="flex gap-3 text-xs">
+            <div className="flex flex-wrap gap-3 text-xs">
               {allowExam && (
                 <div>
                   <Button variant="link">
@@ -73,8 +73,8 @@ function ListShow({ listResp }: ListShowProps) {
             </Button>
 
             {/* 右侧紧急标签与箭头 */}
-            {isUrgent && <span className="text-xs px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-semibold shrink-0">截止今天</span>}
-            {!allowExam && <span className="text-xs px-1.5 py-0.5 rounded bg-rose-50 text-blue-600 font-semibold shrink-0">已截止</span>}
+            {isUrgent && <span className="text-xs px-1.5 py-0.5 rounded text-rose-600 font-semibold shrink-0">截止今天</span>}
+            {!allowExam && <span className="text-xs px-1.5 py-0.5 rounded  text-blue-600 font-semibold shrink-0">已截止</span>}
           </div>
         );
       })}
@@ -101,15 +101,12 @@ function InfoShow({ infoResp }: InfoShowProps) {
         />
       </div>
       <p className="font-medium text-gray-800 truncate">{infoResp.paperInfo.title}</p>
-      <div className="flex items-center gap-4 mt-1">
-        <p className="text-sm text-gray-400 shrink-0">
-          {infoResp.paperInfo.authorName} · {0}/{infoResp.paperInfo.count}题
-        </p>
-        {/* 进度条背景 */}
-        <div className="flex-1 h-0.75 bg-gray-100">
-          {/* 进度条高亮 */}
-          <div className="h-0.75 bg-blue-200 transition-all duration-300" style={{ width: `${(10 / infoResp.paperInfo.count) * 100}%` }} />
-        </div>
+      <div className="flex flex-wrap items-center gap-4 mt-1 text-sm text-gray-400 shrink-0">
+        <div>由 {infoResp.paperInfo.authorName} 创建</div>
+        <div>共 {infoResp.paperInfo.count} 题</div>
+        <div>创建时间: {infoResp.createdAt}</div>
+        <div>更新时间: {infoResp.updatedAt}</div>
+        <div>截止时间: {infoResp.deadline}</div>
       </div>
     </div>
   );

@@ -124,12 +124,12 @@ export default function Index() {
       {useDelayedLoading(isLoading || textbooksIsLoading || latestIsLoading) && <Loading />}
 
       {/* 使命 */}
-      <div>
+      <div className="bg-muted">
         <Hero />
       </div>
 
       {/* 关键导航 */}
-      <div className="mt-3 sm:mt-4">
+      <div className="mt-4 p-4 bg-muted">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-primary">
@@ -152,7 +152,7 @@ export default function Index() {
       </div>
 
       {/* 精选试卷 */}
-      <div className="mt-3 sm:mt-4">
+      <div className="mt-4 p-4 bg-muted">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-blue-500">
@@ -181,7 +181,7 @@ export default function Index() {
       </div>
 
       {/* 统计面板 */}
-      <div className="mt-3 sm:mt-4">
+      <div className="mt-4 p-4 bg-muted">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-red-500">
@@ -198,12 +198,12 @@ export default function Index() {
       </div>
 
       {/* 网站碎碎念 */}
-      <div className="my-3 sm:mt-4">
+      <div className="mt-4 p-4 bg-muted">
         <Note />
       </div>
 
       {/* 成为教师 */}
-      <div>
+      <div className="mt-4 p-4 bg-muted">
         <Teacher />
       </div>
 

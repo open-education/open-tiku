@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { cn } from '~/lib/utils';
+import { cn } from 'cn';
 import { ImagePlus, Plus, Trash2, X } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';

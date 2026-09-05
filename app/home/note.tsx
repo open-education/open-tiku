@@ -22,7 +22,7 @@ function Note() {
   ];
 
   return (
-    <section className="border-t border-border bg-white">
+    <section>
       <div className="px-6 py-6 grid md:grid-cols-3 gap-10 md:gap-8">
         {FEATURES.map(({ icon: Icon, title, desc }) => (
           <div key={title} className="flex gap-4">

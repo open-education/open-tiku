@@ -2,7 +2,7 @@ import { Button } from '~/components/ui/button';
 import { Card } from '~/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { Wrench, X } from 'lucide-react';
-import { cn } from '~/lib/utils';
+import { cn } from 'cn';
 import React from 'react';
 
 /// 工具组件展示容器, 本身不展示任何内容

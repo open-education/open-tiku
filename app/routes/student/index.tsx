@@ -2,7 +2,7 @@ import { getGreeting } from '~/util/greeting';
 import type { Route } from './+types/index';
 import { CheckLine, ChevronRight, FileQuestionMark, GraduationCap, RotateCcw, Star, Target, Zap } from 'lucide-react';
 import { Card, CardContent } from '~/components/ui/card';
-import { cn } from '~/lib/utils';
+import { cn } from 'cn';
 import { SimplePagination } from '~/common/page';
 import { DateUtil } from '~/util/object';
 import { useTestList } from '~/util/fetcher';
@@ -108,7 +108,7 @@ export default function Index() {
   return (
     <div className="px-4 py-4 sm:px-16 sm:py-4 space-y-4">
       {/* 欢迎 */}
-      <div className="bg-white p-4">
+      <div className="bg-muted p-4">
         <div className="text-blue-500 font-semibold">{getGreeting()}</div>
         <div className="text-sm">七年级1班，已累计打卡 12 次</div>
       </div>
@@ -121,13 +121,13 @@ export default function Index() {
       </div>
 
       {/* 已达成就 */}
-      <div className="overflow-hidden border border-gray-100 bg-white shadow-sm">
+      <div className="overflow-hidden border border-gray-100 bg-muted shadow-sm">
         {/* 头部区域 */}
         <div className="border-b border-gray-100 p-4">
           <h3 className="font-semibold text-blue-600">已达成就</h3>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 bg-gray-50 p-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 p-3">
           {STATS.map((item) => (
             <Card key={item.id} className="border-0 text-center">
               <CardContent>
@@ -142,7 +142,7 @@ export default function Index() {
       </div>
 
       {/* 今日任务 */}
-      <div className="overflow-hidden border border-gray-100 bg-white shadow-sm">
+      <div className="overflow-hidden border border-gray-100 bg-muted shadow-sm">
         {/* 头部区域 */}
         <div className="border-b border-gray-100 p-4">
           <h3 className="font-semibold text-blue-600">今日任务</h3>
@@ -158,7 +158,7 @@ export default function Index() {
       </div>
 
       {/* 个性化推荐 */}
-      <div className="border border-gray-100 bg-white shadow-sm">
+      <div className="border border-gray-100 bg-muted shadow-sm">
         {/* 头部区域 */}
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <h3 className="font-semibold text-blue-600">个性化推荐</h3>
@@ -196,7 +196,7 @@ export default function Index() {
       </div>
 
       {/* 历史任务 */}
-      <div className="overflow-hidden border border-gray-100 bg-white shadow-sm">
+      <div className="overflow-hidden border border-gray-100 bg-muted shadow-sm">
         {/* 头部区域 */}
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <h3 className="font-semibold text-blue-600">历史任务</h3>

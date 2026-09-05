@@ -138,7 +138,7 @@ export default function Index() {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-muted">
       <Card className="w-full">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="text-base font-medium">通用字典管理</CardTitle>
