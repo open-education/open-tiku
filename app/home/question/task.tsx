@@ -140,7 +140,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
   };
 
   return (
-    <div className="text-base space-y-6 pl-4 pr-4">
+    <div className="text-base space-y-6 pl-4 pr-4 bg-muted">
       <div className="text-sm">
         <div>1. 文件标识请使用右上角的 快捷工具-上传文件 上传文件后获得</div>
       </div>
