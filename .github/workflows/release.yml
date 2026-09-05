@@ -4,7 +4,7 @@ on:
   push:
     tags:
       # 标记 v 开头的 tag 时生效
-      - "v*"
+      - 'v*'
 
 permissions:
   contents: write
@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "24"
+          node-version: '24'
 
       # 安装 pnpm 并缓存依赖
       - name: Setup pnpm

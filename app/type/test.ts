@@ -90,3 +90,17 @@ export interface TestAnswerAddReq {
   status: number;
   list: AnswerAddReq[];
 }
+
+// 做题记录列表
+export interface AttemptListReq {
+  id: number;
+  pageNo: number;
+  pageSize: number;
+}
+
+export interface AttemptListResp {
+  list: AttemptInfoResp[];
+  pageNo: number;
+  pageSize: number;
+  total: number;
+}

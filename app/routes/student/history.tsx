@@ -16,6 +16,7 @@ import { zhCN } from 'date-fns/locale';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
 import { Loading } from '~/common/load';
 import { SimpleAlert } from '~/common/alert';
+import { StringConst } from '~/util/string';
 
 /// 历史任务
 export function meta({}: Route.MetaArgs) {
@@ -39,7 +40,7 @@ export default function Index() {
   // 历史任务默认前10天
   const [pageNo, setPageNo] = useState<number>(1);
   const {
-    data: historyListResp = { list: [], pageNo: 1, pageSize: 10, total: 0 },
+    data: historyListResp = { list: [], pageNo: 1, pageSize: StringConst.pageSize, total: 0 },
     isLoading: historyListRespLoading,
     error: historyListRespErr,
   } = useTestList(dateRange?.from ? DateUtil.formatDate(dateRange.from) : '', dateRange?.to ? DateUtil.formatDate(dateRange.to) : '', pageNo);

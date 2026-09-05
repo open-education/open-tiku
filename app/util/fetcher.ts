@@ -2,15 +2,15 @@ import useSWR from 'swr';
 import useSWRImmutable from 'swr/immutable';
 import { httpClient } from '~/util/http';
 import type { Textbook, TextbookOtherDict } from '~/type/textbook';
-import type { PaperListReq, PaperListResp, CommonPaperSearchReq, CommonPaperResp } from '~/type/paper';
+import type { CommonPaperResp, CommonPaperSearchReq, PaperListReq, PaperListResp } from '~/type/paper';
 import { StringConst, StringValidator } from '~/util/string';
 import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from '~/type/question';
 import type { TaskListReq, TaskListResp } from '~/type/task';
 import type { ChapterKnowledgeResp, QuestionCateResp } from '~/type/question-cate';
 import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentListReq, ClassStudentResp } from '~/type/class';
 import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from '~/type/user';
-import type { HomeworkListSearchReq, HomeworkListResp, HomeworkListReq } from '~/type/homework';
-import type { TestListReq, TestListResp } from '~/type/test';
+import type { HomeworkListReq, HomeworkListResp, HomeworkListSearchReq } from '~/type/homework';
+import type { AttemptListReq, AttemptListResp, TestListReq, TestListResp } from '~/type/test';
 
 /// 使用 SWR 缓存查询组件
 /// https://swr.vercel.app/
@@ -239,4 +239,16 @@ export function useTestList(startDate: string, endDate: string, pageNo: number) 
   const reqPath = '/test/list';
   const key = [reqPath, JSON.stringify(req)];
   return useSWR<TestListResp>(key, () => httpClient.post<TestListResp>(reqPath, req), defaultErrConfig);
+}
+
+// 做题记录列表
+export function useAttemptList(id: number, pageNo: number) {
+  let req: AttemptListReq = {
+    id,
+    pageNo,
+    pageSize: StringConst.pageSize,
+  };
+  const reqPath = '/test/attempts';
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<AttemptListResp>(key, () => httpClient.post<AttemptListResp>(reqPath, req), defaultErrConfig);
 }
