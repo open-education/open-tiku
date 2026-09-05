@@ -226,13 +226,17 @@ export default function Index() {
       </Card>
 
       {/* 班级基础信息编辑对话框 */}
-      <ClassEdit open={editDialogOpen} setOpen={setEditDialogOpen} searchReq={searchReq} infoResp={infoResp} classListMutate={classListMutate} />
+      {editDialogOpen && infoResp && (
+        <ClassEdit open={editDialogOpen} setOpen={setEditDialogOpen} searchReq={searchReq} infoResp={infoResp} classListMutate={classListMutate} />
+      )}
 
       {/* 导入学生账户对话框 */}
-      <UploadStudentAccount open={uploadStudentDialogOpen} setOpen={setUploadStudentAccountOpen} infoResp={infoResp} />
+      {uploadStudentDialogOpen && infoResp && (
+        <UploadStudentAccount open={uploadStudentDialogOpen} setOpen={setUploadStudentAccountOpen} infoResp={infoResp} />
+      )}
 
       {/* 查看班级学生对话框 */}
-      <StudentAccountList open={viewInfoDialogOpen} setOpen={setViewInfoDialogOpen} infoResp={infoResp} />
+      {viewInfoDialogOpen && infoResp && <StudentAccountList open={viewInfoDialogOpen} setOpen={setViewInfoDialogOpen} infoResp={infoResp} />}
     </div>
   );
 }
