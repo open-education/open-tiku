@@ -1,12 +1,12 @@
-import { useRef } from "react";
-import type { GenPaperResp, TopPaperResp } from "~/type/paper";
-import { useReactToPrint } from "react-to-print";
-import { StringConst } from "~/util/string";
-import { TitleShow } from "~/common/title";
-import { MultiOptionShow } from "~/common/select";
-import { Button } from "~/components/ui/button";
-import { Separator } from "~/components/ui/separator";
-import type { QuestionOption } from "~/type/question";
+import { useRef } from 'react';
+import type { GenPaperResp, TopPaperResp } from '~/type/paper';
+import { useReactToPrint } from 'react-to-print';
+import { StringConst } from '~/util/string';
+import { TitleShow } from '~/common/title';
+import { MultiOptionShow } from '~/common/select';
+import { Button } from '~/components/ui/button';
+import { Separator } from '~/components/ui/separator';
+import type { QuestionOption } from '~/type/question';
 
 // 普通的前端试卷打印pdf页面
 
@@ -47,7 +47,7 @@ function normalizeTopPaper(resp: TopPaperResp): { title: string; groups: Normali
     groups: resp.groups.map((group) => ({
       id: group.common.id,
       typeName: group.common.typeName,
-      subTitle: group.common.subTitle || "",
+      subTitle: group.common.subTitle || '',
       questions: group.questions.map((q) => ({
         id: q.id,
         orderNum: q.orderNum,
@@ -67,7 +67,7 @@ function normalizeGenPaper(resp: GenPaperResp): { title: string; groups: Normali
     groups: resp.groups.map((group) => ({
       id: group.common.genId,
       typeName: group.common.typeName,
-      subTitle: group.common.subTitle || "",
+      subTitle: group.common.subTitle || '',
       questions: group.questions.map((q) => ({
         id: q.common.genId,
         orderNum: q.common.orderNum,
@@ -85,7 +85,7 @@ function ExportPdf({ topInfoResp, genInfoResp }: ExportPdfProps) {
   const printRef = useRef<HTMLDivElement>(null);
 
   // 确定标题
-  let title = "试卷导出";
+  let title = '试卷导出';
   let normalizedGroups: NormalizedGroup[] = [];
 
   // 将手动组卷和精选试卷数据结构进行处理
@@ -112,7 +112,7 @@ function ExportPdf({ topInfoResp, genInfoResp }: ExportPdfProps) {
       }
     `,
     onAfterPrint: () => {
-      console.log("下载完成");
+      console.log('下载完成');
     },
   });
 
@@ -122,7 +122,7 @@ function ExportPdf({ topInfoResp, genInfoResp }: ExportPdfProps) {
   };
 
   return (
-    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-gray-100">
+    <div className="flex flex-col gap-3 pl-4 pb-4 pr-4 bg-muted">
       <div className="mt-3">
         <Button onClick={confirmExportPdf} className="text-sm">
           确认下载
@@ -151,7 +151,7 @@ function PdfContent({ title, groups }: { title: string; groups: NormalizedGroup[
           {group.questions.map((question) => (
             <div
               key={question.id}
-              className="text-base mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
+              className="text-base mt-4 p-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
             >
               <div className="pb-2">
                 <div>

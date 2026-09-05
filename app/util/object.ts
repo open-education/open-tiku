@@ -1,5 +1,5 @@
-import type { TopPaperReq, TopPaperResp } from "~/type/paper";
-import type { Textbook, TextbookOption, TextbookOtherDict } from "~/type/textbook";
+import type { TopPaperReq, TopPaperResp } from '~/type/paper';
+import type { Textbook, TextbookOption, TextbookOtherDict } from '~/type/textbook';
 
 // 数组相关操作工具
 export const ArrayUtil = {
@@ -47,7 +47,7 @@ export const ArrayUtil = {
 // 字典相关工具函数
 export const DictUtil = {
   getQuestionTypeName: (typeId: number, dict: Record<number, TextbookOtherDict>): string => {
-    return dict[typeId]?.itemValue ?? "";
+    return dict[typeId]?.itemValue ?? '';
   },
 
   getQuestionTagNames: (tagIds: number[], dict: Record<number, TextbookOtherDict>): string[] => {
@@ -78,5 +78,70 @@ export const ObjectUtil = {
   // 生成一个随机字符
   getRandomStr: (): string => {
     return Math.random().toString(36).substring(2, 9);
+  },
+};
+
+// 日期相关工具
+export const DateUtil = {
+  getTodayDate: (): { startDate: string; endDate: string } => {
+    const today = new Date();
+
+    // 计算明天
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    return {
+      startDate: DateUtil.formatDate(today),
+      endDate: DateUtil.formatDate(tomorrow),
+    };
+  },
+
+  // 今天的日期字符串
+  getTodayStrDate: (): string => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  },
+
+  // 格式化 Date 日期为 yyyy-mm-dd 格式
+  formatDate: (date: Date): string => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  },
+
+  // 获取前n天的日期, endDate 是今天的日期
+  getLastPrevDays: (prev: number = 10): { startDate: string; endDate: string } => {
+    const today = new Date();
+
+    // 1. 因为后端是 < endDate，传今天正好能彻底排除今天的数据
+    const endDate = DateUtil.formatDate(today);
+
+    // 2. 开始日期为今天的 n 天前
+    const tenDaysAgo = new Date(today);
+    tenDaysAgo.setDate(today.getDate() - prev);
+    const startDate = DateUtil.formatDate(tenDaysAgo);
+
+    return {
+      startDate,
+      endDate,
+    };
+  },
+
+  // 字符串格式的日期是否是今天的日期, 不需要严格去处理时区, 就按用户电脑默认时区即可
+  isTodayLocal: (dateStr: string): boolean => {
+    // 1. 获取用户电脑本地的年、月、日并补零
+    const todayStr = DateUtil.getTodayStrDate();
+
+    // 2. 直接进行字符串全等比对
+    return dateStr === todayStr;
+  },
+
+  // 判断是否是今天之前
+  isBeforeToday: (dateStr: string): boolean => {
+    return dateStr < DateUtil.getTodayStrDate();
   },
 };

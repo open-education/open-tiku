@@ -1,15 +1,16 @@
-import useSWR from "swr";
-import useSWRImmutable from "swr/immutable";
-import { httpClient } from "~/util/http";
-import type { Textbook, TextbookOtherDict } from "~/type/textbook";
-import type { PaperListReq, PaperListResp, CommonPaperSearchReq, CommonPaperResp } from "~/type/paper";
-import { StringConst, StringValidator } from "~/util/string";
-import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from "~/type/question";
-import type { TaskListReq, TaskListResp } from "~/type/task";
-import type { ChapterKnowledgeResp, QuestionCateResp } from "~/type/question-cate";
-import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentListReq, ClassStudentResp } from "~/type/class";
-import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from "~/type/user";
-import type { HomeworkListSearchReq, HomeworkListResp, HomeworkListReq } from "~/type/homework";
+import useSWR from 'swr';
+import useSWRImmutable from 'swr/immutable';
+import { httpClient } from '~/util/http';
+import type { Textbook, TextbookOtherDict } from '~/type/textbook';
+import type { CommonPaperResp, CommonPaperSearchReq, PaperListReq, PaperListResp } from '~/type/paper';
+import { StringConst, StringValidator } from '~/util/string';
+import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from '~/type/question';
+import type { TaskListReq, TaskListResp } from '~/type/task';
+import type { ChapterKnowledgeResp, QuestionCateResp } from '~/type/question-cate';
+import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentListReq, ClassStudentResp } from '~/type/class';
+import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from '~/type/user';
+import type { HomeworkListReq, HomeworkListResp, HomeworkListSearchReq } from '~/type/homework';
+import type { AttemptListReq, AttemptListResp, TestListReq, TestListResp } from '~/type/test';
 
 /// 使用 SWR 缓存查询组件
 /// https://swr.vercel.app/
@@ -50,10 +51,10 @@ export function usePaperList(search: CommonPaperSearchReq, pageNo: number) {
   if (search.paperType > 0) {
     req.paperType = search.paperType;
   }
-  if (StringValidator.isNonEmpty(search.grade) && search.grade !== "不选") {
+  if (StringValidator.isNonEmpty(search.grade) && search.grade !== '不选') {
     req.grade = search.grade;
   }
-  if (StringValidator.isNonEmpty(search.semester) && search.semester !== "不选") {
+  if (StringValidator.isNonEmpty(search.semester) && search.semester !== '不选') {
     req.semester = search.semester;
   }
   if (search.status !== undefined) {
@@ -61,7 +62,7 @@ export function usePaperList(search: CommonPaperSearchReq, pageNo: number) {
   }
 
   // 生成 SWR 的 key（只有 relatedId > 0 时才发起请求，否则为 null）
-  const reqPath = "/paper/list";
+  const reqPath = '/paper/list';
   const key = req.relatedId > 0 ? [reqPath, JSON.stringify(req)] : null;
 
   return useSWR<PaperListResp>(key, () => httpClient.post<PaperListResp>(reqPath, req), defaultErrConfig);
@@ -98,7 +99,7 @@ export function useQuestionList(source: string, search: QuestionSearch, pageNo: 
   }
 
   // 生成 SWR 的 key（只有 relatedId > 0 时才发起请求，否则为 null）
-  const reqPath = "/question/list";
+  const reqPath = '/question/list';
   const key = req.questionCateIds.length > 0 ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>(reqPath, req), defaultErrConfig);
 }
@@ -112,14 +113,14 @@ export function useSimilarList(questionId: number, eightId: number, pageNo: numb
     pageSize: StringConst.pageSize,
   };
 
-  const reqPath = "/question/similar";
+  const reqPath = '/question/similar';
   const key = [reqPath, JSON.stringify(req)];
   return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>(reqPath, req), defaultErrConfig);
 }
 
 // 题目上传任务列表
 export function useTaskList(req: TaskListReq) {
-  return useSWR<TaskListResp>(JSON.stringify(req), () => httpClient.post<TaskListResp>("/task/list", req), defaultErrConfig);
+  return useSWR<TaskListResp>(JSON.stringify(req), () => httpClient.post<TaskListResp>('/task/list', req), defaultErrConfig);
 }
 
 // 题目其它通用字典获取
@@ -163,7 +164,7 @@ export function useClassList(search: ClassSearchReq, pageNo: number) {
     req.semester = search.semester;
   }
 
-  const reqPath = "/class/list";
+  const reqPath = '/class/list';
   const key = [reqPath, JSON.stringify(req)];
   return useSWR<ClassListResp>(key, () => httpClient.post<ClassListResp>(reqPath, req), defaultErrConfig);
 }
@@ -171,7 +172,7 @@ export function useClassList(search: ClassSearchReq, pageNo: number) {
 // 班级学生账户列表
 // 使用全局缓存key, 方便跨组件重新 mutate 该数据, 尤其针对不直接关联的兄弟组件
 export const getClassStudentListKey = (classIds: number[]) => {
-  const reqPath = "/class/student/list";
+  const reqPath = '/class/student/list';
   // 排序避免顺序不一致
   const sortedIds = [...classIds].sort((a, b) => a - b);
   return [reqPath, JSON.stringify({ sortedIds })];
@@ -181,7 +182,7 @@ export function useClassStudentList(classIds: number[]) {
   const req: ClassStudentListReq = {
     classIds,
   };
-  const reqPath = "/class/student/list";
+  const reqPath = '/class/student/list';
   const key = getClassStudentListKey(classIds);
   return useSWR<Record<number, ClassStudentResp[]>>(key, () => httpClient.post<Record<number, ClassStudentResp[]>>(reqPath, req), defaultErrConfig);
 }
@@ -193,7 +194,7 @@ export function useUserAccountList(pageNo: number) {
     pageSize: StringConst.pageSize,
   };
 
-  const reqPath = "/user/account/list";
+  const reqPath = '/user/account/list';
   const key = [reqPath, JSON.stringify(req)];
   return useSWR<UserIdentityListResp>(key, () => httpClient.post<UserIdentityListResp>(reqPath, req), defaultErrConfig);
 }
@@ -205,7 +206,7 @@ export function useUserSessionList(pageNo: number) {
     pageSize: StringConst.pageSize,
   };
 
-  const reqPath = "/user/session/list";
+  const reqPath = '/user/session/list';
   const key = [reqPath, JSON.stringify(req)];
   return useSWR<UserSessionListResp>(key, () => httpClient.post<UserSessionListResp>(reqPath, req), defaultErrConfig);
 }
@@ -221,7 +222,33 @@ export function usePaperHomeworkList(search: HomeworkListSearchReq, pageNo: numb
     req.batchNo = search.batchNo;
   }
 
-  const reqPath = "/homework/list";
+  const reqPath = '/homework/list';
   const key = req.paperId > 0 ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<HomeworkListResp>(key, () => httpClient.post<HomeworkListResp>(reqPath, req), defaultErrConfig);
+}
+
+// 学生任务列表
+export function useTestList(startDate: string, endDate: string, pageNo: number) {
+  let req: TestListReq = {
+    startDate,
+    endDate,
+    pageNo,
+    pageSize: StringConst.pageSize,
+  };
+
+  const reqPath = '/test/list';
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<TestListResp>(key, () => httpClient.post<TestListResp>(reqPath, req), defaultErrConfig);
+}
+
+// 做题记录列表
+export function useAttemptList(id: number, pageNo: number) {
+  let req: AttemptListReq = {
+    id,
+    pageNo,
+    pageSize: StringConst.pageSize,
+  };
+  const reqPath = '/test/attempts';
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<AttemptListResp>(key, () => httpClient.post<AttemptListResp>(reqPath, req), defaultErrConfig);
 }

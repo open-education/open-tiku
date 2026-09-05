@@ -5,9 +5,9 @@
  */
 function pemToArrayBuffer(pem: string): ArrayBuffer {
   const b64 = pem
-    .replace(/-----BEGIN PUBLIC KEY-----/, "")
-    .replace(/-----END PUBLIC KEY-----/, "")
-    .replace(/\s/g, "");
+    .replace(/-----BEGIN PUBLIC KEY-----/, '')
+    .replace(/-----END PUBLIC KEY-----/, '')
+    .replace(/\s/g, '');
   const binaryString = atob(b64);
   const bytes = new Uint8Array(binaryString.length);
   for (let i = 0; i < binaryString.length; i++) {
@@ -26,20 +26,20 @@ async function encryptPassword(text: string, pemPublicKey: string): Promise<stri
 
   // 导入公钥
   const publicKey = await window.crypto.subtle.importKey(
-    "spki",
+    'spki',
     publicKeyBuffer,
     {
-      name: "RSA-OAEP",
-      hash: "SHA-256",
+      name: 'RSA-OAEP',
+      hash: 'SHA-256',
     },
     false,
-    ["encrypt"],
+    ['encrypt'],
   );
 
   // 加密数据
   const encoder = new TextEncoder();
   const data = encoder.encode(text);
-  const encryptedBuffer = await window.crypto.subtle.encrypt({ name: "RSA-OAEP" }, publicKey, data);
+  const encryptedBuffer = await window.crypto.subtle.encrypt({ name: 'RSA-OAEP' }, publicKey, data);
 
   // 转为 Base64 字符串用于网络传输
   return btoa(String.fromCharCode(...new Uint8Array(encryptedBuffer)));
@@ -49,7 +49,7 @@ async function encryptPassword(text: string, pemPublicKey: string): Promise<stri
 function generateNonce(length = 16): string {
   const array = new Uint8Array(length);
   window.crypto.getRandomValues(array);
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
 // 生成密码
@@ -61,7 +61,7 @@ export async function getEncryptPwd(password: string): Promise<string> {
   // 格式: password|timestamp|nonce
   const rawData = `${password}|${timestamp}|${nonce}`;
 
-  const res = await fetch("/public_key.pem");
+  const res = await fetch('/public_key.pem');
   const publicKeyPem = await res.text();
 
   // 用公钥整体加密

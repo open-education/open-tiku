@@ -1,5 +1,5 @@
-import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
+import { Badge } from '~/components/ui/badge';
+import { Button } from '~/components/ui/button';
 import type {
   QuestionApproveReq,
   QuestionDeleteReq,
@@ -7,16 +7,16 @@ import type {
   QuestionListResp,
   QuestionPageSourceProps,
   QuestionSearch,
-} from "~/type/question";
-import type { TextbookOtherDict } from "~/type/textbook";
-import { httpClient } from "~/util/http";
-import { QuestionInfo } from "~/common/question/info";
-import { SimilarQuestionList } from "~/question/similar";
-import Add from "~/question/add";
-import { toast } from "sonner";
-import { StringConst } from "~/util/string";
-import { useState } from "react";
-import { Textarea } from "~/components/ui/textarea";
+} from '~/type/question';
+import type { TextbookOtherDict } from '~/type/textbook';
+import { httpClient } from '~/util/http';
+import { QuestionInfo } from '~/common/question/info';
+import { SimilarQuestionList } from '~/home/question/similar';
+import Add from '~/home/question/add';
+import { toast } from 'sonner';
+import { StringConst } from '~/util/string';
+import { useState } from 'react';
+import { Textarea } from '~/components/ui/textarea';
 import {
   Dialog,
   DialogClose,
@@ -26,14 +26,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
-import { QuestionRelationType, QuestionStatus } from "~/type/enum";
-import type { KeyedMutator } from "swr";
-import type { UserInfoResp } from "~/type/user";
-import { useUserInfo } from "~/hooks/use-user";
-import { Slider } from "~/components/ui/slider";
-import type { GenDifficultyLevelRange } from "~/type/paper";
-import { Separator } from "~/components/ui/separator";
+} from '~/components/ui/dialog';
+import { QuestionRelationType, QuestionStatus, UserRoleType } from '~/type/enum';
+import type { KeyedMutator } from 'swr';
+import type { UserInfoResp } from '~/type/user';
+import { useUserInfo } from '~/hooks/use-user';
+import { Slider } from '~/components/ui/slider';
+import type { GenDifficultyLevelRange } from '~/type/paper';
+import { Separator } from '~/components/ui/separator';
 
 /// 题目题目相关标签选择器
 
@@ -60,7 +60,7 @@ function TypeSelect({ options, value = 0, onSelect }: TypeSelectProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {options.map((option) => (
-        <Button key={option.id} className="text-sm" variant={value === option.id ? "default" : "outline"} onClick={() => handleSelect(option.id)}>
+        <Button key={option.id} className="text-sm" variant={value === option.id ? 'default' : 'outline'} onClick={() => handleSelect(option.id)}>
           {option.itemValue}
         </Button>
       ))}
@@ -98,7 +98,7 @@ function MultiTagSelect({ options, value = [], onChange }: MultiTagSelectProps) 
             key={option.id}
             className="text-sm"
             type="button"
-            variant={isSelected ? "default" : "outline"}
+            variant={isSelected ? 'default' : 'outline'}
             onClick={() => handleToggle(option.id)}
           >
             {option.itemValue}
@@ -126,7 +126,7 @@ function StatusSelect({ defaultValue = 0, onSelect }: StatusSelectProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {StringConst.questionStatusList.map(({ id, value, label }) => (
-        <Button key={id} className="text-sm" variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
+        <Button key={id} className="text-sm" variant={defaultValue === value ? 'default' : 'outline'} onClick={() => handleSelect(value)}>
           {label}
         </Button>
       ))}
@@ -151,7 +151,7 @@ function OtherDictSelect({ defaultValue, onSelect }: OtherDictSelectProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {StringConst.questionOtherDictList.map(({ id, value, label }) => (
-        <Button key={id} className="text-sm" variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
+        <Button key={id} className="text-sm" variant={defaultValue === value ? 'default' : 'outline'} onClick={() => handleSelect(value)}>
           {label}
         </Button>
       ))}
@@ -209,12 +209,12 @@ function TagShow({ pageSource, typeValue, tagNames, dimensionNames, difficultyLe
 
     // 我的审核和题目需要展示题目状态
     const statusDesc =
-      pageSource.source !== "list" ? (
+      pageSource.source !== 'list' ? (
         <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 text-sm" key={status}>
-          {StringConst.questionStatusList[status].label || "草稿中"}
+          {StringConst.questionStatusList[status].label || '草稿中'}
         </Badge>
       ) : (
-        ""
+        ''
       );
 
     return (
@@ -277,8 +277,8 @@ function OperateTags({
     httpClient
       .get<QuestionInfoResp>(`/question/info/${questionId}`)
       .then((res) => {
-        setSheetTitle("查看详情");
-        setSheetDesc("");
+        setSheetTitle('查看详情');
+        setSheetDesc('');
         setSheetContent(
           <QuestionInfo
             pageSource={pageSource}
@@ -305,8 +305,8 @@ function OperateTags({
     httpClient
       .get<QuestionInfoResp>(`/question/info/${questionId}`)
       .then((res) => {
-        setSheetTitle("编辑详情");
-        setSheetDesc("编辑题目信息");
+        setSheetTitle('编辑详情');
+        setSheetDesc('编辑题目信息');
         setSheetContent(
           <Add
             questionSearch={questionSearch}
@@ -332,8 +332,8 @@ function OperateTags({
     // 将当前题目主键作为变式题的父题标识
     const initSearch: QuestionSearch = { ...questionSearch, sourceId: questionId };
 
-    setSheetTitle("添加课本原题");
-    setSheetDesc("题目需要借助其它 ai 工具转为 markdown 源格式文档后使用; 仅母题可添加课本原题");
+    setSheetTitle('添加课本原题');
+    setSheetDesc('题目需要借助其它 ai 工具转为 markdown 源格式文档后使用; 仅母题可添加课本原题');
     setSheetContent(
       <Add
         questionSearch={initSearch}
@@ -351,8 +351,8 @@ function OperateTags({
     // 变式题将当前题目主键作为变式题的父题标识
     const initSearch: QuestionSearch = { ...questionSearch, sourceId: questionId };
 
-    setSheetTitle("添加变式题");
-    setSheetDesc("题目需要借助其它 ai 工具转为 markdown 源格式文档后使用");
+    setSheetTitle('添加变式题');
+    setSheetDesc('题目需要借助其它 ai 工具转为 markdown 源格式文档后使用');
     setSheetContent(
       <Add
         questionSearch={initSearch}
@@ -371,10 +371,10 @@ function OperateTags({
 
     // 通过题目关联关系获取到详情标识
     httpClient
-      .post<QuestionInfoResp>("question/original", { id: questionId, relationType: questionRelationType })
+      .post<QuestionInfoResp>('question/original', { id: questionId, relationType: questionRelationType })
       .then((res) => {
-        setSheetTitle("查看 课本原题 详情");
-        setSheetDesc("一道母题只能关联一道课本原题, 变式题不能关联课本原题");
+        setSheetTitle('查看 课本原题 详情');
+        setSheetDesc('一道母题只能关联一道课本原题, 变式题不能关联课本原题');
         setSheetContent(
           <QuestionInfo
             pageSource={pageSource}
@@ -396,8 +396,8 @@ function OperateTags({
 
   // 查看变式题列表
   const handleSimilarList = () => {
-    setSheetTitle("变式题列表");
-    setSheetDesc("变式题暂不支持查看详情");
+    setSheetTitle('变式题列表');
+    setSheetDesc('变式题暂不支持查看详情');
     setSheetContent(
       <SimilarQuestionList
         questionTypeDict={questionTypeDict}
@@ -421,10 +421,10 @@ function OperateTags({
     const req: QuestionApproveReq = {
       id: questionId,
       status: QuestionStatus.Pending,
-      rejectReason: "",
+      rejectReason: '',
     };
     httpClient
-      .post("/edit/question/status", req)
+      .post('/edit/question/status', req)
       .then((res) => {
         questionListRespMutate();
         setOpenSubmitApprove(false);
@@ -445,7 +445,7 @@ function OperateTags({
   const [approveReq, setApproveReq] = useState<QuestionApproveReq>({
     id: questionId,
     status: QuestionStatus.Drafing,
-    rejectReason: "",
+    rejectReason: '',
   });
   const updateApproveReq = (key: keyof QuestionApproveReq, value: number | string) => {
     setApproveReq((prev) => ({ ...prev, [key]: value }));
@@ -456,7 +456,7 @@ function OperateTags({
     setConfirmApproving(true);
 
     httpClient
-      .post("/edit/question/status", approveReq)
+      .post('/edit/question/status', approveReq)
       .then((res) => {
         questionListRespMutate();
         setOpenConfirmApprove(false);
@@ -483,7 +483,7 @@ function OperateTags({
     };
 
     httpClient
-      .post("/question/delete", req)
+      .post('/question/delete', req)
       .then((res) => {
         questionListRespMutate();
         setOpenDelete(false);
@@ -501,6 +501,7 @@ function OperateTags({
   const renderButtons = (source: string, questionRelationType: number) => {
     // 获取用户信息
     const currentUser: UserInfoResp | null = useUserInfo();
+    const notStudent = currentUser !== null && currentUser.role !== UserRoleType.Student;
 
     // 详情按钮-所有地方均有
     const buttons = [
@@ -511,7 +512,7 @@ function OperateTags({
 
     // 提交审核
     // 我的题目页面状态为草稿中才会出现提交审核
-    if (currentUser && source === "myQuestion" && status === QuestionStatus.Drafing) {
+    if (currentUser && source === 'myQuestion' && status === QuestionStatus.Drafing) {
       buttons.push(
         <Dialog key="myQuestionSubmit" open={openSubmitApprove} onOpenChange={setOpenSubmitApprove}>
           <DialogTrigger render={<Button variant="link">提交审核</Button>} />
@@ -544,7 +545,7 @@ function OperateTags({
                 }
               />
               <Button className="text-sm" onClick={handleSubmitApprove} disabled={submitApproving}>
-                {submitApproving ? "提交审核中" : "提交审核"}
+                {submitApproving ? '提交审核中' : '提交审核'}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -554,7 +555,7 @@ function OperateTags({
 
     // 审核题目
     // 我的审核页面状态为待审核的数据才会出现审核按钮
-    if (currentUser && source === "myReview" && status === QuestionStatus.Pending) {
+    if (currentUser && source === 'myReview' && status === QuestionStatus.Pending) {
       buttons.push(
         <Dialog key="myReviewApprove" open={openConfirmApprove} onOpenChange={setOpenConfirmApprove}>
           <DialogTrigger render={<Button variant="link">审核</Button>} />
@@ -582,13 +583,13 @@ function OperateTags({
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               <div className="grid grid-cols-[100px_1fr] gap-4 items-center">
                 <span className="text-sm text-right">审核状态:</span>
-                <StatusSelect defaultValue={approveReq.status} onSelect={(val) => updateApproveReq("status", val)} />
+                <StatusSelect defaultValue={approveReq.status} onSelect={(val) => updateApproveReq('status', val)} />
 
                 <span className="text-sm text-right">拒绝理由:</span>
                 <Textarea
                   value={approveReq.rejectReason}
                   className="text-sm"
-                  onChange={(e) => updateApproveReq("rejectReason", e.target.value)}
+                  onChange={(e) => updateApproveReq('rejectReason', e.target.value)}
                   placeholder="拒绝时需要说明拒绝原因"
                 />
               </div>
@@ -605,7 +606,7 @@ function OperateTags({
                 }
               />
               <Button className="text-sm" onClick={handleApprove} disabled={confirmApproving}>
-                {confirmApproving ? "审核中" : "审核"}
+                {confirmApproving ? '审核中' : '审核'}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -614,7 +615,7 @@ function OperateTags({
     }
 
     // 编辑, 审核不能编辑别人的信息, 更不能自己编辑自己审核
-    if (currentUser && pageSource.source !== "myReview") {
+    if (currentUser && pageSource.source !== 'myReview' && notStudent) {
       buttons.push(
         <Button key="edit" variant="link" onClick={handleEditInfo}>
           编辑
@@ -623,7 +624,7 @@ function OperateTags({
     }
 
     // 变式题课本原题只有母题可添加
-    if (currentUser && source === "list" && questionRelationType === QuestionRelationType.Base) {
+    if (currentUser && source === 'list' && questionRelationType === QuestionRelationType.Base && notStudent) {
       buttons.push(
         <Button key="originalTextbook" variant="link" onClick={handleOriginalTextbookAdd}>
           添加课本原题
@@ -653,7 +654,7 @@ function OperateTags({
     }
 
     // 我的题目可以删除题目
-    if (source === "myQuestion") {
+    if (source === 'myQuestion') {
       buttons.push(
         <Dialog key="myQuestionDelete" open={openDelete} onOpenChange={setOpenDelete}>
           <DialogTrigger render={<Button variant="link">删除</Button>} />
@@ -671,7 +672,7 @@ function OperateTags({
                 }
               />
               <Button className="text-sm" onClick={handleDelete} disabled={deleting}>
-                {deleting ? "删除中" : "删除"}
+                {deleting ? '删除中' : '删除'}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -697,16 +698,16 @@ function ShowDifficultyLevelRange({ levelRange, setLevelRange }: DifficultyLevel
 
     if (total === 0) {
       setLevelRange({
-        basic: key === "basic" ? val : remaining / 2,
-        improve: key === "improve" ? val : remaining / 2,
-        expand: key === "expand" ? val : remaining / 2,
+        basic: key === 'basic' ? val : remaining / 2,
+        improve: key === 'improve' ? val : remaining / 2,
+        expand: key === 'expand' ? val : remaining / 2,
       });
     } else {
       const ratio = remaining / total;
       setLevelRange({
-        basic: key === "basic" ? val : Math.round(levelRange.basic * ratio),
-        improve: key === "improve" ? val : Math.round(levelRange.improve * ratio),
-        expand: key === "expand" ? val : Math.round(levelRange.expand * ratio),
+        basic: key === 'basic' ? val : Math.round(levelRange.basic * ratio),
+        improve: key === 'improve' ? val : Math.round(levelRange.improve * ratio),
+        expand: key === 'expand' ? val : Math.round(levelRange.expand * ratio),
       });
     }
   };
@@ -721,7 +722,7 @@ function ShowDifficultyLevelRange({ levelRange, setLevelRange }: DifficultyLevel
             </span>
             <span className="font-medium">{levelRange.basic}%</span>
           </div>
-          <Slider value={[levelRange.basic]} onValueChange={(v) => update("basic", Array.isArray(v) ? v[0] : v)} max={100} step={1} />
+          <Slider value={[levelRange.basic]} onValueChange={(v) => update('basic', Array.isArray(v) ? v[0] : v)} max={100} step={1} />
         </div>
 
         <div>
@@ -731,7 +732,7 @@ function ShowDifficultyLevelRange({ levelRange, setLevelRange }: DifficultyLevel
             </span>
             <span className="font-medium">{levelRange.improve}%</span>
           </div>
-          <Slider value={[levelRange.improve]} onValueChange={(v) => update("improve", Array.isArray(v) ? v[0] : v)} max={100} step={1} />
+          <Slider value={[levelRange.improve]} onValueChange={(v) => update('improve', Array.isArray(v) ? v[0] : v)} max={100} step={1} />
         </div>
 
         <div>
@@ -741,7 +742,7 @@ function ShowDifficultyLevelRange({ levelRange, setLevelRange }: DifficultyLevel
             </span>
             <span className="font-medium">{levelRange.expand}%</span>
           </div>
-          <Slider value={[levelRange.expand]} onValueChange={(v) => update("expand", Array.isArray(v) ? v[0] : v)} max={100} step={1} />
+          <Slider value={[levelRange.expand]} onValueChange={(v) => update('expand', Array.isArray(v) ? v[0] : v)} max={100} step={1} />
         </div>
       </div>
 

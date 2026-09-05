@@ -1,9 +1,9 @@
-import { Button } from "~/components/ui/button";
-import { Card } from "~/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { Wrench, X } from "lucide-react";
-import { cn } from "~/lib/utils";
-import React from "react";
+import { Button } from '~/components/ui/button';
+import { Card } from '~/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
+import { Wrench, X } from 'lucide-react';
+import { cn } from 'cn';
+import React from 'react';
 
 /// 工具组件展示容器, 本身不展示任何内容
 
@@ -51,9 +51,9 @@ export interface QuickToolListProps {
  * </div>
  * @returns
  */
-export function QuickToolList({ tools = [], defaultToolId, panelClassName, panelWidth = "w-100" }: QuickToolListProps) {
+export function QuickToolList({ tools = [], defaultToolId, panelClassName, panelWidth = 'w-100' }: QuickToolListProps) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [activeToolId, setActiveToolId] = React.useState(defaultToolId ?? tools[0]?.id ?? "");
+  const [activeToolId, setActiveToolId] = React.useState(defaultToolId ?? tools[0]?.id ?? '');
 
   const toggleOpen = () => setIsOpen((prev) => !prev);
 
@@ -62,7 +62,7 @@ export function QuickToolList({ tools = [], defaultToolId, panelClassName, panel
 
   return (
     <div className="fixed top-20 right-5 z-50">
-      <Button variant={"secondary"} onClick={toggleOpen} aria-label={isOpen ? "关闭快捷工具" : "打开快捷工具"}>
+      <Button variant={'secondary'} onClick={toggleOpen} aria-label={isOpen ? '关闭快捷工具' : '打开快捷工具'}>
         {isOpen ? (
           <>
             <X className="h-5 w-5" />
@@ -80,9 +80,9 @@ export function QuickToolList({ tools = [], defaultToolId, panelClassName, panel
       {isOpen && (
         <Card
           className={cn(
-            "absolute top-10 right-4 max-h-[80vh] overflow-hidden shadow-xl",
-            "transition-all duration-300 ease-in-out",
-            "animate-in slide-in-from-top-2 fade-in",
+            'absolute top-10 right-4 max-h-[80vh] overflow-hidden shadow-xl',
+            'transition-all duration-300 ease-in-out',
+            'animate-in slide-in-from-top-2 fade-in',
             panelWidth,
             panelClassName,
           )}

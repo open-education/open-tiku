@@ -1,12 +1,12 @@
-import { Button } from "~/components/ui/button";
-import { Textarea } from "~/components/ui/textarea";
-import { Alert, AlertDescription } from "~/components/ui/alert";
-import { AlertCircle, CheckCircle2, Loader2, NotebookText } from "lucide-react";
-import { useState } from "react";
-import { cn } from "~/lib/utils";
-import type { TextbookOtherDict } from "~/type/textbook";
-import { httpClient } from "~/util/http";
-import type { CreateQuestionReq, QuestionSnippetReq } from "~/type/question";
+import { Button } from '~/components/ui/button';
+import { Textarea } from '~/components/ui/textarea';
+import { Alert, AlertDescription } from '~/components/ui/alert';
+import { AlertCircle, CheckCircle2, Loader2, NotebookText } from 'lucide-react';
+import { useState } from 'react';
+import { cn } from 'cn';
+import type { TextbookOtherDict } from '~/type/textbook';
+import { httpClient } from '~/util/http';
+import type { CreateQuestionReq, QuestionSnippetReq } from '~/type/question';
 
 // 解析题目
 interface ParseQuestionProps {
@@ -15,14 +15,14 @@ interface ParseQuestionProps {
   onFill?: (val: CreateQuestionReq) => void; // 解析成功后回调, 回调的值为解析完成后的题目请求结构
 }
 function ParseQuestion({ typeList = [], tagList = [], onFill }: ParseQuestionProps) {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
   const [addReq, setAddReq] = useState<CreateQuestionReq | null>(null);
 
   const handleParse = () => {
     if (!input.trim()) {
-      setResult({ success: false, message: "请先粘贴 Markdown 内容" });
+      setResult({ success: false, message: '请先粘贴 Markdown 内容' });
       return;
     }
 
@@ -37,13 +37,13 @@ function ParseQuestion({ typeList = [], tagList = [], onFill }: ParseQuestionPro
 
     // 尝试解析文本
     httpClient
-      .post<CreateQuestionReq>("/text/question/snippet", req)
+      .post<CreateQuestionReq>('/text/question/snippet', req)
       .then((res) => {
         if (res.title.trim().length > 0) {
-          setResult({ success: true, message: "解析完成" });
+          setResult({ success: true, message: '解析完成' });
           setAddReq(res);
         } else {
-          setResult({ success: false, message: "解析完成, 但是题干都为空, 请确认粘贴的内容符合规范" });
+          setResult({ success: false, message: '解析完成, 但是题干都为空, 请确认粘贴的内容符合规范' });
         }
       })
       .catch((err) => setResult({ success: false, message: err.message }))
@@ -73,7 +73,7 @@ function ParseQuestion({ typeList = [], tagList = [], onFill }: ParseQuestionPro
 
       {/* 按钮 */}
       <div className="flex gap-3">
-        <Button className="text-sm md:text-sm" onClick={handleParse} disabled={isLoading || !input.trim()} variant={"outline"}>
+        <Button className="text-sm md:text-sm" onClick={handleParse} disabled={isLoading || !input.trim()} variant={'outline'}>
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -87,12 +87,12 @@ function ParseQuestion({ typeList = [], tagList = [], onFill }: ParseQuestionPro
         </Button>
 
         <Button
-          variant={"secondary"}
+          variant={'secondary'}
           className="text-sm md:text-sm"
           disabled={!addReq || addReq.title.trim().length == 0}
           onClick={() => {
             if (!addReq) {
-              setResult({ success: false, message: "当前没有有效的题目信息可填充" });
+              setResult({ success: false, message: '当前没有有效的题目信息可填充' });
               return;
             }
             onFill?.(addReq);
@@ -106,12 +106,12 @@ function ParseQuestion({ typeList = [], tagList = [], onFill }: ParseQuestionPro
       {/* 结果反馈 */}
       {result && (
         <Alert
-          variant={result.success ? "default" : "destructive"}
+          variant={result.success ? 'default' : 'destructive'}
           className={cn(
-            "border-l-4",
+            'border-l-4',
             result.success
-              ? "border-l-green-500 bg-green-50 text-green-800 dark:bg-green-950/30 dark:text-green-400"
-              : "border-l-red-500 bg-red-50 text-red-800 dark:bg-red-950/30 dark:text-red-400",
+              ? 'border-l-green-500 bg-green-50 text-green-800 dark:bg-green-950/30 dark:text-green-400'
+              : 'border-l-red-500 bg-red-50 text-red-800 dark:bg-red-950/30 dark:text-red-400',
           )}
         >
           <div className="flex items-start gap-2">

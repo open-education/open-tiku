@@ -1,10 +1,10 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { Card, CardContent } from "~/components/ui/card";
-import { Progress } from "~/components/ui/progress";
-import { Button } from "~/components/ui/button";
-import { Separator } from "~/components/ui/separator";
-import type { Textbook } from "~/type/textbook";
-import { cn } from "~/lib/utils";
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { Card, CardContent } from '~/components/ui/card';
+import { Progress } from '~/components/ui/progress';
+import { Button } from '~/components/ui/button';
+import { Separator } from '~/components/ui/separator';
+import type { Textbook } from '~/type/textbook';
+import { cn } from 'cn';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,11 +16,11 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { Check, ChevronDown, ChevronRight } from "lucide-react";
-import { StringConst } from "~/util/string";
-import { Checkbox } from "~/components/ui/checkbox";
-import { Badge } from "~/components/ui/badge";
+} from '~/components/ui/dropdown-menu';
+import { Check, ChevronDown, ChevronRight } from 'lucide-react';
+import { StringConst } from '~/util/string';
+import { Checkbox } from '~/components/ui/checkbox';
+import { Badge } from '~/components/ui/badge';
 
 // 章节导航选择
 // 前5层级标识
@@ -32,13 +32,13 @@ interface LevelProps {
   fifth: string | null;
 }
 
-const steps: (keyof LevelProps)[] = ["first", "second", "third", "fourth", "fifth"];
+const steps: (keyof LevelProps)[] = ['first', 'second', 'third', 'fourth', 'fifth'];
 const stepLabels: Record<keyof LevelProps, string> = {
-  first: "学段",
-  second: "科目",
-  third: "考点/章节选题",
-  fourth: "考点分类/出版社",
-  fifth: "考点名称/年级",
+  first: '学段',
+  second: '科目',
+  third: '考点/章节选题',
+  fourth: '考点分类/出版社',
+  fifth: '考点名称/年级',
 };
 
 // 构建层级查找 Map，以 key 为索引
@@ -216,7 +216,7 @@ function ChapterExpandNav(props: ChapterExpandNavProps) {
                 <LevelExt
                   key={levelKey}
                   levelKey={levelKey}
-                  keyDesc={stepLabels[levelKey] || ""}
+                  keyDesc={stepLabels[levelKey] || ''}
                   enabled={enabled}
                   isSelected={isSelected}
                   optionKeys={optionKeys}
@@ -230,7 +230,7 @@ function ChapterExpandNav(props: ChapterExpandNavProps) {
 
           {/* 底部操作区域 - 由父组件控制 */}
           {actions && (
-            <div className={cn("mt-5 pt-5 transition-all duration-300", completedCount === 5 ? "opacity-100" : "opacity-0 pointer-events-none")}>
+            <div className={cn('mt-5 pt-5 transition-all duration-300', completedCount === 5 ? 'opacity-100' : 'opacity-0 pointer-events-none')}>
               <Separator className="mb-4" />
               {actions}
             </div>
@@ -262,14 +262,14 @@ function LevelExt(props: LevelExtProps) {
   }, [optionKeys, textbookMap.byKey]);
 
   return (
-    <div className={cn("py-4 first:pt-0 transition-opacity duration-200", !enabled && "opacity-25 pointer-events-none select-none")}>
+    <div className={cn('py-4 first:pt-0 transition-opacity duration-200', !enabled && 'opacity-25 pointer-events-none select-none')}>
       <div className="flex items-start gap-5">
         {/* Label with check indicator */}
         <div className="flex items-center gap-2.5 w-30 shrink-0 mt-1.5">
           <span
             className={cn(
-              "w-4 h-4 rounded-full shrink-0 border-2 flex items-center justify-center transition-colors",
-              isSelected ? "bg-primary border-primary" : "border-muted-foreground/35",
+              'w-4 h-4 rounded-full shrink-0 border-2 flex items-center justify-center transition-colors',
+              isSelected ? 'bg-primary border-primary' : 'border-muted-foreground/35',
             )}
           >
             {isSelected && (
@@ -288,7 +288,7 @@ function LevelExt(props: LevelExtProps) {
               <Button
                 key={opt.key}
                 className="text-sm"
-                variant={selectedKey === opt.key ? "default" : "outline"}
+                variant={selectedKey === opt.key ? 'default' : 'outline'}
                 onClick={() => onSelect(opt)}
                 disabled={!enabled}
               >
@@ -296,7 +296,7 @@ function LevelExt(props: LevelExtProps) {
               </Button>
             ))
           ) : (
-            <span className="text-sm text-muted-foreground/40 mt-1.5 italic">{enabled ? "暂无选项" : "请先完成上一步"}</span>
+            <span className="text-sm text-muted-foreground/40 mt-1.5 italic">{enabled ? '暂无选项' : '请先完成上一步'}</span>
           )}
         </div>
       </div>
@@ -314,7 +314,7 @@ interface ChapterDropdownNavProps {
 }
 // 下拉菜单样式的导航-适用于搜索一类的列表也
 function ChapterDropdownNav(props: ChapterDropdownNavProps) {
-  const { textbooks, onSelect, defaultSelectedKeys = [], placeholder = "请选择学段", maxDepth = 5, longText = false } = props;
+  const { textbooks, onSelect, defaultSelectedKeys = [], placeholder = '请选择学段', maxDepth = 5, longText = false } = props;
 
   const [selectedPath, setSelectedPath] = useState<Textbook[]>([]);
   const [open, setOpen] = useState(false);
@@ -451,7 +451,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
             {items.map((item) => (
               <DropdownMenuItem
                 key={item.key}
-                className={cn("flex items-center justify-between cursor-pointer", isNodeSelected(item.key) && "bg-accent text-accent-foreground")}
+                className={cn('flex items-center justify-between cursor-pointer', isNodeSelected(item.key) && 'bg-accent text-accent-foreground')}
                 onClick={() => handleSelect(item)}
               >
                 <span className="text-sm">{item.label}</span>
@@ -473,7 +473,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
               return (
                 <DropdownMenuSub key={item.key}>
                   <DropdownMenuSubTrigger
-                    className={cn("flex items-center justify-between cursor-pointer min-w-50 whitespace-nowrap", isInPath && "bg-accent/50")}
+                    className={cn('flex items-center justify-between cursor-pointer min-w-50 whitespace-nowrap', isInPath && 'bg-accent/50')}
                   >
                     <span className="text-sm">{item.label}</span>
                     {isSelected && <Check className="ml-2 h-4 w-4" />}
@@ -498,7 +498,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
               return (
                 <DropdownMenuItem
                   key={item.key}
-                  className={cn("flex items-center justify-between cursor-pointer", isSelected && "bg-accent text-accent-foreground")}
+                  className={cn('flex items-center justify-between cursor-pointer', isSelected && 'bg-accent text-accent-foreground')}
                   onClick={() => handleSelect(item)}
                 >
                   <span className="text-sm">{item.label}</span>
@@ -518,7 +518,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
     if (selectedPath.length === 0) {
       return placeholder;
     }
-    return longText ? selectedPath[selectedPath.length - 1].label : selectedPath.map((item) => item.label).join(" / ");
+    return longText ? selectedPath[selectedPath.length - 1].label : selectedPath.map((item) => item.label).join(' / ');
   }, [selectedPath, placeholder]);
 
   return (
@@ -581,19 +581,19 @@ const renderTreeNodes = (
         const canExpand = hasChildren && depth < maxDepth - 1;
 
         // 计算子节点选中状态
-        let childStatus: "none" | "all" | "partial" = "none";
+        let childStatus: 'none' | 'all' | 'partial' = 'none';
         if (hasChildren) {
           const children = item.children!;
           const total = children.length;
           const selected = children.filter((child) => selectedKeys.has(child.key)).length;
-          if (selected === total) childStatus = "all";
-          else if (selected > 0) childStatus = "partial";
+          if (selected === total) childStatus = 'all';
+          else if (selected > 0) childStatus = 'partial';
         }
 
         return (
           <div key={item.key} className="relative">
             <div
-              className={cn("flex items-center gap-2 p-2 hover:bg-accent/50 transition-colors", isSelected && "bg-accent/30")}
+              className={cn('flex items-center gap-2 p-2 hover:bg-accent/50 transition-colors', isSelected && 'bg-accent/30')}
               style={{ paddingLeft: `${depth * 20 + 8}px` }}
             >
               {/* 展开/折叠按钮 */}
@@ -613,7 +613,7 @@ const renderTreeNodes = (
                   onToggleSelect(item, checked as boolean);
                 }}
                 onClick={(e) => e.stopPropagation()}
-                data-state={childStatus === "partial" ? "indeterminate" : undefined}
+                data-state={childStatus === 'partial' ? 'indeterminate' : undefined}
                 className="shrink-0"
               />
 
@@ -820,7 +820,7 @@ function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [],
               toggleAll(!allSelected);
             }}
           >
-            {selectedCount === totalCount ? "取消全选" : "全选"}
+            {selectedCount === totalCount ? '取消全选' : '全选'}
           </Button>
         </div>
       </div>

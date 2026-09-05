@@ -1,4 +1,4 @@
-import { Button } from "~/components/ui/button";
+import { Button } from '~/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -8,32 +8,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
-import { Separator } from "~/components/ui/separator";
+} from '~/components/ui/dialog';
+import { Separator } from '~/components/ui/separator';
 
 function Teacher() {
   return (
-    <section className="bg-primary">
+    <section>
       <div className="px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
-          <p className="text-primary-foreground text-xl font-medium mb-1" style={{ fontFamily: '"Noto Serif SC", serif' }}>
-            成为教师角色
-          </p>
-          <p className="text-primary-foreground/70 text-sm">上传自制题目，精选现有试卷，基于题库自主组卷，管理班级学情，一站式教学辅助工具</p>
+          <p className="text-xl font-medium mb-1">成为教师角色</p>
+          <p className="text-sm">上传自制题目，精选现有试卷，基于题库自主组卷，管理班级学情，一站式教学辅助工具</p>
         </div>
         <div className="flex gap-3 shrink-0">
-          <button className="text-sm border border-primary-foreground/30 text-primary-foreground px-5 py-2.5 rounded-lg hover:bg-primary-foreground/10 transition-colors">
-            了解更多
-          </button>
-
           <Dialog>
-            <DialogTrigger
-              render={
-                <button className="text-sm bg-primary-foreground text-primary px-5 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity">
-                  加入教师角色
-                </button>
-              }
-            />
+            <DialogTrigger render={<Button className="text-sm">加入教师角色</Button>} />
             <DialogContent className="w-200! max-w-[90vw]!">
               <DialogHeader>
                 <DialogTitle className="text-base font-semibold">申请加入教师角色</DialogTitle>

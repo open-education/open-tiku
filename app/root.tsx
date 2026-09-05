@@ -1,18 +1,19 @@
-import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
-import type { Route } from "./+types/root";
-import "~/app.css";
-import React from "react";
-import { Toaster } from "~/components/ui/sonner";
-import { Error } from "~/common/error";
-import { ObjectUtil } from "~/util/object";
-import katexStyles from "katex/dist/katex.min.css?url";
-import { TooltipProvider } from "~/components/ui/tooltip";
-import { InitLoading } from "~/common/load";
+import type { Route } from './+types/root';
+import '~/app.css';
+import React from 'react';
+import { Toaster } from '~/components/ui/sonner';
+import { Error } from '~/common/error';
+import { ObjectUtil } from '~/util/object';
+import katexStyles from 'katex/dist/katex.min.css?url';
+import { TooltipProvider } from '~/components/ui/tooltip';
+import { InitLoading } from '~/common/load';
+import { ThemeProvider } from 'next-themes';
 
 // 使用该方式引入 katex css 文件
 export function links(): Route.LinkDescriptors {
-  return [{ rel: "stylesheet", href: katexStyles }];
+  return [{ rel: 'stylesheet', href: katexStyles }];
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -42,17 +43,21 @@ export function HydrateFallback() {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme" attribute="class">
+      <Outlet />
+    </ThemeProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "发生了意外错误";
+  let message = 'Oops!';
+  let details = '发生了意外错误';
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details = error.status === 404 ? "找不到请求的页面" : error.statusText || details;
+    message = error.status === 404 ? '404' : 'Error';
+    details = error.status === 404 ? '找不到请求的页面' : error.statusText || details;
   } else if (import.meta.env.DEV && ObjectUtil.isError(error)) {
     details = error.message;
     stack = error.stack;

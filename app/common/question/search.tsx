@@ -1,28 +1,29 @@
-import { Input } from "~/components/ui/input";
-import { ChapterDropdownNav, type SelectNavProps } from "~/common/nav";
-import { MultiTagSelect, StatusSelect, TypeSelect } from "~/common/question/tag";
-import type { QuestionPageSourceProps, QuestionSearch } from "~/type/question";
-import type { Textbook } from "~/type/textbook";
-import { useQuestionCates, useQuestionList, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
-import { useEffect, useMemo, useState } from "react";
-import { createTextbookPathDict } from "~/util/textbook-dict";
-import { ArrayUtil } from "~/util/object";
-import { StringConst } from "~/util/string";
-import { Separator } from "~/components/ui/separator";
-import { SimpleNoData } from "~/common/empty";
-import { SimpleAlert } from "~/common/alert";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { Loading } from "~/common/load";
-import { QuestionListShow } from "~/common/question/list";
-import { SimplePagination } from "~/common/page";
-import { SimpleSheet } from "~/common/sheet";
-import Add from "~/question/add";
-import { TaskAdd, TaskListShow } from "~/question/task";
-import { Button } from "~/components/ui/button";
-import { Plus, Upload, View } from "lucide-react";
-import type { UserInfoResp } from "~/type/user";
-import { useUserInfo } from "~/hooks/use-user";
-import { QuestionRelationType } from "~/type/enum";
+import { Input } from '~/components/ui/input';
+import { ChapterDropdownNav, type SelectNavProps } from '~/common/nav';
+import { MultiTagSelect, StatusSelect, TypeSelect } from '~/common/question/tag';
+import type { QuestionPageSourceProps, QuestionSearch } from '~/type/question';
+import type { Textbook } from '~/type/textbook';
+import { useQuestionCates, useQuestionList, useQuestionOtherDicts, useTextbooks } from '~/util/fetcher';
+import { useEffect, useMemo, useState } from 'react';
+import { createTextbookPathDict } from '~/util/textbook-dict';
+import { ArrayUtil } from '~/util/object';
+import { StringConst } from '~/util/string';
+import { Separator } from '~/components/ui/separator';
+import { SimpleNoData } from '~/common/empty';
+import { SimpleAlert } from '~/common/alert';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { Loading } from '~/common/load';
+import { QuestionListShow } from '~/common/question/list';
+import { SimplePagination } from '~/common/page';
+import { SimpleSheet } from '~/common/sheet';
+import Add from '~/home/question/add';
+import { TaskAdd, TaskListShow } from '~/home/question/task';
+import { Button } from '~/components/ui/button';
+import { Plus, Upload, View } from 'lucide-react';
+import type { UserInfoResp } from '~/type/user';
+import { useUserInfo } from '~/hooks/use-user';
+import { QuestionRelationType, UserRoleType } from '~/type/enum';
+import { cn } from 'cn';
 
 // 题目搜索页面
 interface QuestionSearchProps {
@@ -31,7 +32,7 @@ interface QuestionSearchProps {
   className?: string;
 }
 
-function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4 sm:px-16 sm:py-4" }: QuestionSearchProps) {
+function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: QuestionSearchProps) {
   // 获取用户信息
   const currentUser: UserInfoResp | null = useUserInfo();
 
@@ -53,7 +54,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
     tagIds: [],
     dimensionIds: [],
     // 我的题目和审核默认查询草稿中的数据
-    ...(pageSource.source !== "list" ? { status: 0 } : {}),
+    ...(pageSource.source !== 'list' ? { status: 0 } : {}),
   });
   const updateQuestionSearch = (key: keyof QuestionSearch, value: number | number[] | string[]) => {
     setQuestionSearch((prev) => ({ ...prev, [key]: value }));
@@ -68,7 +69,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
 
     const nodes = pathMap.get(questionSearch.fiveLevelId.toString()) ?? [];
     const twoLevelId = nodes.length > 2 ? nodes[1].id : 0;
-    updateQuestionSearch("twoLevelId", twoLevelId);
+    updateQuestionSearch('twoLevelId', twoLevelId);
   }, [questionSearch.fiveLevelId, pathMap]);
 
   // 查询题目类型和标签
@@ -76,22 +77,22 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
     data: questionTypes = [],
     isLoading: questionTypesLoading,
     error: questionTypesErr,
-  } = useQuestionOtherDicts(questionSearch.twoLevelId, "question_type");
-  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, "id"), [questionTypes]);
+  } = useQuestionOtherDicts(questionSearch.twoLevelId, 'question_type');
+  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, 'id'), [questionTypes]);
 
   const {
     data: questionTags = [],
     isLoading: questionTagsLoading,
     error: questionTagsErr,
-  } = useQuestionOtherDicts(questionSearch.twoLevelId, "question_tag");
-  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
+  } = useQuestionOtherDicts(questionSearch.twoLevelId, 'question_tag');
+  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, 'id'), [questionTags]);
 
   const {
     data: questionDimensions = [],
     isLoading: questionDimensionsLoading,
     error: questionDimensionsErr,
-  } = useQuestionOtherDicts(questionSearch.twoLevelId, "question_dimension");
-  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
+  } = useQuestionOtherDicts(questionSearch.twoLevelId, 'question_dimension');
+  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, 'id'), [questionDimensions]);
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(questionSearch.fiveLevelId);
@@ -110,14 +111,14 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
 
   // Sheet相关操作变量
   const [openSheet, setOpenSheet] = useState<boolean>(false);
-  const [sheetTitle, setSheetTitle] = useState<string>("");
-  const [sheetDesc, setSheetDesc] = useState<string>("");
-  const [sheetContent, setSheetContent] = useState<React.ReactNode>("");
+  const [sheetTitle, setSheetTitle] = useState<string>('');
+  const [sheetDesc, setSheetDesc] = useState<string>('');
+  const [sheetContent, setSheetContent] = useState<React.ReactNode>('');
 
   // 添加题目
   const handleQuestionAdd = () => {
-    setSheetTitle("添加母题");
-    setSheetDesc("通常只有标题是必填项, 比如纯粹的填空简答题等");
+    setSheetTitle('添加母题');
+    setSheetDesc('通常只有标题是必填项, 比如纯粹的填空简答题等');
     setSheetContent(
       <Add
         questionSearch={questionSearch}
@@ -132,8 +133,8 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
 
   // 添加任务
   const handleTaskAdd = () => {
-    setSheetTitle("上传题目");
-    setSheetDesc("注意上传模板约定");
+    setSheetTitle('上传题目');
+    setSheetDesc('注意上传模板约定');
     setSheetContent(
       <TaskAdd questionSearch={questionSearch} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
     );
@@ -142,14 +143,14 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
 
   // 查看任务
   const handleTaskList = () => {
-    setSheetTitle("任务列表");
-    setSheetDesc("任务执行周期大概每5分钟一次, 如果任务异常请联系管理员");
+    setSheetTitle('任务列表');
+    setSheetDesc('任务执行周期大概每5分钟一次, 如果任务异常请联系管理员');
     setSheetContent(<TaskListShow questionSearch={questionSearch} />);
     setOpenSheet(true);
   };
 
   return (
-    <div className={className}>
+    <div className={cn('bg-muted p-4', className)}>
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
         {/* 章节/考点 */}
@@ -160,14 +161,14 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
               textbooks={textbooks}
               onSelect={(selectedItems: Textbook[]) => {
                 if (!selectedItems) {
-                  updateQuestionSearch("fiveLevelId", 0);
-                  updateQuestionSearch("fiveLevelSelectKeys", []);
+                  updateQuestionSearch('fiveLevelId', 0);
+                  updateQuestionSearch('fiveLevelSelectKeys', []);
                   return;
                 }
                 const current: Textbook = selectedItems[selectedItems.length - 1];
-                updateQuestionSearch("fiveLevelId", current.id);
+                updateQuestionSearch('fiveLevelId', current.id);
                 updateQuestionSearch(
-                  "fiveLevelSelectKeys",
+                  'fiveLevelSelectKeys',
                   selectedItems.map((item) => item.key),
                 );
               }}
@@ -185,13 +186,13 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
               textbooks={questionCates}
               onSelect={(selectedItems: Textbook[]) => {
                 if (!selectedItems) {
-                  updateQuestionSearch("eightIds", []);
-                  updateQuestionSearch("eightLevelSelectKeys", []);
+                  updateQuestionSearch('eightIds', []);
+                  updateQuestionSearch('eightLevelSelectKeys', []);
                   return;
                 }
 
                 updateQuestionSearch(
-                  "eightLevelSelectKeys",
+                  'eightLevelSelectKeys',
                   selectedItems.map((info) => info.key),
                 );
 
@@ -199,11 +200,11 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
 
                 // 必须选择题型
                 if (current.tableName !== StringConst.questionCateTableName) {
-                  updateQuestionSearch("eightIds", []);
+                  updateQuestionSearch('eightIds', []);
                   return;
                 }
 
-                updateQuestionSearch("eightIds", [current.id]);
+                updateQuestionSearch('eightIds', [current.id]);
               }}
               defaultSelectedKeys={[]}
               placeholder="请选择题型"
@@ -219,7 +220,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
               options={questionTypes}
               value={questionSearch.typeId}
               onSelect={(val) => {
-                updateQuestionSearch("typeId", val);
+                updateQuestionSearch('typeId', val);
               }}
             />
           </div>
@@ -233,7 +234,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
               options={questionTags}
               value={questionSearch.tagIds}
               onChange={(val) => {
-                updateQuestionSearch("tagIds", val);
+                updateQuestionSearch('tagIds', val);
               }}
             />
           </div>
@@ -247,18 +248,18 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
               options={questionDimensions}
               value={questionSearch.dimensionIds}
               onChange={(val) => {
-                updateQuestionSearch("dimensionIds", val);
+                updateQuestionSearch('dimensionIds', val);
               }}
             />
           </div>
         </div>
 
         {/* 我的题目和审核可以自己选择状态 */}
-        {pageSource.source !== "list" && (
+        {pageSource.source !== 'list' && (
           <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
             <div className="md:w-24 shrink-0 font-medium">状态:</div>
             <div className="flex-1 min-w-0">
-              <StatusSelect defaultValue={questionSearch.status} onSelect={(status) => updateQuestionSearch("status", status)} />
+              <StatusSelect defaultValue={questionSearch.status} onSelect={(status) => updateQuestionSearch('status', status)} />
             </div>
           </div>
         )}
@@ -271,7 +272,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
               type="number"
               value={questionSearch.id}
               onChange={(e) => {
-                updateQuestionSearch("id", Number(e.target.value));
+                updateQuestionSearch('id', Number(e.target.value));
               }}
               className="text-sm md:text-sm w-full md:w-1/3" // 移动端全宽，PC端1/3宽度
             />
@@ -279,12 +280,12 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = "px-4 py-4
         </div>
 
         {/* 操作按钮, 普通列表页面 */}
-        {pageSource.source === "list" && (
+        {pageSource.source === 'list' && (
           <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
             <div className="md:w-24 shrink-0 font-medium">操作:</div>
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap gap-1">
-                {currentUser && (
+                {currentUser && currentUser.role !== UserRoleType.Student && (
                   <>
                     <Button variant="outline" className="text-sm" onClick={handleQuestionAdd}>
                       <Plus className="mr-2 h-4 w-4" />

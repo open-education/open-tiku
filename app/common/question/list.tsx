@@ -1,10 +1,10 @@
-import type { QuestionBaseInfoResp, QuestionListResp, QuestionPageSourceProps, QuestionSearch } from "~/type/question";
-import type { TextbookOtherDict } from "~/type/textbook";
-import { OperateTags, TagShow } from "~/common/question/tag";
-import { DictUtil } from "~/util/object";
-import { TitleShow } from "~/common/title";
-import { MultiOptionShow } from "~/common/select";
-import type { KeyedMutator } from "swr";
+import type { QuestionBaseInfoResp, QuestionListResp, QuestionPageSourceProps, QuestionSearch } from '~/type/question';
+import type { TextbookOtherDict } from '~/type/textbook';
+import { OperateTags, TagShow } from '~/common/question/tag';
+import { DictUtil } from '~/util/object';
+import { TitleShow } from '~/common/title';
+import { MultiOptionShow } from '~/common/select';
+import type { KeyedMutator } from 'swr';
 
 /// 题库题目列表展示
 
@@ -47,7 +47,7 @@ function QuestionListShow({
         return (
           <div
             key={questionInfo.id}
-            className="mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
+            className="mt-4 p-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
           >
             {/* 题干选项等部分 */}
             <SingleQuestionCommonPart
@@ -116,7 +116,7 @@ function SingleQuestionCommonPart({
 
       {/* 标题 */}
       <div className="mt-2.5">
-        {<TitleShow id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment || ""} images={questionInfo.images} />}
+        {<TitleShow id={questionInfo.id} title={questionInfo.title} comment={questionInfo.comment || ''} images={questionInfo.images} />}
       </div>
 
       {/* 选项内容 */}
@@ -144,7 +144,7 @@ function SimilarQuestionListShow({ pageSource, questionTypeDict, questionTagDict
         return (
           <div
             key={questionInfo.id}
-            className="mt-4 p-3 bg-white transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
+            className="mt-4 p-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
           >
             {/* 题干选项等部分 */}
             <SingleQuestionCommonPart

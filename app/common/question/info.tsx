@@ -1,16 +1,16 @@
-import { Card, CardContent } from "~/components/ui/card";
-import { Badge } from "~/components/ui/badge";
-import { Separator } from "~/components/ui/separator";
-import { Lightbulb, CheckCircle2, Layers, AlertCircle } from "lucide-react";
-import type { QuestionInfoResp, QuestionPageSourceProps } from "~/type/question";
-import { SimpleFullContent } from "~/common/content";
-import { TagShow } from "~/common/question/tag";
-import { TitleShow } from "~/common/title";
-import { MultiOptionShow } from "~/common/select";
-import type { TextbookOtherDict } from "~/type/textbook";
-import { DictUtil } from "~/util/object";
-import { SimpleAlert } from "~/common/alert";
-import { QuestionStatus } from "~/type/enum";
+import { Card, CardContent } from '~/components/ui/card';
+import { Badge } from '~/components/ui/badge';
+import { Separator } from '~/components/ui/separator';
+import { Lightbulb, CheckCircle2, Layers, AlertCircle } from 'lucide-react';
+import type { QuestionInfoResp, QuestionPageSourceProps } from '~/type/question';
+import { SimpleFullContent } from '~/common/content';
+import { TagShow } from '~/common/question/tag';
+import { TitleShow } from '~/common/title';
+import { MultiOptionShow } from '~/common/select';
+import type { TextbookOtherDict } from '~/type/textbook';
+import { DictUtil } from '~/util/object';
+import { SimpleAlert } from '~/common/alert';
+import { QuestionStatus } from '~/type/enum';
 
 // 题目详情样式-预览和详情均使用该样式
 interface QuestionInfoProps {
@@ -25,16 +25,16 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionD
   const { baseInfo, extraInfo } = infoResp;
 
   return (
-    <div className="space-y-4 pl-4 pb-4 pr-4">
+    <div className="space-y-4 pl-4 pb-4 pr-4 bg-muted">
       {/* 我的题目审核如果被拒绝要显示拒绝原因, 修改后重新提交审核 */}
       {baseInfo.status === QuestionStatus.Rejected && (
-        <SimpleAlert title="你的题目审核被拒绝, 请按拒绝原因修改后重新提交审核" message={baseInfo.rejectReason || ""} />
+        <SimpleAlert title="你的题目审核被拒绝, 请按拒绝原因修改后重新提交审核" message={baseInfo.rejectReason || ''} />
       )}
 
       {/* 来源和备注, 只展示存在的信息 */}
       <div className="text-xs flex flex-col gap-1 border p-4">
         <div>创建时间: {baseInfo.createdAt}</div>
-        <div>作者昵称: {baseInfo.authorName || ""}</div>
+        <div>作者昵称: {baseInfo.authorName || ''}</div>
         {baseInfo.originalName && <div>创作者昵称: {baseInfo.originalName}</div>}
         {baseInfo.source && <div>来源: {baseInfo.source}</div>}
         {baseInfo.approveName && <div>审核人: {baseInfo.approveName}</div>}
@@ -59,7 +59,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionD
 
           {/* 题干 - 突出显示 */}
           <div className="text-sm">
-            <TitleShow id={baseInfo.id} title={baseInfo.title} comment={baseInfo.comment ?? ""} images={baseInfo.images ?? []} />
+            <TitleShow id={baseInfo.id} title={baseInfo.title} comment={baseInfo.comment ?? ''} images={baseInfo.images ?? []} />
           </div>
 
           {/* 选项 */}
@@ -78,7 +78,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionD
                 variant="outline"
                 className="text-sm px-4 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-300 border-0 shadow-sm"
               >
-                {extraInfo.knowledge ?? ""}
+                {extraInfo.knowledge ?? ''}
               </Badge>
             </div>
           </div>
@@ -94,7 +94,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionD
             <div>
               <h4 className="font-semibold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider mb-1">参考答案</h4>
               <div className=" text-emerald-700 dark:text-emerald-300">
-                <SimpleFullContent content={extraInfo.answer ?? ""} />
+                <SimpleFullContent content={extraInfo.answer ?? ''} />
               </div>
             </div>
           </div>
@@ -108,7 +108,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionD
               <span>解题分析</span>
             </div>
             <div className="leading-relaxed text-gray-700 dark:text-gray-300">
-              <SimpleFullContent content={extraInfo.analysis?.content ?? ""} />
+              <SimpleFullContent content={extraInfo.analysis?.content ?? ''} />
             </div>
           </div>
 
@@ -119,7 +119,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionD
               <span>解题过程</span>
             </div>
             <div className="leading-relaxed text-gray-700 dark:text-gray-300">
-              <SimpleFullContent content={extraInfo.process?.content ?? ""} />
+              <SimpleFullContent content={extraInfo.process?.content ?? ''} />
             </div>
           </div>
 
@@ -159,7 +159,7 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionD
             <div>
               <h4 className="text-amber-700 dark:text-amber-300 uppercase tracking-wider mb-0.5">易错备注</h4>
               <div className="text-amber-800/80 dark:text-amber-300/80 leading-relaxed">
-                <SimpleFullContent content={extraInfo.remark ?? ""} />
+                <SimpleFullContent content={extraInfo.remark ?? ''} />
               </div>
             </div>
           </div>

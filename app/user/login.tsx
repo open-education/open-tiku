@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router";
-import { SimpleAlert } from "~/common/alert";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader } from "~/components/ui/card";
-import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from "~/components/ui/field";
-import { Input } from "~/components/ui/input";
-import { clearAuth, saveAuth } from "~/util/user";
-import { UserLoginSource } from "~/type/enum";
-import type { StudentLoginReq, UserInfoResp, UserLoginReq } from "~/type/user";
-import { httpClient } from "~/util/http";
-import { StringValidator } from "~/util/string";
-import { getEncryptPwd } from "~/util/pwd";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { SimpleAlert } from '~/common/alert';
+import { Button } from '~/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader } from '~/components/ui/card';
+import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from '~/components/ui/field';
+import { Input } from '~/components/ui/input';
+import { clearAuth, saveAuth } from '~/util/user';
+import { UserLoginSource } from '~/type/enum';
+import type { StudentLoginReq, UserInfoResp, UserLoginReq } from '~/type/user';
+import { httpClient } from '~/util/http';
+import { StringValidator } from '~/util/string';
+import { getEncryptPwd } from '~/util/pwd';
 
 // 账户登录
 
 const defaultStudentLoginReq: StudentLoginReq = {
-  account: "",
-  password: "",
+  account: '',
+  password: '',
 };
 
 // 当前自己浏览器登录只保留最新的一个有效用户
@@ -35,7 +35,7 @@ export function Login() {
 
   // 学生登录
   const handleStudentLogin = async () => {
-    setWarnInfo("");
+    setWarnInfo('');
 
     if (!StringValidator.isNonEmpty(logInReq.account)) {
       setWarnInfo(<SimpleAlert title="登录参数校验" message="账户为空" />);
@@ -60,7 +60,7 @@ export function Login() {
       };
 
       httpClient
-        .post<UserInfoResp>("/user/login", req)
+        .post<UserInfoResp>('/user/login', req)
         .then((userInfo) => {
           // 检查 token 信息
           if (!StringValidator.isNonEmpty(userInfo.token)) {
@@ -68,7 +68,7 @@ export function Login() {
             return;
           }
           saveAuth(userInfo.token, userInfo);
-          navigate("/", { replace: true });
+          navigate('/', { replace: true });
         })
         .catch((err) => {
           setWarnInfo(<SimpleAlert title="登录失败" message={err.message} />);
@@ -79,7 +79,7 @@ export function Login() {
         });
     } catch (cryptoError: any) {
       // 捕获加密阶段的错误 例如公钥接口404 本地Web Crypto不支持等
-      setWarnInfo(<SimpleAlert title="安全初始化失败" message={cryptoError.message || "无法加密密码，请稍后重试"} />);
+      setWarnInfo(<SimpleAlert title="安全初始化失败" message={cryptoError.message || '无法加密密码，请稍后重试'} />);
       clearAuth();
       setStudentLoggingIn(false);
     }
@@ -90,7 +90,7 @@ export function Login() {
   const [isQQRedirecting, setIsQQRedirecting] = useState(false);
 
   const handleNormalLogin = (providerType: number) => {
-    setWarnInfo("");
+    setWarnInfo('');
 
     if (providerType == 1) {
       setIsGithubRedirecting(true);
@@ -134,7 +134,7 @@ export function Login() {
                   placeholder="uu"
                   required
                   value={logInReq.account}
-                  onChange={(e) => updateLogInReq("account", e.target.value)}
+                  onChange={(e) => updateLogInReq('account', e.target.value)}
                 />
                 <FieldDescription className="text-sm">由你的老师帮你创建的账号</FieldDescription>
               </Field>
@@ -152,13 +152,13 @@ export function Login() {
                   required
                   placeholder="******"
                   value={logInReq.password}
-                  onChange={(e) => updateLogInReq("password", e.target.value)}
+                  onChange={(e) => updateLogInReq('password', e.target.value)}
                 />
               </Field>
 
               <Field>
                 <Button variant="default" onClick={handleStudentLogin} disabled={studentLoggingIn}>
-                  {studentLoggingIn ? "登录中..." : "登录"}
+                  {studentLoggingIn ? '登录中...' : '登录'}
                 </Button>
               </Field>
 
@@ -172,7 +172,7 @@ export function Login() {
                   disabled={isGithubRedirecting}
                 >
                   {isGithubRedirecting ? (
-                    "登录中..."
+                    '登录中...'
                   ) : (
                     <>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -192,7 +192,7 @@ export function Login() {
                   disabled={isQQRedirecting}
                 >
                   {isQQRedirecting ? (
-                    "登录中..."
+                    '登录中...'
                   ) : (
                     <>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">

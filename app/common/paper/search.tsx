@@ -1,16 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
-import type { CommonPaperSearchReq, PaperPageSourceProps } from "~/type/paper";
-import { usePaperList, useQuestionOtherDicts, useTextbooks } from "~/util/fetcher";
-import { ArrayUtil } from "~/util/object";
-import { createTextbookPathDict } from "~/util/textbook-dict";
-import { CommonPaperSearchConf } from "~/common/paper/config";
-import { Separator } from "~/components/ui/separator";
-import { SimpleAlert } from "~/common/alert";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { Loading } from "~/common/load";
-import { MyPaperList } from "~/paper/gen/list";
-import { SimplePagination } from "~/common/page";
-import { SimpleSheet } from "~/common/sheet";
+import { useEffect, useMemo, useState } from 'react';
+import type { CommonPaperSearchReq, PaperPageSourceProps } from '~/type/paper';
+import { usePaperList, useQuestionOtherDicts, useTextbooks } from '~/util/fetcher';
+import { ArrayUtil } from '~/util/object';
+import { createTextbookPathDict } from '~/util/textbook-dict';
+import { CommonPaperSearchConf } from '~/common/paper/config';
+import { Separator } from '~/components/ui/separator';
+import { SimpleAlert } from '~/common/alert';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { Loading } from '~/common/load';
+import { MyPaperList } from '~/home/paper/gen/list';
+import { SimplePagination } from '~/common/page';
+import { SimpleSheet } from '~/common/sheet';
 
 interface MyPaperSearchListProps {
   pageSource: PaperPageSourceProps;
@@ -20,11 +20,11 @@ function MyPaperSearchList({ pageSource }: MyPaperSearchListProps) {
   // 默认的搜索属性
   const defaultSearchReq: CommonPaperSearchReq = {
     relatedId: 0,
-    relatedName: "",
-    tag: "",
-    year: "",
-    grade: "",
-    semester: "",
+    relatedName: '',
+    tag: '',
+    year: '',
+    grade: '',
+    semester: '',
     selectedKeys: [],
     paperType: 0,
     source: pageSource.source,
@@ -55,18 +55,18 @@ function MyPaperSearchList({ pageSource }: MyPaperSearchListProps) {
   }, [searchReq.relatedId, pathMap]);
 
   // 查询题目类型和标签 核心素养
-  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionOtherDicts(twoLevelId, "question_type");
-  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, "id"), [questionTypes]);
+  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionOtherDicts(twoLevelId, 'question_type');
+  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, 'id'), [questionTypes]);
 
-  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionOtherDicts(twoLevelId, "question_tag");
-  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, "id"), [questionTags]);
+  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionOtherDicts(twoLevelId, 'question_tag');
+  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, 'id'), [questionTags]);
 
   const {
     data: questionDimensions = [],
     isLoading: questionDimensionsLoading,
     error: questionDimensionsErr,
-  } = useQuestionOtherDicts(twoLevelId, "question_dimension");
-  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, "id"), [questionDimensions]);
+  } = useQuestionOtherDicts(twoLevelId, 'question_dimension');
+  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, 'id'), [questionDimensions]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -88,12 +88,12 @@ function MyPaperSearchList({ pageSource }: MyPaperSearchListProps) {
 
   // Sheet相关操作变量
   const [openSheet, setOpenSheet] = useState<boolean>(false);
-  const [sheetTitle, setSheetTitle] = useState<string>("");
-  const [sheetDesc, setSheetDesc] = useState<string>("");
-  const [sheetContent, setSheetContent] = useState<React.ReactNode>("");
+  const [sheetTitle, setSheetTitle] = useState<string>('');
+  const [sheetDesc, setSheetDesc] = useState<string>('');
+  const [sheetContent, setSheetContent] = useState<React.ReactNode>('');
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-muted">
       {/* 搜索选项 */}
       <div className="flex flex-col gap-3">
         <CommonPaperSearchConf textbooks={textbooks} search={searchReq} updateCommonPaperSearchReq={updateSearchReq} />
@@ -136,7 +136,7 @@ function MyPaperSearchList({ pageSource }: MyPaperSearchListProps) {
       ) && <Loading />}
 
       {/* 试卷列表 */}
-      <div className="mt-3 bg-gray-50">
+      <div className="mt-3">
         <MyPaperList
           search={searchReq}
           paperList={paperListResp.list}

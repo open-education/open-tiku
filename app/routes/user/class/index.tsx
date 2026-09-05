@@ -1,38 +1,38 @@
-import type { ClassInfoResp, ClassSearchReq } from "~/type/class";
-import type { Route } from "./+types/index";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { Button } from "~/components/ui/button";
-import { Eye, Pencil, Plus, Trash2, Upload } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { Separator } from "~/components/ui/separator";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { useState } from "react";
-import { SimpleAlert } from "~/common/alert";
-import { Loading } from "~/common/load";
-import { SimplePagination } from "~/common/page";
-import { useClassList } from "~/util/fetcher";
-import { StringConst } from "~/util/string";
-import { ClassEdit, StudentAccountList, UploadStudentAccount } from "~/user/class/edit";
-import { SimpleTooltip } from "~/common/tooltip";
-import { SearchConfig } from "~/user/class/config";
+import type { ClassInfoResp, ClassSearchReq } from '~/type/class';
+import type { Route } from './+types/index';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import { Button } from '~/components/ui/button';
+import { Eye, Pencil, Plus, Trash2, Upload } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
+import { Separator } from '~/components/ui/separator';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { useState } from 'react';
+import { SimpleAlert } from '~/common/alert';
+import { Loading } from '~/common/load';
+import { SimplePagination } from '~/common/page';
+import { useClassList } from '~/util/fetcher';
+import { StringConst } from '~/util/string';
+import { ClassEdit, StudentAccountList, UploadStudentAccount } from '~/user/class/edit';
+import { SimpleTooltip } from '~/common/tooltip';
+import { SearchConfig } from '~/user/class/config';
 
 // 我的班级
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "班级-我的班级" },
+    { title: '班级-我的班级' },
     {
-      name: "description",
-      content: "个人中心我的班级管理; 导入班级学生账号, 生成学生账户登录密码",
+      name: 'description',
+      content: '个人中心我的班级管理; 导入班级学生账号, 生成学生账户登录密码',
     },
   ];
 }
 
 // 搜索默认值
 const defaultSearchReq: ClassSearchReq = {
-  year: "",
-  grade: "",
-  semester: "",
+  year: '',
+  grade: '',
+  semester: '',
 };
 
 export default function Index() {
@@ -69,7 +69,7 @@ export default function Index() {
   const [viewInfoDialogOpen, setViewInfoDialogOpen] = useState<boolean>(false);
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-muted">
       <Card className="w-full">
         <CardHeader className="flex flex-row justify-between space-y-0 pb-4">
           <CardTitle className="text-base font-medium">我的班级管理</CardTitle>
@@ -196,7 +196,7 @@ export default function Index() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => alert("没有实现")}
+                          onClick={() => alert('没有实现')}
                           className="h-8 w-8 text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />

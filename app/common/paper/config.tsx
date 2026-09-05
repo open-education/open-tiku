@@ -1,17 +1,17 @@
-import { Settings2 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Separator } from "~/components/ui/separator";
-import { ChapterDropdownNav } from "~/common/nav";
-import type { Textbook } from "~/type/textbook";
-import { StatusSelect, TagSelect } from "~/common/paper/tag";
-import { StringConst } from "~/util/string";
-import { YearSelect } from "~/common/paper/year";
-import { GradeSelect } from "~/common/paper/grade";
-import { SemesterSelect } from "~/common/paper/semester";
-import { Textarea } from "~/components/ui/textarea";
-import { Input } from "~/components/ui/input";
-import type { CommonPaperSearchReq, CommonPaperReq } from "~/type/paper";
-import { Button } from "~/components/ui/button";
+import { Settings2 } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import { Separator } from '~/components/ui/separator';
+import { ChapterDropdownNav } from '~/common/nav';
+import type { Textbook } from '~/type/textbook';
+import { StatusSelect, TagSelect } from '~/common/paper/tag';
+import { StringConst } from '~/util/string';
+import { YearSelect } from '~/common/paper/year';
+import { GradeSelect } from '~/common/paper/grade';
+import { SemesterSelect } from '~/common/paper/semester';
+import { Textarea } from '~/components/ui/textarea';
+import { Input } from '~/components/ui/input';
+import type { CommonPaperSearchReq, CommonPaperReq } from '~/type/paper';
+import { Button } from '~/components/ui/button';
 
 // 试卷基本信息搜索
 
@@ -31,17 +31,17 @@ function CommonPaperSearchConf({ textbooks, search: metaSearch, updateCommonPape
             textbooks={textbooks}
             onSelect={(selectedItems: Textbook[]) => {
               if (!selectedItems) {
-                updateCommonPaperSearchReq("relatedId", 0);
-                updateCommonPaperSearchReq("relatedName", "");
-                updateCommonPaperSearchReq("selectedKeys", []);
+                updateCommonPaperSearchReq('relatedId', 0);
+                updateCommonPaperSearchReq('relatedName', '');
+                updateCommonPaperSearchReq('selectedKeys', []);
                 return;
               }
 
               const current: Textbook = selectedItems[selectedItems.length - 1];
-              updateCommonPaperSearchReq("relatedId", current.id);
-              updateCommonPaperSearchReq("relatedName", current.label);
+              updateCommonPaperSearchReq('relatedId', current.id);
+              updateCommonPaperSearchReq('relatedName', current.label);
               updateCommonPaperSearchReq(
-                "selectedKeys",
+                'selectedKeys',
                 selectedItems.map((item) => item.key),
               );
             }}
@@ -58,7 +58,7 @@ function CommonPaperSearchConf({ textbooks, search: metaSearch, updateCommonPape
             options={StringConst.examTags}
             defaultValue={metaSearch.tag}
             onSelect={(value) => {
-              updateCommonPaperSearchReq("tag", value);
+              updateCommonPaperSearchReq('tag', value);
             }}
           />
         </div>
@@ -67,14 +67,14 @@ function CommonPaperSearchConf({ textbooks, search: metaSearch, updateCommonPape
       <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
         <div className="md:w-24 shrink-0 font-medium">年份:</div>
         <div className="flex-1 min-w-0">
-          <YearSelect value={metaSearch.year} onValueChange={(val) => updateCommonPaperSearchReq("year", val ?? "")} placeholder="选择年份" />
+          <YearSelect value={metaSearch.year} onValueChange={(val) => updateCommonPaperSearchReq('year', val ?? '')} placeholder="选择年份" />
         </div>
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
         <div className="md:w-24 shrink-0 font-medium">年级:</div>
         <div className="flex-1 min-w-0">
-          <GradeSelect value={metaSearch.grade} onValueChange={(val) => updateCommonPaperSearchReq("grade", val ?? "")} placeholder="选择年级" />
+          <GradeSelect value={metaSearch.grade} onValueChange={(val) => updateCommonPaperSearchReq('grade', val ?? '')} placeholder="选择年级" />
         </div>
       </div>
 
@@ -83,7 +83,7 @@ function CommonPaperSearchConf({ textbooks, search: metaSearch, updateCommonPape
         <div className="flex-1 min-w-0">
           <SemesterSelect
             value={metaSearch.semester}
-            onValueChange={(val) => updateCommonPaperSearchReq("semester", val ?? "")}
+            onValueChange={(val) => updateCommonPaperSearchReq('semester', val ?? '')}
             placeholder="选择学期"
           />
         </div>
@@ -97,8 +97,8 @@ function CommonPaperSearchConf({ textbooks, search: metaSearch, updateCommonPape
               key={value}
               className="text-sm md:text-sm w-20 text-center"
               type="button"
-              variant={metaSearch.paperType === value ? "default" : "outline"}
-              onClick={() => updateCommonPaperSearchReq("paperType", value)}
+              variant={metaSearch.paperType === value ? 'default' : 'outline'}
+              onClick={() => updateCommonPaperSearchReq('paperType', value)}
             >
               {label}
             </Button>
@@ -107,11 +107,11 @@ function CommonPaperSearchConf({ textbooks, search: metaSearch, updateCommonPape
       </div>
 
       {/* 我的题目和审核可以自己选择状态 */}
-      {metaSearch.source !== "list" && (
+      {metaSearch.source !== 'list' && (
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
           <div className="md:w-24 shrink-0 font-medium">状态:</div>
           <div className="flex-1 min-w-0">
-            <StatusSelect defaultValue={metaSearch.status} onSelect={(status) => updateCommonPaperSearchReq("status", status)} />
+            <StatusSelect defaultValue={metaSearch.status} onSelect={(status) => updateCommonPaperSearchReq('status', status)} />
           </div>
         </div>
       )}
@@ -149,13 +149,13 @@ function CommonPaperConf({ textbooks = [], commonPaperReq, defaultSelectedKeys =
                   // 直接记录末级的标识即可, 搜索直接搜索该层级标识即可, 不关心父级和子级
                   // 但是详情和编辑需要展示这个路径, 需要用了再获取
                   if (!selectedItems) {
-                    updateCommonPaperReq("relatedId", 0);
-                    updateCommonPaperReq("relatedName", "");
+                    updateCommonPaperReq('relatedId', 0);
+                    updateCommonPaperReq('relatedName', '');
                     return;
                   }
                   const current = selectedItems[selectedItems.length - 1];
-                  updateCommonPaperReq("relatedId", current.id);
-                  updateCommonPaperReq("relatedName", current.label);
+                  updateCommonPaperReq('relatedId', current.id);
+                  updateCommonPaperReq('relatedName', current.label);
                 }}
                 defaultSelectedKeys={defaultSelectedKeys}
                 placeholder="请选择学段"
@@ -168,9 +168,9 @@ function CommonPaperConf({ textbooks = [], commonPaperReq, defaultSelectedKeys =
             <div className="col-span-8">
               <TagSelect
                 options={StringConst.examTags}
-                defaultValue={commonPaperReq.tag ?? ""}
+                defaultValue={commonPaperReq.tag ?? ''}
                 onSelect={(val) => {
-                  updateCommonPaperReq("tag", val);
+                  updateCommonPaperReq('tag', val);
                 }}
               />
             </div>
@@ -180,9 +180,9 @@ function CommonPaperConf({ textbooks = [], commonPaperReq, defaultSelectedKeys =
             <div className="col-span-2">年份:</div>
             <div className="col-span-8">
               <YearSelect
-                value={commonPaperReq.year ?? ""}
+                value={commonPaperReq.year ?? ''}
                 onValueChange={(val) => {
-                  updateCommonPaperReq("year", val ?? "");
+                  updateCommonPaperReq('year', val ?? '');
                 }}
                 placeholder="选择年份"
               />
@@ -193,8 +193,8 @@ function CommonPaperConf({ textbooks = [], commonPaperReq, defaultSelectedKeys =
             <div className="col-span-2">年级:</div>
             <div className="col-span-8">
               <GradeSelect
-                value={commonPaperReq.grade ?? ""}
-                onValueChange={(val) => updateCommonPaperReq("grade", !val || val === "不选" ? "" : val)}
+                value={commonPaperReq.grade ?? ''}
+                onValueChange={(val) => updateCommonPaperReq('grade', !val || val === '不选' ? '' : val)}
                 placeholder="选择年级"
               />
             </div>
@@ -204,8 +204,8 @@ function CommonPaperConf({ textbooks = [], commonPaperReq, defaultSelectedKeys =
             <div className="col-span-2">学期:</div>
             <div className="col-span-8">
               <SemesterSelect
-                value={commonPaperReq.semester ?? ""}
-                onValueChange={(val) => updateCommonPaperReq("semester", !val || val === "不选" ? "" : val)}
+                value={commonPaperReq.semester ?? ''}
+                onValueChange={(val) => updateCommonPaperReq('semester', !val || val === '不选' ? '' : val)}
                 placeholder="选择学期"
               />
             </div>
@@ -217,8 +217,8 @@ function CommonPaperConf({ textbooks = [], commonPaperReq, defaultSelectedKeys =
               <Textarea
                 value={commonPaperReq.title}
                 className="text-sm md:text-sm"
-                onChange={(e) => updateCommonPaperReq("title", e.target.value)}
-                placeholder={"请输入试卷标题"}
+                onChange={(e) => updateCommonPaperReq('title', e.target.value)}
+                placeholder={'请输入试卷标题'}
               />
             </div>
           </div>
@@ -230,7 +230,7 @@ function CommonPaperConf({ textbooks = [], commonPaperReq, defaultSelectedKeys =
                 type="number"
                 value={commonPaperReq.score}
                 onChange={(e) => {
-                  updateCommonPaperReq("score", Number(e.target.value));
+                  updateCommonPaperReq('score', Number(e.target.value));
                 }}
                 className="text-sm md:text-sm"
               />
@@ -243,8 +243,8 @@ function CommonPaperConf({ textbooks = [], commonPaperReq, defaultSelectedKeys =
               <Textarea
                 className="text-sm md:text-sm"
                 value={commonPaperReq.source}
-                onChange={(e) => updateCommonPaperReq("source", e.target.value)}
-                placeholder={"请输入试卷来源"}
+                onChange={(e) => updateCommonPaperReq('source', e.target.value)}
+                placeholder={'请输入试卷来源'}
               />
             </div>
           </div>
@@ -255,8 +255,8 @@ function CommonPaperConf({ textbooks = [], commonPaperReq, defaultSelectedKeys =
               <Textarea
                 value={commonPaperReq.remark}
                 className="texst-sm md:text-sm"
-                onChange={(e) => updateCommonPaperReq("remark", e.target.value)}
-                placeholder={"请输入备注信息"}
+                onChange={(e) => updateCommonPaperReq('remark', e.target.value)}
+                placeholder={'请输入备注信息'}
               />
             </div>
           </div>

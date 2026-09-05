@@ -6,7 +6,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "~/components/ui/pagination";
+} from '~/components/ui/pagination';
 
 // 简单的分页组件
 interface PaginationProps {
@@ -21,7 +21,7 @@ export function SimplePagination({ pageNo, pageSize, total, onPageChange }: Pagi
 
   // 生成页码列表（包含省略号）
   const getPageNumbers = () => {
-    const pages: (number | "ellipsis")[] = [];
+    const pages: (number | 'ellipsis')[] = [];
     const maxVisible = 5; // 最多显示5个页码
 
     if (totalPages <= maxVisible) {
@@ -48,7 +48,7 @@ export function SimplePagination({ pageNo, pageSize, total, onPageChange }: Pagi
 
       // 左侧省略号
       if (start > 2) {
-        pages.push("ellipsis");
+        pages.push('ellipsis');
       }
 
       // 中间页码
@@ -58,7 +58,7 @@ export function SimplePagination({ pageNo, pageSize, total, onPageChange }: Pagi
 
       // 右侧省略号
       if (end < totalPages - 1) {
-        pages.push("ellipsis");
+        pages.push('ellipsis');
       }
 
       // 始终显示最后一页
@@ -83,13 +83,13 @@ export function SimplePagination({ pageNo, pageSize, total, onPageChange }: Pagi
       <PaginationContent>
         {/* 上一页 */}
         <PaginationItem>
-          <PaginationPrevious onClick={handlePrev} aria-disabled={pageNo === 1} className={pageNo === 1 ? "pointer-events-none opacity-50" : ""} />
+          <PaginationPrevious onClick={handlePrev} aria-disabled={pageNo === 1} className={pageNo === 1 ? 'pointer-events-none opacity-50' : ''} />
         </PaginationItem>
 
         {/* 页码列表 */}
         {pageNumbers.map((page, index) => (
           <PaginationItem key={index}>
-            {page === "ellipsis" ? (
+            {page === 'ellipsis' ? (
               <PaginationEllipsis />
             ) : (
               <PaginationLink isActive={page === pageNo} onClick={() => onPageChange(page)}>
@@ -104,7 +104,7 @@ export function SimplePagination({ pageNo, pageSize, total, onPageChange }: Pagi
           <PaginationNext
             onClick={handleNext}
             aria-disabled={pageNo === totalPages}
-            className={pageNo === totalPages ? "pointer-events-none opacity-50" : ""}
+            className={pageNo === totalPages ? 'pointer-events-none opacity-50' : ''}
           />
         </PaginationItem>
       </PaginationContent>

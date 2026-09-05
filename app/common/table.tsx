@@ -23,7 +23,7 @@ export const table = {
     </tr>
   ),
   th: ({ children, align, ...props }: any) => {
-    const alignClass = align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left";
+    const alignClass = align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left';
     return (
       <th className={`${alignClass} px-4 py-3 border-b border-gray-200 bg-gray-50 text-sm font-semibold text-gray-700`} {...props}>
         {children}
@@ -31,7 +31,7 @@ export const table = {
     );
   },
   td: ({ children, align, ...props }: any) => {
-    const alignClass = align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left";
+    const alignClass = align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left';
     return (
       <td className={`${alignClass} px-4 py-3 border-b border-gray-200 text-sm text-gray-600`} {...props}>
         {children}

@@ -1,27 +1,27 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import type { Route } from "./+types/index";
-import { useState } from "react";
-import { useUserAccountList } from "~/util/fetcher";
-import { StringConst } from "~/util/string";
-import { SimpleAlert } from "~/common/alert";
-import { useDelayedLoading } from "~/hooks/delayed-loading";
-import { Loading } from "~/common/load";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { Button } from "~/components/ui/button";
-import { Pencil } from "lucide-react";
-import { SimplePagination } from "~/common/page";
-import type { UserIdentityInfoResp } from "~/type/user";
-import { AccountEdit } from "~/user/account/edit";
-import { SimpleTooltip } from "~/common/tooltip";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import type { Route } from './+types/index';
+import { useState } from 'react';
+import { useUserAccountList } from '~/util/fetcher';
+import { StringConst } from '~/util/string';
+import { SimpleAlert } from '~/common/alert';
+import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { Loading } from '~/common/load';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import { Button } from '~/components/ui/button';
+import { Pencil } from 'lucide-react';
+import { SimplePagination } from '~/common/page';
+import type { UserIdentityInfoResp } from '~/type/user';
+import { AccountEdit } from '~/user/account/edit';
+import { SimpleTooltip } from '~/common/tooltip';
 
 // 网站第三方登录用户列表
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "用户-第三方账户列表" },
+    { title: '用户-第三方账户列表' },
     {
-      name: "description",
-      content: "个人中心用户账户管理; 第三方登录账户列表",
+      name: 'description',
+      content: '个人中心用户账户管理; 第三方登录账户列表',
     },
   ];
 }
@@ -45,7 +45,7 @@ export default function Index() {
   const [editInfoResp, setEditInfoResp] = useState<UserIdentityInfoResp | null>(null);
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-muted">
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-base font-semibold">第三方登录账户管理</CardTitle>

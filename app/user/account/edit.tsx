@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { toast } from "sonner";
-import type { KeyedMutator } from "swr";
-import { Button } from "~/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import { Separator } from "~/components/ui/separator";
-import { Textarea } from "~/components/ui/textarea";
-import type { UserIdentityInfoReq, UserIdentityInfoResp, UserIdentityListResp } from "~/type/user";
-import { httpClient } from "~/util/http";
-import { StringConst } from "~/util/string";
+import { useState } from 'react';
+import { toast } from 'sonner';
+import type { KeyedMutator } from 'swr';
+import { Button } from '~/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog';
+import { Separator } from '~/components/ui/separator';
+import { Textarea } from '~/components/ui/textarea';
+import type { UserIdentityInfoReq, UserIdentityInfoResp, UserIdentityListResp } from '~/type/user';
+import { httpClient } from '~/util/http';
+import { StringConst } from '~/util/string';
 
 // 试卷状态选择器
 interface AccountStatusSelectProps {
@@ -26,7 +26,7 @@ function AccountStatusSelect({ defaultValue = 0, onSelect }: AccountStatusSelect
   return (
     <div className="flex flex-wrap gap-2 justify-start">
       {StringConst.accountStatusList.map(({ id, value, label }) => (
-        <Button key={id} className="text-sm" variant={defaultValue === value ? "default" : "outline"} onClick={() => handleSelect(value)}>
+        <Button key={id} className="text-sm" variant={defaultValue === value ? 'default' : 'outline'} onClick={() => handleSelect(value)}>
           {label}
         </Button>
       ))}
@@ -45,7 +45,7 @@ interface AccountEditProps {
 const defaultAccountEditReq: UserIdentityInfoReq = {
   id: 0,
   status: 0,
-  remark: "",
+  remark: '',
 };
 
 function AccountEdit({ open, setOpen, infoResp, accountListRespMutate }: AccountEditProps) {
@@ -62,7 +62,7 @@ function AccountEdit({ open, setOpen, infoResp, accountListRespMutate }: Account
       toast.error(<div className="text-red-700">没有选择账户</div>, {
         duration: Infinity,
         action: {
-          label: "关闭",
+          label: '关闭',
           onClick: () => {},
         },
       });
@@ -73,7 +73,7 @@ function AccountEdit({ open, setOpen, infoResp, accountListRespMutate }: Account
 
     // 请求编辑账户更新
     httpClient
-      .post<boolean>("/user/account/edit", editReq)
+      .post<boolean>('/user/account/edit', editReq)
       .then((res) => {
         setOpen(false);
         setEditReq({ ...defaultAccountEditReq });
@@ -85,7 +85,7 @@ function AccountEdit({ open, setOpen, infoResp, accountListRespMutate }: Account
         toast.error(<div className="text-red-700">编辑账户信息出错: {err.message}</div>, {
           duration: Infinity,
           action: {
-            label: "关闭",
+            label: '关闭',
             onClick: () => {},
           },
         });
@@ -109,14 +109,14 @@ function AccountEdit({ open, setOpen, infoResp, accountListRespMutate }: Account
           <div className="grid grid-cols-[100px_1fr] gap-4 items-center">
             {/* 状态 */}
             <span className="text-sm text-right">状态:</span>
-            <AccountStatusSelect defaultValue={editReq.status} onSelect={(val) => updateEditReq("status", val)} />
+            <AccountStatusSelect defaultValue={editReq.status} onSelect={(val) => updateEditReq('status', val)} />
 
             {/* 备注 */}
             <span className="text-sm text-right self-start pt-1.5">备注:</span>
             <Textarea
               className="text-sm md:text-sm"
               value={editReq.remark}
-              onChange={(e) => updateEditReq("remark", e.target.value)}
+              onChange={(e) => updateEditReq('remark', e.target.value)}
               placeholder="请输入备注信息"
             />
           </div>
@@ -138,7 +138,7 @@ function AccountEdit({ open, setOpen, infoResp, accountListRespMutate }: Account
               取消
             </Button>
             <Button className="text-sm" onClick={handleEdit} disabled={editProcessIng}>
-              {editProcessIng ? "更新中..." : "更新"}
+              {editProcessIng ? '更新中...' : '更新'}
             </Button>
           </div>
         </DialogFooter>
