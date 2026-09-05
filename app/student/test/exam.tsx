@@ -489,7 +489,7 @@ function EditEaxm({ hId, paperId, examMethod }: EditEaxmProps) {
     status === TestStatus.InProgress ? setSaveDrafting(true) : setSaveSubmitting(true);
 
     const list = Array.from(answerMap.values());
-    const addReq: TestAnswerAddReq = { attemptId: hId, status, list };
+    const addReq: TestAnswerAddReq = { attemptId: latestAttemptResp.id, status, list };
 
     httpClient
       .post('/test/answer/add', addReq)
