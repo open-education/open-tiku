@@ -106,7 +106,7 @@ export default function Index() {
   } = useTestList(historyStartDate, historyEndDate, pageNo);
 
   return (
-    <div className="px-4 py-4 sm:px-16 sm:py-4 space-y-4">
+    <div className="space-y-4">
       {/* 欢迎 */}
       <div className="bg-muted p-4">
         <div className="text-blue-500 font-semibold">{getGreeting()}</div>

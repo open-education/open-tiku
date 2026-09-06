@@ -15,7 +15,7 @@ export default function Index() {
   }
 
   return (
-    <div>
+    <div className="px-4 py-4 sm:px-16 sm:py-4">
       <Outlet />
     </div>
   );
