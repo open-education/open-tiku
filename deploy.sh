@@ -40,9 +40,7 @@ done
 
 # 检查版本号
 if [ -z "$VERSION" ]; then
-    echo "错误: 请指定版本号"
-    show_help
-    exit 1
+    echo "没有指定版本号, 使用本地文件部署"
 fi
 
 echo "开始部署 $APP_NAME 版本: $VERSION"
@@ -53,7 +51,6 @@ _URL="https://github.com/open-education/open-tiku/releases/download/${VERSION}/$
 _APP_FILE="${APP_NAME}.tgz"
 
 echo "准备版本: $VERSION"
-echo "下载地址: $_URL"
 
 # 创建临时目录
 rm -rf "$BUILD_DIR"
@@ -82,7 +79,7 @@ if [ -n "$VERSION" ]; then
 else
     # 未提供版本号，使用当前目录下的压缩包
     if [ -f "../$_APP_FILE" ]; then
-        cp "../$_APP_FILE" .
+        mv "../$_APP_FILE" .
         echo "使用本地文件: ../$_APP_FILE"
     else
         echo "错误: 未找到 ../$_APP_FILE, 请将 ${APP_NAME}.tgz 放在脚本同级目录"

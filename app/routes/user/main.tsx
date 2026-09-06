@@ -260,13 +260,13 @@ function Index() {
   // ----- 桌面端布局 -----
   if (isDesktop) {
     return (
-      <div className="flex h-full text-base">
-        <aside className="flex w-64 flex-col border bg-background/95">
+      <div className="flex h-full text-base p-4 gap-4">
+        <aside className="flex w-64 flex-col border bg-muted">
           <ScrollArea className="flex-1">
             <div className="py-2">{navContent}</div>
           </ScrollArea>
         </aside>
-        <main className="flex-1 overflow-auto bg-muted/30">
+        <main className="flex-1 overflow-auto bg-muted">
           <div className="mx-auto">
             <Outlet />
           </div>
@@ -277,9 +277,9 @@ function Index() {
 
   // ----- 移动端布局 -----
   return (
-    <div className="flex flex-col h-full text-base">
+    <div className="flex flex-col h-full text-base p-4 gap-4">
       {/* 顶部导航栏（汉堡按钮 + 标题） */}
-      <div className="sticky top-0 z-20 border bg-background/95 backdrop-blur-sm">
+      <div className="sticky top-0 z-20 border bg-muted backdrop-blur-sm">
         <div className="flex items-center gap-3 px-4 py-2.5">
           <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -300,7 +300,7 @@ function Index() {
       </div>
 
       {/* 内容区域 */}
-      <main className="flex-1 overflow-auto bg-muted/30">
+      <main className="flex-1 overflow-auto bg-muted">
         <div className="mx-auto">
           <Outlet />
         </div>
