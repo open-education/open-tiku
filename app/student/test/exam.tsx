@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, HelpCircle, Lightbulb } from 'lucide-react';
+import { AlertTriangle, ChevronLeft, ChevronRight, HelpCircle, Lightbulb } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -178,7 +178,7 @@ function ExamLayout({
   };
 
   return (
-    <ResizablePanelGroup orientation="horizontal" className="min-h-50 border bg-white">
+    <ResizablePanelGroup orientation="horizontal" className="min-h-50 border">
       {/* 左侧控制台 */}
       <ResizablePanel defaultSize="40%">
         <div className="p-4">
@@ -366,27 +366,23 @@ function ExamLayout({
 
               {/* 解析面板 */}
               {showAnswer && (
-                <Alert className="bg-slate-50 border-slate-200/80 p-6 space-y-4 animate-in fade-in duration-200">
-                  <div className="flex items-center gap-6 text-sm font-semibold border-b border-slate-200/60 pb-3">
-                    <div className="flex items-center">
-                      <span className="text-slate-400 mr-2 font-normal">正确答案</span>
+                <Alert className="bg-card border-slate-200/80 p-6 space-y-4 animate-in fade-in duration-200">
+                  <div className="text-sm font-semibold border-b border-slate-200/60 pb-3 space-y-4">
+                    <div className="space-y-2">
+                      <div className="text-slate-400 font-normal">正确答案</div>
                       <SimpleFullContent content={currentQuestionInfo.info.extraInfo.answer || ''} />
                     </div>
-                    <div className="flex items-center">
-                      <span className="text-blue-600 mr-2 font-bold">您的答案</span>
+                    <div className="space-y-2">
+                      <div className="text-blue-600 font-bold">您的答案</div>
                       <SimpleFullContent content={currentAnswerReq.answer} />
                     </div>
                   </div>
-                  <div className="text-sm leading-relaxed text-slate-600">
-                    <span className="font-bold text-slate-800 block mb-1.5 items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 解题分析
-                    </span>
+                  <div className="text-sm leading-relaxed space-y-4">
+                    <div className="font-bold">解题分析</div>
                     <SimpleFullContent content={currentQuestionInfo.info.extraInfo.analysis?.content || ''} />
                   </div>
-                  <div className="text-sm leading-relaxed text-slate-600">
-                    <span className="font-bold text-slate-800 block mb-1.5 items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 解题过程
-                    </span>
+                  <div className="text-sm leading-relaxed space-y-4">
+                    <div className="font-bold">解题过程</div>
                     <SimpleFullContent content={currentQuestionInfo.info.extraInfo.process?.content || ''} />
                   </div>
                 </Alert>
@@ -394,7 +390,7 @@ function ExamLayout({
             </CardContent>
 
             {/* 底部导航栏 */}
-            <div className="border-t border-slate-100 p-6 bg-white flex items-center justify-between">
+            <div className="border-t border-slate-100 p-6 bg-card flex items-center justify-between">
               <Button variant="outline" disabled={currentIndex <= 0} onClick={handlePrev}>
                 <ChevronLeft className="w-4 h-4 mr-1" /> 上一题
               </Button>
@@ -509,7 +505,7 @@ function EditEaxm({ hId, paperId, examMethod }: EditEaxmProps) {
   };
 
   return (
-    <div className="px-4 py-4 sm:px-16 sm:py-4">
+    <div className="p-4 space-y-4 bg-muted">
       {useDelayedLoading(genPaperLoading || attemptLoading) && <Loading />}
 
       {warnInfo}
@@ -555,7 +551,7 @@ function PreviewEaxm({ genPaperResp, attemptResp }: PreviewEaxmProps) {
   }, [attemptResp]);
 
   return (
-    <div className="p-4">
+    <div className="p-4 space-y-4 bg-muted">
       <ExamLayout isReadOnly={true} genPaperResp={genPaperResp} attemptResp={attemptResp} answerMap={answerMap} showAnswer={true} />
     </div>
   );

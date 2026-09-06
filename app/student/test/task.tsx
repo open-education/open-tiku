@@ -29,7 +29,7 @@ function ListShow({ listResp }: ListShowProps) {
           <div
             key={item.id}
             onClick={() => {}}
-            className="px-4 py-3 border-t border-gray-100 flex items-center gap-2.5 cursor-pointer transition-colors duration-100 hover:bg-accent"
+            className="px-4 py-3 border-t border-gray-100 flex items-center gap-2.5 cursor-pointer transition-colors duration-100 bg-card hover:bg-gray-100"
           >
             {/* 左侧状态图标容器 */}
             <div

@@ -113,7 +113,7 @@ export default function Index() {
   const [sheetContent, setSheetContent] = useState<React.ReactNode>('');
 
   return (
-    <div className="px-4 py-4 sm:px-16 sm:py-4 space-y-4">
+    <div className="p-4 space-y-4 bg-muted">
       {warnInfo}
 
       {useDelayedLoading(genPaperLoading || attemptListRespLoading || loading) && <Loading />}

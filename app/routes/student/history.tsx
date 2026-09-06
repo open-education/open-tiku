@@ -46,7 +46,7 @@ export default function Index() {
   } = useTestList(dateRange?.from ? DateUtil.formatDate(dateRange.from) : '', dateRange?.to ? DateUtil.formatDate(dateRange.to) : '', pageNo);
 
   return (
-    <div className="px-4 py-4 sm:px-16 sm:py-4 space-y-4">
+    <div className="p-4 bg-muted space-y-4">
       {/* 搜索条件 */}
       <div>
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
@@ -57,14 +57,14 @@ export default function Index() {
                 render={
                   <Button
                     variant="outline"
-                    className="justify-start text-left font-normal border-slate-300 text-slate-700 bg-white hover:border-slate-400 hover:bg-slate-50 shadow-sm"
+                    className="justify-start text-left font-normal border-slate-300 hover:border-slate-400 hover:bg-slate-50 shadow-sm"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd', { locale: zhCN }) : <span>开始日期</span>}
                   </Button>
                 }
               />
-              <PopoverContent className="w-auto p-0 border border-slate-200 shadow-md bg-white block z-50" align="start">
+              <PopoverContent className="w-auto p-0 border border-slate-200 shadow-md block z-50" align="start">
                 <Calendar
                   mode="single"
                   selected={dateRange?.from}
@@ -81,14 +81,14 @@ export default function Index() {
                 render={
                   <Button
                     variant="outline"
-                    className="justify-start text-left font-normal border-slate-300 text-slate-700 bg-white hover:border-slate-400 hover:bg-slate-50 shadow-sm"
+                    className="justify-start text-left font-normal border-slate-300 hover:border-slate-400 hover:bg-slate-50 shadow-sm"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd', { locale: zhCN }) : <span>结束日期</span>}
                   </Button>
                 }
               />
-              <PopoverContent className="w-auto p-0 border border-slate-200 shadow-md bg-white block z-50" align="start">
+              <PopoverContent className="w-auto p-0 border border-slate-200 shadow-md block z-50" align="start">
                 <Calendar
                   mode="single"
                   selected={dateRange?.to}
@@ -106,8 +106,10 @@ export default function Index() {
       {historyListRespErr && <SimpleAlert title="任务列表获取失败" message={historyListRespErr.message} />}
 
       {/* 任务列表 */}
-      <div className="overflow-hidden border border-gray-100 bg-white shadow-sm">
-        <div className="p-3">{historyListResp.total > 0 ? <ListShow listResp={historyListResp.list} /> : <SimpleNoData desc="历史任务为空" />}</div>
+      <div className="overflow-hidden shadow-sm">
+        <div className="p-3 space-y-4">
+          {historyListResp.total > 0 ? <ListShow listResp={historyListResp.list} /> : <SimpleNoData desc="历史任务为空" />}
+        </div>
 
         {historyListResp.total > 0 && (
           <div className="my-3">

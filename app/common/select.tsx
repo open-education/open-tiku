@@ -74,13 +74,16 @@ function MultiOptionSelect({ options, selectedOpt, setSelectedOpt, showAnswer, r
       {options?.map((option) => {
         const imageUrl = option.images?.[0];
         const isImageMode = option.images && option.images.length > 0;
-
         const isSelected = selectedOpt === option.label;
-        let cardClass = 'border border-neutral-300 bg-white hover:border-neutral-400 hover:bg-neutral-50 shadow-sm transition-all';
+
+        // 1. 默认/未选中态：适配深色模式的边界和悬浮色
+        let cardClass =
+          'border border-neutral-300 dark:border-neutral-700 bg-card hover:border-neutral-400 dark:hover:border-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800 shadow-sm transition-all text-card-foreground';
 
         if (isSelected) {
+          // 2. 已选中态：深色模式下降低背景亮度，提高文字亮度，并调整阴影
           cardClass =
-            'border-indigo-600 bg-indigo-100 ring-1 ring-indigo-600 shadow-md shadow-indigo-100/50 text-indigo-900 font-medium transition-all';
+            'border-indigo-600 dark:border-indigo-500 bg-indigo-100 dark:bg-indigo-950/40 ring-1 ring-indigo-600 dark:ring-indigo-500 shadow-md shadow-indigo-100/50 dark:shadow-none text-indigo-900 dark:text-indigo-200 font-medium transition-all';
         }
 
         if (showAnswer) {
@@ -88,13 +91,13 @@ function MultiOptionSelect({ options, selectedOpt, setSelectedOpt, showAnswer, r
           const isUserCorrect = selectedOpt === referAnswer; // 用户是否整体答对
 
           if (isCurrentCorrect) {
-            // 明亮翡翠绿边框 + 强外环激活
+            // 3. 正确答案态：深色模式下使用暗绿底+亮绿字
             cardClass =
-              'border-emerald-600 bg-emerald-100 ring-1 ring-emerald-600 shadow-md shadow-emerald-100/50 text-emerald-950 font-semibold transition-all duration-200';
+              'border-emerald-600 dark:border-emerald-500 bg-emerald-100 dark:bg-emerald-950/40 ring-1 ring-emerald-600 dark:ring-emerald-500 shadow-md shadow-emerald-100/50 dark:shadow-none text-emerald-950 dark:text-emerald-200 font-semibold transition-all duration-200';
           } else if (isSelected && !isUserCorrect) {
-            // 高警示红边框 + 强外环激活
+            // 4. 错误项态：深色模式下使用暗红底+亮红字
             cardClass =
-              'border-red-600 bg-red-100 ring-1 ring-red-600 shadow-md shadow-red-100/50 text-red-950 font-semibold transition-all duration-200';
+              'border-red-600 dark:border-red-500 bg-red-100 dark:bg-red-950/40 ring-1 ring-red-600 dark:ring-red-500 shadow-md shadow-red-100/50 dark:shadow-none text-red-950 dark:text-red-200 font-semibold transition-all duration-200';
           }
         }
 
