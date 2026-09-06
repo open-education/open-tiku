@@ -79,7 +79,7 @@ function PaperList({
         .get<TopPaperResp>(`/paper/top/info/${id}`)
         .then((res) => {
           setSheetTitle('查看详情');
-          setSheetDesc('如需修改直接编辑即可');
+          setSheetDesc('草稿中/待审核的试卷如需修改直接编辑即可');
           setSheetContent(
             <TopInfo infoResp={res} search={search} setSheetTitle={setSheetTitle} setSheetDesc={setSheetDesc} setSheetContent={setSheetContent} />,
           );

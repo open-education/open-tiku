@@ -22,7 +22,7 @@ function SimpleFullContent(props: SimpleFullContentProps) {
       {StringValidator.isNonEmpty(content) && (
         <Markdown
           remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]}
-          rehypePlugins={[rehypeRaw, [rehypeKatex, { output: 'html' }]]}
+          rehypePlugins={[rehypeRaw, [rehypeKatex, { output: 'html', strict: 'ignore' }]]}
           components={table}
         >
           {content}
