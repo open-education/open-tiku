@@ -15,7 +15,7 @@ show_help() {
     echo "  $0 -v v0.0.1-beta"
     echo ""
     echo "参数:"
-    echo "  -v, --version   版本号(必需)"
+    echo "  -v, --version   版本号(可选, 不提供则使用已准备好的压缩包)"
     echo "  -h, --help      显示帮助信息"
 }
 
@@ -60,21 +60,34 @@ rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
-# 下载
-echo "下载中..."
-if command -v curl >/dev/null 2>&1; then
-    if ! curl -f -L -o "$_APP_FILE" "$_URL"; then
-        echo "错误: 下载失败"
-        exit 1
-    fi
-elif command -v wget >/dev/null 2>&1; then
-    if ! wget -q -O "$_APP_FILE" "$_URL"; then
-        echo "错误: 下载失败"
+# 下载或复制本地文件
+if [ -n "$VERSION" ]; then
+    echo "准备版本: $VERSION"
+    echo "下载地址: $_URL"
+    echo "下载中..."
+    if command -v curl >/dev/null 2>&1; then
+        if ! curl -f -L -o "$_APP_FILE" "$_URL"; then
+            echo "错误: 下载失败"
+            exit 1
+        fi
+    elif command -v wget >/dev/null 2>&1; then
+        if ! wget -q -O "$_APP_FILE" "$_URL"; then
+            echo "错误: 下载失败"
+            exit 1
+        fi
+    else
+        echo "错误: 需要 curl 或 wget"
         exit 1
     fi
 else
-    echo "错误: 需要 curl 或 wget"
-    exit 1
+    # 未提供版本号，使用当前目录下的压缩包
+    if [ -f "../$_APP_FILE" ]; then
+        cp "../$_APP_FILE" .
+        echo "使用本地文件: ../$_APP_FILE"
+    else
+        echo "错误: 未找到 ../$_APP_FILE, 请将 ${APP_NAME}.tgz 放在脚本同级目录"
+        exit 1
+    fi
 fi
 
 # 检查文件
