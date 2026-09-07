@@ -7,7 +7,7 @@ import { FileUpload } from '~/common/file';
 import { ChapterDropdownNav } from '~/common/nav';
 import type { QuestionSearch } from '~/type/question';
 import { useQuestionCates, useTaskList, useTextbooks } from '~/util/fetcher';
-import type { Textbook } from '~/type/textbook';
+import type { TextbookResp } from '~/type/textbook';
 import { createTextbookPathDict } from '~/util/textbook-dict';
 import { StringConst, StringValidator } from '~/util/string';
 import { Loading } from '~/common/load';
@@ -64,7 +64,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
   // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
-  const pathMap: Map<string, Textbook[]> = createTextbookPathDict(textbooks);
+  const pathMap: Map<string, TextbookResp[]> = createTextbookPathDict(textbooks);
 
   useEffect(() => {
     // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再2层深度上, 因此只要有2层深度就可以把题型类型和标签返回, 后续如果有优化再处理
@@ -187,13 +187,13 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
           <div className="col-span-9">
             <ChapterDropdownNav
               textbooks={textbooks}
-              onSelect={(selectedItems: Textbook[]) => {
+              onSelect={(selectedItems: TextbookResp[]) => {
                 if (!selectedItems) {
                   setFiveLevelId(0);
                   return;
                 }
 
-                const current: Textbook = selectedItems[selectedItems.length - 1];
+                const current: TextbookResp = selectedItems[selectedItems.length - 1];
                 setFiveLevelId(current.id);
               }}
               defaultSelectedKeys={questionSearch.fiveLevelSelectKeys || []}
@@ -210,13 +210,13 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
           <div className="col-span-9">
             <ChapterDropdownNav
               textbooks={questionCates}
-              onSelect={(selectedItems: Textbook[]) => {
+              onSelect={(selectedItems: TextbookResp[]) => {
                 if (!selectedItems) {
                   updateAddReq('questionCateId', 0);
                   return;
                 }
 
-                const current: Textbook = selectedItems[selectedItems.length - 1];
+                const current: TextbookResp = selectedItems[selectedItems.length - 1];
                 // 必须选择题型
                 if (current.tableName !== StringConst.questionCateTableName) {
                   updateAddReq('questionCateId', 0);
@@ -368,13 +368,13 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
           <div className="col-span-9">
             <ChapterDropdownNav
               textbooks={textbooks}
-              onSelect={(selectedItems: Textbook[]) => {
+              onSelect={(selectedItems: TextbookResp[]) => {
                 if (!selectedItems) {
                   setFiveLevelId(0);
                   return;
                 }
 
-                const current: Textbook = selectedItems[selectedItems.length - 1];
+                const current: TextbookResp = selectedItems[selectedItems.length - 1];
                 setFiveLevelId(current.id);
               }}
               defaultSelectedKeys={questionSearch.fiveLevelSelectKeys || []}
@@ -391,13 +391,13 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
           <div className="col-span-9">
             <ChapterDropdownNav
               textbooks={questionCates}
-              onSelect={(selectedItems: Textbook[]) => {
+              onSelect={(selectedItems: TextbookResp[]) => {
                 if (!selectedItems) {
                   updateListReq('questionCateId', 0);
                   return;
                 }
 
-                const current: Textbook = selectedItems[selectedItems.length - 1];
+                const current: TextbookResp = selectedItems[selectedItems.length - 1];
                 updateListReq('questionCateId', current.id);
               }}
               defaultSelectedKeys={questionSearch.eightLevelSelectKeys || []}

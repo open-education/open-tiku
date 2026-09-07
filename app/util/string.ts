@@ -138,11 +138,17 @@ export const StringConst = {
     { id: 1, value: 'question_type', label: '题型' },
     { id: 2, value: 'question_tag', label: '标签' },
     { id: 3, value: 'question_dimension', label: '核心素养' },
+    { id: 4, value: 'question_level', label: '分层体系' },
+    { id: 5, value: 'question_scene', label: '适用场景' },
+    { id: 6, value: 'question_mistake_tip', label: '常见错误' },
   ],
   questionOtherDictNames: new Map<string, string>([
     ['question_type', '题型'],
     ['question_tag', '标签'],
     ['question_dimension', '核心素养'],
+    ['question_level', '分层体系'],
+    ['question_scene', '适用场景'],
+    ['question_mistake_tip', '常见错误'],
   ]),
   // 菜单路径类型
   textbookPathTypes: [

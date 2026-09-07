@@ -15,9 +15,9 @@ import type {
   GenPaperGroupResp,
   GenDifficultyLevelRange,
 } from '~/type/paper';
-import type { Textbook } from '~/type/textbook';
-import { useQuestionCates, useQuestionOtherDicts, useTextbooks } from '~/util/fetcher';
-import { createTextbookPathDict } from '~/util/textbook-dict';
+import type { TextbookResp } from '~/type/textbook';
+import { useQuestionCates, useQuestionOtherDictList, useTextbooks } from '~/util/fetcher';
+import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook-dict';
 import { GenPaperGenTypeConfig } from '~/home/paper/gen/config';
 import { Button } from '~/components/ui/button';
 import { Eye, Save, Send, Settings2 } from 'lucide-react';
@@ -34,7 +34,7 @@ import { httpClient } from '~/util/http';
 import { toast } from 'sonner';
 import { PaperStatus } from '~/type/enum';
 import { GenInfoPreview } from '~/home/paper/gen/info';
-import { ArrayUtil, ObjectUtil } from '~/util/object';
+import { ObjectUtil } from '~/util/object';
 
 // 生成试卷
 
@@ -126,44 +126,41 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
 
   // 查询题目类型和标签
   const {
-    data: questionTypes = [],
-    isLoading: questionTypesLoading,
-    error: questionTypesErr,
-  } = useQuestionOtherDicts(genPaperSearchReq.twoLevelId, 'question_type');
-  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, 'id'), [questionTypes]);
+    data: dictListResp = { map: {} },
+    isLoading: dictListRespLoading,
+    error: dictListRespErr,
+  } = useQuestionOtherDictList(genPaperSearchReq.twoLevelId, [
+    'question_type',
+    'question_tag',
+    'question_dimension',
+    'question_level',
+    'question_scene',
+    'question_mistake_tip',
+  ]);
+  const otherDictListRecord = useMemo(() => {
+    return createOtherDictListRecord(dictListResp);
+  }, [dictListResp]);
 
   // 添加状态来维护题型配置
   const [genPaperGenTypes, setGenPaperGenTypes] = useState<GenPaperGenType[]>([]);
 
   // 当 questionTypes 变化时，初始化 genPaperGenTypes
   useEffect(() => {
-    const initialList = questionTypes.map((info): GenPaperGenType => ({
-      id: info.id,
-      label: info.itemValue,
-      num: 0,
-      score: 0,
-    }));
+    const initialList = otherDictListRecord.questionTypes.map(
+      (info): GenPaperGenType => ({
+        id: info.id,
+        label: info.itemValue,
+        num: 0,
+        score: 0,
+      }),
+    );
     setGenPaperGenTypes(initialList);
-  }, [questionTypes]);
+  }, [otherDictListRecord]);
 
   const handleGenPaperGenTypesChange = (newList: GenPaperGenType[]) => {
     setGenPaperGenTypes(newList);
     updateGenPaperSearchReq('genPaperGenTypes', newList);
   };
-
-  const {
-    data: questionTags = [],
-    isLoading: questionTagsLoading,
-    error: questionTagsErr,
-  } = useQuestionOtherDicts(genPaperSearchReq.twoLevelId, 'question_tag');
-  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, 'id'), [questionTags]);
-
-  const {
-    data: questionDimensions = [],
-    isLoading: questionDimensionsLoading,
-    error: questionDimensionsErr,
-  } = useQuestionOtherDicts(genPaperSearchReq.twoLevelId, 'question_dimension');
-  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, 'id'), [questionDimensions]);
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(genPaperSearchReq.fiveLevelId);
@@ -468,14 +465,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
           .then((res) => {
             setSheetTitle('预览试卷详情');
             setSheetDesc('仅为详情预览, 需审核通过后其他人可见, 需去 我的试卷 查看');
-            setSheetContent(
-              <GenInfoPreview
-                infoResp={genPaperPreviewInfo}
-                questionTypeDict={questionTypeDict}
-                questionTagDict={questionTagDict}
-                questionDimensionDict={questionDimensionDict}
-              />,
-            );
+            setSheetContent(<GenInfoPreview infoResp={genPaperPreviewInfo} otherDictListRecord={otherDictListRecord} />);
           })
           .catch((err) => {
             setWarnInfo(<SimpleAlert title="获取试卷详情失败" message={err.message} />);
@@ -515,14 +505,10 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
 
       <Separator className="mt-3 mb-3" />
 
-      {useDelayedLoading(textbooksIsLoading || questionTypesLoading || questionTagsLoading || questionDimensionsLoading || questionCatesLoading) && (
-        <Loading />
-      )}
+      {useDelayedLoading(textbooksIsLoading || dictListRespLoading || questionCatesLoading) && <Loading />}
 
       {textbooksErr && <SimpleAlert title="获取导航失败" message={textbooksErr.message} />}
-      {questionTypesErr && <SimpleAlert title="获取题目类型失败" message={questionTypesErr.message} />}
-      {questionTagsErr && <SimpleAlert title="获取题目标签失败" message={questionTagsErr.message} />}
-      {questionDimensionsErr && <SimpleAlert title="获取核心素养失败" message={questionDimensionsErr.message} />}
+      {dictListRespErr && <SimpleAlert title="教材通用字典获取失败" message={dictListRespErr.message} />}
       {questionCatesErr && <SimpleAlert title="获取题型失败" message={questionCatesErr.message} />}
 
       {warnInfo}
@@ -560,13 +546,13 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
                         <div className="flex-1 min-w-0">
                           <ChapterDropdownNav
                             textbooks={textbooks}
-                            onSelect={(selectedItems: Textbook[]) => {
+                            onSelect={(selectedItems: TextbookResp[]) => {
                               if (!selectedItems) {
                                 updateGenPaperSearchReq('fiveLevelId', 0);
                                 updateGenPaperSearchReq('fiveLevelSelectKeys', []);
                                 return;
                               }
-                              const current: Textbook = selectedItems[selectedItems.length - 1];
+                              const current: TextbookResp = selectedItems[selectedItems.length - 1];
                               updateGenPaperSearchReq('fiveLevelId', current.id);
                               updateGenPaperSearchReq(
                                 'fiveLevelSelectKeys',
@@ -606,7 +592,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
                         <div className="md:w-24 shrink-0 font-medium">标签:</div>
                         <div className="flex-1 min-w-0">
                           <MultiTagSelect
-                            options={questionTags}
+                            options={otherDictListRecord.questionTags}
                             value={genPaperSearchReq.tagIds || []}
                             onChange={(val) => {
                               updateGenPaperSearchReq('tagIds', val);
@@ -620,7 +606,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
                         <div className="md:w-24 shrink-0 font-medium">核心素养:</div>
                         <div className="flex-1 min-w-0">
                           <MultiTagSelect
-                            options={questionDimensions}
+                            options={otherDictListRecord.questionDimensions}
                             value={genPaperSearchReq.dimensionIds || []}
                             onChange={(val) => {
                               updateGenPaperSearchReq('dimensionIds', val);
@@ -653,12 +639,7 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
           <ResizablePanel defaultSize="50%">
             <Watermark className="h-full w-full bg-slate-50">
               <div className="p-4">
-                <GenInfoPreview
-                  infoResp={genPaperPreviewInfo}
-                  questionTypeDict={questionTypeDict}
-                  questionTagDict={questionTagDict}
-                  questionDimensionDict={questionDimensionDict}
-                />
+                <GenInfoPreview infoResp={genPaperPreviewInfo} otherDictListRecord={otherDictListRecord} />
               </div>
             </Watermark>
           </ResizablePanel>

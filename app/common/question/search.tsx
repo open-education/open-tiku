@@ -2,11 +2,10 @@ import { Input } from '~/components/ui/input';
 import { ChapterDropdownNav, type SelectNavProps } from '~/common/nav';
 import { MultiTagSelect, StatusSelect, TypeSelect } from '~/common/question/tag';
 import type { QuestionPageSourceProps, QuestionSearch } from '~/type/question';
-import type { Textbook } from '~/type/textbook';
-import { useQuestionCates, useQuestionList, useQuestionOtherDicts, useTextbooks } from '~/util/fetcher';
+import type { TextbookResp } from '~/type/textbook';
+import { useQuestionCates, useQuestionList, useQuestionOtherDictList, useTextbooks } from '~/util/fetcher';
 import { useEffect, useMemo, useState } from 'react';
-import { createTextbookPathDict } from '~/util/textbook-dict';
-import { ArrayUtil } from '~/util/object';
+import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook-dict';
 import { StringConst } from '~/util/string';
 import { Separator } from '~/components/ui/separator';
 import { SimpleNoData } from '~/common/empty';
@@ -53,6 +52,9 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
     typeId: 0,
     tagIds: [],
     dimensionIds: [],
+    levelIds: [],
+    sceneIds: [],
+    mistakeTipIds: [],
     // 我的题目和审核默认查询草稿中的数据
     ...(pageSource.source !== 'list' ? { status: 0 } : {}),
   });
@@ -72,27 +74,22 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
     updateQuestionSearch('twoLevelId', twoLevelId);
   }, [questionSearch.fiveLevelId, pathMap]);
 
-  // 查询题目类型和标签
+  // 查询题目类型和标签等信息
   const {
-    data: questionTypes = [],
-    isLoading: questionTypesLoading,
-    error: questionTypesErr,
-  } = useQuestionOtherDicts(questionSearch.twoLevelId, 'question_type');
-  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, 'id'), [questionTypes]);
-
-  const {
-    data: questionTags = [],
-    isLoading: questionTagsLoading,
-    error: questionTagsErr,
-  } = useQuestionOtherDicts(questionSearch.twoLevelId, 'question_tag');
-  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, 'id'), [questionTags]);
-
-  const {
-    data: questionDimensions = [],
-    isLoading: questionDimensionsLoading,
-    error: questionDimensionsErr,
-  } = useQuestionOtherDicts(questionSearch.twoLevelId, 'question_dimension');
-  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, 'id'), [questionDimensions]);
+    data: dictListResp = { map: {} },
+    isLoading: dictListRespLoading,
+    error: dictListRespErr,
+  } = useQuestionOtherDictList(questionSearch.twoLevelId, [
+    'question_type',
+    'question_tag',
+    'question_dimension',
+    'question_level',
+    'question_scene',
+    'question_mistake_tip',
+  ]);
+  const otherDictListRecord = useMemo(() => {
+    return createOtherDictListRecord(dictListResp);
+  }, [dictListResp]);
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(questionSearch.fiveLevelId);
@@ -159,13 +156,13 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
           <div className="flex-1 min-w-0">
             <ChapterDropdownNav
               textbooks={textbooks}
-              onSelect={(selectedItems: Textbook[]) => {
+              onSelect={(selectedItems: TextbookResp[]) => {
                 if (!selectedItems) {
                   updateQuestionSearch('fiveLevelId', 0);
                   updateQuestionSearch('fiveLevelSelectKeys', []);
                   return;
                 }
-                const current: Textbook = selectedItems[selectedItems.length - 1];
+                const current: TextbookResp = selectedItems[selectedItems.length - 1];
                 updateQuestionSearch('fiveLevelId', current.id);
                 updateQuestionSearch(
                   'fiveLevelSelectKeys',
@@ -180,11 +177,11 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
 
         {/* 题型 */}
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-          <div className="md:w-24 shrink-0 font-medium">题型:</div>
+          <div className="md:w-24 shrink-0 font-medium">题型分类:</div>
           <div className="flex-1 min-w-0">
             <ChapterDropdownNav
               textbooks={questionCates}
-              onSelect={(selectedItems: Textbook[]) => {
+              onSelect={(selectedItems: TextbookResp[]) => {
                 if (!selectedItems) {
                   updateQuestionSearch('eightIds', []);
                   updateQuestionSearch('eightLevelSelectKeys', []);
@@ -196,7 +193,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
                   selectedItems.map((info) => info.key),
                 );
 
-                const current: Textbook = selectedItems[selectedItems.length - 1];
+                const current: TextbookResp = selectedItems[selectedItems.length - 1];
 
                 // 必须选择题型
                 if (current.tableName !== StringConst.questionCateTableName) {
@@ -214,10 +211,10 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
 
         {/* 类型 */}
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-          <div className="md:w-24 shrink-0 font-medium">类型:</div>
+          <div className="md:w-24 shrink-0 font-medium">题目类型:</div>
           <div className="flex-1 min-w-0">
             <TypeSelect
-              options={questionTypes}
+              options={otherDictListRecord.questionTypes}
               value={questionSearch.typeId}
               onSelect={(val) => {
                 updateQuestionSearch('typeId', val);
@@ -228,10 +225,10 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
 
         {/* 标签 */}
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-          <div className="md:w-24 shrink-0 font-medium">标签:</div>
+          <div className="md:w-24 shrink-0 font-medium">题目标签:</div>
           <div className="flex-1 min-w-0">
             <MultiTagSelect
-              options={questionTags}
+              options={otherDictListRecord.questionTags}
               value={questionSearch.tagIds}
               onChange={(val) => {
                 updateQuestionSearch('tagIds', val);
@@ -245,7 +242,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
           <div className="md:w-24 shrink-0 font-medium">核心素养:</div>
           <div className="flex-1 min-w-0">
             <MultiTagSelect
-              options={questionDimensions}
+              options={otherDictListRecord.questionDimensions}
               value={questionSearch.dimensionIds}
               onChange={(val) => {
                 updateQuestionSearch('dimensionIds', val);
@@ -254,10 +251,52 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
           </div>
         </div>
 
+        {/* 分层体系 */}
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">分层体系:</div>
+          <div className="flex-1 min-w-0">
+            <MultiTagSelect
+              options={otherDictListRecord.questionLevels}
+              value={questionSearch.levelIds}
+              onChange={(val) => {
+                updateQuestionSearch('levelIds', val);
+              }}
+            />
+          </div>
+        </div>
+
+        {/* 适用场景 */}
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">适用场景:</div>
+          <div className="flex-1 min-w-0">
+            <MultiTagSelect
+              options={otherDictListRecord.questionScenes}
+              value={questionSearch.sceneIds}
+              onChange={(val) => {
+                updateQuestionSearch('sceneIds', val);
+              }}
+            />
+          </div>
+        </div>
+
+        {/* 常见错误 */}
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="md:w-24 shrink-0 font-medium">常见错误:</div>
+          <div className="flex-1 min-w-0">
+            <MultiTagSelect
+              options={otherDictListRecord.questionMistakeTips}
+              value={questionSearch.mistakeTipIds}
+              onChange={(val) => {
+                updateQuestionSearch('mistakeTipIds', val);
+              }}
+            />
+          </div>
+        </div>
+
         {/* 我的题目和审核可以自己选择状态 */}
         {pageSource.source !== 'list' && (
           <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-            <div className="md:w-24 shrink-0 font-medium">状态:</div>
+            <div className="md:w-24 shrink-0 font-medium">题目状态:</div>
             <div className="flex-1 min-w-0">
               <StatusSelect defaultValue={questionSearch.status} onSelect={(status) => updateQuestionSearch('status', status)} />
             </div>
@@ -266,7 +305,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
 
         {/* ID */}
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-          <div className="md:w-24 shrink-0 font-medium">ID:</div>
+          <div className="md:w-24 shrink-0 font-medium">题目 ID:</div>
           <div className="flex-1 min-w-0">
             <Input
               type="number"
@@ -324,14 +363,9 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
           <SimpleAlert title="菜单获取失败" message={textbooksErr.message} />
         </div>
       )}
-      {questionTypesErr && (
+      {dictListRespErr && (
         <div className="mt-3">
-          <SimpleAlert title="题目类型获取失败" message={questionTypesErr.message} />
-        </div>
-      )}
-      {questionTagsErr && (
-        <div className="mt-3">
-          <SimpleAlert title="题目标签获取失败" message={questionTagsErr.message} />
+          <SimpleAlert title="教材通用字典获取失败" message={dictListRespErr.message} />
         </div>
       )}
       {questionCatesErr && (
@@ -344,30 +378,15 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
           <SimpleAlert title="题目列表获取失败" message={questionListRespErr.message} />
         </div>
       )}
-      {questionDimensionsErr && (
-        <div className="mt-3">
-          <SimpleAlert title="核心素养获取失败" message={questionDimensionsErr.message} />
-        </div>
-      )}
 
       {/* 相关加载中 */}
-      {useDelayedLoading(
-        isLoading ||
-          textbooksLoading ||
-          questionTypesLoading ||
-          questionTagsLoading ||
-          questionCatesLoading ||
-          questionListRespLoading ||
-          questionDimensionsLoading,
-      ) && <Loading />}
+      {useDelayedLoading(isLoading || textbooksLoading || dictListRespLoading || questionCatesLoading || questionListRespLoading) && <Loading />}
 
       {/* 题目列表 */}
       <div>
         <QuestionListShow
           pageSource={pageSource}
-          questionTypeDict={questionTypeDict}
-          questionTagDict={questionTagDict}
-          questionDimensionDict={questionDimensionDict}
+          otherDictListRecord={otherDictListRecord}
           listResp={questionListResp}
           questionSearch={questionSearch}
           questionListRespMutate={questionListRespMutate}

@@ -13,7 +13,7 @@ import { Separator } from '~/components/ui/separator';
 import { Switch } from '~/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
-import type { Textbook, TextbookOtherDict } from '~/type/textbook';
+import type { TextbookResp, TextbookOtherDictResp, TextbookOtherDictReq } from '~/type/textbook';
 import { useQuestionOtherDicts, useTextbooks } from '~/util/fetcher';
 import { StringConst, StringValidator } from '~/util/string';
 import { toast } from 'sonner';
@@ -31,15 +31,14 @@ export function meta({}: Route.MetaArgs) {
 
 // 其它字典维护
 export default function Index() {
-  const [addReq, setAddReq] = useState<TextbookOtherDict>({
-    id: 0,
+  const [addReq, setAddReq] = useState<TextbookOtherDictReq>({
     textbookId: 0,
     typeCode: '',
     itemValue: '',
     sortOrder: 0,
     isSelect: false,
   });
-  const updateAddReq = (key: keyof TextbookOtherDict, value: number | string | boolean) => {
+  const updateAddReq = (key: keyof TextbookOtherDictReq, value: number | string | boolean) => {
     setAddReq((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -58,13 +57,13 @@ export default function Index() {
 
   // 点击添加按钮,  新增需要默认值
   const handleAdd = () => {
-    setAddReq({ ...addReq, id: 0, itemValue: '', sortOrder: 0, isSelect: false });
+    setAddReq({ textbookId: addReq.textbookId, typeCode: addReq.typeCode, itemValue: '', sortOrder: 0, isSelect: false });
     setDialogOpen(true);
   };
 
   // 点击编辑按钮, 需要用当前行数据初始化
-  const handleEdit = (item: TextbookOtherDict) => {
-    setAddReq({ ...addReq, id: item.id, itemValue: item.itemValue, sortOrder: item.sortOrder, isSelect: item.isSelect });
+  const handleEdit = (item: TextbookOtherDictResp) => {
+    setAddReq({ ...item });
     setDialogOpen(true);
   };
 
@@ -104,7 +103,7 @@ export default function Index() {
     setProcessIng(true);
 
     httpClient
-      .post('other/dict/add', addReq)
+      .post<number>('other/dict/add', addReq)
       .then((res) => {
         // 添加成功则清除表单其它项
         setAddReq({ ...addReq, id: 0, itemValue: '', sortOrder: 0, isSelect: false });
@@ -128,13 +127,31 @@ export default function Index() {
 
   // 删除数据
   const handleDelete = (id: number) => {
-    toast.error(<div className="text-red-700">暂不支持删除</div>, {
-      duration: Infinity,
-      action: {
-        label: '关闭',
-        onClick: () => {},
-      },
-    });
+    if (!confirm('只能删除没有关联题目的字典')) {
+      return;
+    }
+
+    setProcessIng(true);
+
+    httpClient
+      .get<boolean>(`other/dict/remove/${id}`)
+      .then((res) => {
+        setDialogOpen(false);
+        // 同时要重新刷新字典列表
+        otherDictsMutate();
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">{err.message}</div>, {
+          duration: Infinity,
+          action: {
+            label: '关闭',
+            onClick: () => {},
+          },
+        });
+      })
+      .finally(() => {
+        setProcessIng(false);
+      });
   };
 
   return (
@@ -157,12 +174,12 @@ export default function Index() {
                 <div className="flex-1 min-w-0">
                   <ChapterDropdownNav
                     textbooks={textbooks}
-                    onSelect={(selectedItems: Textbook[]) => {
+                    onSelect={(selectedItems: TextbookResp[]) => {
                       if (!selectedItems) {
                         updateAddReq('textbookId', 0);
                         return;
                       }
-                      const current: Textbook = selectedItems[selectedItems.length - 1];
+                      const current: TextbookResp = selectedItems[selectedItems.length - 1];
                       updateAddReq('textbookId', current.id);
                     }}
                     defaultSelectedKeys={[]}
@@ -215,7 +232,7 @@ export default function Index() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-106.25">
           <DialogHeader>
-            <DialogTitle className="text-base font-medium">{addReq.id > 0 ? '编辑' : '添加'}</DialogTitle>
+            <DialogTitle className="text-base font-medium">{addReq.id && addReq.id > 0 ? '编辑' : '添加'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             {/* 名称 */}
@@ -260,7 +277,7 @@ export default function Index() {
               取消
             </Button>
             <Button className="text-sm" onClick={handleSubmit} disabled={processIng}>
-              {addReq.id > 0 ? (processIng ? '更新中...' : '更新') : processIng ? '保存中...' : '保存'}
+              {addReq.id && addReq.id > 0 ? (processIng ? '更新中...' : '更新') : processIng ? '保存中...' : '保存'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -271,8 +288,8 @@ export default function Index() {
 
 // 展示字典列表
 interface OtherDictListShowProps {
-  list: TextbookOtherDict[];
-  onEdit: (val: TextbookOtherDict) => void;
+  list: TextbookOtherDictResp[];
+  onEdit: (val: TextbookOtherDictResp) => void;
   onDelete: (val: number) => void;
 }
 function OtherDictListShow({ list, onEdit, onDelete }: OtherDictListShowProps) {

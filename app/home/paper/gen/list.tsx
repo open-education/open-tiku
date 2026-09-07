@@ -8,7 +8,7 @@ import { GenInfo, GenInfoPreview } from '~/home/paper/gen/info';
 import { TopInfo } from '~/home/paper/top/info';
 import React, { useState } from 'react';
 import { SimpleAlert } from '~/common/alert';
-import type { TextbookOtherDict } from '~/type/textbook';
+import type { OtherDictListRecord } from '~/type/textbook';
 import {
   Dialog,
   DialogClose,
@@ -34,9 +34,7 @@ interface MyPaperListProps {
   paperList: CommonPaperResp[];
   paperListRespMutate: KeyedMutator<PaperListResp>;
 
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
+  otherDictListRecord: OtherDictListRecord;
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
@@ -51,9 +49,7 @@ function MyPaperList({
   search,
   paperList,
   paperListRespMutate,
-  questionTypeDict,
-  questionTagDict,
-  questionDimensionDict,
+  otherDictListRecord,
   setOpenSheet,
   setSheetTitle,
   setSheetDesc,
@@ -79,25 +75,10 @@ function MyPaperList({
             setSheetTitle('查看详情');
             if (res.common.status === PaperStatus.Drafing && search.source === 'myPaper') {
               setSheetDesc('当前为可编辑状态');
-              setSheetContent(
-                <GenInfo
-                  infoResp={res}
-                  questionTypeDict={questionTypeDict}
-                  questionTagDict={questionTagDict}
-                  questionDimensionDict={questionDimensionDict}
-                  setOpenSheet={setOpenSheet}
-                />,
-              );
+              setSheetContent(<GenInfo infoResp={res} otherDictListRecord={otherDictListRecord} setOpenSheet={setOpenSheet} />);
             } else {
               setSheetDesc('当前为不可编辑状态');
-              setSheetContent(
-                <GenInfoPreview
-                  infoResp={res}
-                  questionTypeDict={questionTypeDict}
-                  questionTagDict={questionTagDict}
-                  questionDimensionDict={questionDimensionDict}
-                />,
-              );
+              setSheetContent(<GenInfoPreview infoResp={res} otherDictListRecord={otherDictListRecord} />);
             }
           }
           setOpenSheet(true);

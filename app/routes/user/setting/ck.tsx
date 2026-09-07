@@ -21,7 +21,7 @@ import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle }
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog';
 import { Separator } from '~/components/ui/separator';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
-import type { Textbook } from '~/type/textbook';
+import type { TextbookResp } from '~/type/textbook';
 import { useChapterKnowledgeList, useTextbooks } from '~/util/fetcher';
 import { createTextbookPathDict } from '~/util/textbook-dict';
 import { toast } from 'sonner';
@@ -43,12 +43,12 @@ export function meta({}: Route.MetaArgs) {
 // 题型关联
 export default function Index() {
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(7);
-  const pathMap: Map<string, Textbook[]> = useMemo(() => {
+  const pathMap: Map<string, TextbookResp[]> = useMemo(() => {
     return createTextbookPathDict(textbooks);
   }, [textbooks]);
 
   // 当前选择的第7层菜单项
-  const [currentTextbook, setCurrentTextbook] = useState<Textbook | null>(null);
+  const [currentTextbook, setCurrentTextbook] = useState<TextbookResp | null>(null);
 
   const { data: ckList = [], isLoading: ckListLoading, error: ckListErr, mutate: ckListMutate } = useChapterKnowledgeList(currentTextbook?.id || 0);
 
@@ -63,7 +63,7 @@ export default function Index() {
   // 关联相关操作
   const [relationDialogOpen, setRelationDialogOpen] = useState<boolean>(false);
   const [relationNodeNames, setRelationNodeNames] = useState<string[]>([]);
-  const [relationTextbook, setRelationTextbook] = useState<Textbook | null>(null);
+  const [relationTextbook, setRelationTextbook] = useState<TextbookResp | null>(null);
   const [relationSuccess, setRelationSuccess] = useState<boolean>(false);
   const [relationWarnInfo, setRelationWarnInfo] = useState<React.ReactNode>('');
   const [relationLinkIng, setRelationLinkIng] = useState<boolean>(false);
@@ -217,12 +217,12 @@ export default function Index() {
                 <div className="flex-1 min-w-0">
                   <ChapterDropdownNav
                     textbooks={textbooks}
-                    onSelect={(selectedItems: Textbook[]) => {
+                    onSelect={(selectedItems: TextbookResp[]) => {
                       if (!selectedItems) {
                         setCurrentTextbook(null);
                         return;
                       }
-                      const current: Textbook = selectedItems[selectedItems.length - 1];
+                      const current: TextbookResp = selectedItems[selectedItems.length - 1];
                       if (current.pathDepth !== 7) {
                         setCurrentTextbook(null);
                         return;
@@ -349,13 +349,13 @@ export default function Index() {
                       <div className="flex-1 min-w-0">
                         <ChapterDropdownNav
                           textbooks={textbooks}
-                          onSelect={(selectedItems: Textbook[]) => {
+                          onSelect={(selectedItems: TextbookResp[]) => {
                             if (!selectedItems) {
                               setRelationTextbook(null);
                               setRelationNodeNames([]);
                               return;
                             }
-                            const current: Textbook = selectedItems[selectedItems.length - 1];
+                            const current: TextbookResp = selectedItems[selectedItems.length - 1];
                             if (current.pathDepth !== 7) {
                               setRelationTextbook(null);
                               setRelationNodeNames([]);

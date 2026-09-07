@@ -8,7 +8,7 @@ import { TopInfo } from '~/home/paper/top/info';
 import { GenInfoPreview } from '~/home/paper/gen/info';
 import React from 'react';
 import { SimpleAlert } from '~/common/alert';
-import type { TextbookOtherDict } from '~/type/textbook';
+import type { OtherDictListRecord } from '~/type/textbook';
 import { cn } from 'cn';
 
 /// 试卷元数据
@@ -19,9 +19,7 @@ interface PaperListProps {
   search?: CommonPaperSearchReq;
 
   // 精选试卷不需要该部分信息
-  questionTypeDict?: Record<number, TextbookOtherDict>;
-  questionTagDict?: Record<number, TextbookOtherDict>;
-  questionDimensionDict?: Record<number, TextbookOtherDict>;
+  otherDictListRecord: OtherDictListRecord;
 
   // 以下为 Sheet 操作方法和属性
   setOpenSheet: (value: boolean) => void;
@@ -37,9 +35,7 @@ interface PaperListProps {
 function PaperList({
   papers,
   search,
-  questionTypeDict = {},
-  questionTagDict = {},
-  questionDimensionDict = {},
+  otherDictListRecord,
   setOpenSheet,
   setSheetTitle,
   setSheetDesc,
@@ -58,14 +54,7 @@ function PaperList({
         .then((res) => {
           setSheetTitle('查看详情');
           setSheetDesc('该处仅能查看明细, 如需修改请去 我的试卷 修改');
-          setSheetContent(
-            <GenInfoPreview
-              infoResp={res}
-              questionTypeDict={questionTypeDict}
-              questionTagDict={questionTagDict}
-              questionDimensionDict={questionDimensionDict}
-            />,
-          );
+          setSheetContent(<GenInfoPreview infoResp={res} otherDictListRecord={otherDictListRecord} />);
           setOpenSheet(true);
         })
         .catch((err) => {

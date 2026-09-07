@@ -1,12 +1,12 @@
 import type { TopPaperReq, TopPaperResp } from '~/type/paper';
-import type { Textbook, TextbookOption, TextbookOtherDict } from '~/type/textbook';
+import type { TextbookResp, TextbookOption, TextbookOtherDictResp } from '~/type/textbook';
 
 // 数组相关操作工具
 export const ArrayUtil = {
   /**
    * 将 Textbook 树形结构转换为 TextbookOption 结构
    */
-  mapTextbookToOption: (list: Textbook[]): TextbookOption[] => {
+  mapTextbookToOption: (list: TextbookResp[]): TextbookOption[] => {
     return list.map((item) => ({
       value: item.key,
       label: item.label,
@@ -46,16 +46,12 @@ export const ArrayUtil = {
 
 // 字典相关工具函数
 export const DictUtil = {
-  getQuestionTypeName: (typeId: number, dict: Record<number, TextbookOtherDict>): string => {
-    return dict[typeId]?.itemValue ?? '';
+  getItemValue: (id: number, dict: Record<number, TextbookOtherDictResp>): string => {
+    return dict[id]?.itemValue ?? '';
   },
 
-  getQuestionTagNames: (tagIds: number[], dict: Record<number, TextbookOtherDict>): string[] => {
-    return tagIds.map((id) => dict[id]?.itemValue).filter((name): name is string => name !== undefined);
-  },
-
-  getQuestionDimensionNames: (dimensionIds: number[], dict: Record<number, TextbookOtherDict>): string[] => {
-    return dimensionIds.map((id) => dict[id]?.itemValue).filter((name): name is string => name !== undefined);
+  getItemValues: (ids: number[], dict: Record<number, TextbookOtherDictResp>): string[] => {
+    return ids.map((id) => dict[id]?.itemValue).filter((name): name is string => name !== undefined);
   },
 };
 

@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '~/components/ui/input';
 import { Separator } from '~/components/ui/separator';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
-import type { Textbook, CreateTextbookReq } from '~/type/textbook';
+import type { TextbookResp, CreateTextbookReq } from '~/type/textbook';
 import { useTextbooks, useTextbookLevel } from '~/util/fetcher';
 import { httpClient } from '~/util/http';
 import { StringConst, StringValidator } from '~/util/string';
@@ -111,7 +111,7 @@ export default function Index() {
   const [dailogContent, setDailogContent] = useState<React.ReactNode>('');
 
   // 添加菜单
-  const handleAdd = (levelName: string, pathDepth: number, path: string, mutateCallback: KeyedMutator<Textbook[]>, parentId?: number) => {
+  const handleAdd = (levelName: string, pathDepth: number, path: string, mutateCallback: KeyedMutator<TextbookResp[]>, parentId?: number) => {
     setDailogOpen(true);
     setDailogTitle('添加菜单');
     setDailogDesc(`追加 ${levelName} 的子菜单`);
@@ -119,7 +119,7 @@ export default function Index() {
   };
 
   // 编辑菜单
-  const handleEdit = (levelName: string, pathDepth: number, item: Textbook, mutateCallback: KeyedMutator<Textbook[]>, parentId?: number) => {
+  const handleEdit = (levelName: string, pathDepth: number, item: TextbookResp, mutateCallback: KeyedMutator<TextbookResp[]>, parentId?: number) => {
     setDailogOpen(true);
     setDailogTitle('编辑菜单');
     setDailogDesc(`编辑 ${levelName} 的子菜单`);
@@ -127,7 +127,7 @@ export default function Index() {
   };
 
   // 删除菜单
-  const handleDelete = (levelName: string, item: Textbook, mutateCallback: KeyedMutator<Textbook[]>) => {
+  const handleDelete = (levelName: string, item: TextbookResp, mutateCallback: KeyedMutator<TextbookResp[]>) => {
     setDailogOpen(true);
     setDailogTitle('删除菜单');
     setDailogDesc(`删除 ${levelName} 的子菜单`);
@@ -359,10 +359,10 @@ interface LevelProps {
   setOpen: (val: boolean) => void;
   levelName: string;
   levelDesc: string;
-  levels: Textbook[];
+  levels: TextbookResp[];
   onClear: (id: number) => void;
-  onEdit: (value: Textbook) => void;
-  onDelete: (value: Textbook) => void;
+  onEdit: (value: TextbookResp) => void;
+  onDelete: (value: TextbookResp) => void;
   onAdd: () => void;
 }
 function Level({ open, setOpen, levelName, levelDesc, levels, onClear, onAdd, onEdit, onDelete }: LevelProps) {
@@ -421,7 +421,7 @@ function Level({ open, setOpen, levelName, levelDesc, levels, onClear, onAdd, on
 // 一个菜单内容
 interface ItemProps {
   isSelected?: boolean; // 新增：是否选中
-  item: Textbook; // 显示菜单详情
+  item: TextbookResp; // 显示菜单详情
   onViewList: (val: number) => void; // 查看子菜单回调函数
   onEdit: () => void;
   onDelete: () => void;
@@ -476,9 +476,9 @@ interface AddProps {
   parentId?: number; // 父级标识, 第一级不传
   pathDepth: number; // 深度
   path?: string; // 记录根节点至当前节点的父路径
-  item?: Textbook; // 现有菜单值
+  item?: TextbookResp; // 现有菜单值
   onClose: (val: boolean) => void; // 取消暂时什么都不做
-  mutateCallback?: KeyedMutator<Textbook[]>; // 操作完毕后是否需要请求回调刷新缓存
+  mutateCallback?: KeyedMutator<TextbookResp[]>; // 操作完毕后是否需要请求回调刷新缓存
 }
 function Add({ parentId, pathDepth, path = '', item, onClose, mutateCallback }: AddProps) {
   // 添加和编辑请求
@@ -600,9 +600,9 @@ function Add({ parentId, pathDepth, path = '', item, onClose, mutateCallback }: 
 
 // 删除菜单
 interface DeleteProps {
-  item: Textbook; // 现有菜单值
+  item: TextbookResp; // 现有菜单值
   onClose: (val: boolean) => void; // 取消暂时什么都不做
-  mutateCallback?: KeyedMutator<Textbook[]>; // 操作完毕后是否需要请求回调刷新缓存
+  mutateCallback?: KeyedMutator<TextbookResp[]>; // 操作完毕后是否需要请求回调刷新缓存
 }
 function Delete({ item, onClose, mutateCallback }: DeleteProps) {
   const [submittIng, setSubmittIng] = useState<boolean>(false);

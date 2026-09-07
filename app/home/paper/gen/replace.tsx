@@ -6,7 +6,7 @@ import { PaperStatus } from '~/type/enum';
 import { useQuestionList } from '~/util/fetcher';
 import { StringConst } from '~/util/string';
 import { GenInfoReplaceList } from '~/home/paper/gen/info';
-import type { TextbookOtherDict } from '~/type/textbook';
+import type { OtherDictListRecord } from '~/type/textbook';
 import { SimpleAlert } from '~/common/alert';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
 import { Loading } from '~/common/load';
@@ -16,13 +16,11 @@ import { Loading } from '~/common/load';
 interface ReplaceQuestionProps {
   conf: CommonGenPaperGenConf; // 试卷配置
   questionTypeId: number; // 当前题目类型
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
+  otherDictListRecord: OtherDictListRecord;
   onConfirmReplace: (value: QuestionInfoResp) => void;
 }
 
-function ReplaceQuestion({ conf, questionTypeId, questionTypeDict, questionTagDict, questionDimensionDict, onConfirmReplace }: ReplaceQuestionProps) {
+function ReplaceQuestion({ conf, questionTypeId, otherDictListRecord, onConfirmReplace }: ReplaceQuestionProps) {
   // 查询题目列表
   const [pageNo, setPageNo] = useState<number>(1);
 
@@ -36,6 +34,9 @@ function ReplaceQuestion({ conf, questionTypeId, questionTypeDict, questionTagDi
     tagIds: conf.tagIds || [],
     status: PaperStatus.Drafing,
     dimensionIds: conf.dimensionIds || [],
+    levelIds: [],
+    sceneIds: [],
+    mistakeTipIds: [],
   };
 
   const {
@@ -51,13 +52,7 @@ function ReplaceQuestion({ conf, questionTypeId, questionTypeDict, questionTagDi
       {useDelayedLoading(questionListRespLoading) && <Loading />}
 
       {/* 题目列表 */}
-      <GenInfoReplaceList
-        listResp={questionListResp.list}
-        questionTypeDict={questionTypeDict}
-        questionTagDict={questionTagDict}
-        questionDimensionDict={questionDimensionDict}
-        onConfirmReplace={onConfirmReplace}
-      />
+      <GenInfoReplaceList listResp={questionListResp.list} otherDictListRecord={otherDictListRecord} onConfirmReplace={onConfirmReplace} />
 
       {/* 分页 */}
       {questionListResp.total > 0 && (

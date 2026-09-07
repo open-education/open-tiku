@@ -18,7 +18,7 @@ import { ArrayUtil } from '~/util/object';
 import { TitleShow } from '~/common/title';
 import { MultiOptionShow } from '~/common/select';
 import { QuestionInfo } from '~/common/question/info';
-import type { TextbookOtherDict } from '~/type/textbook';
+import type { OtherDictListRecord } from '~/type/textbook';
 import { createPortal } from 'react-dom';
 import { ReplaceQuestion } from '~/home/paper/gen/replace';
 import { httpClient } from '~/util/http';
@@ -136,12 +136,10 @@ function GenInfoHead({ commonPaperResp }: GenInfoHeadProps) {
 // 预览详情
 interface GenInfoPreviewProps {
   infoResp: GenPaperResp;
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
+  otherDictListRecord: OtherDictListRecord;
 }
 
-function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionDimensionDict }: GenInfoPreviewProps) {
+function GenInfoPreview({ infoResp, otherDictListRecord }: GenInfoPreviewProps) {
   // 遮盖层弹框查看试卷详情
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
@@ -219,13 +217,7 @@ function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionD
               </div>
 
               <div className="flex-1 overflow-y-auto pt-4">
-                <QuestionInfo
-                  pageSource={{ source: 'list' }}
-                  questionTypeDict={questionTypeDict}
-                  questionTagDict={questionTagDict}
-                  questionDimensionDict={questionDimensionDict}
-                  infoResp={viewQuestionInfo}
-                />
+                <QuestionInfo pageSource={{ source: 'list' }} otherDictListRecord={otherDictListRecord} infoResp={viewQuestionInfo} />
               </div>
             </div>
           </div>,
@@ -238,12 +230,10 @@ function GenInfoPreview({ infoResp, questionTypeDict, questionTagDict, questionD
 // 试卷详情样式
 interface GenInfoProps {
   infoResp: GenPaperResp;
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
+  otherDictListRecord: OtherDictListRecord;
   setOpenSheet: (value: boolean) => void;
 }
-function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensionDict, setOpenSheet }: GenInfoProps) {
+function GenInfo({ infoResp, otherDictListRecord, setOpenSheet }: GenInfoProps) {
   // 需要在这里维护这个变量状态, 考虑获取到数据后再打开抽屉因此接口请求放在上一步
   const [genPaperInfo, setGenPaperInfo] = useState<GenPaperResp>(infoResp);
 
@@ -506,9 +496,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
                   <ReplaceQuestion
                     conf={infoResp.conf}
                     questionTypeId={replaceQuestionReq.questionTypeId}
-                    questionTypeDict={questionTypeDict}
-                    questionTagDict={questionTagDict}
-                    questionDimensionDict={questionDimensionDict}
+                    otherDictListRecord={otherDictListRecord}
                     onConfirmReplace={handleConfirmReplacement}
                   />
                 )}
@@ -516,13 +504,7 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
                 {/* 查看详情 */}
                 {showViewQuestionInfo && viewQuestionInfo && (
                   <div className="mt-3">
-                    <QuestionInfo
-                      pageSource={{ source: 'list' }}
-                      questionTypeDict={questionTypeDict}
-                      questionTagDict={questionTagDict}
-                      questionDimensionDict={questionDimensionDict}
-                      infoResp={viewQuestionInfo}
-                    />
+                    <QuestionInfo pageSource={{ source: 'list' }} otherDictListRecord={otherDictListRecord} infoResp={viewQuestionInfo} />
                   </div>
                 )}
               </div>
@@ -537,13 +519,11 @@ function GenInfo({ infoResp, questionTypeDict, questionTagDict, questionDimensio
 // 题目替换列表
 interface GenInfoReplaceListProps {
   listResp: QuestionBaseInfoResp[];
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
+  otherDictListRecord: OtherDictListRecord;
   onConfirmReplace: (value: QuestionInfoResp) => void;
 }
 
-function GenInfoReplaceList({ listResp, questionTypeDict, questionTagDict, questionDimensionDict, onConfirmReplace }: GenInfoReplaceListProps) {
+function GenInfoReplaceList({ listResp, otherDictListRecord, onConfirmReplace }: GenInfoReplaceListProps) {
   // 遮盖层弹框查看试卷详情
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
@@ -636,13 +616,7 @@ function GenInfoReplaceList({ listResp, questionTypeDict, questionTagDict, quest
               </div>
 
               <div className="flex-1 overflow-y-auto pt-4">
-                <QuestionInfo
-                  pageSource={{ source: 'list' }}
-                  questionTypeDict={questionTypeDict}
-                  questionTagDict={questionTagDict}
-                  questionDimensionDict={questionDimensionDict}
-                  infoResp={viewQuestionInfo}
-                />
+                <QuestionInfo pageSource={{ source: 'list' }} otherDictListRecord={otherDictListRecord} infoResp={viewQuestionInfo} />
               </div>
             </div>
           </div>,

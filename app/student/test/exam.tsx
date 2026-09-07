@@ -66,6 +66,7 @@ const defaultGenPaperQuestionResp: GenPaperQuestionResp = {
       approveName: '',
       createdAt: '',
       updatedAt: '',
+      levelId: 0,
     },
     extraInfo: {},
   },

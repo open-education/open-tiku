@@ -6,21 +6,19 @@ import { SimplePagination } from '~/common/page';
 import { SimilarQuestionListShow } from '~/common/question/list';
 import { Separator } from '~/components/ui/separator';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
-import type { TextbookOtherDict } from '~/type/textbook';
+import type { OtherDictListRecord } from '~/type/textbook';
 import { useSimilarList } from '~/util/fetcher';
 import { StringConst } from '~/util/string';
 
 /// 变式题列表, 暂时未设计详情
 
 interface SimilarQuestionListProps {
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
+  otherDictListRecord: OtherDictListRecord;
   questionId: number;
   eightId: number;
 }
 
-export function SimilarQuestionList({ questionTypeDict, questionTagDict, questionDimensionDict, questionId, eightId }: SimilarQuestionListProps) {
+export function SimilarQuestionList({ otherDictListRecord, questionId, eightId }: SimilarQuestionListProps) {
   const [pageNo, setPageNo] = useState<number>(1);
 
   // 标签和题型暂时不支持查询
@@ -60,13 +58,7 @@ export function SimilarQuestionList({ questionTypeDict, questionTagDict, questio
 
       {/* 题目列表 */}
       <div className="text-sm">
-        <SimilarQuestionListShow
-          pageSource={{ source: 'list' }}
-          questionTypeDict={questionTypeDict}
-          questionTagDict={questionTagDict}
-          questionDimensionDict={questionDimensionDict}
-          listResp={listResp}
-        />
+        <SimilarQuestionListShow pageSource={{ source: 'list' }} otherDictListRecord={otherDictListRecord} listResp={listResp} />
       </div>
 
       {/* 分页 */}
