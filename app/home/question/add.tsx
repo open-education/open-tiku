@@ -392,6 +392,15 @@ export default function Add({
       addReq.status = 1;
     }
 
+    // 知识点用逗号分割
+    if (addReq.knowledge && StringValidator.isNonEmpty(addReq.knowledge)) {
+      let knowledge = addReq.knowledge
+        .split(/\s*[、，,]\s*/)
+        .filter(Boolean)
+        .join(', ');
+      addReq.knowledge = knowledge;
+    }
+
     // 添加题目成功并预览详情, 未提交的题目只能在 我的题目 中可见
     httpClient
       .post<number>('/question/add', addReq)
