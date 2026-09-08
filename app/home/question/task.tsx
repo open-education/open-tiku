@@ -144,6 +144,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
     <div className="text-base space-y-6 pl-4 pr-4 bg-muted">
       <div className="text-sm">
         <div>1. 文件标识请使用右上角的 快捷工具-上传文件 上传文件后获得</div>
+        <div>2. 模板请参考下面下载模板, 如果模板有变更需要练习管理员更新支持后才会生效</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -180,6 +181,20 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
       {warnInfo}
 
       <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-10 gap-4 items-center">
+          <div className="col-span-1">
+            下载参考模板:<span className="text-destructive">*</span>
+          </div>
+          <div className="flex gap-3 col-span-9">
+            <a href="/api/file/read/file/fctk_tpl.md" target="_blank">
+              <Button>分层题库模板.md</Button>
+            </a>
+            <a href="/api/file/read/file/fctk_tpl.docx" target="_blank">
+              <Button>分层题库模板.docx</Button>
+            </a>
+          </div>
+        </div>
+
         {/* 选择前5层级 */}
         <div className="grid grid-cols-10 gap-1 items-center">
           <div className="col-span-1">
