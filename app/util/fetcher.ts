@@ -128,8 +128,17 @@ export function useSimilarList(questionId: number, eightId: number, pageNo: numb
 }
 
 // 题目上传任务列表
-export function useTaskList(req: TaskListReq) {
-  return useSWR<TaskListResp>(JSON.stringify(req), () => httpClient.post<TaskListResp>('/task/list', req), defaultErrConfig);
+export function useTaskList(reqInit: TaskListReq, pageNo: number, pageSize: number) {
+  let req: TaskListReq = {
+    questionCateId: reqInit.questionCateId,
+    taskType: reqInit.taskType,
+    pageNo,
+    pageSize,
+  };
+
+  const reqPath = '/task/list';
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<TaskListResp>(key, () => httpClient.post<TaskListResp>(reqPath, req), defaultErrConfig);
 }
 
 // 题目其它通用字典获取

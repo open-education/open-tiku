@@ -21,6 +21,7 @@ import { SimplePagination } from '~/common/page';
 import { QuickToolList } from '~/common/tool';
 import { SimpleNoData } from '~/common/empty';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { SimpleFullContent } from '~/common/content';
 
 /// 题目上传任务
 
@@ -307,13 +308,16 @@ const getStatusBadgeClasses = (status: number): string => {
   }
 };
 function TaskListShow({ questionSearch }: TaskListShowProps) {
+  const [pageNo, setPageNo] = useState<number>(1);
+  const pageSize = 5;
+
   const initAddReq = useMemo(() => {
     // 初始化部分默认值
     const initAddDefault: TaskListReq = {
       questionCateId: 0,
       taskType: StringConst.taskTypeUploadQuestion,
-      pageNo: 1,
-      pageSize: StringConst.pageSize,
+      pageNo: pageNo,
+      pageSize: pageSize,
     };
 
     // questionSearch 为列表页传递过来的数据, 可能选也可能为空
@@ -341,16 +345,16 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
   const {
     data: listResp = {
       list: [],
-      pageNo: 1,
-      pageSize: StringConst.pageSize,
+      pageNo: pageNo,
+      pageSize: pageSize,
       total: 0,
     },
     isLoading: listRespLoading,
     error: listRespErr,
-  } = useTaskList(listReq);
+  } = useTaskList(listReq, pageNo, pageSize);
 
   return (
-    <div className="p-4 text-base">
+    <div className="p-4 text-base bg-muted">
       <Separator />
 
       {useDelayedLoading(textbooksLoading || questionCatesLoading || listRespLoading) && <Loading />}
@@ -431,11 +435,20 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
               </div>
             </div>
 
-            {/* 结果信息（可选） */}
+            {/* 结果信息 */}
             {task.result && (
-              <div className="flex items-start gap-1.5 p-2 bg-muted/40 rounded-md border border-border/40">
+              <div className="flex items-start gap-1.5 p-2 bg-muted border border-border/40">
                 <FileText size={14} className="shrink-0 mt-0.5 text-muted-foreground" />
-                <div className="text-sm text-muted-foreground break-all line-clamp-2">结果：{task.result}</div>
+                <div className="flex flex-col text-sm text-muted-foreground break-all w-full">
+                  <div className="font-medium text-foreground mb-1">处理结果明细：</div>
+                  <div className="max-h-25 overflow-y-auto pr-1 flex flex-col gap-0.5 scrollbar-thin">
+                    {task.result.split('\n').map((line, index) => (
+                      <div key={index}>
+                        <SimpleFullContent content={line} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
 
@@ -443,11 +456,11 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
             <div className="flex flex-wrap items-center justify-between gap-2 pt-1.5 mt-1 border-t border-border/40 text-sm text-muted-foreground">
               <div className="flex items-center gap-1.5">
                 <CalendarDays size={13} />
-                <span>创建：{task.createdAt}</span>
+                <span>创建时间：{task.createdAt}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Clock size={13} />
-                <span>更新：{task.updatedAt}</span>
+                <span>完成时间：{task.updatedAt}</span>
               </div>
             </div>
           </CardContent>
@@ -456,12 +469,7 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
 
       {listResp.total > 0 && (
         <div className="mt-3">
-          <SimplePagination
-            pageNo={listReq.pageNo}
-            pageSize={StringConst.pageSize}
-            total={listResp.total}
-            onPageChange={(val) => updateListReq('pageNo', val)}
-          />
+          <SimplePagination pageNo={listResp.pageNo} pageSize={listResp.pageSize} total={listResp.total} onPageChange={(val) => setPageNo(val)} />
         </div>
       )}
     </div>

@@ -20,7 +20,7 @@ import { Textarea } from '~/components/ui/textarea';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
 import { TestMethod, TestResult, TestStatus } from '~/type/enum';
 import type { CommonPaperGroupResp, GenPaperQuestionResp, GenPaperResp } from '~/type/paper';
-import type { AnswerAddReq, AttemptInfoResp, InProgressLatestAttemptReq, TestAnswerAddReq } from '~/type/test';
+import type { AnswerAddReq, AttemptInfoResp, TestAnswerAddReq } from '~/type/test';
 import { httpClient } from '~/util/http';
 
 // 默认常量定义
@@ -113,7 +113,6 @@ function ExamLayout({
   onCheckAnswer,
   actionSlot,
 }: ExamLayoutProps) {
-  // 核心路由与索引反查 Map
   const [groupCommonMap, questionMap, indexToQuestionIdMap, questionIdToIndexMap] = useMemo(() => {
     const gMap = new Map<number, CommonPaperGroupResp>();
     const qMap = new Map<number, GenPaperQuestionResp>();
