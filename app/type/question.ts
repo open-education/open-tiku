@@ -1,5 +1,3 @@
-import type { TextbookOtherDictResp } from '~/type/textbook';
-
 // 题目选项信息
 export interface QuestionOption {
   label: string; // A, B, C, D, E
