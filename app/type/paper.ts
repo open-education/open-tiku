@@ -175,6 +175,9 @@ export interface CommonGenPaperGenConf {
   dimensionIds?: number[];
   levelRange?: GenDifficultyLevelRange;
   questionTypes: GenPaperGenType[];
+  levelIds?: number[];
+  sceneIds?: number[];
+  mistakeTipIds?: number[];
 }
 
 // 试卷题型列表
@@ -208,6 +211,9 @@ export interface GenPaperSearchReq {
   tagIds?: number[]; // 题目标签
   dimensionIds?: number[]; //核心素养
   genPaperGenTypes: GenPaperGenType[]; // 题型题量配置
+  levelIds?: number[]; // 分层体系
+  sceneIds?: number[]; // 适用场景
+  mistakeTipIds?: number[]; // 常见错误
 }
 
 // 手动组卷试卷详情返回字段

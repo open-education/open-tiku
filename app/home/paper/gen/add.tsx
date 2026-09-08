@@ -109,6 +109,9 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
     tagIds: [],
     dimensionIds: [],
     genPaperGenTypes: [],
+    levelIds: [],
+    sceneIds: [],
+    mistakeTipIds: [],
   });
   const updateGenPaperSearchReq = (key: keyof GenPaperSearchReq, value: number | number[] | string[] | GenPaperGenType[]) => {
     setGenPaperSearchReq((prev) => ({ ...prev, [key]: value }));
@@ -245,6 +248,9 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       dimensionIds: genPaperSearchReq.dimensionIds,
       levelRange: levelRange,
       questionTypes: genPaperSearchReq.genPaperGenTypes,
+      levelIds: genPaperSearchReq.levelIds,
+      sceneIds: genPaperSearchReq.sceneIds,
+      mistakeTipIds: genPaperSearchReq.mistakeTipIds,
     };
 
     // 预览请求
@@ -415,6 +421,9 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
       dimensionIds: genPaperSearchReq.dimensionIds,
       levelRange: levelRange,
       questionTypes: genPaperSearchReq.genPaperGenTypes,
+      levelIds: genPaperSearchReq.levelIds,
+      sceneIds: genPaperSearchReq.sceneIds,
+      mistakeTipIds: genPaperSearchReq.mistakeTipIds,
     };
 
     // 题型题目信息
@@ -610,6 +619,48 @@ export default function GenAdd({ searchReq, setSheetTitle, setSheetDesc, setShee
                             value={genPaperSearchReq.dimensionIds || []}
                             onChange={(val) => {
                               updateGenPaperSearchReq('dimensionIds', val);
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* 分层体系 */}
+                      <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                        <div className="md:w-24 shrink-0 font-medium">分层体系:</div>
+                        <div className="flex-1 min-w-0">
+                          <MultiTagSelect
+                            options={otherDictListRecord.questionLevels}
+                            value={genPaperSearchReq.levelIds || []}
+                            onChange={(val) => {
+                              updateGenPaperSearchReq('levelIds', val);
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* 适用场景 */}
+                      <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                        <div className="md:w-24 shrink-0 font-medium">适用场景:</div>
+                        <div className="flex-1 min-w-0">
+                          <MultiTagSelect
+                            options={otherDictListRecord.questionScenes}
+                            value={genPaperSearchReq.sceneIds || []}
+                            onChange={(val) => {
+                              updateGenPaperSearchReq('sceneIds', val);
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* 常见错误 */}
+                      <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                        <div className="md:w-24 shrink-0 font-medium">常见错误:</div>
+                        <div className="flex-1 min-w-0">
+                          <MultiTagSelect
+                            options={otherDictListRecord.questionMistakeTips}
+                            value={genPaperSearchReq.mistakeTipIds || []}
+                            onChange={(val) => {
+                              updateGenPaperSearchReq('mistakeTipIds', val);
                             }}
                           />
                         </div>

@@ -21,7 +21,7 @@ import { Button } from '~/components/ui/button';
 import { Plus, Upload, View } from 'lucide-react';
 import type { UserInfoResp } from '~/type/user';
 import { useUserInfo } from '~/hooks/use-user';
-import { QuestionRelationType, UserRoleType } from '~/type/enum';
+import { QuestionRelationType, QuestionStatus, UserRoleType } from '~/type/enum';
 import { cn } from 'cn';
 
 // 题目搜索页面
@@ -56,7 +56,7 @@ function QuestionSearchPage({ selectNavProps, pageSource, className = '' }: Ques
     sceneIds: [],
     mistakeTipIds: [],
     // 我的题目和审核默认查询草稿中的数据
-    ...(pageSource.source !== 'list' ? { status: 0 } : {}),
+    ...(pageSource.source !== 'list' ? { status: QuestionStatus.Drafing } : {}),
   });
   const updateQuestionSearch = (key: keyof QuestionSearch, value: number | number[] | string[]) => {
     setQuestionSearch((prev) => ({ ...prev, [key]: value }));

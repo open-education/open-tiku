@@ -10,6 +10,7 @@ import { Loading } from '~/common/load';
 import { MyPaperList } from '~/home/paper/gen/list';
 import { SimplePagination } from '~/common/page';
 import { SimpleSheet } from '~/common/sheet';
+import { PaperStatus } from '~/type/enum';
 
 interface MyPaperSearchListProps {
   pageSource: PaperPageSourceProps;
@@ -27,6 +28,8 @@ function MyPaperSearchList({ pageSource }: MyPaperSearchListProps) {
     selectedKeys: [],
     paperType: 0,
     source: pageSource.source,
+    // 我的试卷和审核默认查询草稿中的数据
+    ...(pageSource.source !== 'list' ? { status: PaperStatus.Drafing } : {}),
   };
 
   // 处理搜索信息, 惰性初始化将其它页面传递过来的值进行赋值
