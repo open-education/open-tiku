@@ -16,6 +16,7 @@ import { SimpleSheet } from '~/common/sheet';
 import { Separator } from '~/components/ui/separator';
 import { AttemptListShow } from '~/student/test/task';
 import { SimpleNoData } from '~/common/empty';
+import type { OtherDictListRecord } from '~/type/textbook';
 
 // 做题记录列表
 
@@ -57,6 +58,22 @@ const defaultGenPaperResp: GenPaperResp = {
     questionTypes: [],
   },
   groups: [],
+};
+
+// 默认空的通用字典信息
+const defaultOtherDictListRecord: OtherDictListRecord = {
+  questionTypes: [],
+  questionTypeDict: {},
+  questionTags: [],
+  questionTagDict: {},
+  questionDimensions: [],
+  questionDimensionDict: {},
+  questionLevels: [],
+  questionLevelDict: {},
+  questionScenes: [],
+  questionSceneDict: {},
+  questionMistakeTips: [],
+  questionMistakeTipDict: {},
 };
 
 export default function Index() {
@@ -102,7 +119,7 @@ export default function Index() {
   const handlePaperInfo = () => {
     setSheetTitle('查看详情');
     setSheetDesc('该处仅能查看明细');
-    setSheetContent(<GenInfoPreview infoResp={genPaperResp} questionTypeDict={{}} questionTagDict={{}} questionDimensionDict={{}} />);
+    setSheetContent(<GenInfoPreview infoResp={genPaperResp} otherDictListRecord={defaultOtherDictListRecord} />);
     setOpenSheet(true);
   };
 

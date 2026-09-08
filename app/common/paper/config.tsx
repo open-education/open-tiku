@@ -2,7 +2,7 @@ import { Settings2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { Separator } from '~/components/ui/separator';
 import { ChapterDropdownNav } from '~/common/nav';
-import type { Textbook } from '~/type/textbook';
+import type { TextbookResp } from '~/type/textbook';
 import { StatusSelect, TagSelect } from '~/common/paper/tag';
 import { StringConst } from '~/util/string';
 import { YearSelect } from '~/common/paper/year';
@@ -16,7 +16,7 @@ import { Button } from '~/components/ui/button';
 // 试卷基本信息搜索
 
 interface CommonPaperSearchConfProps {
-  textbooks: Textbook[];
+  textbooks: TextbookResp[];
   search: CommonPaperSearchReq;
   updateCommonPaperSearchReq: (key: keyof CommonPaperSearchReq, value: string | number | string[]) => void;
 }
@@ -29,7 +29,7 @@ function CommonPaperSearchConf({ textbooks, search: metaSearch, updateCommonPape
         <div className="flex-1 min-w-0">
           <ChapterDropdownNav
             textbooks={textbooks}
-            onSelect={(selectedItems: Textbook[]) => {
+            onSelect={(selectedItems: TextbookResp[]) => {
               if (!selectedItems) {
                 updateCommonPaperSearchReq('relatedId', 0);
                 updateCommonPaperSearchReq('relatedName', '');
@@ -37,7 +37,7 @@ function CommonPaperSearchConf({ textbooks, search: metaSearch, updateCommonPape
                 return;
               }
 
-              const current: Textbook = selectedItems[selectedItems.length - 1];
+              const current: TextbookResp = selectedItems[selectedItems.length - 1];
               updateCommonPaperSearchReq('relatedId', current.id);
               updateCommonPaperSearchReq('relatedName', current.label);
               updateCommonPaperSearchReq(
@@ -122,7 +122,7 @@ function CommonPaperSearchConf({ textbooks, search: metaSearch, updateCommonPape
 // 试卷基础配置
 
 interface CommonPaperConfProps {
-  textbooks: Textbook[];
+  textbooks: TextbookResp[];
   commonPaperReq: CommonPaperReq;
   defaultSelectedKeys: string[];
   updateCommonPaperReq: (key: keyof CommonPaperReq, value: string | number) => void;
@@ -145,7 +145,7 @@ function CommonPaperConf({ textbooks = [], commonPaperReq, defaultSelectedKeys =
             <div className="col-span-8">
               <ChapterDropdownNav
                 textbooks={textbooks}
-                onSelect={(selectedItems: Textbook[]) => {
+                onSelect={(selectedItems: TextbookResp[]) => {
                   // 直接记录末级的标识即可, 搜索直接搜索该层级标识即可, 不关心父级和子级
                   // 但是详情和编辑需要展示这个路径, 需要用了再获取
                   if (!selectedItems) {

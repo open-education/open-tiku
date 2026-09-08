@@ -1,7 +1,6 @@
 import type { QuestionBaseInfoResp, QuestionListResp, QuestionPageSourceProps, QuestionSearch } from '~/type/question';
-import type { TextbookOtherDict } from '~/type/textbook';
+import type { OtherDictListRecord } from '~/type/textbook';
 import { OperateTags, TagShow } from '~/common/question/tag';
-import { DictUtil } from '~/util/object';
 import { TitleShow } from '~/common/title';
 import { MultiOptionShow } from '~/common/select';
 import type { KeyedMutator } from 'swr';
@@ -11,9 +10,7 @@ import type { KeyedMutator } from 'swr';
 // 普通列表展示, 需要查看详情等操作
 interface QuestionListShowProps {
   pageSource: QuestionPageSourceProps;
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
+  otherDictListRecord: OtherDictListRecord;
   listResp: QuestionListResp;
   questionSearch: QuestionSearch;
   questionListRespMutate: KeyedMutator<QuestionListResp>; // 审核删除等操作需要重置列表接口重新请求数据
@@ -29,9 +26,7 @@ interface QuestionListShowProps {
 }
 function QuestionListShow({
   pageSource,
-  questionTypeDict,
-  questionTagDict,
-  questionDimensionDict,
+  otherDictListRecord,
   listResp,
   questionSearch,
   questionListRespMutate,
@@ -50,21 +45,13 @@ function QuestionListShow({
             className="mt-4 p-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
           >
             {/* 题干选项等部分 */}
-            <SingleQuestionCommonPart
-              pageSource={pageSource}
-              questionTypeDict={questionTypeDict}
-              questionTagDict={questionTagDict}
-              questionDimensionDict={questionDimensionDict}
-              questionInfo={questionInfo}
-            />
+            <SingleQuestionCommonPart pageSource={pageSource} otherDictListRecord={otherDictListRecord} questionInfo={questionInfo} />
 
             {/* 题目其它标签, 比如查看答案, 关联题目等 */}
             <div className="flex flex-wrap gap-2 justify-start md:justify-end">
               <OperateTags
                 pageSource={pageSource}
-                questionTypeDict={questionTypeDict}
-                questionTagDict={questionTagDict}
-                questionDimensionDict={questionDimensionDict}
+                otherDictListRecord={otherDictListRecord}
                 questionId={questionInfo.id}
                 questionRelationType={questionInfo.relationType}
                 eightId={questionInfo.questionCateId}
@@ -88,30 +75,15 @@ function QuestionListShow({
 // 题目标题选项等公共部分展示
 interface SingleQuestionCommonPartProps {
   pageSource: QuestionPageSourceProps;
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
+  otherDictListRecord: OtherDictListRecord;
   questionInfo: QuestionBaseInfoResp;
 }
-function SingleQuestionCommonPart({
-  pageSource,
-  questionTypeDict,
-  questionTagDict,
-  questionDimensionDict,
-  questionInfo,
-}: SingleQuestionCommonPartProps) {
+function SingleQuestionCommonPart({ pageSource, otherDictListRecord, questionInfo }: SingleQuestionCommonPartProps) {
   return (
     <>
       {/* 标签 */}
-      <div className="flex gap-3 items-center w-full">
-        <TagShow
-          pageSource={pageSource}
-          typeValue={DictUtil.getQuestionTypeName(questionInfo.questionTypeId, questionTypeDict)}
-          tagNames={DictUtil.getQuestionTagNames(questionInfo.questionTagIds || [], questionTagDict)}
-          dimensionNames={DictUtil.getQuestionDimensionNames(questionInfo.questionDimensionIds || [], questionDimensionDict)}
-          difficultyLevelValue={questionInfo.difficultyLevel}
-          status={questionInfo.status}
-        />
+      <div className="flex flex-wrap gap-3 items-center w-full">
+        <TagShow pageSource={pageSource} otherDictListRecord={otherDictListRecord} questionInfo={questionInfo} />
       </div>
 
       {/* 标题 */}
@@ -132,12 +104,10 @@ function SingleQuestionCommonPart({
 // 变式题列表展示, 不关心展示详情了, 因为这部分题目跟普通列表的题目是重复的, 仅仅展示有哪些变式题列表
 interface SimilarQuestionListShowProps {
   pageSource: QuestionPageSourceProps;
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
+  otherDictListRecord: OtherDictListRecord;
   listResp: QuestionListResp;
 }
-function SimilarQuestionListShow({ pageSource, questionTypeDict, questionTagDict, questionDimensionDict, listResp }: SimilarQuestionListShowProps) {
+function SimilarQuestionListShow({ pageSource, otherDictListRecord, listResp }: SimilarQuestionListShowProps) {
   return (
     <>
       {listResp.list?.map((questionInfo) => {
@@ -147,13 +117,7 @@ function SimilarQuestionListShow({ pageSource, questionTypeDict, questionTagDict
             className="mt-4 p-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
           >
             {/* 题干选项等部分 */}
-            <SingleQuestionCommonPart
-              pageSource={pageSource}
-              questionTypeDict={questionTypeDict}
-              questionTagDict={questionTagDict}
-              questionDimensionDict={questionDimensionDict}
-              questionInfo={questionInfo}
-            />
+            <SingleQuestionCommonPart pageSource={pageSource} otherDictListRecord={otherDictListRecord} questionInfo={questionInfo} />
           </div>
         );
       })}

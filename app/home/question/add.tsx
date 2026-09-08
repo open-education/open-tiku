@@ -26,18 +26,17 @@ import {
 import type { Content, CreateQuestionReq, QuestionInfoResp, QuestionListResp, QuestionOption, QuestionSearch } from '~/type/question';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '~/components/ui/resizable';
 import { Watermark } from '~/common/watermark';
-import type { Textbook } from '~/type/textbook';
+import type { TextbookResp } from '~/type/textbook';
 import { ChapterDropdownNav } from '~/common/nav';
 import { MultiTagSelect, TypeSelect } from '~/common/question/tag';
 import { StringConst, StringValidator } from '~/util/string';
-import { ArrayUtil } from '~/util/object';
-import { useQuestionCates, useQuestionOtherDicts, useTextbooks } from '~/util/fetcher';
+import { useQuestionCates, useQuestionOtherDictList, useTextbooks } from '~/util/fetcher';
 import { SimpleAlert } from '~/common/alert';
 import { Loading } from '~/common/load';
 import { toast } from 'sonner';
 import { QuestionInfo } from '~/common/question/info';
 import { httpClient } from '~/util/http';
-import { createTextbookPathDict } from '~/util/textbook-dict';
+import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook-dict';
 import { ImageAdd } from '~/common/image';
 import { QuickToolList } from '~/common/tool';
 import { FileUpload } from '~/common/file';
@@ -71,6 +70,9 @@ export default function Add({
     id: 0,
     fiveLevelSelectKeys: [],
     eightLevelSelectKeys: [],
+    levelIds: [],
+    sceneIds: [],
+    mistakeTipIds: [],
   },
   infoResp = {
     baseInfo: {
@@ -87,6 +89,7 @@ export default function Add({
       createdAt: '',
       updatedAt: '',
       relationType: 0,
+      levelId: 0,
     },
     extraInfo: {},
   },
@@ -113,7 +116,8 @@ export default function Add({
       optionsLayout: 1,
       source: '',
       status: 0,
-      relationType: addRelationType || 0, // 不存在传入非法的值
+      relationType: addRelationType || 0,
+      levelId: 0,
     };
 
     // questionSearch 为列表页传递过来的数据, 可能选也可能为空
@@ -130,6 +134,12 @@ export default function Add({
       // 此时为变式题母题标识id
       initAddDefault.sourceId = questionSearch.sourceId;
     }
+    if (questionSearch.sceneIds.length > 0) {
+      initAddDefault.sceneIds = questionSearch.sceneIds;
+    }
+    if (questionSearch.mistakeTipIds.length > 0) {
+      initAddDefault.mistakeTipIds = questionSearch.mistakeTipIds;
+    }
 
     return initAddDefault;
   }, []);
@@ -145,7 +155,7 @@ export default function Add({
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
   // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
-  const pathMap: Map<string, Textbook[]> = createTextbookPathDict(textbooks);
+  const pathMap: Map<string, TextbookResp[]> = createTextbookPathDict(textbooks);
 
   useEffect(() => {
     // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再2层深度上, 因此只要有2层深度就可以把题型类型和标签返回, 后续如果有优化再处理
@@ -156,29 +166,32 @@ export default function Add({
   }, [fiveLevelId]);
 
   // 查询题目类型和标签
-  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionOtherDicts(twoLevelId, 'question_type');
-  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, 'id'), [questionTypes]);
-
-  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionOtherDicts(twoLevelId, 'question_tag');
-  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, 'id'), [questionTags]);
-
   const {
-    data: questionDimensions = [],
-    isLoading: questionDimensionsLoading,
-    error: questionDimensionsErr,
-  } = useQuestionOtherDicts(twoLevelId, 'question_dimension');
-  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, 'id'), [questionDimensions]);
+    data: dictListResp = { map: {} },
+    isLoading: dictListRespLoading,
+    error: dictListRespErr,
+  } = useQuestionOtherDictList(twoLevelId, [
+    'question_type',
+    'question_tag',
+    'question_dimension',
+    'question_level',
+    'question_scene',
+    'question_mistake_tip',
+  ]);
+  const otherDictListRecord = useMemo(() => {
+    return createOtherDictListRecord(dictListResp);
+  }, [dictListResp]);
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
 
   // 是否是选择题, 列表页可能携带需要填充默认值
-  const [isChoice, setIsChoice] = useState<boolean>(questionTypeDict[addReq.questionTypeId]?.isSelect);
+  const [isChoice, setIsChoice] = useState<boolean>(otherDictListRecord.questionTypeDict[addReq.questionTypeId]?.isSelect);
 
   // 解析工具填充覆盖现有值, 选择性填充
   const replaceAddReq = (fillReq: CreateQuestionReq) => {
     // 如果是选择题需要触发选中
-    setIsChoice(questionTypeDict[fillReq.questionTypeId]?.isSelect);
+    setIsChoice(otherDictListRecord.questionTypeDict[fillReq.questionTypeId]?.isSelect);
 
     // 填充的字段如下赋值
     setAddReq((prev) => ({
@@ -189,6 +202,9 @@ export default function Add({
       ['questionTypeId']: fillReq.questionTypeId,
       ['questionTagIds']: fillReq.questionTagIds || [],
       ['knowledge']: fillReq.knowledge || '',
+      ['questionDimensionIds']: fillReq.questionDimensionIds || [],
+      ['sceneIds']: fillReq.sceneIds || [],
+      ['mistakeTipIds']: fillReq.mistakeTipIds || [],
       ['answer']: fillReq.answer || '',
       ['analysis']: fillReq.analysis || {
         content: '',
@@ -330,6 +346,16 @@ export default function Add({
       });
       return;
     }
+    if (addReq.levelId <= 0) {
+      toast.error(<div className="text-red-700">分层体系不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: '关闭',
+          onClick: () => {},
+        },
+      });
+      return;
+    }
     if (!StringValidator.isNonEmpty(addReq.title)) {
       toast.error(<div className="text-red-700">题目标题不能为空</div>, {
         duration: Infinity,
@@ -366,6 +392,15 @@ export default function Add({
       addReq.status = 1;
     }
 
+    // 知识点用逗号分割
+    if (addReq.knowledge && StringValidator.isNonEmpty(addReq.knowledge)) {
+      let knowledge = addReq.knowledge
+        .split(/\s*[、，,]\s*/)
+        .filter(Boolean)
+        .join(', ');
+      addReq.knowledge = knowledge;
+    }
+
     // 添加题目成功并预览详情, 未提交的题目只能在 我的题目 中可见
     httpClient
       .post<number>('/question/add', addReq)
@@ -375,15 +410,7 @@ export default function Add({
           .then((res) => {
             setSheetTitle('题目详情');
             setSheetDesc('当前仅是预览状态, 需管理员审核通过后题目方可被搜索展示');
-            setSheetContent(
-              <QuestionInfo
-                pageSource={{ source: 'list' }}
-                questionTypeDict={questionTypeDict}
-                questionTagDict={questionTagDict}
-                questionDimensionDict={questionDimensionDict}
-                infoResp={res}
-              />,
-            );
+            setSheetContent(<QuestionInfo pageSource={{ source: 'list' }} otherDictListRecord={otherDictListRecord} infoResp={res} />);
 
             // 刷新列表页面如果是编辑
             if (addReq.id && addReq.id > 0) {
@@ -409,8 +436,8 @@ export default function Add({
       <div>
         <div>1. 图片标识请使用右上角的 快捷工具-上传文件 上传图片后获得</div>
         <div>2. 符合 上传题目 模板的题目可以粘贴到 快捷工具-解析题目 进行解析后点击 填充 会自动填充至左边表单中</div>
-        <div>3. 一道母题只能关联一道课本原题, 变式题本身已是最末级不再关联其它题目</div>
-        <div>4. 标签中的 母题 课本原题 变式题 为特殊标签, 方便你区分当前的题目依赖关系, 这个关系为冗余仅提供给你直觉区分题目类型, 不会做逻辑验证</div>
+        <div>3. 母题才能添加变式题, 变式题本身已是最末级不再关联其它题目</div>
+        <div>4. 标签中的 母题 变式题 为特殊标签, 方便你区分当前的题目依赖关系, 这个关系为冗余仅提供给你直觉区分题目类型, 不会做逻辑验证</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -428,9 +455,7 @@ export default function Add({
       {addWarnInfo}
 
       {/* 加载中信息 */}
-      {useDelayedLoading(
-        isLoading || textbooksLoading || questionTypesLoading || questionTagsLoading || questionCatesLoading || questionDimensionsLoading,
-      ) && <Loading />}
+      {useDelayedLoading(isLoading || textbooksLoading || questionCatesLoading || dictListRespLoading) && <Loading />}
       {/* 相关错误信息 */}
 
       {textbooksErr && (
@@ -438,24 +463,14 @@ export default function Add({
           <SimpleAlert title="学段/年级列表获取失败" message={textbooksErr.message} />
         </div>
       )}
-      {questionTypesErr && (
+      {dictListRespErr && (
         <div className="mt-3">
-          <SimpleAlert title="题目类型获取失败" message={questionTypesErr.message} />
-        </div>
-      )}
-      {questionTagsErr && (
-        <div className="mt-3">
-          <SimpleAlert title="题目标签获取失败" message={questionTagsErr.message} />
+          <SimpleAlert title="教材通用字典获取失败" message={dictListRespErr.message} />
         </div>
       )}
       {questionCatesErr && (
         <div className="mt-3">
           <SimpleAlert title="题型类型获取失败" message={questionCatesErr.message} />
-        </div>
-      )}
-      {questionDimensionsErr && (
-        <div className="mt-3">
-          <SimpleAlert title="核心素养获取失败" message={questionDimensionsErr.message} />
         </div>
       )}
 
@@ -484,7 +499,7 @@ export default function Add({
                   <span className="font-medium text-sm">解析题目</span>
                 </div>
               ),
-              content: <ParseQuestion typeList={questionTypes} tagList={questionTags} onFill={(req) => replaceAddReq(req)} />,
+              content: <ParseQuestion textbookId={twoLevelId} onFill={(req) => replaceAddReq(req)} />,
             },
           ]}
           defaultToolId="tool-file-upload"
@@ -515,13 +530,13 @@ export default function Add({
                       <div className="col-span-8">
                         <ChapterDropdownNav
                           textbooks={textbooks}
-                          onSelect={(selectedItems: Textbook[]) => {
+                          onSelect={(selectedItems: TextbookResp[]) => {
                             if (!selectedItems) {
                               setFiveLevelId(0);
                               return;
                             }
 
-                            const current: Textbook = selectedItems[selectedItems.length - 1];
+                            const current: TextbookResp = selectedItems[selectedItems.length - 1];
                             setFiveLevelId(current.id);
                           }}
                           defaultSelectedKeys={questionSearch.fiveLevelSelectKeys || []}
@@ -533,18 +548,18 @@ export default function Add({
                     {/* 根据前5层级选择后3层级 */}
                     <div className="grid grid-cols-10 gap-4 items-center">
                       <div className="col-span-2">
-                        题型:<span className="text-destructive">*</span>
+                        题型分类:<span className="text-destructive">*</span>
                       </div>
                       <div className="col-span-8">
                         <ChapterDropdownNav
                           textbooks={questionCates}
-                          onSelect={(selectedItems: Textbook[]) => {
+                          onSelect={(selectedItems: TextbookResp[]) => {
                             if (!selectedItems) {
                               updateAddReq('questionCateId', 0);
                               return;
                             }
 
-                            const current: Textbook = selectedItems[selectedItems.length - 1];
+                            const current: TextbookResp = selectedItems[selectedItems.length - 1];
                             // 必须选择题型
                             if (current.tableName !== StringConst.questionCateTableName) {
                               updateAddReq('questionCateId', 0);
@@ -561,25 +576,25 @@ export default function Add({
 
                     <div className="grid grid-cols-10 gap-4 items-center">
                       <div className="col-span-2">
-                        类型:<span className="text-destructive">*</span>
+                        题目类型:<span className="text-destructive">*</span>
                       </div>
                       <div className="col-span-8">
                         <TypeSelect
-                          options={questionTypes}
+                          options={otherDictListRecord.questionTypes}
                           value={addReq.questionTypeId}
                           onSelect={(val) => {
                             updateAddReq('questionTypeId', val);
-                            setIsChoice(questionTypeDict[val]?.isSelect);
+                            setIsChoice(otherDictListRecord.questionTypeDict[val]?.isSelect);
                           }}
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-10 gap-4 items-center">
-                      <div className="col-span-2">标签:</div>
+                      <div className="col-span-2">题目标签:</div>
                       <div className="col-span-8">
                         <MultiTagSelect
-                          options={questionTags}
+                          options={otherDictListRecord.questionTags}
                           value={addReq.questionTagIds ?? []}
                           onChange={(val) => updateAddReq('questionTagIds', val)}
                         />
@@ -590,9 +605,46 @@ export default function Add({
                       <div className="col-span-2">核心素养:</div>
                       <div className="col-span-8">
                         <MultiTagSelect
-                          options={questionDimensions}
+                          options={otherDictListRecord.questionDimensions}
                           value={addReq.questionDimensionIds ?? []}
                           onChange={(val) => updateAddReq('questionDimensionIds', val)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-10 gap-4 items-center">
+                      <div className="col-span-2">
+                        分层体系:<span className="text-destructive">*</span>
+                      </div>
+                      <div className="col-span-8">
+                        <TypeSelect
+                          options={otherDictListRecord.questionLevels}
+                          value={addReq.levelId || 0}
+                          onSelect={(val) => {
+                            updateAddReq('levelId', val);
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-10 gap-4 items-center">
+                      <div className="col-span-2">适用场景:</div>
+                      <div className="col-span-8">
+                        <MultiTagSelect
+                          options={otherDictListRecord.questionScenes}
+                          value={addReq.sceneIds ?? []}
+                          onChange={(val) => updateAddReq('sceneIds', val)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-10 gap-4 items-center">
+                      <div className="col-span-2">常见错误:</div>
+                      <div className="col-span-8">
+                        <MultiTagSelect
+                          options={otherDictListRecord.questionMistakeTips}
+                          value={addReq.mistakeTipIds ?? []}
+                          onChange={(val) => updateAddReq('mistakeTipIds', val)}
                         />
                       </div>
                     </div>
@@ -965,9 +1017,7 @@ export default function Add({
               <div className="pt-4 pb-4">
                 <QuestionInfo
                   pageSource={{ source: 'list' }}
-                  questionTypeDict={questionTypeDict}
-                  questionTagDict={questionTagDict}
-                  questionDimensionDict={questionDimensionDict}
+                  otherDictListRecord={otherDictListRecord}
                   infoResp={{
                     baseInfo: {
                       id: 0,

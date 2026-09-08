@@ -1,5 +1,3 @@
-import type { TextbookOtherDict } from '~/type/textbook';
-
 // 题目选项信息
 export interface QuestionOption {
   label: string; // A, B, C, D, E
@@ -29,6 +27,9 @@ export interface CreateQuestionReq {
   questionTypeId: number; // 题目类型标识
   questionTagIds?: number[]; // 题目标签
   questionDimensionIds?: number[]; // 核心素养
+  levelId: number; // 分层体系
+  sceneIds?: number[]; // 适合常见
+  mistakeTipIds?: number[]; // 常见错误
   originalName: string; // 原创者代号-不要写别人真名, 尊重他人隐私
   source?: string; // 题目来源
   title: string; // 题干
@@ -53,6 +54,9 @@ export interface QuestionBaseInfoResp {
   questionTypeId: number;
   questionTagIds?: number[];
   questionDimensionIds?: number[];
+  levelId: number;
+  sceneIds?: number[];
+  mistakeTipIds?: number[];
   relationType: number;
   authorId?: number;
   authorName?: string;
@@ -99,6 +103,9 @@ export interface QuestionListReq {
   titleVal?: string;
   tagIds?: number[];
   dimensionIds?: number[];
+  levelIds?: number[];
+  sceneIds?: number[];
+  mistakeTipIds?: number[];
   pageNo: number;
   pageSize: number;
 }
@@ -131,6 +138,9 @@ export interface QuestionSearch {
   typeId: number; // 题目类型
   tagIds: number[]; // 题目标签
   dimensionIds: number[]; //核心素养
+  levelIds: number[]; // 分层体系
+  sceneIds: number[]; // 适用场景
+  mistakeTipIds: number[]; // 常见错误
   id?: number; // 题目主键
   sourceId?: number; // 母题标识, 添加变式题时需要传递
   status?: number; // 题目状态
@@ -138,8 +148,7 @@ export interface QuestionSearch {
 
 // 解析题目请求
 export interface QuestionSnippetReq {
-  typeList: TextbookOtherDict[];
-  tagList: TextbookOtherDict[];
+  textbookId: number;
   content: string;
 }
 

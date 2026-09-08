@@ -7,7 +7,7 @@ import { FileUpload } from '~/common/file';
 import { ChapterDropdownNav } from '~/common/nav';
 import type { QuestionSearch } from '~/type/question';
 import { useQuestionCates, useTaskList, useTextbooks } from '~/util/fetcher';
-import type { Textbook } from '~/type/textbook';
+import type { TextbookResp } from '~/type/textbook';
 import { createTextbookPathDict } from '~/util/textbook-dict';
 import { StringConst, StringValidator } from '~/util/string';
 import { Loading } from '~/common/load';
@@ -21,6 +21,7 @@ import { SimplePagination } from '~/common/page';
 import { QuickToolList } from '~/common/tool';
 import { SimpleNoData } from '~/common/empty';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
+import { SimpleFullContent } from '~/common/content';
 
 /// 题目上传任务
 
@@ -64,7 +65,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
   // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
-  const pathMap: Map<string, Textbook[]> = createTextbookPathDict(textbooks);
+  const pathMap: Map<string, TextbookResp[]> = createTextbookPathDict(textbooks);
 
   useEffect(() => {
     // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再2层深度上, 因此只要有2层深度就可以把题型类型和标签返回, 后续如果有优化再处理
@@ -143,6 +144,7 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
     <div className="text-base space-y-6 pl-4 pr-4 bg-muted">
       <div className="text-sm">
         <div>1. 文件标识请使用右上角的 快捷工具-上传文件 上传文件后获得</div>
+        <div>2. 模板请参考下面下载模板, 如果模板有变更需要练习管理员更新支持后才会生效</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -179,6 +181,20 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
       {warnInfo}
 
       <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-10 gap-4 items-center">
+          <div className="col-span-1">
+            下载参考模板:<span className="text-destructive">*</span>
+          </div>
+          <div className="flex gap-3 col-span-9">
+            <a href="/api/file/read/file/fctk_tpl.md" target="_blank">
+              <Button>分层题库模板.md</Button>
+            </a>
+            <a href="/api/file/read/file/fctk_tpl.docx" target="_blank">
+              <Button>分层题库模板.docx</Button>
+            </a>
+          </div>
+        </div>
+
         {/* 选择前5层级 */}
         <div className="grid grid-cols-10 gap-1 items-center">
           <div className="col-span-1">
@@ -187,13 +203,13 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
           <div className="col-span-9">
             <ChapterDropdownNav
               textbooks={textbooks}
-              onSelect={(selectedItems: Textbook[]) => {
+              onSelect={(selectedItems: TextbookResp[]) => {
                 if (!selectedItems) {
                   setFiveLevelId(0);
                   return;
                 }
 
-                const current: Textbook = selectedItems[selectedItems.length - 1];
+                const current: TextbookResp = selectedItems[selectedItems.length - 1];
                 setFiveLevelId(current.id);
               }}
               defaultSelectedKeys={questionSearch.fiveLevelSelectKeys || []}
@@ -210,13 +226,13 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
           <div className="col-span-9">
             <ChapterDropdownNav
               textbooks={questionCates}
-              onSelect={(selectedItems: Textbook[]) => {
+              onSelect={(selectedItems: TextbookResp[]) => {
                 if (!selectedItems) {
                   updateAddReq('questionCateId', 0);
                   return;
                 }
 
-                const current: Textbook = selectedItems[selectedItems.length - 1];
+                const current: TextbookResp = selectedItems[selectedItems.length - 1];
                 // 必须选择题型
                 if (current.tableName !== StringConst.questionCateTableName) {
                   updateAddReq('questionCateId', 0);
@@ -307,13 +323,16 @@ const getStatusBadgeClasses = (status: number): string => {
   }
 };
 function TaskListShow({ questionSearch }: TaskListShowProps) {
+  const [pageNo, setPageNo] = useState<number>(1);
+  const pageSize = 5;
+
   const initAddReq = useMemo(() => {
     // 初始化部分默认值
     const initAddDefault: TaskListReq = {
       questionCateId: 0,
       taskType: StringConst.taskTypeUploadQuestion,
-      pageNo: 1,
-      pageSize: StringConst.pageSize,
+      pageNo: pageNo,
+      pageSize: pageSize,
     };
 
     // questionSearch 为列表页传递过来的数据, 可能选也可能为空
@@ -341,16 +360,16 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
   const {
     data: listResp = {
       list: [],
-      pageNo: 1,
-      pageSize: StringConst.pageSize,
+      pageNo: pageNo,
+      pageSize: pageSize,
       total: 0,
     },
     isLoading: listRespLoading,
     error: listRespErr,
-  } = useTaskList(listReq);
+  } = useTaskList(listReq, pageNo, pageSize);
 
   return (
-    <div className="p-4 text-base">
+    <div className="p-4 text-base bg-muted">
       <Separator />
 
       {useDelayedLoading(textbooksLoading || questionCatesLoading || listRespLoading) && <Loading />}
@@ -368,13 +387,13 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
           <div className="col-span-9">
             <ChapterDropdownNav
               textbooks={textbooks}
-              onSelect={(selectedItems: Textbook[]) => {
+              onSelect={(selectedItems: TextbookResp[]) => {
                 if (!selectedItems) {
                   setFiveLevelId(0);
                   return;
                 }
 
-                const current: Textbook = selectedItems[selectedItems.length - 1];
+                const current: TextbookResp = selectedItems[selectedItems.length - 1];
                 setFiveLevelId(current.id);
               }}
               defaultSelectedKeys={questionSearch.fiveLevelSelectKeys || []}
@@ -391,13 +410,13 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
           <div className="col-span-9">
             <ChapterDropdownNav
               textbooks={questionCates}
-              onSelect={(selectedItems: Textbook[]) => {
+              onSelect={(selectedItems: TextbookResp[]) => {
                 if (!selectedItems) {
                   updateListReq('questionCateId', 0);
                   return;
                 }
 
-                const current: Textbook = selectedItems[selectedItems.length - 1];
+                const current: TextbookResp = selectedItems[selectedItems.length - 1];
                 updateListReq('questionCateId', current.id);
               }}
               defaultSelectedKeys={questionSearch.eightLevelSelectKeys || []}
@@ -431,11 +450,20 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
               </div>
             </div>
 
-            {/* 结果信息（可选） */}
+            {/* 结果信息 */}
             {task.result && (
-              <div className="flex items-start gap-1.5 p-2 bg-muted/40 rounded-md border border-border/40">
+              <div className="flex items-start gap-1.5 p-2 bg-muted border border-border/40">
                 <FileText size={14} className="shrink-0 mt-0.5 text-muted-foreground" />
-                <div className="text-sm text-muted-foreground break-all line-clamp-2">结果：{task.result}</div>
+                <div className="flex flex-col text-sm text-muted-foreground break-all w-full">
+                  <div className="font-medium text-foreground mb-1">处理结果明细：</div>
+                  <div className="max-h-25 overflow-y-auto pr-1 flex flex-col gap-0.5 scrollbar-thin">
+                    {task.result.split('\n').map((line, index) => (
+                      <div key={index}>
+                        <SimpleFullContent content={line} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
 
@@ -443,11 +471,11 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
             <div className="flex flex-wrap items-center justify-between gap-2 pt-1.5 mt-1 border-t border-border/40 text-sm text-muted-foreground">
               <div className="flex items-center gap-1.5">
                 <CalendarDays size={13} />
-                <span>创建：{task.createdAt}</span>
+                <span>创建时间：{task.createdAt}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Clock size={13} />
-                <span>更新：{task.updatedAt}</span>
+                <span>更新时间：{task.updatedAt}</span>
               </div>
             </div>
           </CardContent>
@@ -456,12 +484,7 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
 
       {listResp.total > 0 && (
         <div className="mt-3">
-          <SimplePagination
-            pageNo={listReq.pageNo}
-            pageSize={StringConst.pageSize}
-            total={listResp.total}
-            onPageChange={(val) => updateListReq('pageNo', val)}
-          />
+          <SimplePagination pageNo={listResp.pageNo} pageSize={listResp.pageSize} total={listResp.total} onPageChange={(val) => setPageNo(val)} />
         </div>
       )}
     </div>

@@ -11,10 +11,26 @@ import { Note } from '~/home/note';
 import { Teacher } from '~/home/teacher';
 import { NavLink } from 'react-router';
 import { useLatestPapers, useTextbooks } from '~/util/fetcher';
-import type { Textbook } from '~/type/textbook';
+import type { OtherDictListRecord, TextbookResp } from '~/type/textbook';
 import { SimpleSheet } from '~/common/sheet';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
 import { Badge } from '~/components/ui/badge';
+
+// 默认空的通用字典信息
+const defaultOtherDictListRecord: OtherDictListRecord = {
+  questionTypes: [],
+  questionTypeDict: {},
+  questionTags: [],
+  questionTagDict: {},
+  questionDimensions: [],
+  questionDimensionDict: {},
+  questionLevels: [],
+  questionLevelDict: {},
+  questionScenes: [],
+  questionSceneDict: {},
+  questionMistakeTips: [],
+  questionMistakeTipDict: {},
+};
 
 // 默认首页
 export default function Index() {
@@ -37,7 +53,7 @@ export default function Index() {
     relatedId: 0,
     relatedName: '',
   });
-  const handleNavSelectionChange = useCallback((selection: LevelProps, selectedTextbooks: Record<keyof LevelProps, Textbook | null>) => {
+  const handleNavSelectionChange = useCallback((selection: LevelProps, selectedTextbooks: Record<keyof LevelProps, TextbookResp | null>) => {
     const curKeys: string[] = [];
     // 记录末级标识和名称, 有就一直覆盖到最后为止
     let curRelatedId: number = 0;
@@ -172,6 +188,7 @@ export default function Index() {
 
         <PaperList
           papers={latestPapers}
+          otherDictListRecord={defaultOtherDictListRecord}
           setOpenSheet={setOpenSheet}
           setSheetTitle={setSheetTitle}
           setSheetDesc={setSheetDesc}

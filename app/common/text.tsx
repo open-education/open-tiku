@@ -4,23 +4,25 @@ import { Alert, AlertDescription } from '~/components/ui/alert';
 import { AlertCircle, CheckCircle2, Loader2, NotebookText } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from 'cn';
-import type { TextbookOtherDict } from '~/type/textbook';
 import { httpClient } from '~/util/http';
 import type { CreateQuestionReq, QuestionSnippetReq } from '~/type/question';
 
 // 解析题目
 interface ParseQuestionProps {
-  typeList: TextbookOtherDict[];
-  tagList: TextbookOtherDict[];
+  textbookId: number;
   onFill?: (val: CreateQuestionReq) => void; // 解析成功后回调, 回调的值为解析完成后的题目请求结构
 }
-function ParseQuestion({ typeList = [], tagList = [], onFill }: ParseQuestionProps) {
+function ParseQuestion({ textbookId, onFill }: ParseQuestionProps) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
   const [addReq, setAddReq] = useState<CreateQuestionReq | null>(null);
 
   const handleParse = () => {
+    if (textbookId <= 0) {
+      setResult({ success: false, message: '请先选择第二级菜单' });
+      return;
+    }
     if (!input.trim()) {
       setResult({ success: false, message: '请先粘贴 Markdown 内容' });
       return;
@@ -30,8 +32,7 @@ function ParseQuestion({ typeList = [], tagList = [], onFill }: ParseQuestionPro
     setIsLoading(true);
 
     const req: QuestionSnippetReq = {
-      typeList,
-      tagList,
+      textbookId,
       content: input,
     };
 

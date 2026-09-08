@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import useSWRImmutable from 'swr/immutable';
 import { httpClient } from '~/util/http';
-import type { Textbook, TextbookOtherDict } from '~/type/textbook';
+import type { TextbookResp, TextbookOtherDictResp, TextbookOtherDictListResp, TextbookOtherDictListReq } from '~/type/textbook';
 import type { CommonPaperResp, CommonPaperSearchReq, PaperListReq, PaperListResp } from '~/type/paper';
 import { StringConst, StringValidator } from '~/util/string';
 import type { QuestionListReq, QuestionListResp, QuestionSearch, QuestionSimilarListReq } from '~/type/question';
@@ -26,7 +26,7 @@ const defaultErrConfig = {
 
 // 导航-更新频率比较低, 只有强制刷新等才会重新请求
 export function useTextbooks(depth: number = 5) {
-  return useSWRImmutable<Textbook[]>(`/textbook/list/${depth}/all`, httpClient.get, defaultErrConfig);
+  return useSWRImmutable<TextbookResp[]>(`/textbook/list/${depth}/all`, httpClient.get, defaultErrConfig);
 }
 
 // 最新精选试卷
@@ -71,7 +71,7 @@ export function usePaperList(search: CommonPaperSearchReq, pageNo: number) {
 // 教材/考点题型列表-第5层标识同时获取题型列表
 export function useQuestionCates(fiveLevelId: number) {
   const key = fiveLevelId > 0 ? `/textbook/list/${fiveLevelId}/children` : null;
-  return useSWR<Textbook[]>(key, httpClient.get, defaultErrConfig);
+  return useSWR<TextbookResp[]>(key, httpClient.get, defaultErrConfig);
 }
 
 // 题目列表
@@ -97,6 +97,15 @@ export function useQuestionList(source: string, search: QuestionSearch, pageNo: 
   if (search.dimensionIds && search.dimensionIds.length > 0) {
     req.dimensionIds = search.dimensionIds;
   }
+  if (search.levelIds && search.levelIds.length > 0) {
+    req.levelIds = search.levelIds;
+  }
+  if (search.sceneIds && search.sceneIds.length > 0) {
+    req.sceneIds = search.sceneIds;
+  }
+  if (search.mistakeTipIds && search.mistakeTipIds.length > 0) {
+    req.mistakeTipIds = search.mistakeTipIds;
+  }
 
   // 生成 SWR 的 key（只有 relatedId > 0 时才发起请求，否则为 null）
   const reqPath = '/question/list';
@@ -119,20 +128,43 @@ export function useSimilarList(questionId: number, eightId: number, pageNo: numb
 }
 
 // 题目上传任务列表
-export function useTaskList(req: TaskListReq) {
-  return useSWR<TaskListResp>(JSON.stringify(req), () => httpClient.post<TaskListResp>('/task/list', req), defaultErrConfig);
+export function useTaskList(reqInit: TaskListReq, pageNo: number, pageSize: number) {
+  let req: TaskListReq = {
+    questionCateId: reqInit.questionCateId,
+    taskType: reqInit.taskType,
+    pageNo,
+    pageSize,
+  };
+
+  const reqPath = '/task/list';
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<TaskListResp>(key, () => httpClient.post<TaskListResp>(reqPath, req), defaultErrConfig);
 }
 
 // 题目其它通用字典获取
 export function useQuestionOtherDicts(twoLevelId: number, typeCode: string) {
   const key = twoLevelId > 0 && StringValidator.isNonEmpty(typeCode) ? `/other/dict/list/${twoLevelId}/${typeCode}` : null;
-  return useSWRImmutable<TextbookOtherDict[]>(key, httpClient.get, defaultErrConfig);
+  return useSWRImmutable<TextbookOtherDictResp[]>(key, httpClient.get, defaultErrConfig);
+}
+
+// 通过教材标识和字典获取字典信息
+export function useQuestionOtherDictList(twoLevelId: number, typeCodes: string[]) {
+  let req: TextbookOtherDictListReq = {
+    textbookId: twoLevelId,
+  };
+  if (typeCodes.length > 0) {
+    req.codes = typeCodes;
+  }
+
+  const reqPath = '/other/dict/list/all';
+  const key = twoLevelId > 0 ? [reqPath, JSON.stringify(req)] : null;
+  return useSWRImmutable<TextbookOtherDictListResp>(key, () => httpClient.post<TextbookOtherDictListResp>(reqPath, req), defaultErrConfig);
 }
 
 // 用户中心导航菜单维护 - 获取指定深度的父级标识获取子菜单列表
 export function useTextbookLevel(parentId: number = 0) {
   const key = parentId > 0 ? `/textbook/list/${parentId}/level` : null;
-  return useSWRImmutable<Textbook[]>(key, httpClient.get, defaultErrConfig);
+  return useSWRImmutable<TextbookResp[]>(key, httpClient.get, defaultErrConfig);
 }
 
 // 通过章节或者考点拉去关联关系

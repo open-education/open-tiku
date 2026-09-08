@@ -7,20 +7,17 @@ import { SimpleFullContent } from '~/common/content';
 import { TagShow } from '~/common/question/tag';
 import { TitleShow } from '~/common/title';
 import { MultiOptionShow } from '~/common/select';
-import type { TextbookOtherDict } from '~/type/textbook';
-import { DictUtil } from '~/util/object';
+import type { OtherDictListRecord } from '~/type/textbook';
 import { SimpleAlert } from '~/common/alert';
 import { QuestionStatus } from '~/type/enum';
 
 // 题目详情样式-预览和详情均使用该样式
 interface QuestionInfoProps {
   pageSource: QuestionPageSourceProps;
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
+  otherDictListRecord: OtherDictListRecord;
   infoResp: QuestionInfoResp;
 }
-function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionDimensionDict, infoResp }: QuestionInfoProps) {
+function QuestionInfo({ pageSource, otherDictListRecord, infoResp }: QuestionInfoProps) {
   // 有详情返回时优先详情返回, 否则理解为预览数据
   const { baseInfo, extraInfo } = infoResp;
 
@@ -46,15 +43,8 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionD
       <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
         <CardContent className="space-y-6">
           {/* 标签 */}
-          <div className="flex gap-3 items-center w-full">
-            <TagShow
-              pageSource={pageSource}
-              typeValue={DictUtil.getQuestionTypeName(baseInfo.questionTypeId, questionTypeDict)}
-              tagNames={DictUtil.getQuestionTagNames(baseInfo.questionTagIds || [], questionTagDict)}
-              dimensionNames={DictUtil.getQuestionDimensionNames(baseInfo.questionDimensionIds || [], questionDimensionDict)}
-              difficultyLevelValue={baseInfo.difficultyLevel}
-              status={baseInfo.status}
-            />
+          <div className="flex flex-wrap gap-3 items-center w-full">
+            <TagShow pageSource={pageSource} otherDictListRecord={otherDictListRecord} questionInfo={infoResp.baseInfo} />
           </div>
 
           {/* 题干 - 突出显示 */}
@@ -74,12 +64,21 @@ function QuestionInfo({ pageSource, questionTypeDict, questionTagDict, questionD
               <span className="text-base">涉及知识点</span>
             </div>
             <div className="flex flex-wrap gap-2 pl-1">
-              <Badge
-                variant="outline"
-                className="text-sm px-4 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-300 border-0 shadow-sm"
-              >
-                {extraInfo.knowledge ?? ''}
-              </Badge>
+              {extraInfo.knowledge &&
+                extraInfo.knowledge.split(',').map((item, index) => {
+                  const trimmedItem = item.trim();
+                  if (!trimmedItem) return null;
+
+                  return (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="text-sm px-4 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-300 border-0 shadow-sm"
+                    >
+                      {trimmedItem}
+                    </Badge>
+                  );
+                })}
             </div>
           </div>
         </CardContent>

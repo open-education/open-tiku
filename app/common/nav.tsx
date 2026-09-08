@@ -3,7 +3,7 @@ import { Card, CardContent } from '~/components/ui/card';
 import { Progress } from '~/components/ui/progress';
 import { Button } from '~/components/ui/button';
 import { Separator } from '~/components/ui/separator';
-import type { Textbook } from '~/type/textbook';
+import type { TextbookResp } from '~/type/textbook';
 import { cn } from 'cn';
 import {
   DropdownMenu,
@@ -43,17 +43,17 @@ const stepLabels: Record<keyof LevelProps, string> = {
 
 // 构建层级查找 Map，以 key 为索引
 interface TextbookMap {
-  byKey: Map<string, Textbook>;
+  byKey: Map<string, TextbookResp>;
   childrenMap: Map<string, string[]>; // key -> child keys
   rootKeys: string[];
 }
 
-function buildTextbookMap(textbooks: Textbook[]): TextbookMap {
-  const byKey = new Map<string, Textbook>();
+function buildTextbookMap(textbooks: TextbookResp[]): TextbookMap {
+  const byKey = new Map<string, TextbookResp>();
   const childrenMap = new Map<string, string[]>();
   const rootKeys: string[] = [];
 
-  function traverse(items: Textbook[], parentKey?: string) {
+  function traverse(items: TextbookResp[], parentKey?: string) {
     for (const item of items) {
       byKey.set(item.key, item);
 
@@ -93,7 +93,7 @@ function getOptionsAtLevel(textbookMap: TextbookMap, selectedValues: LevelProps,
 }
 
 // 获取某个层级选中的完整 Textbook（使用 Map 查找）
-function getSelectedTextbookAtLevel(textbookMap: TextbookMap, selectedValues: LevelProps, levelIndex: number): Textbook | null {
+function getSelectedTextbookAtLevel(textbookMap: TextbookMap, selectedValues: LevelProps, levelIndex: number): TextbookResp | null {
   const key = steps[levelIndex];
   const value = selectedValues[key];
 
@@ -105,9 +105,9 @@ function getSelectedTextbookAtLevel(textbookMap: TextbookMap, selectedValues: Le
 
 interface ChapterExpandNavProps {
   // textbooks 网站原始前5层级导航信息
-  textbooks: Textbook[];
+  textbooks: TextbookResp[];
   // 选择 Option 时监听选中项的外部函数
-  onSelectionChange?: (selection: LevelProps, selectedTextbooks: Record<keyof LevelProps, Textbook | null>) => void;
+  onSelectionChange?: (selection: LevelProps, selectedTextbooks: Record<keyof LevelProps, TextbookResp | null>) => void;
   // 导航区域下面操作按钮
   actions?: React.ReactNode;
 }
@@ -135,7 +135,7 @@ function ChapterExpandNav(props: ChapterExpandNavProps) {
 
   // 计算选中对象的缓存（避免重复计算）
   const selectedTextbooks = useMemo(() => {
-    const result: Record<keyof LevelProps, Textbook | null> = {
+    const result: Record<keyof LevelProps, TextbookResp | null> = {
       first: null,
       second: null,
       third: null,
@@ -157,7 +157,7 @@ function ChapterExpandNav(props: ChapterExpandNavProps) {
 
   // 处理层级选择
   const handleLevelSelect = useCallback(
-    (levelKey: keyof LevelProps, textbook: Textbook) => {
+    (levelKey: keyof LevelProps, textbook: TextbookResp) => {
       const levelIndex = steps.indexOf(levelKey);
 
       // 清空当前层级及之后的所有层级
@@ -250,7 +250,7 @@ interface LevelExtProps {
   optionKeys: string[];
   textbookMap: TextbookMap;
   selectedKey: string | null;
-  onSelect: (textbook: Textbook) => void;
+  onSelect: (textbook: TextbookResp) => void;
 }
 
 function LevelExt(props: LevelExtProps) {
@@ -258,7 +258,7 @@ function LevelExt(props: LevelExtProps) {
 
   // 将 keys 转换为 Textbook 对象（仅当需要显示时）
   const options = useMemo(() => {
-    return optionKeys.map((key) => textbookMap.byKey.get(key)).filter((item): item is Textbook => item !== undefined);
+    return optionKeys.map((key) => textbookMap.byKey.get(key)).filter((item): item is TextbookResp => item !== undefined);
   }, [optionKeys, textbookMap.byKey]);
 
   return (
@@ -305,8 +305,8 @@ function LevelExt(props: LevelExtProps) {
 }
 
 interface ChapterDropdownNavProps {
-  textbooks: Textbook[];
-  onSelect?: (selectedItems: Textbook[]) => void;
+  textbooks: TextbookResp[];
+  onSelect?: (selectedItems: TextbookResp[]) => void;
   defaultSelectedKeys?: string[];
   placeholder?: string;
   maxDepth?: number;
@@ -316,14 +316,14 @@ interface ChapterDropdownNavProps {
 function ChapterDropdownNav(props: ChapterDropdownNavProps) {
   const { textbooks, onSelect, defaultSelectedKeys = [], placeholder = '请选择学段', maxDepth = 5, longText = false } = props;
 
-  const [selectedPath, setSelectedPath] = useState<Textbook[]>([]);
+  const [selectedPath, setSelectedPath] = useState<TextbookResp[]>([]);
   const [open, setOpen] = useState(false);
 
   // 构建 key 到节点的映射表，优化查找性能 O(1)
   const nodeMap = useMemo(() => {
-    const map = new Map<string, Textbook>();
+    const map = new Map<string, TextbookResp>();
 
-    const traverse = (nodes: Textbook[]) => {
+    const traverse = (nodes: TextbookResp[]) => {
       for (const node of nodes) {
         map.set(node.key, node);
         if (node.children) {
@@ -340,7 +340,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
   const parentMap = useMemo(() => {
     const map = new Map<string, string | null>();
 
-    const traverse = (nodes: Textbook[], parentKey: string | null = null) => {
+    const traverse = (nodes: TextbookResp[], parentKey: string | null = null) => {
       for (const node of nodes) {
         map.set(node.key, parentKey);
         if (node.children) {
@@ -355,10 +355,10 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
 
   // 获取从根到指定节点的路径（使用映射表优化）
   const getPathToNode = useCallback(
-    (key: string): Textbook[] | null => {
+    (key: string): TextbookResp[] | null => {
       if (!nodeMap.has(key)) return null;
 
-      const path: Textbook[] = [];
+      const path: TextbookResp[] = [];
       let currentKey: string | null = key;
 
       // 从当前节点向上遍历到根节点
@@ -376,11 +376,11 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
 
   // 根据 key 数组查找路径（使用映射表优化）
   const findPathByKeys = useCallback(
-    (keys: string[]): Textbook[] | null => {
+    (keys: string[]): TextbookResp[] | null => {
       if (keys.length === 0) return null;
 
       // 验证所有 key 是否存在且是连续路径
-      const path: Textbook[] = [];
+      const path: TextbookResp[] = [];
       let parentKey: string | null = null;
 
       for (const key of keys) {
@@ -413,7 +413,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
 
   // 处理选择
   const handleSelect = useCallback(
-    (item: Textbook) => {
+    (item: TextbookResp) => {
       const path = getPathToNode(item.key);
       if (path) {
         setSelectedPath(path);
@@ -444,7 +444,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
 
   // 渲染菜单项（递归）
   const renderMenuItems = useCallback(
-    (items: Textbook[], depth: number = 0): React.ReactNode => {
+    (items: TextbookResp[], depth: number = 0): React.ReactNode => {
       if (depth >= maxDepth) {
         return (
           <DropdownMenuGroup>
@@ -550,7 +550,7 @@ interface SelectNavProps {
 }
 
 // 树形展开导航菜单
-interface CheckboxTreeNode extends Textbook {
+interface CheckboxTreeNode extends TextbookResp {
   children?: CheckboxTreeNode[];
 }
 

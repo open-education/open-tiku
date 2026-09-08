@@ -2,13 +2,14 @@ import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import type {
   QuestionApproveReq,
+  QuestionBaseInfoResp,
   QuestionDeleteReq,
   QuestionInfoResp,
   QuestionListResp,
   QuestionPageSourceProps,
   QuestionSearch,
 } from '~/type/question';
-import type { TextbookOtherDict } from '~/type/textbook';
+import type { OtherDictListRecord, TextbookOtherDictResp } from '~/type/textbook';
 import { httpClient } from '~/util/http';
 import { QuestionInfo } from '~/common/question/info';
 import { SimilarQuestionList } from '~/home/question/similar';
@@ -34,12 +35,13 @@ import { useUserInfo } from '~/hooks/use-user';
 import { Slider } from '~/components/ui/slider';
 import type { GenDifficultyLevelRange } from '~/type/paper';
 import { Separator } from '~/components/ui/separator';
+import { DictUtil } from '~/util/object';
 
 /// 题目题目相关标签选择器
 
 interface TypeSelectProps {
   /** 标签选项数组 */
-  options: TextbookOtherDict[];
+  options: TextbookOtherDictResp[];
   /** 默认选中的标签（可选） */
   value?: number;
   /** 选中标签时的回调，返回选中的文本 */
@@ -70,7 +72,7 @@ function TypeSelect({ options, value = 0, onSelect }: TypeSelectProps) {
 
 interface MultiTagSelectProps {
   /** 标签数据列表 */
-  options: TextbookOtherDict[];
+  options: TextbookOtherDictResp[];
   /** 当前选中的 id 列表（受控） */
   value: number[];
   /** 选中值变化时的回调 */
@@ -164,25 +166,27 @@ function OtherDictSelect({ defaultValue, onSelect }: OtherDictSelectProps) {
 // 题目本身的标签
 // 难度标签
 // 题目状态标签
+// 分层体系
+// 适用场景
+// 常见错误
 interface TagShowProps {
   pageSource: QuestionPageSourceProps;
-  typeValue: string;
-  tagNames: string[];
-  dimensionNames: string[];
-  difficultyLevelValue: number;
-  status: number;
+  questionInfo: QuestionBaseInfoResp;
+  otherDictListRecord: OtherDictListRecord;
 }
-function TagShow({ pageSource, typeValue, tagNames, dimensionNames, difficultyLevelValue, status }: TagShowProps) {
+function TagShow({ pageSource, questionInfo, otherDictListRecord }: TagShowProps) {
   // 生成标签列表
   const getBadges = () => {
     // 题目类型
+    let typeValue = DictUtil.getItemValue(questionInfo.questionTypeId, otherDictListRecord.questionTypeDict);
     const typeNode: React.ReactNode = (
-      <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 text-sm" key={typeValue}>
+      <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 text-sm" key={questionInfo.questionTypeId}>
         {typeValue}
       </Badge>
     );
 
     // 题目标签
+    let tagNames = DictUtil.getItemValues(questionInfo.questionTagIds || [], otherDictListRecord.questionTagDict);
     const tagNode = tagNames.map((val) => {
       return (
         <Badge className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300 text-sm" key={val}>
@@ -192,7 +196,48 @@ function TagShow({ pageSource, typeValue, tagNames, dimensionNames, difficultyLe
     });
 
     // 核心素养
+    let dimensionNames = DictUtil.getItemValues(questionInfo.questionDimensionIds || [], otherDictListRecord.questionDimensionDict);
     const dimensionNode = dimensionNames.map((val) => {
+      return (
+        <Badge className="bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300 text-sm" key={val}>
+          {val}
+        </Badge>
+      );
+    });
+
+    // 难度
+    let difficultyLevelValue = questionInfo.difficultyLevel;
+    const difficultyNode = difficultyLevelValue ? (
+      <Badge className="bg-pink-50 text-pink-700 dark:bg-pink-950 dark:text-pink-300 text-sm" key={difficultyLevelValue}>
+        {difficultyLevelValue}
+      </Badge>
+    ) : (
+      ''
+    );
+
+    // 分层体系
+    let levelName = DictUtil.getItemValue(questionInfo.levelId || 0, otherDictListRecord.questionLevelDict);
+    const levelNode = levelName ? (
+      <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 text-sm" key={levelName}>
+        {levelName}
+      </Badge>
+    ) : (
+      ''
+    );
+
+    // 适合场景
+    let sceneNames = DictUtil.getItemValues(questionInfo.sceneIds || [], otherDictListRecord.questionSceneDict);
+    const sceneNode = sceneNames.map((val) => {
+      return (
+        <Badge className="bg-cyan-50 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-300 text-sm" key={val}>
+          {val}
+        </Badge>
+      );
+    });
+
+    // 常见错误
+    let mistakeTipNames = DictUtil.getItemValues(questionInfo.mistakeTipIds || [], otherDictListRecord.questionMistakeTipDict);
+    const mistakeTipNode = mistakeTipNames.map((val) => {
       return (
         <Badge className="bg-green-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300 text-sm" key={val}>
           {val}
@@ -200,18 +245,11 @@ function TagShow({ pageSource, typeValue, tagNames, dimensionNames, difficultyLe
       );
     });
 
-    // 难度
-    const difficultyNode = (
-      <Badge className="bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300 text-sm" key={difficultyLevelValue}>
-        {difficultyLevelValue}
-      </Badge>
-    );
-
     // 我的审核和题目需要展示题目状态
     const statusDesc =
       pageSource.source !== 'list' ? (
-        <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 text-sm" key={status}>
-          {StringConst.questionStatusList[status].label || '草稿中'}
+        <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 text-sm" key={questionInfo.status}>
+          {StringConst.questionStatusList[questionInfo.status].label || '草稿中'}
         </Badge>
       ) : (
         ''
@@ -223,6 +261,9 @@ function TagShow({ pageSource, typeValue, tagNames, dimensionNames, difficultyLe
         {tagNode}
         {dimensionNode}
         {difficultyNode}
+        {levelNode}
+        {sceneNode}
+        {mistakeTipNode}
         {statusDesc}
       </>
     );
@@ -238,9 +279,7 @@ interface OperateTagsProps {
   questionRelationType: number; // 题目类型
   eightId: number; // 第8层题型标识
   status: number; // 题目状态
-  questionTypeDict: Record<number, TextbookOtherDict>;
-  questionTagDict: Record<number, TextbookOtherDict>;
-  questionDimensionDict: Record<number, TextbookOtherDict>;
+  otherDictListRecord: OtherDictListRecord;
   questionSearch: QuestionSearch;
   questionListRespMutate: KeyedMutator<QuestionListResp>;
 
@@ -259,9 +298,7 @@ function OperateTags({
   questionRelationType,
   eightId,
   status,
-  questionTypeDict,
-  questionTagDict,
-  questionDimensionDict,
+  otherDictListRecord,
   questionSearch,
   questionListRespMutate,
   setOpenSheet,
@@ -279,15 +316,7 @@ function OperateTags({
       .then((res) => {
         setSheetTitle('查看详情');
         setSheetDesc('');
-        setSheetContent(
-          <QuestionInfo
-            pageSource={pageSource}
-            questionTypeDict={questionTypeDict}
-            questionTagDict={questionTagDict}
-            questionDimensionDict={questionDimensionDict}
-            infoResp={res}
-          />,
-        );
+        setSheetContent(<QuestionInfo pageSource={pageSource} otherDictListRecord={otherDictListRecord} infoResp={res} />);
         setOpenSheet(true);
       })
       .catch((err) => {
@@ -327,25 +356,6 @@ function OperateTags({
       });
   };
 
-  // 添加课本原题
-  const handleOriginalTextbookAdd = () => {
-    // 将当前题目主键作为变式题的父题标识
-    const initSearch: QuestionSearch = { ...questionSearch, sourceId: questionId };
-
-    setSheetTitle('添加课本原题');
-    setSheetDesc('题目需要借助其它 ai 工具转为 markdown 源格式文档后使用; 仅母题可添加课本原题');
-    setSheetContent(
-      <Add
-        questionSearch={initSearch}
-        addRelationType={QuestionRelationType.Original}
-        setSheetTitle={setSheetTitle}
-        setSheetDesc={setSheetDesc}
-        setSheetContent={setSheetContent}
-      />,
-    );
-    setOpenSheet(true);
-  };
-
   // 添加变式题
   const handleSimilarAdd = () => {
     // 变式题将当前题目主键作为变式题的父题标识
@@ -365,48 +375,11 @@ function OperateTags({
     setOpenSheet(true);
   };
 
-  // 查看课本原题
-  const handleOriginalTextbook = () => {
-    setLoading?.(true);
-
-    // 通过题目关联关系获取到详情标识
-    httpClient
-      .post<QuestionInfoResp>('question/original', { id: questionId, relationType: questionRelationType })
-      .then((res) => {
-        setSheetTitle('查看 课本原题 详情');
-        setSheetDesc('一道母题只能关联一道课本原题, 变式题不能关联课本原题');
-        setSheetContent(
-          <QuestionInfo
-            pageSource={pageSource}
-            questionTypeDict={questionTypeDict}
-            questionTagDict={questionTagDict}
-            questionDimensionDict={questionDimensionDict}
-            infoResp={res}
-          />,
-        );
-        setOpenSheet(true);
-      })
-      .catch((err) => {
-        toast.error(<div className="text-red-700">查询课本原题出错: {err.message}</div>);
-      })
-      .finally(() => {
-        setLoading?.(false);
-      });
-  };
-
   // 查看变式题列表
   const handleSimilarList = () => {
     setSheetTitle('变式题列表');
     setSheetDesc('变式题暂不支持查看详情');
-    setSheetContent(
-      <SimilarQuestionList
-        questionTypeDict={questionTypeDict}
-        questionTagDict={questionTagDict}
-        questionDimensionDict={questionDimensionDict}
-        questionId={questionId}
-        eightId={eightId}
-      />,
-    );
+    setSheetContent(<SimilarQuestionList otherDictListRecord={otherDictListRecord} questionId={questionId} eightId={eightId} />);
     setOpenSheet(true);
   };
 
@@ -626,20 +599,8 @@ function OperateTags({
     // 变式题课本原题只有母题可添加
     if (currentUser && source === 'list' && questionRelationType === QuestionRelationType.Base && notStudent) {
       buttons.push(
-        <Button key="originalTextbook" variant="link" onClick={handleOriginalTextbookAdd}>
-          添加课本原题
-        </Button>,
         <Button key="similar" variant="link" onClick={handleSimilarAdd}>
           添加变式题
-        </Button>,
-      );
-    }
-
-    // 非课本原题才查看课本原题
-    if (questionRelationType !== QuestionRelationType.Original) {
-      buttons.push(
-        <Button key="originalTextbookInfo" variant="link" onClick={handleOriginalTextbook}>
-          查看课本原题
         </Button>,
       );
     }

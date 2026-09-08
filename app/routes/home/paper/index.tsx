@@ -9,7 +9,7 @@ import { StringValidator } from '~/util/string';
 import { SimplePagination } from '~/common/page';
 import { Separator } from '~/components/ui/separator';
 import { Loading } from '~/common/load';
-import { usePaperList, useQuestionOtherDicts, useTextbooks } from '~/util/fetcher';
+import { usePaperList, useQuestionOtherDictList, useTextbooks } from '~/util/fetcher';
 import { useLocation } from 'react-router';
 import { SimpleAlert } from '~/common/alert';
 import { SimpleSheet } from '~/common/sheet';
@@ -20,8 +20,7 @@ import type { UserInfoResp } from '~/type/user';
 import { useUserInfo } from '~/hooks/use-user';
 import { CommonPaperSearchConf } from '~/common/paper/config';
 import GenAdd from '~/home/paper/gen/add';
-import { createTextbookPathDict } from '~/util/textbook-dict';
-import { ArrayUtil } from '~/util/object';
+import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook-dict';
 import { UserRoleType } from '~/type/enum';
 
 // 重新网页标题等
@@ -92,18 +91,21 @@ export default function Index() {
   }, [searchReq.relatedId, pathMap]);
 
   // 查询题目类型和标签 核心素养
-  const { data: questionTypes = [], isLoading: questionTypesLoading, error: questionTypesErr } = useQuestionOtherDicts(twoLevelId, 'question_type');
-  const questionTypeDict = useMemo(() => ArrayUtil.arrayToDict(questionTypes, 'id'), [questionTypes]);
-
-  const { data: questionTags = [], isLoading: questionTagsLoading, error: questionTagsErr } = useQuestionOtherDicts(twoLevelId, 'question_tag');
-  const questionTagDict = useMemo(() => ArrayUtil.arrayToDict(questionTags, 'id'), [questionTags]);
-
   const {
-    data: questionDimensions = [],
-    isLoading: questionDimensionsLoading,
-    error: questionDimensionsErr,
-  } = useQuestionOtherDicts(twoLevelId, 'question_dimension');
-  const questionDimensionDict = useMemo(() => ArrayUtil.arrayToDict(questionDimensions, 'id'), [questionDimensions]);
+    data: dictListResp = { map: {} },
+    isLoading: dictListRespLoading,
+    error: dictListRespErr,
+  } = useQuestionOtherDictList(twoLevelId, [
+    'question_type',
+    'question_tag',
+    'question_dimension',
+    'question_level',
+    'question_scene',
+    'question_mistake_tip',
+  ]);
+  const otherDictListRecord = useMemo(() => {
+    return createOtherDictListRecord(dictListResp);
+  }, [dictListResp]);
 
   const [warnInfo, setWarnInfo] = useState<React.ReactNode>(null);
   // 列表相关错误信息展示
@@ -182,19 +184,9 @@ export default function Index() {
           <SimpleAlert title="导航获取失败" message={textbooksErr.message} />
         </div>
       )}
-      {questionTypesErr && (
+      {dictListRespErr && (
         <div className="mt-3">
-          <SimpleAlert title="题目类型获取失败" message={questionTypesErr.message} />
-        </div>
-      )}
-      {questionTagsErr && (
-        <div className="mt-3">
-          <SimpleAlert title="题目标签获取失败" message={questionTagsErr.message} />
-        </div>
-      )}
-      {questionDimensionsErr && (
-        <div className="mt-3">
-          <SimpleAlert title="题目核心素养获取失败" message={questionDimensionsErr.message} />
+          <SimpleAlert title="教材通用字典获取失败" message={dictListRespErr.message} />
         </div>
       )}
       {paperListErr && (
@@ -212,18 +204,14 @@ export default function Index() {
       )}
 
       {/* 加载中提示 */}
-      {useDelayedLoading(
-        isLoading || paperListIsLoading || textbooksIsLoading || questionTypesLoading || questionTagsLoading || questionDimensionsLoading,
-      ) && <Loading />}
+      {useDelayedLoading(isLoading || paperListIsLoading || textbooksIsLoading || dictListRespLoading) && <Loading />}
 
       {/* 试卷列表 */}
       <div className="mt-3">
         <PaperList
           papers={paperListResp.list}
           search={searchReq}
-          questionTypeDict={questionTypeDict}
-          questionTagDict={questionTagDict}
-          questionDimensionDict={questionDimensionDict}
+          otherDictListRecord={otherDictListRecord}
           setOpenSheet={setOpenSheet}
           setSheetTitle={setSheetTitle}
           setSheetDesc={setSheetDesc}
