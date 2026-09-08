@@ -460,7 +460,7 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
               </div>
               <div className="flex items-center gap-1.5">
                 <Clock size={13} />
-                <span>完成时间：{task.updatedAt}</span>
+                <span>更新时间：{task.updatedAt}</span>
               </div>
             </div>
           </CardContent>
