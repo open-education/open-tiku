@@ -123,6 +123,13 @@ sh deploy.sh -v v0.0.1-beta
 
 目前没有提供静态文件资源服务, 后端其实有对应的 api 接口读取这些资源, 现在已调整为 软链接 的方式访问这些资源, 本地和线上首次初始化时需要自己手动创建软链接
 
+比如你的存储路径是 `/Users/zhangguangxun/Public/meta/`, 当前目录在项目的 `public` 目录, 将这两个文件夹名称软连接到 `public` 即可
+
+```bash
+% ln -s /Users/zhangguangxun/Public/meta/files .
+% ln -s /Users/zhangguangxun/Public/meta/images .
+```
+
 本地 `images` 图片资源存储目录和 `files` 文件资源存储目录不限制存储位置, 构建会删除该部分的内容
 
 开发根据自己的情况创建类似的软链接即可, 实际存储目录调整为自己的机器路径
@@ -155,6 +162,8 @@ lrwxrwxrwx 1 root root    20 Jun  3 15:51 images -> /var/www/meta/images
 -rw-r--r-- 1 root root  2239 Jun  3 14:39 index.html
 zhangguangxun@VM-0-4-debian:/var/www/open-tiku$
 ```
+
+所以后续如果有资源比如 `S3` 这类简单的存储服务, 迁移是最好的.
 
 线上的 `Caddyfile` 文件内容请参考项目根目录中的 `Caddyfile` 文件内容, 首次部署时自己配置或者直接拷贝类似内容
 
