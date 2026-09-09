@@ -186,10 +186,10 @@ function TaskAdd({ questionSearch, setSheetTitle, setSheetDesc, setSheetContent 
             下载参考模板:<span className="text-destructive">*</span>
           </div>
           <div className="flex gap-3 col-span-9">
-            <a href="/api/file/read/file/fctk_tpl.md" target="_blank">
+            <a href="/api/file/read/file/fctk_tpl.md" download="分层题库模板.md" target="_blank">
               <Button>分层题库模板.md</Button>
             </a>
-            <a href="/api/file/read/file/fctk_tpl.docx" target="_blank">
+            <a href="/api/file/read/file/fctk_tpl.docx" download="分层题库模板.docx" target="_blank">
               <Button>分层题库模板.docx</Button>
             </a>
           </div>
@@ -434,6 +434,15 @@ function TaskListShow({ questionSearch }: TaskListShowProps) {
         <Card key={task.id} className="mt-3 transition-all duration-200 hover:shadow-lg hover:border-primary/10 flex flex-col border-border/60">
           <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-semibold leading-6 line-clamp-1 pr-2">{task.name}</CardTitle>
+            <div>
+              <a
+                href={`/api/file/read/file/${task.url}`}
+                download={`${task.name}${task.name.toLowerCase().endsWith('.md') ? '' : '.md'}`}
+                target="_blank"
+              >
+                <Button variant="link">下载</Button>
+              </a>
+            </div>
             <Badge className={`${getStatusBadgeClasses(task.status)} shrink-0 border text-sm font-normal`}>{task.statusDesc}</Badge>
           </CardHeader>
 
