@@ -22,6 +22,7 @@ export interface TaskInfo {
   questionCateId: number;
   taskType: number;
   name: string;
+  url: string;
   author: string;
   email: string;
   status: number;
