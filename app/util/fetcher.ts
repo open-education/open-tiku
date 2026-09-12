@@ -11,6 +11,7 @@ import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentListReq, 
 import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from '~/type/user';
 import type { HomeworkListReq, HomeworkListResp, HomeworkListSearchReq } from '~/type/homework';
 import type { AttemptListReq, AttemptListResp, TestListReq, TestListResp } from '~/type/test';
+import type { BoardResp } from '~/type/bord';
 
 /// 使用 SWR 缓存查询组件
 /// https://swr.vercel.app/
@@ -283,4 +284,9 @@ export function useAttemptList(id: number, pageNo: number) {
   const reqPath = '/test/attempts';
   const key = [reqPath, JSON.stringify(req)];
   return useSWR<AttemptListResp>(key, () => httpClient.post<AttemptListResp>(reqPath, req), defaultErrConfig);
+}
+
+// 首页统计面板
+export function useBoardList(count: number = 10) {
+  return useSWR<BoardResp>(`/stat/board/${count}`, httpClient.get, defaultErrConfig);
 }
