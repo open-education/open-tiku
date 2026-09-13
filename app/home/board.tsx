@@ -74,18 +74,24 @@ function Board() {
               最新上传
             </div>
             <div>
-              {boardResp.latestQuestions?.map((q, i) => (
-                <div
-                  key={i}
-                  className={cn('flex items-center justify-between gap-4 px-4 py-2 hover:bg-muted/30 transition-colors group', i > 0 && 'border-t')}
-                >
-                  <RankBadge n={i + 1} />
-                  <div className="min-w-0">
-                    <TitleShow title={q.title} comment="" images={[]} />
+              {boardResp.latestQuestions?.length ? (
+                boardResp.latestQuestions.map((q, i) => (
+                  <div
+                    key={q.id}
+                    className={cn('flex items-center justify-between gap-4 px-4 py-2 hover:bg-muted/30 transition-colors group', i > 0 && 'border-t')}
+                  >
+                    <RankBadge n={i + 1} />
+                    <div className="min-w-0 flex-1">
+                      <TitleShow title={q.title} comment="" images={[]} />
+                    </div>
+                    <span className="text-xs text-muted-foreground shrink-0">{q.timeDesc}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground shrink-0">{q.timeDesc}</span>
+                ))
+              ) : (
+                <div className="px-4 py-8 text-center text-xs">
+                  暂无数据
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
