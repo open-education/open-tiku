@@ -226,7 +226,7 @@ export default function Index() {
       </Card>
 
       {/* 班级基础信息编辑对话框 */}
-      {editDialogOpen && infoResp && (
+      {editDialogOpen && (
         <ClassEdit open={editDialogOpen} setOpen={setEditDialogOpen} searchReq={searchReq} infoResp={infoResp} classListMutate={classListMutate} />
       )}
 
