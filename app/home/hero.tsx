@@ -1,45 +1,65 @@
 import { Badge } from '~/components/ui/badge';
 import { cn } from 'cn';
+import type { CountInfo } from '~/type/bord';
 
 /// 统计相关
 
 // 总数统计
 interface CountStatProps {
   id: number;
-  count: string;
+  count: number;
   className: string;
   title: string;
 }
-// 网站统计概览
-const STATS: CountStatProps[] = [
-  {
-    id: 1,
-    count: '12',
-    className: 'text-orange-600',
-    title: '教材总数',
-  },
-  {
-    id: 2,
-    count: '3200',
-    className: 'text-green-600',
-    title: '题目总数',
-  },
-  {
-    id: 3,
-    count: '1300',
-    className: 'text-blue-600',
-    title: '试卷套数',
-  },
-  {
-    id: 4,
-    count: '35',
-    className: 'text-pink-600',
-    title: '教师人数',
-  },
-];
+
+interface HeroProps {
+  countInfo: CountInfo;
+}
 
 // 使命界面
-function Hero() {
+function Hero({
+  countInfo = {
+    textbookNum: 0,
+    questionNum: 0,
+    paperNum: 0,
+    teacherNum: 0,
+    studentNum: 0,
+  },
+}: HeroProps) {
+  // 生成统计信息
+  const stats: CountStatProps[] = [
+    {
+      id: 1,
+      count: countInfo.textbookNum,
+      className: 'text-orange-600',
+      title: '教材总数',
+    },
+    {
+      id: 2,
+      count: countInfo.questionNum,
+      className: 'text-green-600',
+      title: '题目总数',
+    },
+    {
+      id: 3,
+      count: countInfo.paperNum,
+      className: 'text-blue-600',
+      title: '试卷套数',
+    },
+    {
+      id: 4,
+      count: countInfo.teacherNum,
+      className: 'text-pink-600',
+      title: '教师人数',
+    },
+    {
+      id: 5,
+      count: countInfo.studentNum,
+      className: 'text-sky-600',
+      title: '学生人数',
+    },
+  ];
+
   return (
     <section>
       <div className="container mx-auto px-4 py-12 md:py-20 lg:py-28">
@@ -56,8 +76,8 @@ function Hero() {
         </div>
 
         <div className="container mx-auto">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 w-fit mx-auto justify-items-center">
-            {STATS.map((item) => (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-5 w-fit mx-auto justify-items-center">
+            {stats.map((item) => (
               <div key={item.id} className="flex flex-col items-center justify-center p-4 text-center">
                 <h2 className={cn('text-2xl font-bold', item.className)}>{item.count}</h2>
                 <h6 className="text-muted-foreground text-sm">{item.title}</h6>
