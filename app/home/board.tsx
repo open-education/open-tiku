@@ -1,46 +1,25 @@
 import { BookOpen, Clock, TrendingUp, Upload, Users } from 'lucide-react';
 import { Badge } from '~/components/ui/badge';
 import { cn } from 'cn';
-import { useBoardList } from '~/util/fetcher';
-import { SimpleAlert } from '~/common/alert';
 import { TitleShow } from '~/common/title';
+import type { BoardResp } from '~/type/bord';
+import type { TextbookResp } from '~/type/textbook';
 
 // 统计面板
 // 统计面板的数据需要延后生成, 避免每次都重复计算且可能拖慢网站速度
 
-function Board() {
-  const {
-    data: boardResp = {
-      latestQuestions: [],
-    },
-    isLoading: boardRespLoading,
-    error: boardRespErr,
-  } = useBoardList();
+interface BoardProps {
+  pathMap: Map<string, TextbookResp[]>;
+  boardResp: BoardResp;
+}
 
+function Board({ pathMap, boardResp }: BoardProps) {
   const TOP_QUESTIONS = [
     { title: '一元二次方程求根公式应用综合题', grade: '初三', edition: '人教版', count: 8420 },
     { title: '直角三角形三角函数基础计算', grade: '初三', edition: '人教版', count: 7350 },
     { title: '整式加减运算（合并同类项）', grade: '七年级', edition: '人教版', count: 6890 },
     { title: '二次函数图象与性质综合', grade: '初三', edition: '人教版', count: 6210 },
     { title: '用字母表示数（列代数式）', grade: '七年级', edition: '湘教版', count: 5980 },
-  ];
-
-  const TOP_TEXTBOOKS = [
-    { name: '人教版 初中数学 九年级上册', questions: 2840, schools: 342 },
-    { name: '人教版 初中数学 八年级上册', questions: 2650, schools: 318 },
-    { name: '湘教版 初中数学 七年级上册', questions: 2240, schools: 289 },
-    { name: '人教A版 高中数学 必修一', questions: 2180, schools: 265 },
-    { name: '人教版 初中数学 七年级上册', questions: 2050, schools: 247 },
-    { name: '北师大版 初中数学 九年级上册', questions: 1920, schools: 221 },
-    { name: '苏教版 小学数学 六年级上册', questions: 1780, schools: 198 },
-    { name: '人教版 初中数学 八年级下册', questions: 1640, schools: 184 },
-  ];
-
-  const TOP_TEACHERS = [
-    { name: '张**老师', school: '长沙市第一中学', count: 328 },
-    { name: '李**老师', school: '湖南省实验中学', count: 286 },
-    { name: '王**老师', school: '北京市第八十中学', count: 254 },
-    { name: '陈**老师', school: '广州市执信中学', count: 218 },
   ];
 
   const TOP_STUDENTS = [
@@ -58,134 +37,135 @@ function Board() {
     return <Badge className="w-6 h-6 rounded flex items-center justify-center p-0 shrink-0">{n}</Badge>;
   }
 
-  // 局部处理加载中和错误
-  const show = () => {
-    if (boardRespLoading) {
-      return <div>加载中</div>;
-    } else if (boardRespErr) {
-      return <SimpleAlert title="统计信息汇总出错" message={boardRespErr.message} />;
-    } else {
-      return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* 最新上传 */}
-          <div className="bg-card border">
-            <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
-              <Clock size={16} />
-              最新上传
-            </div>
-            <div>
-              {boardResp.latestQuestions?.length ? (
-                boardResp.latestQuestions.map((q, i) => (
-                  <div
-                    key={q.id}
-                    className={cn('flex items-center justify-between gap-4 px-4 py-2 hover:bg-muted/30 transition-colors group', i > 0 && 'border-t')}
-                  >
-                    <RankBadge n={i + 1} />
-                    <div className="min-w-0 flex-1">
-                      <TitleShow title={q.title} comment="" images={[]} />
-                    </div>
-                    <span className="text-xs text-muted-foreground shrink-0">{q.timeDesc}</span>
-                  </div>
-                ))
-              ) : (
-                <div className="px-4 py-8 text-center text-xs">
-                  暂无数据
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* 热门题目 */}
-          <div className="bg-card">
-            <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
-              <TrendingUp size={16} />
-              热门题目
-            </div>
-            <div>
-              {TOP_QUESTIONS.map((q, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className={cn('flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors group', i > 0 && 'border-t')}
-                >
-                  <RankBadge n={i + 1} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm truncate group-hover:text-primary">{q.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {q.grade} · {q.edition}
-                    </p>
-                  </div>
-                  <span className="text-xs font-medium text-muted-foreground shrink-0">{q.count.toLocaleString()} 次</span>
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* 热门教材 */}
-          <div className="bg-card">
-            <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
-              <BookOpen size={16} />
-              热门教材
-            </div>
-            <div>
-              {TOP_TEXTBOOKS.map((t, i) => (
-                <div key={i} className={cn('flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors', i > 0 && 'border-t')}>
-                  <RankBadge n={i + 1} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm truncate">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.schools} 所学校在用</p>
-                  </div>
-                  <span className="text-xs font-medium text-muted-foreground shrink-0">{t.questions.toLocaleString()} 题</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 活跃教师 */}
-          <div className="bg-card">
-            <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
-              <Upload size={16} />
-              活跃教师
-            </div>
-            <div>
-              {TOP_TEACHERS.map((t, i) => (
-                <div key={i} className={cn('flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors', i > 0 && 'border-t')}>
-                  <RankBadge n={i + 1} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium">{t.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{t.school}</p>
-                  </div>
-                  <span className="text-xs font-medium text-muted-foreground shrink-0">上传 {t.count} 题</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 活跃学生 */}
-          <div className="bg-card">
-            <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
-              <Users size={16} />
-              活跃学生
-            </div>
-            <div>
-              {TOP_STUDENTS.map((s, i) => (
-                <div key={i} className={cn('flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors', i > 0 && 'border-t')}>
-                  <RankBadge n={i + 1} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium">{s.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{s.school}</p>
-                  </div>
-                  <span className="text-xs font-medium text-muted-foreground shrink-0">做题 {s.count.toLocaleString()} 题</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      );
+  // 得到教材路径名称
+  const getTextbookNameById = (textbookId: number) => {
+    if (textbookId <= 0) {
+      return '';
     }
+
+    const nodes = pathMap.get(textbookId.toString()) ?? [];
+    return nodes.map((n) => n.label).join('/');
   };
 
-  return <section>{show()}</section>;
+  return (
+    <section>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* 最新上传 */}
+        <div className="bg-card border">
+          <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
+            <Clock size={16} />
+            最新上传
+          </div>
+          <div>
+            {boardResp.latestQuestions?.length ? (
+              boardResp.latestQuestions.map((q, i) => (
+                <div
+                  key={q.id}
+                  className={cn('flex items-center justify-between gap-4 px-4 py-2 hover:bg-muted/30 transition-colors group', i > 0 && 'border-t')}
+                >
+                  <RankBadge n={i + 1} />
+                  <div className="min-w-0 flex-1">
+                    <TitleShow title={q.title} comment="" images={[]} />
+                  </div>
+                  <span className="text-xs text-muted-foreground shrink-0">{q.timeDesc}</span>
+                </div>
+              ))
+            ) : (
+              <div className="px-4 py-8 text-center text-xs">暂无数据</div>
+            )}
+          </div>
+        </div>
+
+        {/* 热门题目 */}
+        <div className="bg-card">
+          <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
+            <TrendingUp size={16} />
+            热门题目
+          </div>
+          <div>
+            {TOP_QUESTIONS.map((q, i) => (
+              <a key={i} href="#" className={cn('flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors group', i > 0 && 'border-t')}>
+                <RankBadge n={i + 1} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm truncate group-hover:text-primary">{q.title}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {q.grade} · {q.edition}
+                  </p>
+                </div>
+                <span className="text-xs font-medium text-muted-foreground shrink-0">{q.count.toLocaleString()} 次</span>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* 热门教材 */}
+        <div className="bg-card">
+          <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
+            <BookOpen size={16} />
+            热门教材
+          </div>
+          <div>
+            {boardResp.topTextbooks?.length > 0 ? (
+              boardResp.topTextbooks?.map((t, i) => (
+                <div key={i} className={cn('flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors', i > 0 && 'border-t')}>
+                  <RankBadge n={i + 1} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm truncate">{getTextbookNameById(t.textbookId)}</p>
+                  </div>
+                  <span className="text-xs font-medium text-muted-foreground shrink-0">{t.cnt} 题</span>
+                </div>
+              ))
+            ) : (
+              <div className="px-4 py-8 text-center text-xs">暂无数据</div>
+            )}
+          </div>
+        </div>
+
+        {/* 活跃教师 */}
+        <div className="bg-card">
+          <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
+            <Upload size={16} />
+            活跃教师
+          </div>
+          <div>
+            {boardResp.topTeacherQuestions?.length > 0 ? (
+              boardResp.topTeacherQuestions?.map((t, i) => (
+                <div key={i} className={cn('flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors', i > 0 && 'border-t')}>
+                  <RankBadge n={i + 1} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">{t.authorName}</p>
+                  </div>
+                  <span className="text-xs font-medium text-muted-foreground shrink-0">上传 {t.cnt} 题</span>
+                </div>
+              ))
+            ) : (
+              <div className="px-4 py-8 text-center text-xs">暂无数据</div>
+            )}
+          </div>
+        </div>
+
+        {/* 活跃学生 */}
+        <div className="bg-card">
+          <div className="px-4 h-12 border-b flex items-center gap-2 text-sm font-bold">
+            <Users size={16} />
+            活跃学生
+          </div>
+          <div>
+            {TOP_STUDENTS.map((s, i) => (
+              <div key={i} className={cn('flex items-center gap-4 px-4 py-2 hover:bg-muted/30 transition-colors', i > 0 && 'border-t')}>
+                <RankBadge n={i + 1} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">{s.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{s.school}</p>
+                </div>
+                <span className="text-xs font-medium text-muted-foreground shrink-0">做题 {s.count.toLocaleString()} 题</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export { Board };

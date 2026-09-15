@@ -1,20 +1,21 @@
 import { ChapterExpandNav, type LevelProps, type SelectNavProps } from '~/common/nav';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { ArrowRight, FileQuestionMark, FileText, Flame, SquarePen, TableOfContents, Video } from 'lucide-react';
 import { Hero } from '~/home/hero';
 import { PaperList } from '~/common/paper/list';
 import { Loading } from '~/common/load';
-import { toast } from 'sonner';
 import { Board } from '~/home/board';
 import { Note } from '~/home/note';
 import { Teacher } from '~/home/teacher';
 import { NavLink } from 'react-router';
-import { useLatestPapers, useTextbooks } from '~/util/fetcher';
+import { useBoardList, useLatestPapers, useTextbooks } from '~/util/fetcher';
 import type { OtherDictListRecord, TextbookResp } from '~/type/textbook';
 import { SimpleSheet } from '~/common/sheet';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
 import { Badge } from '~/components/ui/badge';
+import { SimpleAlert } from '~/common/alert';
+import { createTextbookPathDict } from '~/util/textbook-dict';
 
 // 默认空的通用字典信息
 const defaultOtherDictListRecord: OtherDictListRecord = {
@@ -36,15 +37,54 @@ const defaultOtherDictListRecord: OtherDictListRecord = {
 export default function Index() {
   // 网站主要导航
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks();
-  if (textbooksErr) {
-    toast.error(<div className="text-red-700">{textbooksErr.message}</div>);
-  }
+  // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
+  const pathMap = useMemo(() => {
+    return createTextbookPathDict(textbooks);
+  }, [textbooks]);
+
+  const showNav = () => {
+    if (textbooksIsLoading) {
+      return <div>加载中...</div>;
+    } else if (textbooksErr) {
+      return <SimpleAlert title="导航获取错误" message={textbooksErr.message} />;
+    } else if (textbooks.length === 0) {
+      return <div className="px-4 py-8 text-center text-xs">暂无数据</div>;
+    } else {
+      return (
+        <ChapterExpandNav
+          textbooks={textbooks}
+          onSelectionChange={(selection, selectedTextbooks) => {
+            handleNavSelectionChange(selection, selectedTextbooks);
+          }}
+          actions={actions}
+        />
+      );
+    }
+  };
 
   // 组件挂载时查询最新的几张试卷
   const { data: latestPapers = [], isLoading: latestIsLoading, error: latestPapersErr } = useLatestPapers();
-  if (latestPapersErr) {
-    toast.error(<div className="text-red-700">{latestPapersErr.message}</div>);
-  }
+  const showLatestPaper = () => {
+    if (latestIsLoading) {
+      return <div>加载中...</div>;
+    } else if (latestPapersErr) {
+      return <SimpleAlert title="最新试卷获取错误" message={latestPapersErr.message} />;
+    } else if (latestPapers.length === 0) {
+      return <div className="px-4 py-8 text-center text-xs">暂无数据</div>;
+    } else {
+      return (
+        <PaperList
+          papers={latestPapers}
+          otherDictListRecord={defaultOtherDictListRecord}
+          setOpenSheet={setOpenSheet}
+          setSheetTitle={setSheetTitle}
+          setSheetDesc={setSheetDesc}
+          setSheetContent={setSheetContent}
+          setLoading={setIsLoading}
+        />
+      );
+    }
+  };
 
   // 导航选择的 selectedKeys 值
   const [selectNavProps, setSelectNavProps] = useState<SelectNavProps>({
@@ -116,7 +156,7 @@ export default function Index() {
 
         <Button className="w-32 text-sm" variant="default" size="lg">
           <SquarePen size={14} />
-          <NavLink to={''} state={{ selectNavProps }}>
+          <NavLink to={'student'} state={{ selectNavProps }}>
             开始练题
           </NavLink>
           <ArrowRight size={13} />
@@ -134,14 +174,35 @@ export default function Index() {
   const [sheetDesc, setSheetDesc] = useState<string>('');
   const [sheetContent, setSheetContent] = useState<React.ReactNode>('');
 
+  // 统计面板数据
+  const {
+    data: boardResp = {
+      countInfo: { textbookNum: 0, questionNum: 0, paperNum: 0, teacherNum: 0, studentNum: 0 },
+      latestQuestions: [],
+      topTeacherQuestions: [],
+      topTextbooks: [],
+    },
+    isLoading: boardRespLoading,
+    error: boardRespErr,
+  } = useBoardList();
+  const showBoard = () => {
+    if (boardRespLoading) {
+      return <div>加载中...</div>;
+    } else if (boardRespErr) {
+      return <SimpleAlert title="统计信息获取错误" message={boardRespErr.message} />;
+    } else {
+      return <Board pathMap={pathMap} boardResp={boardResp} />;
+    }
+  };
+
   return (
     <div>
       {/* 加载中提示 */}
-      {useDelayedLoading(isLoading || textbooksIsLoading || latestIsLoading) && <Loading />}
+      {useDelayedLoading(isLoading) && <Loading />}
 
       {/* 使命 */}
       <div className="bg-muted">
-        <Hero />
+        <Hero countInfo={boardResp.countInfo} />
       </div>
 
       {/* 关键导航 */}
@@ -158,13 +219,7 @@ export default function Index() {
           </div>
         </div>
 
-        <ChapterExpandNav
-          textbooks={textbooks}
-          onSelectionChange={(selection, selectedTextbooks) => {
-            handleNavSelectionChange(selection, selectedTextbooks);
-          }}
-          actions={actions}
-        />
+        {showNav()}
       </div>
 
       {/* 精选试卷 */}
@@ -186,15 +241,7 @@ export default function Index() {
           </NavLink>
         </div>
 
-        <PaperList
-          papers={latestPapers}
-          otherDictListRecord={defaultOtherDictListRecord}
-          setOpenSheet={setOpenSheet}
-          setSheetTitle={setSheetTitle}
-          setSheetDesc={setSheetDesc}
-          setSheetContent={setSheetContent}
-          setLoading={setIsLoading}
-        />
+        {showLatestPaper()}
       </div>
 
       {/* 统计面板 */}
@@ -211,7 +258,7 @@ export default function Index() {
           </div>
         </div>
 
-        <Board />
+        {showBoard()}
       </div>
 
       {/* 网站碎碎念 */}
