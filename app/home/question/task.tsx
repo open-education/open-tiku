@@ -8,7 +8,7 @@ import { ChapterDropdownNav } from '~/common/nav';
 import type { QuestionSearch } from '~/type/question';
 import { useQuestionCates, useTaskList, useTextbooks } from '~/util/fetcher';
 import type { TextbookResp } from '~/type/textbook';
-import { createTextbookPathDict } from '~/util/textbook-dict';
+import { createTextbookPathDict } from '~/util/textbook';
 import { StringConst, StringValidator } from '~/util/string';
 import { Loading } from '~/common/load';
 import { SimpleAlert } from '~/common/alert';

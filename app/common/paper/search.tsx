@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { CommonPaperSearchReq, PaperPageSourceProps } from '~/type/paper';
 import { usePaperList, useQuestionOtherDictList, useTextbooks } from '~/util/fetcher';
-import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook-dict';
+import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook';
 import { CommonPaperSearchConf } from '~/common/paper/config';
 import { Separator } from '~/components/ui/separator';
 import { SimpleAlert } from '~/common/alert';

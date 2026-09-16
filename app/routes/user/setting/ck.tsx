@@ -23,7 +23,7 @@ import { Separator } from '~/components/ui/separator';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
 import type { TextbookResp } from '~/type/textbook';
 import { useChapterKnowledgeList, useTextbooks } from '~/util/fetcher';
-import { createTextbookPathDict } from '~/util/textbook-dict';
+import { createTextbookPathDict } from '~/util/textbook';
 import { toast } from 'sonner';
 import type { CreateChapterKnowledgeReq, ChapterKnowledgeResp, RemoveChapterKnowledgeReq } from '~/type/question-cate';
 import { httpClient } from '~/util/http';

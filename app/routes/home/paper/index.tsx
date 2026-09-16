@@ -20,7 +20,7 @@ import type { UserInfoResp } from '~/type/user';
 import { useUserInfo } from '~/hooks/use-user';
 import { CommonPaperSearchConf } from '~/common/paper/config';
 import GenAdd from '~/home/paper/gen/add';
-import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook-dict';
+import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook';
 import { UserRoleType } from '~/type/enum';
 
 // 重新网页标题等

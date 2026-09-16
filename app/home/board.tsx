@@ -4,6 +4,7 @@ import { cn } from 'cn';
 import { TitleShow } from '~/common/title';
 import type { BoardResp } from '~/type/bord';
 import type { TextbookResp } from '~/type/textbook';
+import { formatNumber } from '~/util/fmt';
 
 // 统计面板
 // 统计面板的数据需要延后生成, 避免每次都重复计算且可能拖慢网站速度
@@ -92,7 +93,7 @@ function Board({ pathMap, boardResp }: BoardProps) {
                     {q.grade} · {q.edition}
                   </p>
                 </div>
-                <span className="text-xs font-medium text-muted-foreground shrink-0">{q.count.toLocaleString()} 次</span>
+                <span className="text-xs font-medium text-muted-foreground shrink-0">{formatNumber(q.count)} 次</span>
               </a>
             ))}
           </div>
@@ -112,7 +113,7 @@ function Board({ pathMap, boardResp }: BoardProps) {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm truncate">{getTextbookNameById(t.textbookId)}</p>
                   </div>
-                  <span className="text-xs font-medium text-muted-foreground shrink-0">{t.cnt} 题</span>
+                  <span className="text-xs font-medium text-muted-foreground shrink-0">{formatNumber(t.cnt)} 题</span>
                 </div>
               ))
             ) : (
@@ -135,7 +136,7 @@ function Board({ pathMap, boardResp }: BoardProps) {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium">{t.authorName}</p>
                   </div>
-                  <span className="text-xs font-medium text-muted-foreground shrink-0">上传 {t.cnt} 题</span>
+                  <span className="text-xs font-medium text-muted-foreground shrink-0">上传 {formatNumber(t.cnt)} 题</span>
                 </div>
               ))
             ) : (

@@ -40,6 +40,12 @@ const links: LinksProps[] = [
   },
 ];
 
+// 显示版本
+const showEdition = (): string => {
+  const year = new Date().getFullYear();
+  return year <= 2026 ? '2026' : `2026-${year}`;
+};
+
 function Footer() {
   return (
     <footer className="bg-muted px-8 py-4">
@@ -90,7 +96,7 @@ function Footer() {
 
         {/* 底部版权：靠左对齐 */}
         <div className="mt-10 flex flex-wrap items-center justify-between gap-2">
-          <div className="text-base text-foreground text-left">&copy; 2026 开放题库. All Rights Reserved.</div>
+          <div className="text-base text-foreground text-left">&copy; {showEdition()} 开放题库. All Rights Reserved.</div>
           <div className="text-sm">
             ICP备案号:
             <Link to="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary">

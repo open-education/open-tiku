@@ -1,13 +1,14 @@
 import { Badge } from '~/components/ui/badge';
 import { cn } from 'cn';
 import type { CountInfo } from '~/type/bord';
+import { formatNumber } from '~/util/fmt';
 
 /// 统计相关
 
 // 总数统计
 interface CountStatProps {
   id: number;
-  count: number;
+  count: string;
   className: string;
   title: string;
 }
@@ -30,31 +31,31 @@ function Hero({
   const stats: CountStatProps[] = [
     {
       id: 1,
-      count: countInfo.textbookNum,
+      count: formatNumber(countInfo.textbookNum),
       className: 'text-orange-600',
       title: '教材总数',
     },
     {
       id: 2,
-      count: countInfo.questionNum,
+      count: formatNumber(countInfo.questionNum),
       className: 'text-green-600',
       title: '题目总数',
     },
     {
       id: 3,
-      count: countInfo.paperNum,
+      count: formatNumber(countInfo.paperNum),
       className: 'text-blue-600',
       title: '试卷套数',
     },
     {
       id: 4,
-      count: countInfo.teacherNum,
+      count: formatNumber(countInfo.teacherNum),
       className: 'text-pink-600',
       title: '教师人数',
     },
     {
       id: 5,
-      count: countInfo.studentNum,
+      count: formatNumber(countInfo.studentNum),
       className: 'text-sky-600',
       title: '学生人数',
     },

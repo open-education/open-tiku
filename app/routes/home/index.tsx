@@ -15,7 +15,7 @@ import { SimpleSheet } from '~/common/sheet';
 import { useDelayedLoading } from '~/hooks/delayed-loading';
 import { Badge } from '~/components/ui/badge';
 import { SimpleAlert } from '~/common/alert';
-import { createTextbookPathDict } from '~/util/textbook-dict';
+import { createTextbookPathDict } from '~/util/textbook';
 
 // 默认空的通用字典信息
 const defaultOtherDictListRecord: OtherDictListRecord = {

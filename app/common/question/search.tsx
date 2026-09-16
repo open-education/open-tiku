@@ -5,7 +5,7 @@ import type { QuestionPageSourceProps, QuestionSearch } from '~/type/question';
 import type { TextbookResp } from '~/type/textbook';
 import { useQuestionCates, useQuestionList, useQuestionOtherDictList, useTextbooks } from '~/util/fetcher';
 import { useEffect, useMemo, useState } from 'react';
-import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook-dict';
+import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook';
 import { StringConst } from '~/util/string';
 import { Separator } from '~/components/ui/separator';
 import { SimpleNoData } from '~/common/empty';

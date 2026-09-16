@@ -36,7 +36,7 @@ import { Loading } from '~/common/load';
 import { toast } from 'sonner';
 import { QuestionInfo } from '~/common/question/info';
 import { httpClient } from '~/util/http';
-import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook-dict';
+import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook';
 import { ImageAdd } from '~/common/image';
 import { QuickToolList } from '~/common/tool';
 import { FileUpload } from '~/common/file';

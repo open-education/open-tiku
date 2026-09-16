@@ -17,7 +17,7 @@ import type {
 } from '~/type/paper';
 import type { TextbookResp } from '~/type/textbook';
 import { useQuestionCates, useQuestionOtherDictList, useTextbooks } from '~/util/fetcher';
-import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook-dict';
+import { createOtherDictListRecord, createTextbookPathDict } from '~/util/textbook';
 import { GenPaperGenTypeConfig } from '~/home/paper/gen/config';
 import { Button } from '~/components/ui/button';
 import { Eye, Save, Send, Settings2 } from 'lucide-react';
