@@ -12,14 +12,10 @@ export interface TextbookResp {
   children?: TextbookResp[];
 }
 
-// 通用字典请求
-export interface TextbookOtherDictReq {
-  id?: number;
+// 通用字典返回
+export interface TextbookOtherDictListReq {
   textbookId: number;
-  typeCode: string;
-  itemValue: string;
-  sortOrder: number;
-  isSelect: boolean;
+  codes?: string[];
 }
 
 // 教材章节其它字典
@@ -30,12 +26,6 @@ export interface TextbookOtherDictResp {
   itemValue: string;
   sortOrder: number;
   isSelect: boolean;
-}
-
-// 通用字典返回
-export interface TextbookOtherDictListReq {
-  textbookId: number;
-  codes?: string[];
 }
 
 export interface TextbookOtherDictListResp {
@@ -61,23 +51,4 @@ export interface OtherDictListRecord {
 
   questionMistakeTips: TextbookOtherDictResp[];
   questionMistakeTipDict: Record<number, TextbookOtherDictResp>;
-}
-
-// 选择父级菜单时下拉列表数据结构
-export interface TextbookOption {
-  label: string;
-  value: string;
-  raw: TextbookResp;
-  children?: TextbookOption[];
-}
-
-// 菜单导航请求
-export interface CreateTextbookReq {
-  id?: number;
-  parentId?: number;
-  label: string;
-  pathType?: string;
-  sortOrder: number;
-  pathDepth?: number;
-  path: string;
 }

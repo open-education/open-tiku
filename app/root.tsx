@@ -1,15 +1,14 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
-import type { Route } from './+types/root';
-import '~/app.css';
-import React from 'react';
-import { Toaster } from '~/components/ui/sonner';
-import { Error } from '~/common/error';
-import { ObjectUtil } from '~/util/object';
+import '@/app.css';
+import { Error } from '@/common/error';
+import { InitLoading } from '@/common/load';
+import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { ObjectUtil } from '@/util/object';
 import katexStyles from 'katex/dist/katex.min.css?url';
-import { TooltipProvider } from '~/components/ui/tooltip';
-import { InitLoading } from '~/common/load';
-import { ThemeProvider } from 'next-themes';
+import React from 'react';
+import type { Route } from './+types/root';
 
 // 使用该方式引入 katex css 文件
 export function links(): Route.LinkDescriptors {
@@ -43,11 +42,7 @@ export function HydrateFallback() {
 }
 
 export default function App() {
-  return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme" attribute="class">
-      <Outlet />
-    </ThemeProvider>
-  );
+  return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

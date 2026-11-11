@@ -6,7 +6,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '~/components/ui/pagination';
+} from '@/components/ui/pagination';
 
 // 简单的分页组件
 interface PaginationProps {
@@ -92,7 +92,13 @@ export function SimplePagination({ pageNo, pageSize, total, onPageChange }: Pagi
             {page === 'ellipsis' ? (
               <PaginationEllipsis />
             ) : (
-              <PaginationLink isActive={page === pageNo} onClick={() => onPageChange(page)}>
+              <PaginationLink
+                isActive={page === pageNo}
+                onClick={() => onPageChange(page)}
+                className={
+                  page === pageNo ? 'border-primary bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground' : ''
+                }
+              >
                 {page}
               </PaginationLink>
             )}

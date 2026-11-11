@@ -1,5 +1,5 @@
+import type { UserInfoResp } from '@/type/user';
 import { useEffect, useState } from 'react';
-import type { UserInfoResp } from '~/type/user';
 
 // 获取用户信息
 export const useUserInfo = (): UserInfoResp | null => {

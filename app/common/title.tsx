@@ -1,6 +1,6 @@
-import { StringValidator } from '~/util/string';
-import { SimpleFullContent } from '~/common/content';
-import { ImageZoom } from '~/common/image';
+import { SimpleFullContent } from '@/common/content';
+import { ImageZoom } from '@/common/image';
+import { StringValidator } from '@/util/string';
 
 /// 标题设计--试卷和题库均使用后续移动到父级
 
@@ -10,14 +10,15 @@ interface TitleShowProps {
   title: string;
   comment: string;
   images?: string[];
+  className?: string;
 }
 
-function TitleShow({ no = 0, id = 0, title, comment, images = [] }: TitleShowProps) {
+function TitleShow({ no = 0, id = 0, title, comment, images = [], className = 'text-base' }: TitleShowProps) {
   // 试卷和题目显示前缀
   const content = no > 0 ? `${no}&#46; ${title}` : id > 0 ? `**ID[${id}].** ${title}` : title;
 
   return (
-    <div className="text-base">
+    <div className={className}>
       {/* 题干 */}
       {StringValidator.isNonEmpty(title) && (
         <div>

@@ -1,5 +1,5 @@
-import { NotepadTextDashed } from 'lucide-react';
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '~/components/ui/empty';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Trash } from 'lucide-react';
 
 /// 空的提示信息
 
@@ -11,10 +11,10 @@ function SimpleNoData({ desc }: SimpleNoDataProps) {
     <Empty>
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <NotepadTextDashed />
+          <Trash />
         </EmptyMedia>
-        <EmptyTitle className="text-base">No Data</EmptyTitle>
-        <EmptyDescription className="text-sm">{desc}</EmptyDescription>
+        <EmptyTitle className="text-base">暂无数据</EmptyTitle>
+        <EmptyDescription>{desc}</EmptyDescription>
       </EmptyHeader>
     </Empty>
   );

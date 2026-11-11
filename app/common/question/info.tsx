@@ -1,171 +1,234 @@
-import { Card, CardContent } from '~/components/ui/card';
-import { Badge } from '~/components/ui/badge';
-import { Separator } from '~/components/ui/separator';
-import { Lightbulb, CheckCircle2, Layers, AlertCircle } from 'lucide-react';
-import type { QuestionInfoResp, QuestionPageSourceProps } from '~/type/question';
-import { SimpleFullContent } from '~/common/content';
-import { TagShow } from '~/common/question/tag';
-import { TitleShow } from '~/common/title';
-import { MultiOptionShow } from '~/common/select';
-import type { OtherDictListRecord } from '~/type/textbook';
-import { SimpleAlert } from '~/common/alert';
-import { QuestionStatus } from '~/type/enum';
+import { SimpleFullContent } from '@/common/content';
+import { SimilarListShow } from '@/common/question/list';
+import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { useCopy } from '@/hooks/use-copy';
+import { QuestionRelationType } from '@/type/enum';
+import type { QuestionBaseInfoResp, QuestionInfoResp, QuestionListResp, QuestionSimilarListReq } from '@/type/question';
+import type { OtherDictListRecord } from '@/type/textbook';
+import { httpClient } from '@/util/http';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
+import { SimpleAlert } from '../alert';
 
-// 题目详情样式-预览和详情均使用该样式
-interface QuestionInfoProps {
-  pageSource: QuestionPageSourceProps;
-  otherDictListRecord: OtherDictListRecord;
-  infoResp: QuestionInfoResp;
+// 答案解析
+interface AnswerInfoProps {
+  infoResp: QuestionInfoResp | null;
 }
-function QuestionInfo({ pageSource, otherDictListRecord, infoResp }: QuestionInfoProps) {
+function AnswerInfo({ infoResp }: AnswerInfoProps) {
+  if (infoResp === null) {
+    return <SimpleAlert title="查询答案解析为空" message="题目未维护答案信息" variant="default" />;
+  }
+
   // 有详情返回时优先详情返回, 否则理解为预览数据
-  const { baseInfo, extraInfo } = infoResp;
+  const { extraInfo } = infoResp;
+
+  const sections = [
+    { id: 1, title: '参考答案', content: extraInfo.answer || '未维护', color: 'text-emerald-600', dot: 'bg-emerald-500' },
+    { id: 2, title: '解题分析', content: extraInfo.analysis?.content || '未维护', color: 'text-sky-600', dot: 'bg-sky-500' },
+    { id: 3, title: '解题过程', content: extraInfo.process?.content || '未维护', color: 'text-violet-600', dot: 'bg-violet-500' },
+  ];
 
   return (
-    <div className="space-y-4 pl-4 pb-4 pr-4 bg-muted">
-      {/* 我的题目审核如果被拒绝要显示拒绝原因, 修改后重新提交审核 */}
-      {baseInfo.status === QuestionStatus.Rejected && (
-        <SimpleAlert title="你的题目审核被拒绝, 请按拒绝原因修改后重新提交审核" message={baseInfo.rejectReason || ''} />
-      )}
-
-      {/* 来源和备注, 只展示存在的信息 */}
-      <div className="text-xs flex flex-col gap-1 border p-4">
-        <div>创建时间: {baseInfo.createdAt}</div>
-        <div>作者昵称: {baseInfo.authorName || ''}</div>
-        {baseInfo.originalName && <div>创作者昵称: {baseInfo.originalName}</div>}
-        {baseInfo.source && <div>来源: {baseInfo.source}</div>}
-        {baseInfo.approveName && <div>审核人: {baseInfo.approveName}</div>}
-        {baseInfo.approveAt && <div>审核时间: {baseInfo.approveAt}</div>}
-        <div>更新时间: {baseInfo.updatedAt}</div>
-      </div>
-
-      {/* 题目 */}
-      <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-        <CardContent className="space-y-6">
-          {/* 标签 */}
-          <div className="flex flex-wrap gap-3 items-center w-full">
-            <TagShow pageSource={pageSource} otherDictListRecord={otherDictListRecord} questionInfo={infoResp.baseInfo} />
+    <div className="space-y-3 text-sm">
+      {sections.map(({ id, title, content, color, dot }) => (
+        <div key={id} className="space-y-1">
+          <div className={`flex items-center gap-1.5 font-bold ${color}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
+            {title}
           </div>
-
-          {/* 题干 - 突出显示 */}
-          <div className="text-sm">
-            <TitleShow id={baseInfo.id} title={baseInfo.title} comment={baseInfo.comment ?? ''} images={baseInfo.images ?? []} />
+          <div className="pl-3 text-slate-700">
+            <SimpleFullContent content={content} />
           </div>
-
-          {/* 选项 */}
-          <div className="text-sm">
-            <MultiOptionShow optionsLayout={baseInfo.optionsLayout ?? 2} options={baseInfo.options ?? []} />
-          </div>
-
-          {/* 2. 知识点 - 胶囊式标签 */}
-          <div>
-            <div className="flex items-center gap-2 text-muted-foreground mb-3">
-              <Layers className="w-4 h-4" />
-              <span className="text-base">涉及知识点</span>
-            </div>
-            <div className="flex flex-wrap gap-2 pl-1">
-              {extraInfo.knowledge &&
-                extraInfo.knowledge.split(',').map((item, index) => {
-                  const trimmedItem = item.trim();
-                  if (!trimmedItem) return null;
-
-                  return (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="text-sm px-4 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-300 border-0 shadow-sm"
-                    >
-                      {trimmedItem}
-                    </Badge>
-                  );
-                })}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* 题目其它信息 */}
-      <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-        <CardContent className="space-y-6">
-          {/* 参考答案 - 带图标高亮 */}
-          <div className="text-base flex items-start gap-4 p-4 bg-emerald-50/60 dark:bg-emerald-950/30 rounded-lg border border-emerald-200/60 dark:border-emerald-800/40">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
-            <div>
-              <h4 className="font-semibold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider mb-1">参考答案</h4>
-              <div className=" text-emerald-700 dark:text-emerald-300">
-                <SimpleFullContent content={extraInfo.answer ?? ''} />
-              </div>
-            </div>
-          </div>
-
-          <Separator className="bg-gray-100 dark:bg-gray-800" />
-
-          {/* 解题分析 - 左侧强调边框 */}
-          <div className="text-base border-l-4 border-l-sky-400 pl-4 py-1 bg-sky-50/30 dark:bg-sky-950/20 rounded-r-lg">
-            <div className="flex items-center gap-2 text-sky-700 dark:text-sky-300 mb-1">
-              <Lightbulb className="w-4 h-4" />
-              <span>解题分析</span>
-            </div>
-            <div className="leading-relaxed text-gray-700 dark:text-gray-300">
-              <SimpleFullContent content={extraInfo.analysis?.content ?? ''} />
-            </div>
-          </div>
-
-          {/* 解题过程 */}
-          <div className="text-base border-l-4 border-l-sky-400 pl-4 py-1 bg-sky-50/30 dark:bg-sky-950/20 rounded-r-lg">
-            <div className="flex items-center gap-2 text-sky-700 dark:text-sky-300 mb-1">
-              <Lightbulb className="w-4 h-4" />
-              <span>解题过程</span>
-            </div>
-            <div className="leading-relaxed text-gray-700 dark:text-gray-300">
-              <SimpleFullContent content={extraInfo.process?.content ?? ''} />
-            </div>
-          </div>
-
-          {/* 解题过程 - 时间线步骤 */}
-          <div className="text-base">
-            <h4 className=" text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2">
-              <span className="w-6 h-0.5 bg-gray-300 dark:bg-gray-600"></span>
-              推演步骤
-              <span className="w-6 h-0.5 bg-gray-300 dark:bg-gray-600"></span>
-            </h4>
-            <div className="space-y-0 relative">
-              {/* 竖向连接线 */}
-              <div className="absolute left-4.75 top-3 bottom-3 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
-
-              {baseInfo.steps?.map((step, idx) => (
-                <div key={idx} className="relative flex items-start gap-4 pb-4 last:pb-0 group">
-                  {/* 序号圆点 */}
-                  <div className="relative z-10 flex items-center justify-center w-9 h-9 rounded-full bg-white dark:bg-gray-900 border-2 border-indigo-200 dark:border-indigo-800 group-hover:border-indigo-500 transition-colors shadow-sm shrink-0">
-                    <span className=" text-indigo-600 dark:text-indigo-400">{step.id}</span>
-                  </div>
-                  {/* 步骤内容 */}
-                  <div className="pt-1.5 pb-1 px-4 bg-gray-50/50 dark:bg-gray-900/30 rounded-lg border border-gray-100 dark:border-gray-800 flex-1 hover:bg-gray-100/50 dark:hover:bg-gray-800/30 transition-colors">
-                    <div className=" text-gray-700 dark:text-gray-300 leading-relaxed">
-                      <SimpleFullContent content={step.content} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <Separator className="bg-gray-100 dark:bg-gray-800" />
-
-          {/* 备注 - 警告/提示风格 */}
-          <div className="text-base flex items-start gap-3 p-4 bg-amber-50/60 dark:bg-amber-950/30 rounded-lg border border-amber-200/50 dark:border-amber-800/40">
-            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
-            <div>
-              <h4 className="text-amber-700 dark:text-amber-300 uppercase tracking-wider mb-0.5">易错备注</h4>
-              <div className="text-amber-800/80 dark:text-amber-300/80 leading-relaxed">
-                <SimpleFullContent content={extraInfo.remark ?? ''} />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      ))}
     </div>
   );
 }
 
-export { QuestionInfo };
+// 题目相亲信息
+interface QuestionInfoProps {
+  otherDictListRecord: OtherDictListRecord;
+  baseInfoResp: QuestionBaseInfoResp;
+}
+function QuestionInfo({ otherDictListRecord, baseInfoResp }: QuestionInfoProps) {
+  // 查看答案详情
+  const [isAnswerOpen, setIsAnswerOpen] = useState(false);
+  const [viewAnswerIng, setViewAnswerIng] = useState<boolean>(false);
+  const [viewAnswerErr, setViewAnswerErr] = useState<React.ReactNode>(null);
+  const [infoResp, setInfoResp] = useState<QuestionInfoResp | null>(null);
+
+  const handleViewAnswerInfo = (open: boolean) => {
+    setIsAnswerOpen(open);
+
+    if (infoResp) {
+      return;
+    }
+
+    setViewAnswerIng(true);
+    setViewAnswerErr(null);
+
+    httpClient
+      .get<QuestionInfoResp>(`/question/info/${baseInfoResp.id}`)
+      .then((res) => {
+        setInfoResp(res);
+      })
+      .catch((err) => {
+        setViewAnswerErr(<SimpleAlert title="查询题目详情出错" message={err.message} />);
+      })
+      .finally(() => {
+        setViewAnswerIng(false);
+      });
+  };
+
+  // 查看变式题
+  const [isSimilarOpen, setIsSimilarOpen] = useState(false);
+  const [viewSimilarIng, setViewSimilarIng] = useState<boolean>(false);
+  const [viewSimilarErr, setViewSimilarErr] = useState<React.ReactNode>(null);
+  const [similarListResp, setSimilarListResp] = useState<QuestionListResp | null>(null);
+
+  const handleSimilarList = (open: boolean) => {
+    setIsSimilarOpen(open);
+
+    if (similarListResp !== null) {
+      return;
+    }
+
+    setViewSimilarIng(true);
+    setViewSimilarErr(null);
+
+    const req: QuestionSimilarListReq = {
+      questionId: baseInfoResp.id,
+      questionCateId: baseInfoResp.questionCateId,
+      pageNo: 1,
+      pageSize: 50,
+    };
+
+    httpClient
+      .post<QuestionListResp>('/question/similar', req)
+      .then((res) => {
+        setSimilarListResp(res);
+      })
+      .catch((err) => {
+        setViewSimilarErr(<SimpleAlert title="查询变式题出错" message={err.message} />);
+      })
+      .finally(() => {
+        setViewSimilarIng(false);
+      });
+  };
+
+  // 简单的复制题目
+  const { copy, copied } = useCopy();
+  const handleCopyInfo = async () => {
+    // 没详情就先同步等请求回来
+    let detail = infoResp;
+    if (!detail) {
+      try {
+        detail = await httpClient.get<QuestionInfoResp>(`/question/info/${baseInfoResp.id}`);
+        setInfoResp(detail);
+      } catch (err) {
+        toast.error(<div className="text-red-700">查询题目详情失败: {(err as Error).message}, 无法复制</div>, {
+          duration: Infinity,
+          action: { label: '关闭', onClick: () => {} },
+        });
+        return;
+      }
+    }
+
+    // 图片访问路径
+    const origin = window.location.origin;
+    const imageSrc = `${origin}/images`;
+
+    // 题干图片
+    let titleImages: string[] = [];
+    if (baseInfoResp.images && baseInfoResp.images.length > 0) {
+      baseInfoResp.images.map((fileId) => {
+        titleImages.push(`${imageSrc}/${fileId}`);
+      });
+    }
+
+    // 拼接选项
+    const opt: string[] = [];
+    if (baseInfoResp.options?.length) {
+      baseInfoResp.options.forEach((item) => {
+        // 目前图片和选项文本不能同时存在
+        if (item.content) {
+          opt.push(`${item.label}. ${item.content}`);
+        } else if (item.images && item.images.length > 0) {
+          // 选项图片暂时只关注一章的情形
+          opt.push(`${item.label}. ${imageSrc}/${item.images[0]}`);
+        }
+      });
+    }
+
+    const fullMd = [
+      `## 题干\n${baseInfoResp.title}`,
+      titleImages.length > 0 ? titleImages.join('\n') : '',
+      opt.length > 0 ? opt.join('\n') : '',
+      `## 参考答案\n${detail.extraInfo.answer ?? ''}`,
+      `## 解题分析\n${detail.extraInfo.analysis?.content ?? ''}`,
+      `## 解题过程\n${detail.extraInfo.process?.content ?? ''}`,
+    ]
+      .filter(Boolean)
+      .join('\n\n');
+
+    copy(fullMd);
+  };
+
+  return (
+    <div className="w-full space-y-3">
+      {/* 答案解析内容 */}
+      <Collapsible open={isAnswerOpen}>
+        <CollapsibleContent className="transition-all data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down mt-3 p-3 bg-muted border border-dotted border-blue-100">
+          {viewAnswerErr || <AnswerInfo infoResp={infoResp} />}
+        </CollapsibleContent>
+      </Collapsible>
+
+      {/* 按钮控制栏：一排堆叠，宽度不够自动换行 */}
+      <div className="flex flex-wrap gap-2">
+        {/* 答案解析控制按钮 */}
+        <Collapsible open={isAnswerOpen} onOpenChange={handleViewAnswerInfo}>
+          <CollapsibleTrigger
+            render={
+              <Button variant={isAnswerOpen ? 'default' : 'outline'} size="sm">
+                {isAnswerOpen ? '收起答案解析' : viewAnswerIng ? '查询中...' : '查看答案解析'}
+              </Button>
+            }
+          ></CollapsibleTrigger>
+        </Collapsible>
+
+        {/* 变式题控制按钮 */}
+        {baseInfoResp.relationType === QuestionRelationType.Base && (
+          <Collapsible open={isSimilarOpen} onOpenChange={handleSimilarList}>
+            <CollapsibleTrigger
+              render={
+                <Button variant={isSimilarOpen ? 'default' : 'outline'} size="sm">
+                  {isSimilarOpen ? '收起变式题' : viewSimilarIng ? '查询中...' : '查看变式题'}
+                </Button>
+              }
+            ></CollapsibleTrigger>
+          </Collapsible>
+        )}
+
+        {/* 复制题目 */}
+        <Button
+          variant={copied ? 'default' : 'outline'}
+          size="sm"
+          title="复制 Markdown 格式的题干和答案, 数学公式语法为 LaTeX"
+          onClick={handleCopyInfo}
+        >
+          {copied ? '已复制' : '复制'}
+        </Button>
+      </div>
+
+      {/* 变式题列表内容 */}
+      <Collapsible open={isSimilarOpen}>
+        <CollapsibleContent className="transition-all data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down pb-3">
+          {viewSimilarErr || <SimilarListShow otherDictListRecord={otherDictListRecord} listResp={similarListResp} />}
+        </CollapsibleContent>
+      </Collapsible>
+    </div>
+  );
+}
+
+export { AnswerInfo, QuestionInfo };

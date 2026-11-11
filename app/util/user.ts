@@ -1,4 +1,4 @@
-import type { UserInfoResp } from '~/type/user';
+import type { UserInfoResp } from '@/type/user';
 
 // 保存用户登录信息
 export const saveAuth = (token: string, userInfo: UserInfoResp) => {

@@ -1,3 +1,38 @@
+// 题目列表搜索字段维护
+export interface QuestionSearch {
+  twoLevelId: number; // 第2层标识-用于查询题目类型和标签
+  fiveLevelId: number; // 第5层标识-用于获取知识点分类和教材目录
+  fiveLevelSelectKeys: string[]; // 选择的5层菜单导航key列表
+  eightIds: number[]; // 第8层标识-用于查询该题型下的题目列表
+  eightLevelSelectKeys: string[]; // 题目分类类表导航key集合
+  typeId: number; // 题目类型
+  tagIds: number[]; // 题目标签
+  dimensionIds: number[]; //核心素养
+  levelIds: number[]; // 分层体系
+  sceneIds: number[]; // 适用场景
+  mistakeTipIds: number[]; // 常见错误
+  id?: number; // 题目主键
+  sourceId?: number; // 母题标识, 添加变式题时需要传递
+  status?: number; // 题目状态
+}
+
+// 题目列表请求
+export interface QuestionListReq {
+  source: string;
+  questionCateIds: number[];
+  questionTypeId?: number;
+  ids?: number[];
+  status?: number; // 题目状态, 我的题目能看全部状态
+  titleVal?: string;
+  tagIds?: number[];
+  dimensionIds?: number[];
+  levelIds?: number[];
+  sceneIds?: number[];
+  mistakeTipIds?: number[];
+  pageNo: number;
+  pageSize: number;
+}
+
 // 题目选项信息
 export interface QuestionOption {
   label: string; // A, B, C, D, E
@@ -16,35 +51,6 @@ export interface Content {
 export interface Step {
   id: number; // 步骤
   content: string; // 内容
-}
-
-// 创建题目请求
-export interface CreateQuestionReq {
-  id?: number; // 更新时需要主键, 新增时不能传递这个key
-  sourceId?: number; // 母题标识, 默认无
-  relationType: number; // 变式题分类
-  questionCateId: number; // 题目分类标识
-  questionTypeId: number; // 题目类型标识
-  questionTagIds?: number[]; // 题目标签
-  questionDimensionIds?: number[]; // 核心素养
-  levelId: number; // 分层体系
-  sceneIds?: number[]; // 适合常见
-  mistakeTipIds?: number[]; // 常见错误
-  originalName: string; // 原创者代号-不要写别人真名, 尊重他人隐私
-  source?: string; // 题目来源
-  title: string; // 题干
-  comment?: string; // 题干补充说明
-  difficultyLevel: number; // 难度系数
-  images?: string[]; // 题干图片
-  options?: QuestionOption[]; // 选择题选项列表
-  optionsLayout?: number; // 选择题选项布局样式 1 展示一行 2 展示一列 3 展示两列
-  answer?: string; // 参考答案
-  knowledge?: string; // 涉及知识点
-  analysis?: Content; // 解题分析
-  process?: Content; // 解题过程
-  steps?: Step[]; // 解题步骤提示
-  remark?: string; // 解题备注, 比如易错题型等
-  status: number; // 题目状态
 }
 
 // 题目基本信息返回
@@ -78,6 +84,20 @@ export interface QuestionBaseInfoResp {
   updatedAt: string; // 更新时间
 }
 
+// 题目列表返回
+export interface QuestionListResp {
+  pageNo: number;
+  pageSize: number;
+  total: number;
+  list: QuestionBaseInfoResp[];
+}
+
+// 题目搜索页面
+export interface QuestionPageSourceProps {
+  // 页面来源 list: 普通的搜索列表 myQuestion: 我的题目, 只有查看和编辑 myReview: 我的审核 只有查看
+  source: 'list' | 'myQuestion' | 'myReview';
+}
+
 // 题目其它信息返回
 export interface QuestionExtraInfoResp {
   answer?: string;
@@ -93,23 +113,6 @@ export interface QuestionInfoResp {
   extraInfo: QuestionExtraInfoResp;
 }
 
-// 题目列表请求
-export interface QuestionListReq {
-  source: string;
-  questionCateIds: number[];
-  questionTypeId?: number;
-  ids?: number[];
-  status?: number; // 题目状态, 我的题目能看全部状态
-  titleVal?: string;
-  tagIds?: number[];
-  dimensionIds?: number[];
-  levelIds?: number[];
-  sceneIds?: number[];
-  mistakeTipIds?: number[];
-  pageNo: number;
-  pageSize: number;
-}
-
 // 题目变式题列表请求
 export interface QuestionSimilarListReq {
   questionId: number;
@@ -118,54 +121,4 @@ export interface QuestionSimilarListReq {
   tagIds?: number[];
   pageNo: number;
   pageSize: number;
-}
-
-// 题目列表返回
-export interface QuestionListResp {
-  pageNo: number;
-  pageSize: number;
-  total: number;
-  list: QuestionBaseInfoResp[];
-}
-
-// 题目列表搜索字段维护
-export interface QuestionSearch {
-  twoLevelId: number; // 第2层标识-用于查询题目类型和标签
-  fiveLevelId: number; // 第5层标识-用于获取知识点分类和教材目录
-  fiveLevelSelectKeys: string[]; // 选择的5层菜单导航key列表
-  eightIds: number[]; // 第8层标识-用于查询该题型下的题目列表
-  eightLevelSelectKeys: string[]; // 题目分类类表导航key集合
-  typeId: number; // 题目类型
-  tagIds: number[]; // 题目标签
-  dimensionIds: number[]; //核心素养
-  levelIds: number[]; // 分层体系
-  sceneIds: number[]; // 适用场景
-  mistakeTipIds: number[]; // 常见错误
-  id?: number; // 题目主键
-  sourceId?: number; // 母题标识, 添加变式题时需要传递
-  status?: number; // 题目状态
-}
-
-// 解析题目请求
-export interface QuestionSnippetReq {
-  textbookId: number;
-  content: string;
-}
-
-// 题目搜索页面
-export interface QuestionPageSourceProps {
-  // 页面来源 list: 普通的搜索列表 myQuestion: 我的题目, 只有查看和编辑 myReview: 我的审核 只有查看
-  source: 'list' | 'myQuestion' | 'myReview';
-}
-
-// 题目审核
-export interface QuestionApproveReq {
-  id: number;
-  status: number; // 审核状态
-  rejectReason: string; // 拒绝原因
-}
-
-// 题目删除
-export interface QuestionDeleteReq {
-  id: number;
 }

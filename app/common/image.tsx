@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { createPortal } from 'react-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { cn } from 'cn';
 import { ImagePlus, Plus, Trash2, X } from 'lucide-react';
-import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 /// 图片相关组件
 
@@ -123,4 +123,4 @@ function ImageAdd({ name, images = [], add, update, remove }: ImageAddProps) {
   );
 }
 
-export { ImageZoom, ImageAdd };
+export { ImageAdd, ImageZoom };
