@@ -12,6 +12,7 @@ export enum QuestionStatus {
   Pending = 1, // 待审核
   Published = 2, // 已发布
   Rejected = 3, // 已拒绝
+  None = -1, // 无状态
 }
 
 // 题目关系
@@ -25,4 +26,14 @@ export enum QuestionRelationType {
 export enum UserLoginSource {
   User = 1, // 普通用户
   Student = 2, // 学生
+}
+
+// 页面来源 list: 普通的搜索列表 myQuestion: 我的题目, 只有查看和编辑 myReview: 我的审核 只有查看
+export enum QuestionPageSource {
+  /** 普通的搜索列表 */
+  List = 'list',
+  /** 我的题目：只有查看和编辑 */
+  MyQuestion = 'myQuestion',
+  /** 我的审核：只有查看 */
+  MyReview = 'myReview',
 }

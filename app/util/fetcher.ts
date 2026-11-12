@@ -1,4 +1,5 @@
 import type { BoardResp } from '@/type/bord';
+import { QuestionPageSource } from '@/type/enum';
 import type { QuestionListReq, QuestionListResp, QuestionSearch } from '@/type/question';
 import type { TextbookOtherDictListReq, TextbookOtherDictListResp, TextbookResp } from '@/type/textbook';
 import { httpClient } from '@/util/http';
@@ -44,13 +45,15 @@ export function useQuestionCates(fiveLevelId: number) {
 }
 
 // 题目列表
-export function useQuestionList(source: string, search: QuestionSearch, pageNo: number) {
+export function useQuestionList(source: QuestionPageSource, search: QuestionSearch, pageNo: number) {
   const req: QuestionListReq = {
     source,
-    questionCateIds: search.eightIds,
     pageNo: pageNo,
     pageSize: StringConst.pageSize,
   };
+  if (search.eightIds && search.eightIds.length > 0) {
+    req.questionCateIds = search.eightIds;
+  }
   if (search.typeId > 0) {
     req.questionTypeId = search.typeId;
   }
@@ -60,7 +63,7 @@ export function useQuestionList(source: string, search: QuestionSearch, pageNo: 
   if (search.id && search.id > 0) {
     req.ids = [search.id];
   }
-  if (search.status !== undefined) {
+  if (search.status !== undefined && search.status >= 0) {
     req.status = search.status;
   }
   if (search.dimensionIds && search.dimensionIds.length > 0) {
@@ -76,9 +79,10 @@ export function useQuestionList(source: string, search: QuestionSearch, pageNo: 
     req.mistakeTipIds = search.mistakeTipIds;
   }
 
-  // 生成 SWR 的 key（只有 relatedId > 0 时才发起请求，否则为 null）
   const reqPath = '/question/list';
-  const key = req.questionCateIds.length > 0 ? [reqPath, JSON.stringify(req)] : null;
+  // 我的页面没有区分度
+  const key =
+    source === QuestionPageSource.MyQuestion || (req.questionCateIds && req.questionCateIds.length > 0) ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>(reqPath, req), defaultErrConfig);
 }
 

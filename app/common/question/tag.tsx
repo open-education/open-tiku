@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import type { QuestionBaseInfoResp, QuestionPageSourceProps } from '@/type/question';
+import type { QuestionPageSource } from '@/type/enum';
+import type { QuestionBaseInfoResp } from '@/type/question';
 import type { OtherDictListRecord, TextbookOtherDictResp } from '@/type/textbook';
 import { DictUtil } from '@/util/object';
 import { StringConst } from '@/util/string';
@@ -80,13 +81,13 @@ function TypeSelect({ options, value = 0, onSelect }: TypeSelectProps) {
 // 适用场景
 // 常见错误
 interface TagShowProps {
-  pageSource: QuestionPageSourceProps;
+  pageSource: QuestionPageSource;
   questionInfo: QuestionBaseInfoResp;
   otherDictListRecord: OtherDictListRecord;
 }
 
 // 顶部标签显示
-function TagTopShow({ pageSource, questionInfo, otherDictListRecord }: TagShowProps) {
+function TagTopShow({ questionInfo, otherDictListRecord }: TagShowProps) {
   // 生成标签列表
   const getBadges = () => {
     // 分层体系

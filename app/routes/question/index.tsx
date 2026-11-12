@@ -8,6 +8,7 @@ import { NavTreeList, SearchList } from '@/components/question/nav';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { QuestionPageSource } from '@/type/enum';
 import type { QuestionSearch } from '@/type/question';
 import type { TextbookResp } from '@/type/textbook';
 import { useQuestionCates, useQuestionList, useQuestionOtherDictList, useTextbooks } from '@/util/fetcher';
@@ -93,7 +94,7 @@ export default function Index() {
     isLoading: questionListRespLoading,
     error: questionListRespErr,
     mutate: questionListRespMutate,
-  } = useQuestionList('list', questionSearch, pageNo);
+  } = useQuestionList(QuestionPageSource.List, questionSearch, pageNo);
 
   // 页面加载中
   const showLoading = useDelayedLoading(textbooksIsLoading || dictListRespLoading || questionCatesLoading || questionListRespLoading);
@@ -170,7 +171,7 @@ export default function Index() {
           {/* 题目列表 */}
           <div>
             <QuestionListShow
-              pageSource={{ source: 'list' }}
+              pageSource={QuestionPageSource.List}
               otherDictListRecord={otherDictListRecord}
               listResp={questionListResp}
               questionSearch={questionSearch}

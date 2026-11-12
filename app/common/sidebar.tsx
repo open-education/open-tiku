@@ -8,10 +8,10 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import { UserRoleType } from '@/type/enum';
-import { Bot, ChevronRight, SquareTerminal, Trophy, type LucideIcon } from 'lucide-react';
+import type { OpsMenu } from '@/type/menu';
+import { ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router';
+import { Link } from 'react-router';
 
 // 用户中心菜单项
 
@@ -58,85 +58,11 @@ function Logo() {
   );
 }
 
-// 菜单项配置
-interface Menu {
-  title: string;
-  url: string;
-  icon: LucideIcon;
-  login: boolean;
-  role: UserRoleType;
-  items?: MenuItem[];
+interface MenuListProps {
+  menuItems: OpsMenu[];
+  currentPath: string;
 }
-
-interface MenuItem {
-  title: string;
-  url: string;
-  login: boolean;
-  role: UserRoleType;
-}
-
-const menuItems: Menu[] = [
-  {
-    title: '工作台',
-    url: '/ops',
-    icon: SquareTerminal,
-    login: false,
-    role: UserRoleType.Normal,
-  },
-  {
-    title: '题目搜索',
-    url: '',
-    icon: Bot,
-    login: false,
-    role: UserRoleType.None,
-    items: [
-      {
-        title: '章节/知识点选题',
-        url: '/question',
-        login: false,
-        role: UserRoleType.None,
-      },
-    ],
-  },
-  {
-    title: '我的贡献',
-    url: '',
-    icon: Trophy,
-    login: true,
-    role: UserRoleType.Normal,
-    items: [
-      {
-        title: '我的题目',
-        url: '/my/question',
-        login: false,
-        role: UserRoleType.Normal,
-      },
-      {
-        title: '添加题目',
-        url: '/my/question/add',
-        login: false,
-        role: UserRoleType.Normal,
-      },
-      {
-        title: '上传题目',
-        url: '/my/question/upload',
-        login: false,
-        role: UserRoleType.Normal,
-      },
-      {
-        title: '我的试卷',
-        url: '/my/paper',
-        login: false,
-        role: UserRoleType.Normal,
-      },
-    ],
-  },
-];
-
-function MenuList() {
-  const location = useLocation();
-  const currentPath = location.pathname;
-
+function MenuList({ menuItems, currentPath }: MenuListProps) {
   // 判断某个 url 是否为当前激活项
   const isActive = (url?: string) => {
     if (!url) return false;

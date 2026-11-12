@@ -5,7 +5,6 @@ import type { OtherDictListRecord, TextbookResp } from '@/type/textbook';
 
 // 题目搜索条件树
 interface NavTreeListProps {
-  // textbooks 网站原始前5层级导航信息
   textbooks: TextbookResp[];
   questionCates: CheckboxTreeNode[];
   onTextbook: (selection: LevelProps, selectedTextbooks: Record<keyof LevelProps, TextbookResp | null>) => void;

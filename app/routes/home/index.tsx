@@ -1,3 +1,5 @@
+import { SimpleAlert } from '@/common/alert';
+import { Loading } from '@/common/load';
 import Board from '@/components/home/board';
 import Build from '@/components/home/build';
 import Feature from '@/components/home/feature';
@@ -5,10 +7,10 @@ import Hero from '@/components/home/hero';
 import Layered from '@/components/home/layered';
 import Mission from '@/components/home/mission';
 import Raodmap from '@/components/home/roadmap';
+import { useDelayedLoading } from '@/hooks/delayed-loading';
 import { useBoardList, useTextbooks } from '@/util/fetcher';
 import { TextbookUtil } from '@/util/object';
 import { useMemo } from 'react';
-import type { Route } from './+types/index';
 
 // 默认首页
 export default function Index() {
@@ -31,8 +33,13 @@ export default function Index() {
     error: boardRespErr,
   } = useBoardList();
 
+  const showLoading = useDelayedLoading(textbooksIsLoading || boardRespLoading);
+
   return (
     <>
+      {showLoading && <Loading />}
+      {textbooksErr && <SimpleAlert title="教材和考点查询出错" message={textbooksErr.message} />}
+      {boardRespErr && <SimpleAlert title="统计信息查询出错" message={boardRespErr.message} />}
       <Hero countInfo={boardResp.countInfo} />
       <Feature />
       <Layered />

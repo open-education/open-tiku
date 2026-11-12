@@ -60,15 +60,6 @@ export default function Hero({
 
   return (
     <section className="relative overflow-hidden bg-linear-to-br from-blue-50 via-blue-100 via-40% to-blue-200 pt-20 pb-22.5">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-25 right-[5%] size-100  bg-radial-[at_100%_0%] from-blue-500/15 via-transparent via-70% to-transparent"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-20 left-[10%] size-75 bg-radial-[at_0%_100%] from-blue-900/10 via-transparent via-70% to-transparent"
-      />
-
       <div className="relative mx-auto max-w-300 px-10">
         <div className="mx-auto max-w-215 text-center">
           <Badge className="mb-6 border-0 bg-blue-500/15 p-4 text-[13px] font-medium text-blue-900 shadow-none hover:bg-blue-500/15">

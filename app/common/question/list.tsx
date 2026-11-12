@@ -8,7 +8,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { QuestionBaseInfoResp, QuestionInfoResp, QuestionListResp, QuestionPageSourceProps, QuestionSearch } from '@/type/question';
+import { QuestionPageSource } from '@/type/enum';
+import type { QuestionBaseInfoResp, QuestionInfoResp, QuestionListResp, QuestionSearch } from '@/type/question';
 import type { OtherDictListRecord, TextbookOtherDictResp } from '@/type/textbook';
 import { httpClient } from '@/util/http';
 import { StringConst } from '@/util/string';
@@ -20,7 +21,7 @@ import type { KeyedMutator } from 'swr';
 
 // 题目标题选项等公共部分展示
 interface SingleQuestionCommonPartProps {
-  pageSource: QuestionPageSourceProps;
+  pageSource: QuestionPageSource;
   otherDictListRecord: OtherDictListRecord;
   questionInfo: QuestionBaseInfoResp;
   optBgClassName?: string;
@@ -55,7 +56,7 @@ function SingleQuestionCommonPart({ pageSource, otherDictListRecord, questionInf
 
 // 普通列表展示, 需要查看详情等操作
 interface QuestionListShowProps {
-  pageSource: QuestionPageSourceProps;
+  pageSource: QuestionPageSource;
   otherDictListRecord: OtherDictListRecord;
   listResp: QuestionListResp;
   questionSearch: QuestionSearch;
@@ -98,13 +99,14 @@ function SimilarListShow({ otherDictListRecord, listResp }: SimilarListShowProps
   }
 
   // 需要从字典中获取
-  const LEVEL_CONFIG: TextbookOtherDictResp[] = otherDictListRecord.questionLevels.filter(
+  const levelConfig: TextbookOtherDictResp[] = otherDictListRecord.questionLevels.filter(
     (item) => !StringConst.ignoreQuestionLevelItems.includes(item.itemValue),
   );
 
-  const ITEMS_PER_PAGE = 5;
+  // 变式题每页显示数量
+  const itemsPerPage = 5;
 
-  const [activeTab, setActiveTab] = useState<number>(LEVEL_CONFIG[0].id);
+  const [activeTab, setActiveTab] = useState<number>(levelConfig.length > 0 ? levelConfig[0].id : -1);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [openQuestionId, setOpenQuestionId] = useState<number | null>(null);
 
@@ -112,7 +114,7 @@ function SimilarListShow({ otherDictListRecord, listResp }: SimilarListShowProps
   const groupedData = useMemo(() => {
     const groups: Record<number, QuestionBaseInfoResp[]> = {};
 
-    LEVEL_CONFIG.forEach((cfg) => {
+    levelConfig.forEach((cfg) => {
       groups[cfg.id] = [];
     });
 
@@ -127,15 +129,15 @@ function SimilarListShow({ otherDictListRecord, listResp }: SimilarListShowProps
     return groups;
   }, [listResp.list]);
 
-  const currentTabConfig = LEVEL_CONFIG.find((cfg) => cfg.id === activeTab);
+  const currentTabConfig = levelConfig.find((cfg) => cfg.id === activeTab);
   const currentTabList = currentTabConfig ? groupedData[currentTabConfig.id] || [] : [];
   const totalItems = currentTabList.length;
-  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   // 内存分页数据切片
-  const pagedList = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return currentTabList.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const { startIdx, pagedList } = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return { startIdx: startIndex, pagedList: currentTabList.slice(startIndex, startIndex + itemsPerPage) };
   }, [currentTabList, currentPage]);
 
   const handleTabChange = (id: number) => {
@@ -179,9 +181,11 @@ function SimilarListShow({ otherDictListRecord, listResp }: SimilarListShowProps
 
   return (
     <div>
+      {levelConfig.length === 0 && <SimpleAlert title="变式题类型未确认" message="请选择章节/知识点类型, 否则无法确认变式题类型" variant="default" />}
+
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList variant="line" className="flex">
-          {LEVEL_CONFIG.map((cfg) => {
+          {levelConfig.map((cfg) => {
             const count = groupedData[cfg.id]?.length || 0;
             return (
               <TabsTrigger key={cfg.id} value={cfg.id}>
@@ -194,7 +198,7 @@ function SimilarListShow({ otherDictListRecord, listResp }: SimilarListShowProps
           })}
         </TabsList>
 
-        {LEVEL_CONFIG.map((cfg) => {
+        {levelConfig.map((cfg) => {
           return (
             <TabsContent key={cfg.id} value={cfg.id}>
               <div className="space-y-2">
@@ -205,7 +209,7 @@ function SimilarListShow({ otherDictListRecord, listResp }: SimilarListShowProps
                       <div className={cn('overflow-hidden', isOpen ? 'border-blue-600 border border-dotted bg-green-50' : 'border-gray-300 border')}>
                         <div className="grid grid-cols-[85%_15%] items-center p-2">
                           <div className="flex gap-2 min-w-0 wrap-break-word">
-                            <div className="tabular-nums font-semibold">{index + 1}.</div>
+                            <div className="tabular-nums font-semibold">{startIdx + index + 1}.</div>
                             <TitleShow title={question.title} comment="" className="text-sm" />
                           </div>
 
@@ -225,13 +229,13 @@ function SimilarListShow({ otherDictListRecord, listResp }: SimilarListShowProps
                           {viewInfoErr || (
                             <div className="border-t border-inherit p-2 bg-muted space-y-2">
                               <div className="space-y-1">
-                                <div className={'flex items-center text-sm  gap-1.5 font-bold text-violet-600'}>
-                                  <span className={'h-1.5 w-1.5 rounded-full bg-violet-500'} />
+                                <div className={'flex items-center text-sm  gap-1.5 font-bold text-amber-600'}>
+                                  <span className={'h-1.5 w-1.5 rounded-full bg-amber-500'} />
                                   题目全文
                                 </div>
                                 <div className="p-3 text-slate-700 border border-dashed border-blue-300">
                                   <SingleQuestionCommonPart
-                                    pageSource={{ source: 'list' }}
+                                    pageSource={QuestionPageSource.List}
                                     otherDictListRecord={otherDictListRecord}
                                     questionInfo={question}
                                     optBgClassName=""

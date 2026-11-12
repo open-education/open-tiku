@@ -19,10 +19,11 @@ export default [
     route('/question', 'routes/question/index.tsx'),
 
     // 我的贡献
-    route('/my/question', 'routes/ops/my/question/index.tsx'),
-    route('/my/question/add', 'routes/ops/my/question/add.tsx'),
-    route('/my/question/upload', 'routes/ops/my/question/upload.tsx'),
-    route('/my/paper', 'routes/ops/my/paper/index.tsx'),
+    route('/ops/my/question', 'routes/ops/my/question/index.tsx'),
+    route('/ops/my/question/add', 'routes/ops/my/question/add.tsx'),
+    route('/ops/my/question/upload', 'routes/ops/my/question/upload.tsx'),
+    route('/ops/my/question/task', 'routes/ops/my/question/task.tsx'),
+    route('/ops/my/paper', 'routes/ops/my/paper/index.tsx'),
   ]),
 
   // 学生空间
