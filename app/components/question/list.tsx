@@ -1,6 +1,6 @@
 import { SimpleAlert } from '@/common/alert';
-import { AnswerInfo, QuestionInfo } from '@/common/question/info';
-import { TagBottomShow, TagTopShow } from '@/common/question/tag';
+import { AnswerInfo, QuestionInfo } from '@/components/question/info';
+import { TagBottomShow, TagTopShow } from '@/components/question/tag';
 import { MultiOptionShow } from '@/common/select';
 import { TitleShow } from '@/common/title';
 import { Button } from '@/components/ui/button';

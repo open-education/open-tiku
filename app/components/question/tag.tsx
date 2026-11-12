@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import type { QuestionPageSource } from '@/type/enum';
+import { QuestionPageSource } from '@/type/enum';
 import type { QuestionBaseInfoResp } from '@/type/question';
 import type { OtherDictListRecord, TextbookOtherDictResp } from '@/type/textbook';
 import { DictUtil } from '@/util/object';
@@ -177,7 +177,7 @@ function TagBottomShow({ pageSource, questionInfo, otherDictListRecord }: TagSho
 
     // 我的审核和题目需要展示题目状态
     const statusDesc =
-      pageSource.source !== 'list' ? (
+      pageSource !== QuestionPageSource.List ? (
         <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300" key={questionInfo.status}>
           {StringConst.questionStatusList[questionInfo.status].label || '草稿中'}
         </Badge>

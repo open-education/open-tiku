@@ -3,7 +3,7 @@ import { SimpleNoData } from '@/common/empty';
 import { Loading } from '@/common/load';
 import { type CheckboxTreeNode } from '@/common/nav';
 import { SimplePagination } from '@/common/page';
-import { QuestionListShow } from '@/common/question/list';
+import { QuestionListShow } from '@/components/question/list';
 import { NavTreeList, SearchList } from '@/components/question/nav';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { useDelayedLoading } from '@/hooks/delayed-loading';

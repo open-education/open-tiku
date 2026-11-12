@@ -1,5 +1,5 @@
 import { SimpleFullContent } from '@/common/content';
-import { SimilarListShow } from '@/common/question/list';
+import { SimilarListShow } from '@/components/question/list';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useCopy } from '@/hooks/use-copy';
@@ -9,7 +9,7 @@ import type { OtherDictListRecord } from '@/type/textbook';
 import { httpClient } from '@/util/http';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { SimpleAlert } from '../alert';
+import { SimpleAlert } from '../../common/alert';
 
 // 答案解析
 interface AnswerInfoProps {
