@@ -1,4 +1,4 @@
-import { ChapterExpandNav, ChapterTreeCheckboxNav, type CheckboxTreeNode, type LevelProps } from '@/common/nav';
+import { ChapterExpandNav, ChapterTreeCheckboxNav, type CheckboxTreeNode, type LevelProps } from '@/components/common/nav';
 import { SearchList } from '@/components/question/nav';
 import { Button } from '@/components/ui/button';
 import {

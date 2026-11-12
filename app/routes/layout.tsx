@@ -1,5 +1,5 @@
-import { Error } from '@/common/error';
-import { Logo, MenuList } from '@/common/sidebar';
+import { Error } from '@/components/common/error';
+import { Logo, MenuList } from '@/components/common/sidebar';
 import Auth from '@/components/home/auth';
 import { Separator } from '@/components/ui/separator';
 import {

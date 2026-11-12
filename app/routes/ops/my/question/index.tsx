@@ -4,11 +4,11 @@ import { useQuestionCates, useQuestionList, useQuestionOtherDictList, useTextboo
 import { StringConst } from '@/util/string';
 import { useEffect, useMemo, useState } from 'react';
 
-import { SimpleAlert } from '@/common/alert';
-import { SimpleNoData } from '@/common/empty';
-import { Loading } from '@/common/load';
-import type { CheckboxTreeNode } from '@/common/nav';
-import { SimplePagination } from '@/common/page';
+import { SimpleAlert } from '@/components/common/alert';
+import { SimpleNoData } from '@/components/common/empty';
+import { Loading } from '@/components/common/load';
+import type { CheckboxTreeNode } from '@/components/common/nav';
+import { SimplePagination } from '@/components/common/page';
 import FilterList from '@/components/question/filter';
 import { QuestionListShow } from '@/components/question/list';
 import StatusList from '@/components/question/status';

@@ -1,8 +1,8 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
 import '@/app.css';
-import { Error } from '@/common/error';
-import { InitLoading } from '@/common/load';
+import { Error } from '@/components/common/error';
+import { InitLoading } from '@/components/common/load';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ObjectUtil } from '@/util/object';

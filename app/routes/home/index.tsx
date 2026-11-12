@@ -1,5 +1,5 @@
-import { SimpleAlert } from '@/common/alert';
-import { Loading } from '@/common/load';
+import { SimpleAlert } from '@/components/common/alert';
+import { Loading } from '@/components/common/load';
 import Board from '@/components/home/board';
 import Build from '@/components/home/build';
 import Feature from '@/components/home/feature';

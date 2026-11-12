@@ -1,8 +1,8 @@
-import { SimpleAlert } from '@/common/alert';
+import { SimpleAlert } from '@/components/common/alert';
+import { MultiOptionShow } from '@/components/common/select';
+import { TitleShow } from '@/components/common/title';
 import { AnswerInfo, QuestionInfo } from '@/components/question/info';
 import { TagBottomShow, TagTopShow } from '@/components/question/tag';
-import { MultiOptionShow } from '@/common/select';
-import { TitleShow } from '@/common/title';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';

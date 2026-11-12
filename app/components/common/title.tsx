@@ -1,5 +1,5 @@
-import { SimpleFullContent } from '@/common/content';
-import { ImageZoom } from '@/common/image';
+import { SimpleFullContent } from '@/components/common/content';
+import { ImageZoom } from '@/components/common/image';
 import { StringValidator } from '@/util/string';
 
 /// 标题设计--试卷和题库均使用后续移动到父级

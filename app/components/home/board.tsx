@@ -1,4 +1,4 @@
-import { TitleShow } from '@/common/title';
+import { TitleShow } from '@/components/common/title';
 import { Badge } from '@/components/ui/badge';
 import type { BoardResp } from '@/type/bord';
 import type { TextbookResp } from '@/type/textbook';

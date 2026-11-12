@@ -1,4 +1,4 @@
-import { ChapterExpandNav, ChapterTreeCheckboxNav, type CheckboxTreeNode, type LevelProps } from '@/common/nav';
+import { ChapterExpandNav, ChapterTreeCheckboxNav, type CheckboxTreeNode, type LevelProps } from '@/components/common/nav';
 import { MultiTagSelect, TypeSelect } from '@/components/question/tag';
 import type { QuestionSearch } from '@/type/question';
 import type { OtherDictListRecord, TextbookResp } from '@/type/textbook';

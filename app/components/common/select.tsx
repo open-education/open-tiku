@@ -1,5 +1,5 @@
-import { SimpleFullContent } from '@/common/content';
-import { ImageZoom } from '@/common/image';
+import { SimpleFullContent } from '@/components/common/content';
+import { ImageZoom } from '@/components/common/image';
 import type { QuestionOption } from '@/type/question';
 import { StringValidator } from '@/util/string';
 import { cn } from 'cn';

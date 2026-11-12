@@ -1,4 +1,4 @@
-import { table } from '@/common/table';
+import { table } from '@/components/common/table';
 import { StringValidator } from '@/util/string';
 import Markdown from 'react-markdown';
 import rehypeKatex from 'rehype-katex';

@@ -1,8 +1,8 @@
-import { SimpleAlert } from '@/common/alert';
-import { SimpleNoData } from '@/common/empty';
-import { Loading } from '@/common/load';
-import { type CheckboxTreeNode } from '@/common/nav';
-import { SimplePagination } from '@/common/page';
+import { SimpleAlert } from '@/components/common/alert';
+import { SimpleNoData } from '@/components/common/empty';
+import { Loading } from '@/components/common/load';
+import { type CheckboxTreeNode } from '@/components/common/nav';
+import { SimplePagination } from '@/components/common/page';
 import { QuestionListShow } from '@/components/question/list';
 import { NavTreeList, SearchList } from '@/components/question/nav';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
