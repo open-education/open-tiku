@@ -1,0 +1,326 @@
+import { SimpleAlert } from '@/components/common/alert';
+import { Loading } from '@/components/common/load';
+import { ChapterDropdownNav } from '@/components/common/nav';
+import { OtherDictSelect } from '@/components/question/tag';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useDelayedLoading } from '@/hooks/delayed-loading';
+import type { TextbookOtherDictReq, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
+import { useQuestionOtherDicts, useTextbooks } from '@/util/fetcher';
+import { httpClient } from '@/util/http';
+import { StringConst, StringValidator } from '@/util/string';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import type { Route } from './+types/dict';
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: '系统设置-通用字典维护' },
+    {
+      name: 'description',
+      content: '个人中心, 系统设置, 题目类型, 标签, 核心素养等通用字典维护',
+    },
+  ];
+}
+
+// 其它字典维护
+export default function Index() {
+  const [addReq, setAddReq] = useState<TextbookOtherDictReq>({
+    textbookId: 0,
+    typeCode: '',
+    itemValue: '',
+    sortOrder: 0,
+    isSelect: false,
+  });
+  const updateAddReq = (key: keyof TextbookOtherDictReq, value: number | string | boolean) => {
+    setAddReq((prev) => ({ ...prev, [key]: value }));
+  };
+
+  // 5层导航信息
+  const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(2);
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [processIng, setProcessIng] = useState<boolean>(false);
+
+  const {
+    data: otherDicts = [],
+    isLoading: otherDictsLoading,
+    error: otherDictsErr,
+    mutate: otherDictsMutate,
+  } = useQuestionOtherDicts(addReq.textbookId, addReq.typeCode);
+
+  // 点击添加按钮,  新增需要默认值
+  const handleAdd = () => {
+    setAddReq({ textbookId: addReq.textbookId, typeCode: addReq.typeCode, itemValue: '', sortOrder: 0, isSelect: false });
+    setDialogOpen(true);
+  };
+
+  // 点击编辑按钮, 需要用当前行数据初始化
+  const handleEdit = (item: TextbookOtherDictResp) => {
+    setAddReq({ ...item });
+    setDialogOpen(true);
+  };
+
+  // 提交数据
+  const handleSubmit = () => {
+    if (addReq.textbookId <= 0) {
+      toast.error(<div className="text-red-700">科目不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: '关闭',
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (!StringValidator.isNonEmpty(addReq.typeCode)) {
+      toast.error(<div className="text-red-700">类型不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: '关闭',
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (!StringValidator.isNonEmpty(addReq.itemValue)) {
+      toast.error(<div className="text-red-700">名称不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: '关闭',
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+
+    setProcessIng(true);
+
+    httpClient
+      .post<number>('other/dict/add', addReq)
+      .then((res) => {
+        // 添加成功则清除表单其它项
+        setAddReq({ ...addReq, id: 0, itemValue: '', sortOrder: 0, isSelect: false });
+        setDialogOpen(false);
+        // 同时要重新刷新字典列表
+        otherDictsMutate();
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">{err.message}</div>, {
+          duration: Infinity,
+          action: {
+            label: '关闭',
+            onClick: () => {},
+          },
+        });
+      })
+      .finally(() => {
+        setProcessIng(false);
+      });
+  };
+
+  // 删除数据
+  const handleDelete = (id: number) => {
+    if (!confirm('只能删除没有关联题目的字典')) {
+      return;
+    }
+
+    setProcessIng(true);
+
+    httpClient
+      .get<boolean>(`other/dict/remove/${id}`)
+      .then((res) => {
+        setDialogOpen(false);
+        // 同时要重新刷新字典列表
+        otherDictsMutate();
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">{err.message}</div>, {
+          duration: Infinity,
+          action: {
+            label: '关闭',
+            onClick: () => {},
+          },
+        });
+      })
+      .finally(() => {
+        setProcessIng(false);
+      });
+  };
+
+  return (
+    <div className="bg-card">
+      <Card className="w-full">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <CardTitle className="text-sm font-bold">通用字典管理</CardTitle>
+
+          <Button className="text-sm" onClick={handleAdd} variant="secondary">
+            <Plus className="mr-2 h-4 w-4" />
+            新增
+          </Button>
+        </CardHeader>
+
+        <CardContent>
+          {/* 搜索选项 */}
+          <div className="text-sm">
+            <div className="flex flex-col gap-3">
+              {/* 章节/考点 */}
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                <div className="md:w-24 shrink-0 font-medium">科目:</div>
+                <div className="flex-1 min-w-0">
+                  <ChapterDropdownNav
+                    textbooks={textbooks}
+                    onSelect={(selectedItems: TextbookResp[]) => {
+                      if (!selectedItems) {
+                        updateAddReq('textbookId', 0);
+                        return;
+                      }
+                      const current: TextbookResp = selectedItems[selectedItems.length - 1];
+                      updateAddReq('textbookId', current.id);
+                    }}
+                    defaultSelectedKeys={[]}
+                    placeholder="请选择科目"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+                <div className="md:w-24 shrink-0 font-medium">类型:</div>
+                <div className="flex-1 min-w-0">
+                  <OtherDictSelect defaultValue={addReq.typeCode} onSelect={(val) => updateAddReq('typeCode', val)} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-3">
+            <Separator />
+          </div>
+
+          {/* 错误提示 */}
+          {textbooksErr && <SimpleAlert title="科目获取失败" message={textbooksErr.message} />}
+          {otherDictsErr && <SimpleAlert title="字典信息获取失败" message={otherDictsErr.message} />}
+
+          {/* 加载中 */}
+          {useDelayedLoading(textbooksLoading || otherDictsLoading) && <Loading />}
+
+          {/* 表格 */}
+          <div className="mt-3">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-sm font-semibold">ID</TableHead>
+                  <TableHead className="text-sm font-semibold">类型</TableHead>
+                  <TableHead className="text-sm font-semibold">名称</TableHead>
+                  <TableHead className="text-sm font-semibold">顺序</TableHead>
+                  <TableHead className="text-sm font-semibold">是否为选择题</TableHead>
+                  <TableHead className="text-sm font-semibold">操作</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <OtherDictListShow list={otherDicts} onEdit={(val) => handleEdit(val)} onDelete={(id) => handleDelete(id)} />
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-106.25">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-bold">{addReq.id && addReq.id > 0 ? '编辑' : '添加'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {/* 名称 */}
+            <div className="space-y-1">
+              <label className="text-sm leading-none">字典名称</label>
+              <Input
+                className="text-sm md:text-sm"
+                value={addReq.itemValue}
+                onChange={(e) => updateAddReq('itemValue', e.target.value)}
+                placeholder="例如 选择题"
+              />
+            </div>
+
+            {/* 顺序 */}
+            <div className="space-y-1">
+              <label className="text-sm leading-none">顺序</label>
+              <Input
+                className="text-sm md:text-sm"
+                type="number"
+                min="0"
+                value={addReq.sortOrder}
+                onChange={(e) => updateAddReq('sortOrder', Number(e.target.value))}
+              />
+            </div>
+
+            {/* 是否为选择题 */}
+            <div className="flex flex-row items-center justify-between border p-3">
+              <div className="space-y-0.5">
+                <label className="text-sm">是否为选择题</label>
+              </div>
+              <Switch checked={addReq.isSelect} onCheckedChange={(val) => updateAddReq('isSelect', val)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDialogOpen(false);
+              }}
+            >
+              取消
+            </Button>
+            <Button onClick={handleSubmit} disabled={processIng}>
+              {addReq.id && addReq.id > 0 ? (processIng ? '更新中...' : '更新') : processIng ? '保存中...' : '保存'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+// 展示字典列表
+interface OtherDictListShowProps {
+  list: TextbookOtherDictResp[];
+  onEdit: (val: TextbookOtherDictResp) => void;
+  onDelete: (val: number) => void;
+}
+function OtherDictListShow({ list, onEdit, onDelete }: OtherDictListShowProps) {
+  return (
+    <>
+      {list.length === 0 ? (
+        <TableRow>
+          <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+            暂无数据，点击 新增 添加
+          </TableCell>
+        </TableRow>
+      ) : (
+        list.map((item) => (
+          <TableRow key={item.id}>
+            <TableCell>{item.id}</TableCell>
+            <TableCell>{StringConst.questionOtherDictNames.get(item.typeCode) || ''}</TableCell>
+            <TableCell>{item.itemValue}</TableCell>
+            <TableCell>{item.sortOrder}</TableCell>
+            <TableCell>{item.isSelect ? '是' : '否'}</TableCell>
+            <TableCell>
+              <Button variant="ghost" size="icon" onClick={() => onEdit(item)} className="h-8 w-8">
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => onDelete(item.id)} className="h-8 w-8 text-destructive hover:text-destructive">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))
+      )}
+    </>
+  );
+}

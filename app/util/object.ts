@@ -12,6 +12,17 @@ export const ObjectUtil = {
   getRandomStr: (): string => {
     return Math.random().toString(36).substring(2, 9);
   },
+
+  // 格式化当前时间
+  getFormatNow: (): string => {
+    const d = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const time = `${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+
+    return `${date} ${time}`;
+  },
 };
 
 // 章节考点数据处理工具

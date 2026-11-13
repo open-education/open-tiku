@@ -1,9 +1,11 @@
 import type { BoardResp } from '@/type/bord';
 import { QuestionPageSource } from '@/type/enum';
 import type { QuestionListReq, QuestionListResp, QuestionSearch } from '@/type/question';
-import type { TextbookOtherDictListReq, TextbookOtherDictListResp, TextbookResp } from '@/type/textbook';
+import type { ChapterKnowledgeResp, QuestionCateResp } from '@/type/question-cate';
+import type { TextbookOtherDictListReq, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
+import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from '@/type/user';
 import { httpClient } from '@/util/http';
-import { StringConst } from '@/util/string';
+import { StringConst, StringValidator } from '@/util/string';
 import useSWR from 'swr';
 import useSWRImmutable from 'swr/immutable';
 
@@ -89,4 +91,52 @@ export function useQuestionList(source: QuestionPageSource, search: QuestionSear
 // 首页统计面板
 export function useBoardList(count: number = 10) {
   return useSWR<BoardResp>(`/stat/board/${count}`, httpClient.get, defaultErrConfig);
+}
+
+// 第三方登录用户列表
+export function useUserAccountList(pageNo: number) {
+  let req: UserIdentityListReq = {
+    pageNo,
+    pageSize: StringConst.pageSize,
+  };
+
+  const reqPath = '/user/account/list';
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<UserIdentityListResp>(key, () => httpClient.post<UserIdentityListResp>(reqPath, req), defaultErrConfig);
+}
+
+// 用户 Session 列表
+export function useUserSessionList(pageNo: number) {
+  let req: UserSessionListReq = {
+    pageNo,
+    pageSize: StringConst.pageSize,
+  };
+
+  const reqPath = '/user/session/list';
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<UserSessionListResp>(key, () => httpClient.post<UserSessionListResp>(reqPath, req), defaultErrConfig);
+}
+
+// 题目其它通用字典获取
+export function useQuestionOtherDicts(twoLevelId: number, typeCode: string) {
+  const key = twoLevelId > 0 && StringValidator.isNonEmpty(typeCode) ? `/other/dict/list/${twoLevelId}/${typeCode}` : null;
+  return useSWRImmutable<TextbookOtherDictResp[]>(key, httpClient.get, defaultErrConfig);
+}
+
+// 用户中心导航菜单维护 - 获取指定深度的父级标识获取子菜单列表
+export function useTextbookLevel(parentId: number = 0) {
+  const key = parentId > 0 ? `/textbook/list/${parentId}/level` : null;
+  return useSWRImmutable<TextbookResp[]>(key, httpClient.get, defaultErrConfig);
+}
+
+// 通过章节或者考点拉去关联关系
+export function useChapterKnowledgeList(sevenLevelId: number) {
+  const key = sevenLevelId > 0 ? `/chapter-knowledge/list/${sevenLevelId}` : null;
+  return useSWR<ChapterKnowledgeResp[]>(key, httpClient.get, defaultErrConfig);
+}
+
+// 获取题型列表
+export function useQuestionCateList(relatedId: number) {
+  const key = relatedId > 0 ? `/question-cate/list/${relatedId}` : null;
+  return useSWR<QuestionCateResp[]>(key, httpClient.get, defaultErrConfig);
 }

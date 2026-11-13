@@ -164,7 +164,7 @@ export default function Index() {
         {/* 题目列表 */}
         <div className="mt-4">
           <QuestionListShow
-            pageSource={QuestionPageSource.List}
+            pageSource={QuestionPageSource.MyQuestion}
             otherDictListRecord={otherDictListRecord}
             listResp={questionListResp}
             questionSearch={questionSearch}

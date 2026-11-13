@@ -1,8 +1,7 @@
 import { UserRoleType } from '@/type/enum';
 import type { OpsMenu } from '@/type/menu';
 import type { UserInfoResp } from '@/type/user';
-import { Bot, SquareTerminal, Trophy } from 'lucide-react';
-import type React from 'react';
+import { Bot, CircleCheckBig, Settings, SquareTerminal, Trophy, UserCog } from 'lucide-react';
 
 // 菜单内容
 // 权限配置注意, 会优先直接放行 父路径
@@ -43,7 +42,7 @@ export const menuItems: OpsMenu[] = [
         role: UserRoleType.Normal,
       },
       {
-        title: '添加题目',
+        title: '添加母题',
         url: '/ops/my/question/add',
         login: true,
         role: UserRoleType.Normal,
@@ -66,6 +65,40 @@ export const menuItems: OpsMenu[] = [
         login: true,
         role: UserRoleType.Normal,
       },
+    ],
+  },
+  {
+    title: '审核',
+    url: '',
+    icon: CircleCheckBig,
+    login: true,
+    role: UserRoleType.Teacher,
+    items: [
+      { title: '题目', url: '/ops/review/question', login: true, role: UserRoleType.Teacher },
+      { title: '试卷', url: '/ops/review/paper', login: true, role: UserRoleType.Teacher },
+    ],
+  },
+  {
+    title: '系统设置',
+    url: '',
+    icon: Settings,
+    login: true,
+    role: UserRoleType.Teacher,
+    items: [
+      { title: '章节/知识点', url: '/ops/setting/textbook', login: true, role: UserRoleType.Teacher },
+      { title: '挂载题型', url: '/ops/setting/ck', login: true, role: UserRoleType.Teacher },
+      { title: '通用字典', url: '/ops/setting/dict', login: true, role: UserRoleType.Teacher },
+    ],
+  },
+  {
+    title: '用户',
+    url: '',
+    icon: UserCog,
+    login: true,
+    role: UserRoleType.Teacher,
+    items: [
+      { title: '第三方账户列表', url: '/ops/user/account', login: true, role: UserRoleType.Teacher },
+      { title: '用户 Session 列表', url: '/ops/user/session', login: true, role: UserRoleType.Teacher },
     ],
   },
 ];

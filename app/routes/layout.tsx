@@ -14,16 +14,23 @@ import {
 } from '@/components/ui/sidebar';
 import { useUserInfo } from '@/hooks/use-user';
 import { checkAccess, filterMenuItems, getMenuMap } from '@/util/menu';
-import { useMemo } from 'react';
-import { Outlet, useLocation } from 'react-router';
+import { finalUserLogin } from '@/util/user';
+import { useEffect, useMemo } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 
 // 网站布局样式
 
 export default function Layout() {
+  // 用户登录临时 token 换票
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    finalUserLogin(navigate);
+  }, []);
+
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // key 为终端路由, value 中 title 为 title/subTitle 用户面包屑, login 是否需要登录 role 访问该路由的角色
   const menuMap = useMemo(() => {
     return getMenuMap();
   }, []);

@@ -118,3 +118,38 @@ export interface QuestionSimilarListReq {
   pageNo: number;
   pageSize: number;
 }
+
+// 创建题目请求
+export interface CreateQuestionReq {
+  id?: number; // 更新时需要主键, 新增时不能传递这个key
+  sourceId?: number; // 母题标识, 默认无
+  relationType: number; // 变式题分类
+  questionCateId: number; // 题目分类标识
+  questionTypeId: number; // 题目类型标识
+  questionTagIds?: number[]; // 题目标签
+  questionDimensionIds?: number[]; // 核心素养
+  levelId: number; // 分层体系
+  sceneIds?: number[]; // 适合常见
+  mistakeTipIds?: number[]; // 常见错误
+  originalName: string; // 原创者代号-不要写别人真名, 尊重他人隐私
+  source?: string; // 题目来源
+  title: string; // 题干
+  comment?: string; // 题干补充说明
+  difficultyLevel: number; // 难度系数
+  images?: string[]; // 题干图片
+  options?: QuestionOption[]; // 选择题选项列表
+  optionsLayout?: number; // 选择题选项布局样式 1 展示一行 2 展示一列 3 展示两列
+  answer?: string; // 参考答案
+  knowledge?: string; // 涉及知识点
+  analysis?: Content; // 解题分析
+  process?: Content; // 解题过程
+  steps?: Step[]; // 解题步骤提示
+  remark?: string; // 解题备注, 比如易错题型等
+  status: number; // 题目状态
+}
+
+// 解析题目请求
+export interface QuestionSnippetReq {
+  textbookId: number;
+  content: string;
+}

@@ -198,4 +198,29 @@ function TagBottomShow({ pageSource, questionInfo, otherDictListRecord }: TagSho
   return <>{getBadges()}</>;
 }
 
-export { MultiTagSelect, TagBottomShow, TagTopShow, TypeSelect };
+// 题目类型选择题
+interface OtherDictSelectProps {
+  defaultValue?: string;
+  onSelect: (val: string) => void;
+}
+function OtherDictSelect({ defaultValue, onSelect }: OtherDictSelectProps) {
+  const handleSelect = (val: string) => {
+    // 点击相同项时取消选中（行为可选）
+    if (defaultValue === val) {
+      return;
+    }
+    onSelect(val);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {StringConst.questionOtherDictList.map(({ id, value, label }) => (
+        <Button key={id} className="text-sm" variant={defaultValue === value ? 'default' : 'outline'} onClick={() => handleSelect(value)}>
+          {label}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
+export { MultiTagSelect, OtherDictSelect, TagBottomShow, TagTopShow, TypeSelect };

@@ -4,7 +4,7 @@ import { SimilarListShow } from '@/components/question/list';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useCopy } from '@/hooks/use-copy';
-import { QuestionRelationType } from '@/type/enum';
+import { QuestionPageSource, QuestionRelationType } from '@/type/enum';
 import type { QuestionBaseInfoResp, QuestionInfoResp, QuestionListResp, QuestionSimilarListReq } from '@/type/question';
 import type { OtherDictListRecord } from '@/type/textbook';
 import { httpClient } from '@/util/http';
@@ -62,10 +62,11 @@ function AnswerInfo({ infoResp }: AnswerInfoProps) {
 
 // 题目相亲信息
 interface QuestionInfoProps {
+  pageSource: QuestionPageSource;
   otherDictListRecord: OtherDictListRecord;
   baseInfoResp: QuestionBaseInfoResp;
 }
-function QuestionInfo({ otherDictListRecord, baseInfoResp }: QuestionInfoProps) {
+function QuestionInfo({ pageSource, otherDictListRecord, baseInfoResp }: QuestionInfoProps) {
   // 查看答案详情
   const [isAnswerOpen, setIsAnswerOpen] = useState(false);
   const [viewAnswerIng, setViewAnswerIng] = useState<boolean>(false);
@@ -211,6 +212,13 @@ function QuestionInfo({ otherDictListRecord, baseInfoResp }: QuestionInfoProps) 
           ></CollapsibleTrigger>
         </Collapsible>
 
+        {/* 编辑题目 */}
+        {pageSource === QuestionPageSource.MyQuestion && (
+          <Button size="sm" variant="outline" onClick={() => alert('怎么考虑导航')}>
+            编辑
+          </Button>
+        )}
+
         {/* 变式题控制按钮 */}
         {baseInfoResp.relationType === QuestionRelationType.Base && (
           <Collapsible open={isSimilarOpen} onOpenChange={handleSimilarList}>
@@ -224,11 +232,18 @@ function QuestionInfo({ otherDictListRecord, baseInfoResp }: QuestionInfoProps) 
           </Collapsible>
         )}
 
+        {/* 添加变式题 */}
+        {pageSource === QuestionPageSource.MyQuestion && (
+          <Button size="sm" variant="outline" onClick={() => alert('怎么考虑导航')}>
+            添加变式题
+          </Button>
+        )}
+
         {/* 复制题目 */}
         <Button
           variant={copied ? 'default' : 'outline'}
           size="sm"
-          title="复制 Markdown 格式的题干和答案, 数学公式语法为 LaTeX"
+          title="复制 Markdown 格式的题干和答案, 数学公式语法为 LaTeX（行内 $...$、块级 $$...$$）"
           onClick={handleCopyInfo}
         >
           {copied ? '已复制' : '复制'}

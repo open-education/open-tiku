@@ -28,7 +28,7 @@ export enum UserLoginSource {
   Student = 2, // 学生
 }
 
-// 页面来源 list: 普通的搜索列表 myQuestion: 我的题目, 只有查看和编辑 myReview: 我的审核 只有查看
+// 页面来源
 export enum QuestionPageSource {
   /** 普通的搜索列表 */
   List = 'list',
@@ -36,4 +36,11 @@ export enum QuestionPageSource {
   MyQuestion = 'myQuestion',
   /** 我的审核：只有查看 */
   MyReview = 'myReview',
+}
+
+// 第三方登录账号状态
+export enum AccountStatus {
+  Active = 1, // 1 激活
+  Paused = 2, // 2 暂停
+  Forbidden = 20, // 20 封禁
 }

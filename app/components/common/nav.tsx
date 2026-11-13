@@ -1,7 +1,20 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import type { TextbookResp } from '@/type/textbook';
+import { StringConst } from '@/util/string';
 import { cn } from 'cn';
 import { Check, ChevronDown, ChevronRight } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -568,5 +581,243 @@ function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [],
   );
 }
 
-export type { LevelProps, CheckboxTreeNode };
-export { ChapterExpandNav, ChapterTreeCheckboxNav };
+interface ChapterDropdownNavProps {
+  textbooks: TextbookResp[];
+  onSelect?: (selectedItems: TextbookResp[]) => void;
+  defaultSelectedKeys?: string[];
+  placeholder?: string;
+  maxDepth?: number;
+  longText?: boolean; // 是否是长文本, 长文本只显示最后一项
+}
+// 下拉菜单样式的导航-适用于紧凑搜索一类的列表页
+function ChapterDropdownNav(props: ChapterDropdownNavProps) {
+  const { textbooks, onSelect, defaultSelectedKeys = [], placeholder = '请选择学段', maxDepth = 5, longText = false } = props;
+
+  const [selectedPath, setSelectedPath] = useState<TextbookResp[]>([]);
+  const [open, setOpen] = useState(false);
+
+  // 构建 key 到节点的映射表，优化查找性能 O(1)
+  const nodeMap = useMemo(() => {
+    const map = new Map<string, TextbookResp>();
+
+    const traverse = (nodes: TextbookResp[]) => {
+      for (const node of nodes) {
+        map.set(node.key, node);
+        if (node.children) {
+          traverse(node.children);
+        }
+      }
+    };
+
+    traverse(textbooks);
+    return map;
+  }, [textbooks]);
+
+  // 构建 key 到父级 key 的映射，用于快速获取路径
+  const parentMap = useMemo(() => {
+    const map = new Map<string, string | null>();
+
+    const traverse = (nodes: TextbookResp[], parentKey: string | null = null) => {
+      for (const node of nodes) {
+        map.set(node.key, parentKey);
+        if (node.children) {
+          traverse(node.children, node.key);
+        }
+      }
+    };
+
+    traverse(textbooks);
+    return map;
+  }, [textbooks]);
+
+  // 获取从根到指定节点的路径（使用映射表优化）
+  const getPathToNode = useCallback(
+    (key: string): TextbookResp[] | null => {
+      if (!nodeMap.has(key)) return null;
+
+      const path: TextbookResp[] = [];
+      let currentKey: string | null = key;
+
+      // 从当前节点向上遍历到根节点
+      while (currentKey) {
+        const node = nodeMap.get(currentKey);
+        if (!node) break;
+        path.unshift(node);
+        currentKey = parentMap.get(currentKey) || null;
+      }
+
+      return path;
+    },
+    [nodeMap, parentMap],
+  );
+
+  // 根据 key 数组查找路径（使用映射表优化）
+  const findPathByKeys = useCallback(
+    (keys: string[]): TextbookResp[] | null => {
+      if (keys.length === 0) return null;
+
+      // 验证所有 key 是否存在且是连续路径
+      const path: TextbookResp[] = [];
+      let parentKey: string | null = null;
+
+      for (const key of keys) {
+        const node = nodeMap.get(key);
+        if (!node) return null;
+
+        // 验证父子关系, 第8层级不满足这个要求, 第8层级不验证, 第8层的 tableName 字段为 question_cate
+        if (node.tableName !== StringConst.questionCateTableName && parentKey !== null && node.parentId !== nodeMap.get(parentKey)?.id) {
+          return null;
+        }
+
+        path.push(node);
+        parentKey = key;
+      }
+
+      return path;
+    },
+    [nodeMap],
+  );
+
+  // 初始化默认选中
+  useEffect(() => {
+    if (defaultSelectedKeys.length > 0) {
+      const path = findPathByKeys(defaultSelectedKeys);
+      if (path) {
+        setSelectedPath(path);
+      }
+    }
+  }, [defaultSelectedKeys, findPathByKeys]);
+
+  // 处理选择
+  const handleSelect = useCallback(
+    (item: TextbookResp) => {
+      const path = getPathToNode(item.key);
+      if (path) {
+        setSelectedPath(path);
+        if (onSelect) {
+          onSelect(path);
+        }
+        setOpen(false);
+      }
+    },
+    [onSelect, getPathToNode],
+  );
+
+  // 判断节点是否在选中路径中
+  const isNodeInSelectedPath = useCallback(
+    (key: string): boolean => {
+      return selectedPath.some((p) => p.key === key);
+    },
+    [selectedPath],
+  );
+
+  // 判断节点是否被选中（路径的最后一个）
+  const isNodeSelected = useCallback(
+    (key: string): boolean => {
+      return selectedPath.length > 0 && selectedPath[selectedPath.length - 1].key === key;
+    },
+    [selectedPath],
+  );
+
+  // 渲染菜单项（递归）
+  const renderMenuItems = useCallback(
+    (items: TextbookResp[], depth: number = 0): React.ReactNode => {
+      if (depth >= maxDepth) {
+        return (
+          <DropdownMenuGroup>
+            {items.map((item) => (
+              <DropdownMenuItem
+                key={item.key}
+                className={cn('flex items-center justify-between cursor-pointer', isNodeSelected(item.key) && 'bg-accent text-accent-foreground')}
+                onClick={() => handleSelect(item)}
+              >
+                <span className="text-sm">{item.label}</span>
+                {isNodeSelected(item.key) && <Check className="ml-2 h-4 w-4" />}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuGroup>
+        );
+      }
+
+      return (
+        <DropdownMenuGroup>
+          {items.map((item) => {
+            const hasChildren = item.children && item.children.length > 0;
+            const isSelected = isNodeSelected(item.key);
+            const isInPath = isNodeInSelectedPath(item.key);
+
+            if (hasChildren && depth < maxDepth - 1) {
+              return (
+                <DropdownMenuSub key={item.key}>
+                  <DropdownMenuSubTrigger
+                    className={cn('flex items-center justify-between cursor-pointer min-w-50 whitespace-nowrap', isInPath && 'bg-accent/50')}
+                  >
+                    <span className="text-sm">{item.label}</span>
+                    {isSelected && <Check className="ml-2 h-4 w-4" />}
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent className="min-w-50 p-1">
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem className="flex items-center justify-between cursor-pointer" onClick={() => handleSelect(item)}>
+                        <span className="text-sm">选择 {item.label}</span>
+                        {isSelected && <Check className="ml-2 h-4 w-4" />}
+                      </DropdownMenuItem>
+                      {item.children && item.children.length > 0 && (
+                        <>
+                          <DropdownMenuSeparator />
+                          {renderMenuItems(item.children, depth + 1)}
+                        </>
+                      )}
+                    </DropdownMenuGroup>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+              );
+            } else {
+              return (
+                <DropdownMenuItem
+                  key={item.key}
+                  className={cn('flex items-center justify-between cursor-pointer', isSelected && 'bg-accent text-accent-foreground')}
+                  onClick={() => handleSelect(item)}
+                >
+                  <span className="text-sm">{item.label}</span>
+                  {isSelected && <Check className="ml-2 h-4 w-4" />}
+                </DropdownMenuItem>
+              );
+            }
+          })}
+        </DropdownMenuGroup>
+      );
+    },
+    [maxDepth, handleSelect, isNodeSelected, isNodeInSelectedPath],
+  );
+
+  // 获取当前选中的显示文本
+  const getDisplayText = useCallback(() => {
+    if (selectedPath.length === 0) {
+      return placeholder;
+    }
+    return longText ? selectedPath[selectedPath.length - 1].label : selectedPath.map((item) => item.label).join(' / ');
+  }, [selectedPath, placeholder]);
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger
+        render={
+          <Button variant="outline" className="w-full sm:w-auto justify-between">
+            <span className="truncate text-sm">{getDisplayText()}</span>
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        }
+      />
+      <DropdownMenuContent className="min-w-50 max-h-150 overflow-y-auto p-1">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-sm">选择学段</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {renderMenuItems(textbooks, 0)}
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export { ChapterDropdownNav, ChapterExpandNav, ChapterTreeCheckboxNav };
+export type { CheckboxTreeNode, LevelProps };

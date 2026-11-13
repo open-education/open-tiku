@@ -52,3 +52,34 @@ export interface OtherDictListRecord {
   questionMistakeTips: TextbookOtherDictResp[];
   questionMistakeTipDict: Record<number, TextbookOtherDictResp>;
 }
+
+// 通用字典请求
+export interface TextbookOtherDictReq {
+  id?: number;
+  textbookId: number;
+  typeCode: string;
+  itemValue: string;
+  sortOrder: number;
+  isSelect: boolean;
+}
+
+// 教材章节其它字典
+export interface TextbookOtherDictResp {
+  id: number;
+  textbookId: number;
+  typeCode: string;
+  itemValue: string;
+  sortOrder: number;
+  isSelect: boolean;
+}
+
+// 菜单导航请求
+export interface CreateTextbookReq {
+  id?: number;
+  parentId?: number;
+  label: string;
+  pathType?: string;
+  sortOrder: number;
+  pathDepth?: number;
+  path: string;
+}

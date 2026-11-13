@@ -24,6 +24,15 @@ export default [
     route('/ops/my/question/upload', 'routes/ops/my/question/upload.tsx'),
     route('/ops/my/question/task', 'routes/ops/my/question/task.tsx'),
     route('/ops/my/paper', 'routes/ops/my/paper/index.tsx'),
+
+    // 系统设置
+    route('/ops/setting/textbook', 'routes/ops/setting/textbook.tsx'),
+    route('/ops/setting/ck', 'routes/ops/setting/ck.tsx'),
+    route('/ops/setting/dict', 'routes/ops/setting/dict.tsx'),
+
+    // 用户
+    route('/ops/user/account', 'routes/ops/user/account.tsx'),
+    route('/ops/user/session', 'routes/ops/user/session.tsx'),
   ]),
 
   // 学生空间

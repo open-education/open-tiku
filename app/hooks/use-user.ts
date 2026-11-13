@@ -12,7 +12,6 @@ export const useUserInfo = () => {
     } catch (err) {
       console.log('获取用户信息出错: ', err);
       setUser(null);
-    } finally {
     }
   };
 

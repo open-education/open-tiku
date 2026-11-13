@@ -78,7 +78,7 @@ function QuestionListShow({ pageSource, otherDictListRecord, listResp, questionS
 
             {/* 题目其它标签, 比如查看答案, 关联题目等 */}
             <div className="flex flex-wrap gap-2 justify-start">
-              <QuestionInfo otherDictListRecord={otherDictListRecord} baseInfoResp={questionInfo} />
+              <QuestionInfo pageSource={pageSource} otherDictListRecord={otherDictListRecord} baseInfoResp={questionInfo} />
             </div>
           </div>
         );
@@ -292,4 +292,29 @@ function SimilarListShow({ otherDictListRecord, listResp }: SimilarListShowProps
   );
 }
 
-export { QuestionListShow, SimilarListShow };
+// 预览题目
+interface PreviewInfoProps {
+  otherDictListRecord: OtherDictListRecord;
+  optBgClassName?: string;
+  infoResp: QuestionInfoResp | null;
+}
+function PreviewInfo({ otherDictListRecord, optBgClassName = 'bg-card', infoResp }: PreviewInfoProps) {
+  if (!infoResp) {
+    return <div>没有可预览的题目内容</div>;
+  }
+
+  return (
+    <div className="space-y-3">
+      <SingleQuestionCommonPart
+        pageSource={QuestionPageSource.List}
+        otherDictListRecord={otherDictListRecord}
+        questionInfo={infoResp?.baseInfo}
+        optBgClassName={optBgClassName}
+      />
+
+      <AnswerInfo infoResp={infoResp} />
+    </div>
+  );
+}
+
+export { PreviewInfo, QuestionListShow, SimilarListShow };
