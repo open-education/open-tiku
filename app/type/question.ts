@@ -153,3 +153,15 @@ export interface QuestionSnippetReq {
   textbookId: number;
   content: string;
 }
+
+// 题目审核
+export interface QuestionApproveReq {
+  id: number;
+  status: number; // 审核状态
+  rejectReason: string; // 拒绝原因
+}
+
+// 题目删除
+export interface QuestionDeleteReq {
+  id: number;
+}

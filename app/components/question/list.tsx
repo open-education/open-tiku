@@ -1,7 +1,8 @@
 import { SimpleAlert } from '@/components/common/alert';
 import { MultiOptionShow } from '@/components/common/select';
 import { TitleShow } from '@/components/common/title';
-import { AnswerInfo, QuestionInfo } from '@/components/question/info';
+import { AnswerInfo } from '@/components/question/info';
+import { QuestionOperateList } from '@/components/question/operate';
 import { TagBottomShow, TagTopShow } from '@/components/question/tag';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -78,7 +79,12 @@ function QuestionListShow({ pageSource, otherDictListRecord, listResp, questionS
 
             {/* 题目其它标签, 比如查看答案, 关联题目等 */}
             <div className="flex flex-wrap gap-2 justify-start">
-              <QuestionInfo pageSource={pageSource} otherDictListRecord={otherDictListRecord} baseInfoResp={questionInfo} />
+              <QuestionOperateList
+                pageSource={pageSource}
+                otherDictListRecord={otherDictListRecord}
+                baseInfoResp={questionInfo}
+                questionListRespMutate={questionListRespMutate}
+              />
             </div>
           </div>
         );

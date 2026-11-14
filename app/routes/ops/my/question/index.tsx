@@ -11,7 +11,7 @@ import type { CheckboxTreeNode } from '@/components/common/nav';
 import { SimplePagination } from '@/components/common/page';
 import FilterList from '@/components/question/filter';
 import { QuestionListShow } from '@/components/question/list';
-import StatusList from '@/components/question/status';
+import { StatusList } from '@/components/question/status';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
 import type { TextbookResp } from '@/type/textbook';
 import { formatNumber } from '@/util/fmt';
@@ -102,7 +102,7 @@ export default function Index() {
   const showLoading = useDelayedLoading(textbooksIsLoading || dictListRespLoading || questionCatesLoading || questionListRespLoading);
 
   return (
-    <div className="">
+    <div>
       <div className="mt-1 space-y-4 peer">
         {showLoading && <Loading />}
 
@@ -159,7 +159,7 @@ export default function Index() {
           <SimpleNoData desc="没有查找到任何题目，如有题目，可以尝试上传题目，管理员审核通过后，其他人就可以看到该题目了。" />
         )}
 
-        <div>共找到 {formatNumber(questionListResp.total)} 道题</div>
+        {questionListResp.total > 0 && <div>共找到 {formatNumber(questionListResp.total)} 道题</div>}
 
         {/* 题目列表 */}
         <div className="mt-4">

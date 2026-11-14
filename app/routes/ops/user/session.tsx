@@ -58,16 +58,16 @@ export default function Index() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-sm font-semibold">ID</TableHead>
-                  <TableHead className="text-sm font-semibold">userId</TableHead>
-                  <TableHead className="text-sm font-semibold">来源</TableHead>
-                  <TableHead className="text-sm font-semibold">账户名称</TableHead>
-                  <TableHead className="text-sm font-semibold">渠道</TableHead>
-                  <TableHead className="text-sm font-semibold">过期时间</TableHead>
-                  <TableHead className="text-sm font-semibold">续期次数</TableHead>
-                  <TableHead className="text-sm font-semibold">Client Ip</TableHead>
-                  <TableHead className="text-sm font-semibold">User Agent</TableHead>
-                  <TableHead className="text-sm font-semibold">创建时间</TableHead>
+                  <TableHead className="text-sm">ID</TableHead>
+                  <TableHead className="text-sm">userId</TableHead>
+                  <TableHead className="text-sm">来源</TableHead>
+                  <TableHead className="text-sm">账户名称</TableHead>
+                  <TableHead className="text-sm">渠道</TableHead>
+                  <TableHead className="text-sm">过期时间</TableHead>
+                  <TableHead className="text-sm">续期次数</TableHead>
+                  <TableHead className="text-sm">Client Ip</TableHead>
+                  <TableHead className="text-sm">User Agent</TableHead>
+                  <TableHead className="text-sm">创建时间</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

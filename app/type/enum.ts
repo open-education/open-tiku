@@ -44,3 +44,10 @@ export enum AccountStatus {
   Paused = 2, // 2 暂停
   Forbidden = 20, // 20 封禁
 }
+
+// 学生账户状态
+export enum StudentStatus {
+  Active = 1, // 激活
+  Pause = 2, // 暂停
+  Disabled = 3, // 禁用
+}

@@ -215,7 +215,7 @@ function OtherDictSelect({ defaultValue, onSelect }: OtherDictSelectProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {StringConst.questionOtherDictList.map(({ id, value, label }) => (
-        <Button key={id} className="text-sm" variant={defaultValue === value ? 'default' : 'outline'} onClick={() => handleSelect(value)}>
+        <Button key={id} variant={defaultValue === value ? 'default' : 'outline'} onClick={() => handleSelect(value)}>
           {label}
         </Button>
       ))}

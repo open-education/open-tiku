@@ -160,7 +160,7 @@ export default function Index() {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="text-sm font-bold">通用字典管理</CardTitle>
 
-          <Button className="text-sm" onClick={handleAdd} variant="secondary">
+          <Button onClick={handleAdd} variant="secondary">
             <Plus className="mr-2 h-4 w-4" />
             新增
           </Button>
@@ -168,11 +168,11 @@ export default function Index() {
 
         <CardContent>
           {/* 搜索选项 */}
-          <div className="text-sm">
+          <div>
             <div className="flex flex-col gap-3">
               {/* 章节/考点 */}
               <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                <div className="md:w-24 shrink-0 font-medium">科目:</div>
+                <div className="text-sm md:w-24 shrink-0 font-medium">科目:</div>
                 <div className="flex-1 min-w-0">
                   <ChapterDropdownNav
                     textbooks={textbooks}
@@ -191,7 +191,7 @@ export default function Index() {
               </div>
 
               <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                <div className="md:w-24 shrink-0 font-medium">类型:</div>
+                <div className="text-sm md:w-24 shrink-0 font-medium">类型:</div>
                 <div className="flex-1 min-w-0">
                   <OtherDictSelect defaultValue={addReq.typeCode} onSelect={(val) => updateAddReq('typeCode', val)} />
                 </div>
@@ -215,12 +215,12 @@ export default function Index() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-sm font-semibold">ID</TableHead>
-                  <TableHead className="text-sm font-semibold">类型</TableHead>
-                  <TableHead className="text-sm font-semibold">名称</TableHead>
-                  <TableHead className="text-sm font-semibold">顺序</TableHead>
-                  <TableHead className="text-sm font-semibold">是否为选择题</TableHead>
-                  <TableHead className="text-sm font-semibold">操作</TableHead>
+                  <TableHead className="text-sm">ID</TableHead>
+                  <TableHead className="text-sm">类型</TableHead>
+                  <TableHead className="text-sm">名称</TableHead>
+                  <TableHead className="text-sm">顺序</TableHead>
+                  <TableHead className="text-sm">是否为选择题</TableHead>
+                  <TableHead className="text-sm">操作</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -239,35 +239,27 @@ export default function Index() {
           <div className="space-y-4 py-2">
             {/* 名称 */}
             <div className="space-y-1">
-              <label className="text-sm leading-none">字典名称</label>
-              <Input
-                className="text-sm md:text-sm"
-                value={addReq.itemValue}
-                onChange={(e) => updateAddReq('itemValue', e.target.value)}
-                placeholder="例如 选择题"
-              />
+              <label className="leading-none">字典名称</label>
+              <Input value={addReq.itemValue} onChange={(e) => updateAddReq('itemValue', e.target.value)} placeholder="例如 选择题" />
             </div>
 
             {/* 顺序 */}
             <div className="space-y-1">
-              <label className="text-sm leading-none">顺序</label>
-              <Input
-                className="text-sm md:text-sm"
-                type="number"
-                min="0"
-                value={addReq.sortOrder}
-                onChange={(e) => updateAddReq('sortOrder', Number(e.target.value))}
-              />
+              <label className="leading-none">顺序</label>
+              <Input type="number" min="0" value={addReq.sortOrder} onChange={(e) => updateAddReq('sortOrder', Number(e.target.value))} />
             </div>
 
             {/* 是否为选择题 */}
             <div className="flex flex-row items-center justify-between border p-3">
               <div className="space-y-0.5">
-                <label className="text-sm">是否为选择题</label>
+                <label className="leading-none">是否为选择题</label>
               </div>
               <Switch checked={addReq.isSelect} onCheckedChange={(val) => updateAddReq('isSelect', val)} />
             </div>
           </div>
+
+          <Separator />
+
           <DialogFooter>
             <Button
               variant="outline"

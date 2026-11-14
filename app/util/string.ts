@@ -1,4 +1,4 @@
-import { AccountStatus, QuestionStatus } from '@/type/enum';
+import { AccountStatus, QuestionStatus, StudentStatus } from '@/type/enum';
 
 // 部分字符串常量维护
 export const StringConst = {
@@ -76,6 +76,14 @@ export const StringConst = {
     ['chapter', '章节'],
     ['knowledge', '考点'],
   ]),
+  // 任务类型是上传题目
+  taskTypeUploadQuestion: 1,
+  // 学生账户状态
+  studentStatusList: [
+    { id: 1, value: StudentStatus.Active, label: '激活' },
+    { id: 2, value: StudentStatus.Pause, label: '暂停' },
+    { id: 3, value: StudentStatus.Disabled, label: '停用' },
+  ],
 };
 
 // 字符串验证工具类

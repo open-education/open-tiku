@@ -1,7 +1,7 @@
 import { UserRoleType } from '@/type/enum';
 import type { OpsMenu } from '@/type/menu';
 import type { UserInfoResp } from '@/type/user';
-import { Bot, CircleCheckBig, Settings, SquareTerminal, Trophy, UserCog } from 'lucide-react';
+import { Bot, CircleCheckBig, School, Settings, SquareTerminal, Trophy, UserCog } from 'lucide-react';
 
 // 菜单内容
 // 权限配置注意, 会优先直接放行 父路径
@@ -66,6 +66,14 @@ export const menuItems: OpsMenu[] = [
         role: UserRoleType.Normal,
       },
     ],
+  },
+  {
+    title: '班级',
+    url: '',
+    icon: School,
+    login: true,
+    role: UserRoleType.Teacher,
+    items: [{ title: '我的班级', url: '/ops/class', login: true, role: UserRoleType.Teacher }],
   },
   {
     title: '审核',

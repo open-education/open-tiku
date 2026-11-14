@@ -25,6 +25,13 @@ export default [
     route('/ops/my/question/task', 'routes/ops/my/question/task.tsx'),
     route('/ops/my/paper', 'routes/ops/my/paper/index.tsx'),
 
+    // 班级
+    route('/ops/class', 'routes/ops/class/index.tsx'),
+
+    // 审核
+    route('/ops/review/question', 'routes/ops/review/question.tsx'),
+    route('/ops/review/paper', 'routes/ops/review/paper.tsx'),
+
     // 系统设置
     route('/ops/setting/textbook', 'routes/ops/setting/textbook.tsx'),
     route('/ops/setting/ck', 'routes/ops/setting/ck.tsx'),

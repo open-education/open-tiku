@@ -7,6 +7,7 @@ import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader,
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
 import type { CreateTextbookReq, TextbookResp } from '@/type/textbook';
 import { useTextbookLevel, useTextbooks } from '@/util/fetcher';
@@ -342,8 +343,8 @@ export default function Index() {
       <Dialog open={dailogOpen} onOpenChange={setDailogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-base font-bold">{dailogTitle}</DialogTitle>
-            <DialogDescription className="text-sm">{dailogDesc}</DialogDescription>
+            <DialogTitle className="text-sm font-bold">{dailogTitle}</DialogTitle>
+            <DialogDescription>{dailogDesc}</DialogDescription>
           </DialogHeader>
           {dailogContent}
         </DialogContent>
@@ -373,7 +374,7 @@ function Level({ open, setOpen, levelName, levelDesc, levels, onClear, onAdd, on
       <Card>
         <CardHeader>
           <CardTitle className="text-sm font-bold">{levelName}</CardTitle>
-          <CardDescription className="text-sm">{levelDesc}</CardDescription>
+          <CardDescription>{levelDesc}</CardDescription>
           <CardAction>
             <CollapsibleTrigger
               render={
@@ -407,7 +408,7 @@ function Level({ open, setOpen, levelName, levelDesc, levels, onClear, onAdd, on
           </CollapsibleContent>
         </CardContent>
         <CardFooter>
-          <Button variant="outline" className="text-sm" onClick={() => onAdd()}>
+          <Button variant="outline" onClick={() => onAdd()}>
             <Plus />
             新建菜单
           </Button>
@@ -430,10 +431,10 @@ function Item({ isSelected = false, item, onViewList, onEdit, onDelete }: ItemPr
     <Card className="w-80 transition-colors duration-200">
       <CardHeader>
         <CardTitle className="text-sm font-bold">{item.label}</CardTitle>
-        <CardDescription className="text-sm">排序: {item.sortOrder}</CardDescription>
+        <CardDescription>排序: {item.sortOrder}</CardDescription>
         <CardAction>
           {item.pathDepth < 7 && (
-            <Button className="text-sm" variant={isSelected ? 'default' : 'outline'} onClick={() => onViewList(item.id)}>
+            <Button variant={isSelected ? 'default' : 'outline'} onClick={() => onViewList(item.id)}>
               <Menu />
               子菜单
             </Button>
@@ -441,7 +442,7 @@ function Item({ isSelected = false, item, onViewList, onEdit, onDelete }: ItemPr
         </CardAction>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-2 text-sm">
+        <div className="grid grid-cols-2 gap-2 text-xs">
           <div>标识: {item.id}</div>
           <div>父标识: {item.parentId}</div>
           <div>深度: {item.pathDepth}</div>
@@ -455,12 +456,12 @@ function Item({ isSelected = false, item, onViewList, onEdit, onDelete }: ItemPr
       </CardContent>
       <CardFooter>
         <div className="flex flex-wrap gap-3">
-          <Button className="text-sm" variant="outline" onClick={() => onEdit()}>
+          <Button variant="outline" onClick={() => onEdit()}>
             <Edit />
             编辑
           </Button>
 
-          <Button className="text-sm" variant="outline" onClick={() => onDelete()}>
+          <Button variant="outline" onClick={() => onDelete()}>
             <X />
             删除
           </Button>
@@ -541,19 +542,14 @@ function Add({ parentId, pathDepth, path = '', item, onClose, mutateCallback }: 
   };
 
   return (
-    <div className="space-y-4 py-2">
+    <div className="space-y-2">
       {/* 提示信息 */}
       <div>{warnInfo}</div>
 
       {/* 名称 */}
       <div className="space-y-1">
         <label className="text-sm leading-none">名称</label>
-        <Input
-          className="text-sm md:text-sm"
-          value={addReq.label}
-          onChange={(e) => updateAddReq('label', e.target.value)}
-          placeholder="请输入菜单名称"
-        />
+        <Input value={addReq.label} onChange={(e) => updateAddReq('label', e.target.value)} placeholder="请输入菜单名称" />
       </div>
 
       {/* 菜单类型 */}
@@ -565,31 +561,25 @@ function Add({ parentId, pathDepth, path = '', item, onClose, mutateCallback }: 
       {/* 顺序 */}
       <div className="space-y-1">
         <label className="text-sm leading-none">顺序</label>
-        <Input
-          className="text-sm md:text-sm"
-          type="number"
-          min="0"
-          value={addReq.sortOrder}
-          onChange={(e) => updateAddReq('sortOrder', Number(e.target.value))}
-        />
+        <Input type="number" min="0" value={addReq.sortOrder} onChange={(e) => updateAddReq('sortOrder', Number(e.target.value))} />
       </div>
 
       {/* 操作成功提示 */}
       {success && (
-        <div className="text-sm font-bold">
-          <Alert>
-            <CheckCircle2Icon />
-            <AlertTitle>操作成功</AlertTitle>
-            <AlertDescription>若页面没有发生变化请重新查询后确认</AlertDescription>
-          </Alert>
-        </div>
+        <Alert>
+          <CheckCircle2Icon />
+          <AlertTitle className="text-sm font-bold">操作成功</AlertTitle>
+          <AlertDescription>若页面没有发生变化请重新查询后确认</AlertDescription>
+        </Alert>
       )}
 
+      <Separator />
+
       <DialogFooter>
-        <Button variant="outline" className="text-sm" onClick={() => onClose(false)}>
+        <Button variant="outline" onClick={() => onClose(false)}>
           取消
         </Button>
-        <Button className="text-sm" onClick={handleSubmit} disabled={submittIng}>
+        <Button onClick={handleSubmit} disabled={submittIng}>
           {addReq.id && addReq.id > 0 ? (submittIng ? '更新中...' : '更新') : submittIng ? '保存中...' : '保存'}
         </Button>
       </DialogFooter>
@@ -631,8 +621,8 @@ function Delete({ item, onClose, mutateCallback }: DeleteProps) {
       <div>
         <Alert>
           <InfoIcon />
-          <AlertTitle className="text-sm">删除操作</AlertTitle>
-          <AlertDescription className="text-sm">
+          <AlertTitle className="text-sm font-semibold">删除操作</AlertTitle>
+          <AlertDescription>
             你正在删除菜单 <span className="text-blue-600 font-bold">{item.label}</span>, 存在子菜单时不允许删除当前菜单,
             如需删除请从子菜单开始逐层往上删除
           </AlertDescription>
@@ -643,20 +633,18 @@ function Delete({ item, onClose, mutateCallback }: DeleteProps) {
 
       {/* 操作成功提示 */}
       {success && (
-        <div className="text-sm font-bold">
-          <Alert>
-            <CheckCircle2Icon />
-            <AlertTitle>删除成功</AlertTitle>
-            <AlertDescription>若页面没有发生变化请重新查询后确认</AlertDescription>
-          </Alert>
-        </div>
+        <Alert>
+          <CheckCircle2Icon />
+          <AlertTitle className="text-sm font-bold">删除成功</AlertTitle>
+          <AlertDescription>若页面没有发生变化请重新查询后确认</AlertDescription>
+        </Alert>
       )}
 
       <DialogFooter>
-        <Button variant="outline" className="text-sm" onClick={() => onClose(false)}>
+        <Button variant="outline" onClick={() => onClose(false)}>
           取消
         </Button>
-        <Button className="text-sm" onClick={handleSubmit} disabled={submittIng}>
+        <Button onClick={handleSubmit} disabled={submittIng}>
           {submittIng ? '删除中...' : '删除'}
         </Button>
       </DialogFooter>
@@ -681,7 +669,7 @@ function PathTypeSelect({ defaultValue, onSelect }: PathTypeProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {StringConst.textbookPathTypes.map(({ id, value, label }) => (
-        <Button key={id} className="text-sm" variant={defaultValue === value ? 'default' : 'outline'} onClick={() => handleSelect(value)}>
+        <Button key={id} variant={defaultValue === value ? 'default' : 'outline'} onClick={() => handleSelect(value)}>
           {label}
         </Button>
       ))}

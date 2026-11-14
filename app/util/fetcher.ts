@@ -1,7 +1,9 @@
 import type { BoardResp } from '@/type/bord';
+import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentListReq, ClassStudentResp } from '@/type/class';
 import { QuestionPageSource } from '@/type/enum';
 import type { QuestionListReq, QuestionListResp, QuestionSearch } from '@/type/question';
 import type { ChapterKnowledgeResp, QuestionCateResp } from '@/type/question-cate';
+import type { TaskListReq, TaskListResp } from '@/type/task';
 import type { TextbookOtherDictListReq, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
 import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from '@/type/user';
 import { httpClient } from '@/util/http';
@@ -83,8 +85,10 @@ export function useQuestionList(source: QuestionPageSource, search: QuestionSear
 
   const reqPath = '/question/list';
   // 我的页面没有区分度
-  const key =
-    source === QuestionPageSource.MyQuestion || (req.questionCateIds && req.questionCateIds.length > 0) ? [reqPath, JSON.stringify(req)] : null;
+  const isMy = source === QuestionPageSource.MyQuestion || source === QuestionPageSource.MyReview;
+  const hasCateIds = !!req.questionCateIds?.length;
+
+  const key = isMy || hasCateIds ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>(reqPath, req), defaultErrConfig);
 }
 
@@ -139,4 +143,61 @@ export function useChapterKnowledgeList(sevenLevelId: number) {
 export function useQuestionCateList(relatedId: number) {
   const key = relatedId > 0 ? `/question-cate/list/${relatedId}` : null;
   return useSWR<QuestionCateResp[]>(key, httpClient.get, defaultErrConfig);
+}
+
+// 题目上传任务列表
+export function useTaskList(reqInit: TaskListReq, pageNo: number, pageSize: number) {
+  let req: TaskListReq = {
+    taskType: reqInit.taskType,
+    pageNo,
+    pageSize,
+  };
+
+  if (reqInit.questionCateId && reqInit.questionCateId > 0) {
+    req.questionCateId = reqInit.questionCateId;
+  }
+
+  const reqPath = '/task/list';
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<TaskListResp>(key, () => httpClient.post<TaskListResp>(reqPath, req), defaultErrConfig);
+}
+
+// 班级列表
+export function useClassList(search: ClassSearchReq, pageNo: number) {
+  let req: ClassListReq = {
+    pageNo,
+    pageSize: StringConst.pageSize,
+  };
+
+  if (StringValidator.isNonEmpty(search.year)) {
+    req.year = search.year;
+  }
+  if (StringValidator.isNonEmpty(search.grade)) {
+    req.grade = search.grade;
+  }
+  if (StringValidator.isNonEmpty(search.semester)) {
+    req.semester = search.semester;
+  }
+
+  const reqPath = '/class/list';
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<ClassListResp>(key, () => httpClient.post<ClassListResp>(reqPath, req), defaultErrConfig);
+}
+
+// 班级学生账户列表
+// 使用全局缓存key, 方便跨组件重新 mutate 该数据, 尤其针对不直接关联的兄弟组件
+export const getClassStudentListKey = (classIds: number[]) => {
+  const reqPath = '/class/student/list';
+  // 排序避免顺序不一致
+  const sortedIds = [...classIds].sort((a, b) => a - b);
+  return [reqPath, JSON.stringify({ sortedIds })];
+};
+
+export function useClassStudentList(classIds: number[]) {
+  const req: ClassStudentListReq = {
+    classIds,
+  };
+  const reqPath = '/class/student/list';
+  const key = getClassStudentListKey(classIds);
+  return useSWR<Record<number, ClassStudentResp[]>>(key, () => httpClient.post<Record<number, ClassStudentResp[]>>(reqPath, req), defaultErrConfig);
 }

@@ -67,17 +67,17 @@ export default function Index() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-sm font-semibold">ID</TableHead>
-                  <TableHead className="text-sm font-semibold">userId</TableHead>
-                  <TableHead className="text-sm font-semibold">来源</TableHead>
-                  <TableHead className="text-sm font-semibold">账户名称</TableHead>
-                  <TableHead className="text-sm font-semibold">最后登录时间</TableHead>
-                  <TableHead className="text-sm font-semibold">登录次数</TableHead>
-                  <TableHead className="text-sm font-semibold">角色</TableHead>
-                  <TableHead className="text-sm font-semibold">状态</TableHead>
-                  <TableHead className="text-sm font-semibold">创建时间</TableHead>
-                  <TableHead className="text-sm font-semibold">备注</TableHead>
-                  <TableHead className="text-sm font-semibold">操作</TableHead>
+                  <TableHead className="text-sm">ID</TableHead>
+                  <TableHead className="text-sm">userId</TableHead>
+                  <TableHead className="text-sm">来源</TableHead>
+                  <TableHead className="text-sm">账户名称</TableHead>
+                  <TableHead className="text-sm">最后登录时间</TableHead>
+                  <TableHead className="text-sm">登录次数</TableHead>
+                  <TableHead className="text-sm">角色</TableHead>
+                  <TableHead className="text-sm">状态</TableHead>
+                  <TableHead className="text-sm">创建时间</TableHead>
+                  <TableHead className="text-sm">备注</TableHead>
+                  <TableHead className="text-sm">操作</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

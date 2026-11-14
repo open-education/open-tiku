@@ -198,17 +198,17 @@ export default function Index() {
     <div className="bg-card">
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-bold">建立 章节/考点 第7级 关联关系, 挂载题型</CardTitle>
-          <CardDescription className="text-sm">未关联请建立 章节/考点 的关联关系后才能挂载题型, 没有题型的请 新增题型</CardDescription>
+          <CardTitle className="text-sm font-bold">建立 章节/考点 第7级 关联关系, 挂载题型</CardTitle>
+          <CardDescription>未关联请建立 章节/考点 的关联关系后才能挂载题型, 没有题型的请 新增题型</CardDescription>
           <CardAction>
-            <Button className="text-sm" variant="outline" onClick={handleLinkOpen}>
+            <Button variant="outline" onClick={handleLinkOpen}>
               <Link2 />
               关联
             </Button>
           </CardAction>
         </CardHeader>
         <CardContent>
-          <div className="text-sm">
+          <div className="text-xs">
             {/* 搜索选项 */}
             <div className="flex flex-col gap-3">
               {/* 章节/考点 */}
@@ -251,24 +251,24 @@ export default function Index() {
 
             {/* 关联关系列表 */}
             <div>
-              <div className={`${rowClass} text-sm font-medium text-muted-foreground`}>
-                <div className="w-20 shrink-0 font-semibold">ID</div>
-                <div className="flex-1 font-semibold">章节</div>
-                <div className="flex-1 font-semibold">考点</div>
-                <div className="w-45 shrink-0 font-semibold">操作</div>
+              <div className={`${rowClass} text-sm`}>
+                <div className="w-20 shrink-0">ID</div>
+                <div className="flex-1">章节</div>
+                <div className="flex-1">考点</div>
+                <div className="w-45 shrink-0">操作</div>
               </div>
 
               {ckList.length === 0 ? (
-                <div className="text-center text-muted-foreground text-sm py-8">没有关联关系, 请手动关联后才能维护题型</div>
+                <div className="text-center text-xs py-8">没有关联关系, 请手动关联后才能维护题型</div>
               ) : (
                 ckList.map((item) => (
                   <div key={item.id} className="border-b last:border-b-0">
                     <Collapsible open={item.id === selectCkId}>
                       {/* 主行 */}
                       <div className={`${rowClass} px-4 py-2`}>
-                        <div className="w-20 shrink-0 text-sm">{item.id}</div>
-                        <div className="flex-1 text-sm">{getTextbookName(item.chapterId)}</div>
-                        <div className="flex-1 text-sm">{getTextbookName(item.knowledgeId)}</div>
+                        <div className="w-20 shrink-0 text-xs">{item.id}</div>
+                        <div className="flex-1 text-xs">{getTextbookName(item.chapterId)}</div>
+                        <div className="flex-1 text-xs">{getTextbookName(item.knowledgeId)}</div>
                         <div className="w-45 shrink-0 flex justify-end gap-2">
                           <CollapsibleTrigger
                             render={
@@ -289,7 +289,7 @@ export default function Index() {
                             />
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>确定解除?</AlertDialogTitle>
+                                <AlertDialogTitle className="text-sm font-bold">确定解除?</AlertDialogTitle>
                                 <AlertDialogDescription>如果已经挂载了题型，则不允许解除; 解除后如需关联, 重新关联即可.</AlertDialogDescription>
                               </AlertDialogHeader>
 
@@ -299,11 +299,13 @@ export default function Index() {
                                 <div>
                                   <Alert>
                                     <CheckCircle2Icon />
-                                    <AlertTitle>操作成功</AlertTitle>
+                                    <AlertTitle className="text-sm font-semibold">操作成功</AlertTitle>
                                     <AlertDescription>若页面没有发生变化请重新查询后确认</AlertDescription>
                                   </Alert>
                                 </div>
                               )}
+
+                              <Separator />
 
                               <AlertDialogFooter>
                                 <AlertDialogCancel>取消</AlertDialogCancel>
@@ -334,13 +336,13 @@ export default function Index() {
 
             {/* 关联对话框 */}
             <Dialog open={relationDialogOpen} onOpenChange={setRelationDialogOpen}>
-              <DialogContent className="text-sm md:text-sm max-w-75 sm:max-w-162.5">
+              <DialogContent className=" max-w-75 sm:max-w-162.5">
                 <DialogHeader>
-                  <DialogTitle className="text-base font-medium">关联</DialogTitle>
+                  <DialogTitle className="text-sm font-bold">关联</DialogTitle>
                 </DialogHeader>
-                <DialogDescription className="text-sm">选择待关联的 章节/考点 第7级菜单</DialogDescription>
+                <DialogDescription>选择待关联的 章节/考点 第7级菜单</DialogDescription>
 
-                <div className="space-y-4 py-2 text-sm">
+                <div className="space-y-4 py-2">
                   {/* 搜索选项 */}
                   <div className="flex flex-col gap-3">
                     {/* 章节/考点 */}
@@ -403,7 +405,7 @@ export default function Index() {
                     <div>
                       <Alert>
                         <CheckCircle2Icon />
-                        <AlertTitle>操作成功</AlertTitle>
+                        <AlertTitle className="text-sm font-semibold">操作成功</AlertTitle>
                         <AlertDescription>若页面没有发生变化请重新查询后确认</AlertDescription>
                       </Alert>
                     </div>
@@ -413,14 +415,13 @@ export default function Index() {
                 <DialogFooter>
                   <Button
                     variant="outline"
-                    className="text-sm"
                     onClick={() => {
                       setRelationDialogOpen(false);
                     }}
                   >
                     取消
                   </Button>
-                  <Button className="text-sm" onClick={handleSubmitLink} disabled={relationLinkIng}>
+                  <Button onClick={handleSubmitLink} disabled={relationLinkIng}>
                     {relationLinkIng ? '关联中...' : '关联'}
                   </Button>
                 </DialogFooter>

@@ -1,3 +1,4 @@
+import type { StudentAccountParseResult } from '@/type/class';
 import type { OtherDictListRecord, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
 import { StringConst } from '@/util/string';
 
@@ -22,6 +23,32 @@ export const ObjectUtil = {
     const time = `${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 
     return `${date} ${time}`;
+  },
+
+  getStudentAccount: (input: string): StudentAccountParseResult => {
+    // 1. 按行分割，清洗，过滤空行
+    const lines = input.split('\n');
+    const cleaned = lines.map((line) => line.trim()).filter((line) => line !== '');
+
+    // 2. 统计出现次数
+    const countMap = new Map<string, number>();
+    cleaned.forEach((account) => {
+      countMap.set(account, (countMap.get(account) || 0) + 1);
+    });
+
+    // 3. 找出重复项（出现次数 > 1）
+    const duplicates = Array.from(countMap.entries())
+      .filter(([_, count]) => count > 1)
+      .map(([account]) => account);
+
+    // 4. 逗号拼接
+    const commaSeparated = cleaned.join(',');
+
+    return {
+      cleaned: cleaned,
+      commaSeparated,
+      duplicates,
+    };
   },
 };
 

@@ -1,9 +1,11 @@
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { QuestionStatus } from '@/type/enum';
+import { StringConst } from '@/util/string';
 import { cn } from 'cn';
 import { Check, Clock, FileQuestion, PencilLine, X, type LucideIcon } from 'lucide-react';
 
-// 题目状态筛选
+// 题目状态卡片筛选
 
 export interface StatItem {
   id: number;
@@ -94,7 +96,7 @@ interface StatusListProps {
   onSelectStatus?: (status: QuestionStatus) => void;
 }
 
-export default function StatusList({ items = DEFAULT_STAT_LIST, count, activeStatus = QuestionStatus.None, onSelectStatus }: StatusListProps) {
+function StatusList({ items = DEFAULT_STAT_LIST, count, activeStatus = QuestionStatus.None, onSelectStatus }: StatusListProps) {
   return (
     <section className="py-2">
       <div className="grid max-w-4xl grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
@@ -156,3 +158,30 @@ export default function StatusList({ items = DEFAULT_STAT_LIST, count, activeSta
     </section>
   );
 }
+
+// 题目状态选择器
+interface StatusSelectProps {
+  defaultValue?: number;
+  onSelect: (val: number) => void;
+}
+function StatusSelect({ defaultValue = 0, onSelect }: StatusSelectProps) {
+  const handleSelect = (val: number) => {
+    // 点击相同项时取消选中（行为可选）
+    if (defaultValue === val) {
+      return;
+    }
+    onSelect(val);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {StringConst.questionStatusList.map(({ id, value, label }) => (
+        <Button key={id} variant={defaultValue === value ? 'default' : 'outline'} onClick={() => handleSelect(value)}>
+          {label}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
+export { StatusList, StatusSelect };

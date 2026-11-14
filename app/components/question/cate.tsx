@@ -136,7 +136,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
   return (
     <div className="px-4 pt-3 sm:px-16 sm:pt-4 space-y-3 bg-gray-100">
       <div>
-        <Button className="text-sm" variant="outline" onClick={handleAdd}>
+        <Button variant="outline" onClick={handleAdd}>
           <Plus />
           新增题型
         </Button>
@@ -177,10 +177,10 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
               ) : (
                 cates.map((item) => (
                   <TableRow key={item.id}>
-                    <TableCell className="text-sm">{item.id}</TableCell>
-                    <TableCell className="text-sm">{item.key}</TableCell>
-                    <TableCell className="text-sm">{item.label}</TableCell>
-                    <TableCell className="text-sm">{item.sortOrder}</TableCell>
+                    <TableCell>{item.id}</TableCell>
+                    <TableCell>{item.key}</TableCell>
+                    <TableCell>{item.label}</TableCell>
+                    <TableCell>{item.sortOrder}</TableCell>
                     <TableCell>
                       <Button variant="ghost" size="icon" onClick={() => handleEdit(item)} className="h-8 w-8">
                         <Pencil className="h-4 w-4" />
@@ -238,30 +238,19 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-106.25">
           <DialogHeader>
-            <DialogTitle className="text-base font-medium">{addReq.id && addReq.id > 0 ? '编辑' : '添加'}</DialogTitle>
+            <DialogTitle className="text-sm font-bold">{addReq.id && addReq.id > 0 ? '编辑' : '添加'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             {/* 名称 */}
             <div className="space-y-1">
               <label className="text-sm leading-none">题型名称</label>
-              <Input
-                className="text-sm md:text-sm"
-                value={addReq.label}
-                onChange={(e) => updateAddReq('label', e.target.value)}
-                placeholder="请输入题型名称"
-              />
+              <Input value={addReq.label} onChange={(e) => updateAddReq('label', e.target.value)} placeholder="请输入题型名称" />
             </div>
 
             {/* 顺序 */}
             <div className="space-y-1">
               <label className="text-sm leading-none">顺序</label>
-              <Input
-                className="text-sm md:text-sm"
-                type="number"
-                min="0"
-                value={addReq.sortOrder}
-                onChange={(e) => updateAddReq('sortOrder', Number(e.target.value))}
-              />
+              <Input type="number" min="0" value={addReq.sortOrder} onChange={(e) => updateAddReq('sortOrder', Number(e.target.value))} />
             </div>
 
             {/* 操作结果 */}
@@ -279,14 +268,13 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
           <DialogFooter>
             <Button
               variant="outline"
-              className="text-sm"
               onClick={() => {
                 setDialogOpen(false);
               }}
             >
               取消
             </Button>
-            <Button className="text-sm" onClick={handleSubmit} disabled={processIng}>
+            <Button onClick={handleSubmit} disabled={processIng}>
               {addReq.id && addReq.id > 0 ? (processIng ? '更新中...' : '更新') : processIng ? '保存中...' : '保存'}
             </Button>
           </DialogFooter>
