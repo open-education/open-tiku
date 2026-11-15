@@ -7,16 +7,22 @@ import type { OtherDictListRecord, TextbookResp } from '@/type/textbook';
 interface NavTreeListProps {
   textbooks: TextbookResp[];
   questionCates: CheckboxTreeNode[];
-  onTextbook: (selection: LevelProps, selectedTextbooks: Record<keyof LevelProps, TextbookResp | null>) => void;
+  questionSearch: QuestionSearch;
+  onTextbook: (selectedTextbooks: Record<keyof LevelProps, TextbookResp | null>) => void;
   onQuestionCate: (selectedItems: CheckboxTreeNode[]) => void;
 }
-function NavTreeList({ textbooks, questionCates, onTextbook, onQuestionCate }: NavTreeListProps) {
+function NavTreeList({ textbooks, questionCates, questionSearch, onTextbook, onQuestionCate }: NavTreeListProps) {
   return (
     <>
       <div className="p-3 space-y-2 bg-card">
-        <ChapterExpandNav textbooks={textbooks} onSelectionChange={onTextbook} />
+        <ChapterExpandNav textbooks={textbooks} defaultValues={questionSearch.fiveLevelSelectKeys} onSelectionChange={onTextbook} />
 
-        <ChapterTreeCheckboxNav textbooks={questionCates} onSelect={onQuestionCate} maxDepth={3} />
+        <ChapterTreeCheckboxNav
+          textbooks={questionCates}
+          onSelect={onQuestionCate}
+          defaultSelectedKeys={questionSearch.eightLevelSelectKeys}
+          maxDepth={3}
+        />
       </div>
     </>
   );

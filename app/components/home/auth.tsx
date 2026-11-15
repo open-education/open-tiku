@@ -77,7 +77,7 @@ export default function Auth({ setSheetOpen }: AuthProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="text-base font-semibold">账号登录</DialogTitle>
-            <DialogDescription>不支持注册, 也不收集除昵称外的任何信息, 用户也不要提供任何真实信息</DialogDescription>
+            <DialogDescription>不注册, 不收集除昵称外的任何信息, 也不要提供任何真实信息</DialogDescription>
           </DialogHeader>
 
           <Login />

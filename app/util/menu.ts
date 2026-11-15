@@ -1,7 +1,7 @@
 import { UserRoleType } from '@/type/enum';
 import type { OpsMenu } from '@/type/menu';
 import type { UserInfoResp } from '@/type/user';
-import { Bot, CircleCheckBig, School, Settings, SquareTerminal, Trophy, UserCog } from 'lucide-react';
+import { Bot, ChartColumnIcon, CircleCheckBig, LayoutDashboard, School, Settings, Settings2, Trophy, Users, Wand } from 'lucide-react';
 
 // 菜单内容
 // 权限配置注意, 会优先直接放行 父路径
@@ -9,9 +9,17 @@ export const menuItems: OpsMenu[] = [
   {
     title: '工作台',
     url: '/ops',
-    icon: SquareTerminal,
+    icon: LayoutDashboard,
     login: true,
     role: UserRoleType.Normal,
+  },
+  {
+    title: '个性化设置',
+    url: '',
+    icon: Settings2,
+    login: true,
+    role: UserRoleType.Normal,
+    items: [{ title: '默认菜单', url: '/ops/my/custom', login: true, role: UserRoleType.Normal }],
   },
   {
     title: '题目搜索',
@@ -26,7 +34,20 @@ export const menuItems: OpsMenu[] = [
         login: false,
         role: UserRoleType.None,
       },
+      {
+        title: '试卷选题',
+        url: '/question/paper',
+        login: false,
+        role: UserRoleType.None,
+      },
     ],
+  },
+  {
+    title: '智能组卷',
+    url: '/ops/paper',
+    icon: Wand,
+    login: true,
+    role: UserRoleType.Normal,
   },
   {
     title: '我的贡献',
@@ -65,6 +86,12 @@ export const menuItems: OpsMenu[] = [
         login: true,
         role: UserRoleType.Normal,
       },
+      {
+        title: '上传试卷',
+        url: '/ops/my/paper/upload',
+        login: true,
+        role: UserRoleType.Normal,
+      },
     ],
   },
   {
@@ -74,6 +101,13 @@ export const menuItems: OpsMenu[] = [
     login: true,
     role: UserRoleType.Teacher,
     items: [{ title: '我的班级', url: '/ops/class', login: true, role: UserRoleType.Teacher }],
+  },
+  {
+    title: '学情',
+    url: '/ops/my/analyze',
+    icon: ChartColumnIcon,
+    login: true,
+    role: UserRoleType.Teacher,
   },
   {
     title: '审核',
@@ -101,7 +135,7 @@ export const menuItems: OpsMenu[] = [
   {
     title: '用户',
     url: '',
-    icon: UserCog,
+    icon: Users,
     login: true,
     role: UserRoleType.Teacher,
     items: [

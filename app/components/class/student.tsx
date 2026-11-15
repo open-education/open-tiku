@@ -79,7 +79,7 @@ function StudentList({ infoResp }: StudentAccountListProps) {
     <Card className="shadow-sm hover:shadow-md transition-shadow duration-200 border-border/40 bg-secondary">
       <CardHeader>
         <CardTitle className="text-sm font-semibold">班级学生信息列表</CardTitle>
-        <CardDescription>班级学生信息列表</CardDescription>
+        <CardDescription>查看已有学生账号名称、状态和登录时间等；也可对账号进行限制</CardDescription>
       </CardHeader>
 
       <Separator />

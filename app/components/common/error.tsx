@@ -42,8 +42,8 @@ const secondNavLinks: LinkProps[] = [
   },
   {
     id: 2,
-    title: '试卷库',
-    href: '/paper',
+    title: '试卷中心',
+    href: '/question/paper',
     leftIcon: FileText,
     rightIcon: ArrowRight,
   },

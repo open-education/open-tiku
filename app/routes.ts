@@ -15,8 +15,15 @@ export default [
     // 工作台
     route('/ops', 'routes/ops/index.tsx'),
 
+    // 个性化
+    route('/ops/my/custom', 'routes/ops/my/custom/index.tsx'),
+
     // 题库中心
     route('/question', 'routes/question/index.tsx'),
+    route('/question/paper', 'routes/question/paper.tsx'),
+
+    // 智能组卷
+    route('/ops/paper', 'routes/ops/paper/index.tsx'),
 
     // 我的贡献
     route('/ops/my/question', 'routes/ops/my/question/index.tsx'),
@@ -24,9 +31,13 @@ export default [
     route('/ops/my/question/upload', 'routes/ops/my/question/upload.tsx'),
     route('/ops/my/question/task', 'routes/ops/my/question/task.tsx'),
     route('/ops/my/paper', 'routes/ops/my/paper/index.tsx'),
+    route('/ops/my/paper/upload', 'routes/ops/my/paper/upload.tsx'),
 
     // 班级
     route('/ops/class', 'routes/ops/class/index.tsx'),
+
+    // 学情
+    route('/ops/my/analyze', 'routes/ops/my/analyze/index.tsx'),
 
     // 审核
     route('/ops/review/question', 'routes/ops/review/question.tsx'),

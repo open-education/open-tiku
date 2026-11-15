@@ -32,7 +32,7 @@ import type { Route } from './+types/ck';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '系统设置-挂载题型' },
+    { title: '挂载题型' },
     {
       name: 'description',
       content: '个人中心, 系统设置, 关联教材章节和知识点考点的关联关系',

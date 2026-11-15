@@ -11,16 +11,18 @@ import { Separator } from '@/components/ui/separator';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
 import type { TaskListReq } from '@/type/task';
 import type { TextbookResp } from '@/type/textbook';
-import { useQuestionCates, useTaskList, useTextbooks } from '@/util/fetcher';
+import { useCustomList, useQuestionCates, useTaskList, useTextbooks } from '@/util/fetcher';
 import { StringConst } from '@/util/string';
 import { CalendarDays, Clock, FileText, Mail, User } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import { CustomType } from '@/type/enum';
+import { formatNumber } from '@/util/fmt';
 import type { Route } from './+types/task';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '我的贡献-我的任务' },
+    { title: '我的任务' },
     {
       name: 'description',
       content: '查看我上传的任务列表',
@@ -84,15 +86,33 @@ export default function Index() {
     error: listRespErr,
   } = useTaskList(listReq, pageNo, StringConst.pageSize);
 
-  const showLoading = useDelayedLoading(textbooksLoading || questionCatesLoading || listRespLoading);
+  const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
+
+  // 用户个性化配置
+  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList();
+  useEffect(() => {
+    // 如果存在预设默认值则覆盖初始化值
+    const customTextbook = customListResp.find((item) => item.customType === CustomType.Textbook);
+    if (!customTextbook) {
+      return;
+    }
+
+    if (customTextbook.textbook) {
+      // 更新默认显示
+      if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
+        setFiveLevelId(customTextbook.textbook.fifth);
+      }
+      if (customTextbook.textbook.fifthKeys && customTextbook.textbook.fifthKeys.length > 0) {
+        setDefaultFiveKeys(customTextbook.textbook.fifthKeys);
+      }
+    }
+  }, [customListResp]);
+
+  const showLoading = useDelayedLoading(textbooksLoading || questionCatesLoading || listRespLoading || customListRespLoading);
 
   return (
     <div className="bg-card p-3 space-y-3">
       {showLoading && <Loading />}
-
-      {textbooksErr && <SimpleAlert title="导航信息获取失败" message={textbooksErr.message} />}
-      {questionCatesErr && <SimpleAlert title="题型信息获取失败" message={questionCatesErr.message} />}
-      {listRespErr && <SimpleAlert title="任务列表获取失败" message={listRespErr.message} />}
 
       <div className="flex flex-col gap-3 text-sm">
         {/* 选择前5层级 */}
@@ -112,7 +132,7 @@ export default function Index() {
                 const current: TextbookResp = selectedItems[selectedItems.length - 1];
                 setFiveLevelId(current.id);
               }}
-              defaultSelectedKeys={[]}
+              defaultSelectedKeys={defaultFiveKeys}
               placeholder="请选择学段/考点"
             />
           </div>
@@ -144,7 +164,16 @@ export default function Index() {
 
       <Separator />
 
+      <div className="space-y-2">
+        {textbooksErr && <SimpleAlert title="导航信息获取失败" message={textbooksErr.message} />}
+        {questionCatesErr && <SimpleAlert title="题型信息获取失败" message={questionCatesErr.message} />}
+        {listRespErr && <SimpleAlert title="任务列表获取失败" message={listRespErr.message} />}
+        {customListRespErr && <SimpleAlert title="个性化信息获取失败" message={customListRespErr.message} />}
+      </div>
+
       {listResp.total == 0 && <SimpleNoData desc="当前没有查询到任何历史任务" />}
+
+      {listResp.total > 0 && <div>共找到 {formatNumber(listResp.total)} 个任务</div>}
 
       {listResp.list.map((task) => (
         <Card key={task.id} className="mt-3 transition-all duration-200 hover:shadow-lg hover:border-primary/10 flex flex-col border-border/60">

@@ -165,3 +165,9 @@ export interface QuestionApproveReq {
 export interface QuestionDeleteReq {
   id: number;
 }
+
+// 题目计数信息
+export interface CountQuestionResp {
+  status: number;
+  count: number;
+}

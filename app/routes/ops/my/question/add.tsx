@@ -18,10 +18,10 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { QuestionRelationType } from '@/type/enum';
+import { CustomType, QuestionRelationType } from '@/type/enum';
 import type { Content, CreateQuestionReq, QuestionInfoResp, QuestionListResp, QuestionOption, QuestionSearch } from '@/type/question';
 import type { TextbookResp } from '@/type/textbook';
-import { useQuestionCates, useQuestionOtherDictList, useTextbooks } from '@/util/fetcher';
+import { useCustomList, useQuestionCates, useQuestionOtherDictList, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
 import { ObjectUtil, TextbookUtil } from '@/util/object';
 import { StringConst, StringValidator } from '@/util/string';
@@ -43,10 +43,10 @@ import {
   Wand2,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import type { KeyedMutator } from 'swr';
 import type { Route } from './+types/add';
-import { useNavigate } from 'react-router';
 
 /// 题目添加和编辑
 
@@ -192,6 +192,28 @@ export default function Add({
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
+
+  const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
+
+  // 用户个性化配置
+  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList();
+  useEffect(() => {
+    // 如果存在预设默认值则覆盖初始化值
+    const customTextbook = customListResp.find((item) => item.customType === CustomType.Textbook);
+    if (!customTextbook) {
+      return;
+    }
+
+    if (customTextbook.textbook) {
+      // 更新默认显示
+      if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
+        setFiveLevelId(customTextbook.textbook.fifth);
+      }
+      if (customTextbook.textbook.fifthKeys && customTextbook.textbook.fifthKeys.length > 0) {
+        setDefaultFiveKeys(customTextbook.textbook.fifthKeys);
+      }
+    }
+  }, [customListResp]);
 
   // 是否是选择题, 列表页可能携带需要填充默认值
   const [isChoice, setIsChoice] = useState<boolean>(otherDictListRecord.questionTypeDict[addReq.questionTypeId]?.isSelect);
@@ -469,7 +491,7 @@ export default function Add({
                     const current: TextbookResp = selectedItems[selectedItems.length - 1];
                     setFiveLevelId(current.id);
                   }}
-                  defaultSelectedKeys={questionSearch.fiveLevelSelectKeys || []}
+                  defaultSelectedKeys={defaultFiveKeys}
                   placeholder="请选择学段/考点"
                 />
               </div>
@@ -498,7 +520,7 @@ export default function Add({
 
                     updateAddReq('questionCateId', current.id);
                   }}
-                  defaultSelectedKeys={questionSearch.eightLevelSelectKeys || []}
+                  defaultSelectedKeys={[]}
                   placeholder="请选择题型"
                 />
               </div>

@@ -1,7 +1,8 @@
 import type { BoardResp } from '@/type/bord';
 import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentListReq, ClassStudentResp } from '@/type/class';
+import type { CustomResp } from '@/type/custom';
 import { QuestionPageSource } from '@/type/enum';
-import type { QuestionListReq, QuestionListResp, QuestionSearch } from '@/type/question';
+import type { CountQuestionResp, QuestionListReq, QuestionListResp, QuestionSearch } from '@/type/question';
 import type { ChapterKnowledgeResp, QuestionCateResp } from '@/type/question-cate';
 import type { TaskListReq, TaskListResp } from '@/type/task';
 import type { TextbookOtherDictListReq, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
@@ -84,11 +85,7 @@ export function useQuestionList(source: QuestionPageSource, search: QuestionSear
   }
 
   const reqPath = '/question/list';
-  // 我的页面没有区分度
-  const isMy = source === QuestionPageSource.MyQuestion || source === QuestionPageSource.MyReview;
-  const hasCateIds = !!req.questionCateIds?.length;
-
-  const key = isMy || hasCateIds ? [reqPath, JSON.stringify(req)] : null;
+  const key = [reqPath, JSON.stringify(req)];
   return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>(reqPath, req), defaultErrConfig);
 }
 
@@ -200,4 +197,16 @@ export function useClassStudentList(classIds: number[]) {
   const reqPath = '/class/student/list';
   const key = getClassStudentListKey(classIds);
   return useSWR<Record<number, ClassStudentResp[]>>(key, () => httpClient.post<Record<number, ClassStudentResp[]>>(reqPath, req), defaultErrConfig);
+}
+
+// 获取个性化配置列表
+export function useCustomList() {
+  const key = '/custom/list';
+  return useSWR<CustomResp[]>(key, httpClient.get, defaultErrConfig);
+}
+
+// 获取个性化配置列表
+export function useCountQuestionList() {
+  const key = '/question/count';
+  return useSWR<CountQuestionResp[]>(key, httpClient.get, defaultErrConfig);
 }

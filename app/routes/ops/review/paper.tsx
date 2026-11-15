@@ -4,7 +4,7 @@ import type { Route } from './+types/paper';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '审核-试卷审核' },
+    { title: '试卷审核' },
     {
       name: 'description',
       content: '个人中心, 系统设置, 关联教材章节和知识点考点的关联关系',

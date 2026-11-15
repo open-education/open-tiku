@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { QuestionStatus } from '@/type/enum';
+import type { CountQuestionResp } from '@/type/question';
 import { StringConst } from '@/util/string';
 import { cn } from 'cn';
 import { Check, Clock, FileQuestion, PencilLine, X, type LucideIcon } from 'lucide-react';
@@ -11,7 +12,6 @@ export interface StatItem {
   id: number;
   title: string;
   value: QuestionStatus;
-  count: number;
   icon: LucideIcon;
   desc?: string;
   theme: {
@@ -21,12 +21,11 @@ export interface StatItem {
   };
 }
 
-export const DEFAULT_STAT_LIST: StatItem[] = [
+export const STAT_LIST: StatItem[] = [
   {
     id: 1,
     title: '全部题目',
     value: QuestionStatus.None,
-    count: 0,
     icon: FileQuestion,
     desc: '我的全部题目',
     theme: {
@@ -39,7 +38,6 @@ export const DEFAULT_STAT_LIST: StatItem[] = [
     id: 2,
     title: '草稿中',
     value: QuestionStatus.Drafing,
-    count: 0,
     icon: PencilLine,
     desc: '可编辑的题目',
     theme: {
@@ -52,7 +50,6 @@ export const DEFAULT_STAT_LIST: StatItem[] = [
     id: 3,
     title: '已通过',
     value: QuestionStatus.Published,
-    count: 0,
     icon: Check,
     desc: '所有人可查看',
     theme: {
@@ -65,7 +62,6 @@ export const DEFAULT_STAT_LIST: StatItem[] = [
     id: 4,
     title: '待审核',
     value: QuestionStatus.Pending,
-    count: 0,
     icon: Clock,
     desc: '不可编辑待他人审核',
     theme: {
@@ -78,7 +74,6 @@ export const DEFAULT_STAT_LIST: StatItem[] = [
     id: 5,
     title: '未通过',
     value: QuestionStatus.Rejected,
-    count: 0,
     icon: X,
     desc: '按拒绝理由修改',
     theme: {
@@ -90,19 +85,19 @@ export const DEFAULT_STAT_LIST: StatItem[] = [
 ];
 
 interface StatusListProps {
-  items?: StatItem[];
-  count?: number;
-  activeStatus?: QuestionStatus;
-  onSelectStatus?: (status: QuestionStatus) => void;
+  countMap: Record<number, CountQuestionResp>;
+  activeStatus: QuestionStatus;
+  onSelectStatus: (status: QuestionStatus) => void;
 }
 
-function StatusList({ items = DEFAULT_STAT_LIST, count, activeStatus = QuestionStatus.None, onSelectStatus }: StatusListProps) {
+function StatusList({ countMap, activeStatus = QuestionStatus.None, onSelectStatus }: StatusListProps) {
   return (
     <section className="py-2">
       <div className="grid max-w-4xl grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
-        {items.map((item) => {
+        {STAT_LIST.map((item) => {
           const isActive = activeStatus === item.value;
-          const displayCount = item.count ?? count ?? 0;
+          const displayCount =
+            item.value === QuestionStatus.None ? Object.values(countMap).reduce((sum, q) => sum + q.count, 0) : countMap[item.value]?.count || 0;
 
           return (
             <Card
@@ -110,7 +105,7 @@ function StatusList({ items = DEFAULT_STAT_LIST, count, activeStatus = QuestionS
               onClick={() => onSelectStatus?.(item.value)}
               className={cn(
                 'group relative border bg-card py-0 shadow-none transition-all duration-150 select-none',
-                onSelectStatus && 'cursor-pointer',
+                'cursor-pointer',
                 isActive ? cn('bg-cyan-50', item.theme.ring) : 'border-border/60 hover:border-border hover:bg-muted/30',
               )}
             >

@@ -22,7 +22,7 @@ import type { Route } from './+types/textbook';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '系统设置-章节/考点' },
+    { title: '章节/知识点' },
     {
       name: 'description',
       content: '个人中心, 系统设置, 维护7级教材目录章节和考点层级关系',

@@ -19,6 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useCopy } from '@/hooks/use-copy';
 import { QuestionPageSource, QuestionRelationType, QuestionStatus } from '@/type/enum';
 import type {
+  CountQuestionResp,
   QuestionApproveReq,
   QuestionBaseInfoResp,
   QuestionDeleteReq,
@@ -38,8 +39,15 @@ interface QuestionOperateListProps {
   otherDictListRecord: OtherDictListRecord;
   baseInfoResp: QuestionBaseInfoResp;
   questionListRespMutate: KeyedMutator<QuestionListResp>; // 审核删除等操作需要重置列表接口重新请求数据
+  countListRespMutate?: KeyedMutator<CountQuestionResp[]>; // 我的题目提交审核等操作需要重置列表状态计数接口重新请求数据
 }
-function QuestionOperateList({ pageSource, otherDictListRecord, baseInfoResp, questionListRespMutate }: QuestionOperateListProps) {
+function QuestionOperateList({
+  pageSource,
+  otherDictListRecord,
+  baseInfoResp,
+  questionListRespMutate,
+  countListRespMutate,
+}: QuestionOperateListProps) {
   // 查看答案详情
   const [isAnswerOpen, setIsAnswerOpen] = useState(false);
   const [viewAnswerIng, setViewAnswerIng] = useState<boolean>(false);
@@ -179,6 +187,7 @@ function QuestionOperateList({ pageSource, otherDictListRecord, baseInfoResp, qu
       .post('/edit/question/status', req)
       .then((res) => {
         questionListRespMutate();
+        countListRespMutate?.();
         setOpenSubmitApprove(false);
       })
       .catch((err) => {
@@ -204,6 +213,7 @@ function QuestionOperateList({ pageSource, otherDictListRecord, baseInfoResp, qu
       .post('/question/delete', req)
       .then((res) => {
         questionListRespMutate();
+        countListRespMutate?.();
         setOpenDelete(false);
       })
       .catch((err) => {
@@ -234,6 +244,7 @@ function QuestionOperateList({ pageSource, otherDictListRecord, baseInfoResp, qu
       .post('/edit/question/status', approveReq)
       .then((res) => {
         questionListRespMutate();
+        countListRespMutate?.();
         setOpenConfirmApprove(false);
       })
       .catch((err) => {
@@ -378,7 +389,7 @@ function QuestionOperateList({ pageSource, otherDictListRecord, baseInfoResp, qu
           <Dialog open={openConfirmApprove} onOpenChange={setOpenConfirmApprove}>
             <DialogTrigger
               render={
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="destructive">
                   审核
                 </Button>
               }

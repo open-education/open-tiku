@@ -18,7 +18,7 @@ import type { Route } from './+types/account';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '用户-第三方账户列表' },
+    { title: '第三方账户列表' },
     {
       name: 'description',
       content: '个人中心用户账户管理; 第三方登录账户列表',

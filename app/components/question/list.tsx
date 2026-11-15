@@ -10,7 +10,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuestionPageSource } from '@/type/enum';
-import type { QuestionBaseInfoResp, QuestionInfoResp, QuestionListResp, QuestionSearch } from '@/type/question';
+import type { CountQuestionResp, QuestionBaseInfoResp, QuestionInfoResp, QuestionListResp } from '@/type/question';
 import type { OtherDictListRecord, TextbookOtherDictResp } from '@/type/textbook';
 import { httpClient } from '@/util/http';
 import { StringConst } from '@/util/string';
@@ -60,17 +60,17 @@ interface QuestionListShowProps {
   pageSource: QuestionPageSource;
   otherDictListRecord: OtherDictListRecord;
   listResp: QuestionListResp;
-  questionSearch: QuestionSearch;
   questionListRespMutate: KeyedMutator<QuestionListResp>; // 审核删除等操作需要重置列表接口重新请求数据
+  countListRespMutate?: KeyedMutator<CountQuestionResp[]>; // 我的题目提交审核等操作需要重置列表状态计数接口重新请求数据
 }
-function QuestionListShow({ pageSource, otherDictListRecord, listResp, questionSearch, questionListRespMutate }: QuestionListShowProps) {
+function QuestionListShow({ pageSource, otherDictListRecord, listResp, questionListRespMutate, countListRespMutate }: QuestionListShowProps) {
   return (
     <>
       {listResp.list?.map((questionInfo) => {
         return (
           <div
             key={questionInfo.id}
-            className="mt-4 first:mt-3 px-3 pt-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
+            className="mt-3 first:mt-3 px-3 pt-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
           >
             {/* 题干选项等部分 */}
             <SingleQuestionCommonPart pageSource={pageSource} otherDictListRecord={otherDictListRecord} questionInfo={questionInfo} />
@@ -84,6 +84,7 @@ function QuestionListShow({ pageSource, otherDictListRecord, listResp, questionS
                 otherDictListRecord={otherDictListRecord}
                 baseInfoResp={questionInfo}
                 questionListRespMutate={questionListRespMutate}
+                countListRespMutate={countListRespMutate}
               />
             </div>
           </div>

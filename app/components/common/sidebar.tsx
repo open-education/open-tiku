@@ -29,17 +29,7 @@ function Logo() {
           "
       >
         {/* Logo */}
-        <div
-          className="
-              grid h-9 w-9 shrink-0 place-items-center rounded-lg
-              bg-linear-to-br from-blue-500 to-blue-400
-              text-base font-bold text-white
-              transition-all duration-200
-              group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8
-            "
-        >
-          题
-        </div>
+        <div className="flex h-8.5 w-8.5 items-center justify-center rounded-md bg-blue-900 text-[15px] font-bold text-white">题</div>
 
         {/* 文字块: 收缩时宽度归零 + 淡出, 保持动画平滑 */}
         <div

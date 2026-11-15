@@ -14,7 +14,7 @@ import type { Route } from './+types/session';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '用户-活跃用户 Session 列表' },
+    { title: '活跃用户 Session 列表' },
     {
       name: 'description',
       content: '个人中心用户 Session 管理; 活跃用户 Session 列表',

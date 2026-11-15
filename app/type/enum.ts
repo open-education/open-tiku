@@ -51,3 +51,8 @@ export enum StudentStatus {
   Pause = 2, // 暂停
   Disabled = 3, // 禁用
 }
+
+// 个性化配置
+export enum CustomType {
+  Textbook = 1, // 定制教材层级菜单
+}

@@ -17,7 +17,7 @@ import type { TextbookResp } from '@/type/textbook';
 import { StringConst } from '@/util/string';
 import { cn } from 'cn';
 import { Check, ChevronDown, ChevronRight } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // 章节导航选择
 // 前5层级标识
@@ -100,16 +100,54 @@ function getSelectedTextbookAtLevel(textbookMap: TextbookMap, selectedValues: Le
   return textbookMap.byKey.get(value) || null;
 }
 
+/**
+ * 按顺序填充默认值：遇到取不出来的 key 就停止，后续层级保持无默认值。
+ */
+function resolveDefaultValues(textbookMap: TextbookMap, defaultValue: string[]): LevelProps {
+  const result: LevelProps = {
+    first: null,
+    second: null,
+    third: null,
+    fourth: null,
+    fifth: null,
+  };
+
+  for (let i = 0; i < steps.length; i++) {
+    const value = defaultValue[i];
+    if (!value) break;
+    if (!textbookMap.byKey.has(value)) break;
+
+    result[steps[i]] = value;
+  }
+
+  return result;
+}
+
+/** 比较两个默认值数组是否等价，避免内联数组每次渲染都触发应用 */
+function isSameDefaultValue(a: string[] | null, b: string[] | null): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  return a.every((value, index) => value === b[index]);
+}
+
 interface ChapterExpandNavProps {
   // textbooks 网站原始前5层级导航信息
   textbooks: TextbookResp[];
+  /**
+   * 默认选中值，按层级顺序指定 key 路径，如 ['primary', 'math', 'chapter-1']
+   * 在 textbooks 加载完成后应用；遇到取不出来的 key 就停止，后续层级无默认值。
+   * 语义：只要用户还没有手动选择过，defaultValue（包括异步到达、刷新后的重新挂载）
+   * 都会生效；用户一旦手动选择，则只以用户选择为准，不再被 defaultValue 覆盖。
+   */
+  defaultValues?: string[];
   // 选择 Option 时监听选中项的外部函数
-  onSelectionChange?: (selection: LevelProps, selectedTextbooks: Record<keyof LevelProps, TextbookResp | null>) => void;
+  onSelectionChange?: (selectedTextbooks: Record<keyof LevelProps, TextbookResp | null>) => void;
 }
 
 // 平铺展开式的导航样式-适用于首页
 function ChapterExpandNav(props: ChapterExpandNavProps) {
-  const { textbooks = [], onSelectionChange } = props;
+  const { textbooks = [], onSelectionChange, defaultValues } = props;
 
   // 构建 Map 索引（只在 textbooks 变化时重新构建）
   const textbookMap = useMemo(() => buildTextbookMap(textbooks), [textbooks]);
@@ -122,6 +160,32 @@ function ChapterExpandNav(props: ChapterExpandNavProps) {
     fourth: null,
     fifth: null,
   });
+
+  // 用户是否已手动交互过；交互后默认值逻辑彻底失效
+  const userInteractedRef = useRef(false);
+  // 记录最近一次已应用的默认值，避免内联数组每次渲染都触发 setState
+  const appliedDefaultRef = useRef<string[] | null>(null);
+
+  // textbooks 就绪后 / defaultValue 变化时，在用户未交互的前提下应用默认值
+  useEffect(() => {
+    // 用户已交互，默认值不再参与
+    if (userInteractedRef.current) return;
+    if (!defaultValues || defaultValues.length === 0) return;
+
+    // textbooks 还未加载，等待下一次 effect
+    if (textbookMap.rootKeys.length === 0) return;
+
+    // 同一个默认值只应用一次
+    if (isSameDefaultValue(appliedDefaultRef.current, defaultValues)) return;
+
+    const resolved = resolveDefaultValues(textbookMap, defaultValues);
+    appliedDefaultRef.current = defaultValues;
+
+    // 一个都取不出来就什么都不做，保持无选中
+    if (steps.every((key) => !resolved[key])) return;
+
+    setSelectedValues(resolved);
+  }, [textbookMap, defaultValues]);
 
   // 计算选中对象的缓存（避免重复计算）
   const selectedTextbooks = useMemo(() => {
@@ -142,12 +206,19 @@ function ChapterExpandNav(props: ChapterExpandNavProps) {
 
   // 当选中状态变化时通知父组件
   useEffect(() => {
-    onSelectionChange?.(selectedValues, selectedTextbooks);
-  }, [selectedValues, selectedTextbooks]);
+    // textbooks 未就绪，不通知
+    if (textbookMap.rootKeys.length === 0) return;
+    // 用户未交互过，init 阶段静默；父组件既然传了 defaultValues，自己就知道初始状态
+    if (!userInteractedRef.current) return;
+    onSelectionChange?.(selectedTextbooks);
+  }, [selectedTextbooks, textbookMap.rootKeys.length]);
 
   // 处理层级选择
   const handleLevelSelect = useCallback(
     (levelKey: keyof LevelProps, textbook: TextbookResp) => {
+      // 用户一旦手动操作，默认值逻辑彻底失效
+      userInteractedRef.current = true;
+
       const levelIndex = steps.indexOf(levelKey);
 
       // 清空当前层级及之后的所有层级
@@ -368,7 +439,13 @@ const renderTreeNodes = (
 
 // 属性多选择树形组件 - 完全展开版本
 function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [], maxDepth = 5 }: TreeCheckboxProps) {
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(() => new Set(defaultSelectedKeys));
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+
+  // 需要用接收来初始化, 该值为不受控组件值
+  useEffect(() => {
+    setSelectedKeys(new Set(defaultSelectedKeys));
+  }, [defaultSelectedKeys]);
+
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(() => {
     // 默认展开所有节点
     const allKeys = new Set<string>();

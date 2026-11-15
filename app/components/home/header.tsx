@@ -36,11 +36,11 @@ export default function Header() {
 
         {/* 中等以上屏幕导航 Nav links */}
         <nav className="hidden md:flex items-center gap-1 flex-1">
-          <NavLink to={'question'} className={pcLinkClass}>
+          <NavLink to={'/question'} className={pcLinkClass}>
             题库中心
           </NavLink>
-          <NavLink to={'paper'} className={pcLinkClass}>
-            试卷库
+          <NavLink to={'/question/paper'} className={pcLinkClass}>
+            试卷中心
           </NavLink>
         </nav>
 
@@ -72,11 +72,11 @@ export default function Header() {
                 <NavLink to="/" onClick={() => setSheetOpen(false)} className={mobileLinkClass}>
                   首页
                 </NavLink>
-                <NavLink to="question" onClick={() => setSheetOpen(false)} className={mobileLinkClass}>
-                  题目库
+                <NavLink to="/question" onClick={() => setSheetOpen(false)} className={mobileLinkClass}>
+                  题库中心
                 </NavLink>
-                <NavLink to="paper" onClick={() => setSheetOpen(false)} className={mobileLinkClass}>
-                  试卷库
+                <NavLink to="/question/paper" onClick={() => setSheetOpen(false)} className={mobileLinkClass}>
+                  试卷中心
                 </NavLink>
               </nav>
 

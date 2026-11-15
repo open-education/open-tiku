@@ -22,7 +22,7 @@ import type { Route } from './+types/index';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '班级-我的班级' },
+    { title: '我的班级' },
     {
       name: 'description',
       content: '个人中心我的班级管理; 导入班级学生账号, 生成学生账户登录密码',
@@ -76,7 +76,7 @@ export default function Index() {
     <div className="bg-card">
       <Card className="w-full">
         <CardHeader className="flex flex-row justify-between space-y-0">
-          <CardTitle className="text-base font-semibold">我的班级管理</CardTitle>
+          <CardTitle className="text-sm font-semibold">我的班级管理</CardTitle>
           <Button
             onClick={() => {
               setInfoResp(null);
@@ -89,6 +89,10 @@ export default function Index() {
           </Button>
         </CardHeader>
         <CardContent>
+          <div className="mb-4">
+            <Separator />
+          </div>
+
           {/* 说明事项 */}
           <div className="text-sm space-y-2">
             <div>
@@ -102,13 +106,6 @@ export default function Index() {
             <div>2. 生成密码本身比较耗时, 一次添加的用户建议不要超过 20 个;</div>
             <div>3. 上传学生账户时, 注意是覆盖上传还是增量上传, 覆盖上传会清空班级内已有的学生账户;</div>
           </div>
-
-          <div className="my-4">
-            <Separator />
-          </div>
-
-          {/* 搜索选项 */}
-          <div className="text-base mt-3">{/* <SearchConfig searchReq={searchReq} updateSearchReq={updateSearchReq} /> */}</div>
 
           <div className="mt-3">
             <Separator />

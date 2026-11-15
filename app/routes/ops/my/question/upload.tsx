@@ -8,20 +8,22 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import type { TaskSaveReq } from '@/type/task';
 import type { TextbookResp } from '@/type/textbook';
-import { useQuestionCates, useTextbooks } from '@/util/fetcher';
+import { useCustomList, useQuestionCates, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
 import { TextbookUtil } from '@/util/object';
 import { StringConst, StringValidator } from '@/util/string';
-import { FileImage } from 'lucide-react';
+import { FileImage, Save } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-import type { Route } from './+types/upload';
+import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { CustomType } from '@/type/enum';
 import { useNavigate } from 'react-router';
+import type { Route } from './+types/upload';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '我的贡献-上传任务' },
+    { title: '上传任务' },
     {
       name: 'description',
       content: '查看我上传的任务列表',
@@ -70,6 +72,28 @@ export default function Index() {
 
   // 获取教材/考点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
+
+  const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
+
+  // 用户个性化配置
+  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList();
+  useEffect(() => {
+    // 如果存在预设默认值则覆盖初始化值
+    const customTextbook = customListResp.find((item) => item.customType === CustomType.Textbook);
+    if (!customTextbook) {
+      return;
+    }
+
+    if (customTextbook.textbook) {
+      // 更新默认显示
+      if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
+        setFiveLevelId(customTextbook.textbook.fifth);
+      }
+      if (customTextbook.textbook.fifthKeys && customTextbook.textbook.fifthKeys.length > 0) {
+        setDefaultFiveKeys(customTextbook.textbook.fifthKeys);
+      }
+    }
+  }, [customListResp]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [warnInfo, setWarnInfo] = useState<React.ReactNode>('');
@@ -132,7 +156,7 @@ export default function Index() {
       });
   };
 
-  const showLoading = isLoading || textbooksLoading || questionCatesLoading;
+  const showLoading = useDelayedLoading(isLoading || textbooksLoading || questionCatesLoading || customListRespLoading);
 
   return (
     <div className="bg-card p-3 space-y-3">
@@ -143,6 +167,7 @@ export default function Index() {
 
       <div className="mt-3 flex flex-wrap gap-2">
         <Button variant="default" className="text-sm" onClick={handleAddTask}>
+          <Save className="mr-2 h-4 w-4" />
           保存任务
         </Button>
       </div>
@@ -169,10 +194,12 @@ export default function Index() {
 
       {showLoading && <Loading />}
 
-      {textbooksErr && <SimpleAlert title="导航信息获取失败" message={textbooksErr.message} />}
-      {questionCatesErr && <SimpleAlert title="题型信息获取失败" message={questionCatesErr.message} />}
-
-      {warnInfo}
+      <div className="space-y-2">
+        {textbooksErr && <SimpleAlert title="导航信息获取失败" message={textbooksErr.message} />}
+        {questionCatesErr && <SimpleAlert title="题型信息获取失败" message={questionCatesErr.message} />}
+        {customListRespErr && <SimpleAlert title="个性化配置信息获取失败" message={customListRespErr.message} />}
+        {warnInfo}
+      </div>
 
       <div className="flex flex-col gap-3 text-sm">
         <div className="flex items-center gap-1">
@@ -206,7 +233,7 @@ export default function Index() {
                 const current: TextbookResp = selectedItems[selectedItems.length - 1];
                 setFiveLevelId(current.id);
               }}
-              defaultSelectedKeys={[]}
+              defaultSelectedKeys={defaultFiveKeys}
               placeholder="请选择学段/考点"
             />
           </div>

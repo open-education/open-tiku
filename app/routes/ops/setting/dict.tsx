@@ -3,7 +3,7 @@ import { Loading } from '@/components/common/load';
 import { ChapterDropdownNav } from '@/components/common/nav';
 import { OtherDictSelect } from '@/components/question/tag';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -21,7 +21,7 @@ import type { Route } from './+types/dict';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '系统设置-通用字典维护' },
+    { title: '通用字典维护' },
     {
       name: 'description',
       content: '个人中心, 系统设置, 题目类型, 标签, 核心素养等通用字典维护',
