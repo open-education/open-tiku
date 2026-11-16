@@ -1,9 +1,20 @@
 import { UserRoleType } from '@/type/enum';
 import type { OpsMenu } from '@/type/menu';
 import type { UserInfoResp } from '@/type/user';
-import { Bot, ChartColumnIcon, CircleCheckBig, LayoutDashboard, School, Settings, Settings2, Trophy, Users, Wand } from 'lucide-react';
+import {
+  Bot,
+  ChartColumnIcon,
+  CircleCheckBig,
+  LayoutDashboard,
+  School,
+  Settings,
+  Settings2,
+  Trophy,
+  Users,
+  Wand,
+} from 'lucide-react';
 
-// 菜单内容
+// 左侧菜单内容
 // 权限配置注意, 会优先直接放行 父路径
 export const menuItems: OpsMenu[] = [
   {
@@ -63,7 +74,7 @@ export const menuItems: OpsMenu[] = [
         role: UserRoleType.Normal,
       },
       {
-        title: '添加母题',
+        title: '添加题目',
         url: '/ops/my/question/add',
         login: true,
         role: UserRoleType.Normal,
@@ -167,11 +178,21 @@ export const getMenuMap = () => {
     }
   }
 
+  // 不配置导航栏的特殊菜单, 比如编辑路由
+  map['/ops/my/question/edit'] = {
+    title: '题目编辑',
+    login: true,
+    role: UserRoleType.Normal,
+  };
+
   return map;
 };
 
 // 辅助函数：统一判断单个菜单项（父级或子级）是否有权展示
-export const checkAccess = (user: UserInfoResp | null, item: { login: boolean; role: UserRoleType } | null): boolean => {
+export const checkAccess = (user: UserInfoResp | null, item: {
+  login: boolean;
+  role: UserRoleType
+} | null): boolean => {
   if (!item) return false;
 
   // 不需要登录的菜单直接放行

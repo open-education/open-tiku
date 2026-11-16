@@ -5,7 +5,12 @@ import { QuestionPageSource } from '@/type/enum';
 import type { CountQuestionResp, QuestionListReq, QuestionListResp, QuestionSearch } from '@/type/question';
 import type { ChapterKnowledgeResp, QuestionCateResp } from '@/type/question-cate';
 import type { TaskListReq, TaskListResp } from '@/type/task';
-import type { TextbookOtherDictListReq, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
+import type {
+  TextbookOtherDictListReq,
+  TextbookOtherDictListResp,
+  TextbookOtherDictResp,
+  TextbookResp,
+} from '@/type/textbook';
 import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from '@/type/user';
 import { httpClient } from '@/util/http';
 import { StringConst, StringValidator } from '@/util/string';

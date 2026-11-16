@@ -44,7 +44,12 @@ export default function Index() {
     setQuestionSearch((prev) => ({ ...prev, [key]: value }));
   };
 
-  const { data: countListResp = [], isLoading: countListRespLoading, error: countListRespErr, mutate: countListRespMutate } = useCountQuestionList();
+  const {
+    data: countListResp = [],
+    isLoading: countListRespLoading,
+    error: countListRespErr,
+    mutate: countListRespMutate,
+  } = useCountQuestionList();
   const countMap = useMemo(() => {
     return ArrayUtil.arrayToDict(countListResp, 'status');
   }, [countListResp]);
