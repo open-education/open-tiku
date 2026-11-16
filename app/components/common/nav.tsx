@@ -33,9 +33,9 @@ const steps: (keyof LevelProps)[] = ['first', 'second', 'third', 'fourth', 'fift
 const stepLabels: Record<keyof LevelProps, string> = {
   first: '学段',
   second: '科目',
-  third: '考点/章节选题',
-  fourth: '考点分类/出版社',
-  fifth: '考点名称/年级',
+  third: '知识点/章节选题',
+  fourth: '知识点分类/出版社',
+  fifth: '知识点名称/年级',
 };
 
 // 构建层级查找 Map，以 key 为索引

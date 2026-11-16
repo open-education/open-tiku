@@ -56,3 +56,33 @@ export enum StudentStatus {
 export enum CustomType {
   Textbook = 1, // 定制教材层级菜单
 }
+
+// 文件类型列表
+export enum UploadFileType {
+  Pdf = 1, // PDF 文件
+  Word = 2, // Word 文件
+  Image = 3, // 图片
+}
+
+// 考试类型
+export enum ExamType {
+  UnitTest = 1, // 单元测试
+  Midterm = 2, // 期中考试
+  Final = 3, // 期末考试
+  ZhongkaoMock = 4, // 中考模拟
+  MonthlyExam = 5, // 月考
+  TopicPaper = 6, // 专题卷
+}
+
+// 级别类型
+export enum PaperLevelType {
+  Standard = 1, // 普通
+  Premium = 2, // 精品
+}
+
+// 难度类型
+export enum PaperDifficultyType {
+  Easy = 1, // 容易
+  Medium = 2, // 适中
+  Hard = 3, // 困难
+}

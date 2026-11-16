@@ -74,7 +74,7 @@ export default function QuestionSearchList({
     return TextbookUtil.createOtherDictListRecord(dictListResp);
   }, [dictListResp]);
 
-  // 获取教材/考点题型列表
+  // 获取教材/知识点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(questionSearch.fiveLevelId);
 
   // 用户个性化配置
@@ -204,16 +204,14 @@ export default function QuestionSearchList({
 
   // PC 端
   return (
-    <div>
-      <ResizablePanelGroup orientation="horizontal" className="border flex-col! md:flex-row!">
-        <ResizablePanel defaultSize="25%">
-          <div className="pr-1.5">{leftContent}</div>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize="75%">
-          <div className="pl-1.5">{rightContent}</div>
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </div>
+    <ResizablePanelGroup orientation="horizontal" className="border flex-col! md:flex-row!">
+      <ResizablePanel defaultSize="25%">
+        <div className="pr-1.5">{leftContent}</div>
+      </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel defaultSize="75%">
+        <div className="pl-1.5">{rightContent}</div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 }

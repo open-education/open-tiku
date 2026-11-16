@@ -29,7 +29,7 @@ export const menuItems: OpsMenu[] = [
     role: UserRoleType.None,
     items: [
       {
-        title: '章节/知识点选题',
+        title: '知识点/章节选题',
         url: '/question',
         login: false,
         role: UserRoleType.None,
@@ -127,7 +127,7 @@ export const menuItems: OpsMenu[] = [
     login: true,
     role: UserRoleType.Teacher,
     items: [
-      { title: '章节/知识点', url: '/ops/setting/textbook', login: true, role: UserRoleType.Teacher },
+      { title: '知识点/章节', url: '/ops/setting/textbook', login: true, role: UserRoleType.Teacher },
       { title: '挂载题型', url: '/ops/setting/ck', login: true, role: UserRoleType.Teacher },
       { title: '通用字典', url: '/ops/setting/dict', login: true, role: UserRoleType.Teacher },
     ],

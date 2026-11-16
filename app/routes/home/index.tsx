@@ -38,7 +38,7 @@ export default function Index() {
   return (
     <>
       {showLoading && <Loading />}
-      {textbooksErr && <SimpleAlert title="教材和考点查询出错" message={textbooksErr.message} />}
+      {textbooksErr && <SimpleAlert title="教材和知识点查询出错" message={textbooksErr.message} />}
       {boardRespErr && <SimpleAlert title="统计信息查询出错" message={boardRespErr.message} />}
       <Hero countInfo={boardResp.countInfo} />
       <Feature />

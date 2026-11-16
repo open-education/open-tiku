@@ -190,7 +190,7 @@ export default function Add({
     return TextbookUtil.createOtherDictListRecord(dictListResp);
   }, [dictListResp]);
 
-  // 获取教材/考点题型列表
+  // 获取教材/知识点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
 
   const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
@@ -477,7 +477,7 @@ export default function Add({
             {/* 选择前5层级 */}
             <div className="flex items-center gap-1">
               <div className="w-[6em] shrink-0 whitespace-nowrap">
-                章节/考点:<span className="text-destructive">*</span>
+                知识点/章节:<span className="text-destructive">*</span>
               </div>
               <div className="min-w-0 flex-1">
                 <ChapterDropdownNav
@@ -492,7 +492,7 @@ export default function Add({
                     setFiveLevelId(current.id);
                   }}
                   defaultSelectedKeys={defaultFiveKeys}
-                  placeholder="请选择学段/考点"
+                  placeholder="请选择知识点/章节"
                 />
               </div>
             </div>

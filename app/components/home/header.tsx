@@ -40,7 +40,7 @@ export default function Header() {
             题库中心
           </NavLink>
           <NavLink to={'/question/paper'} className={pcLinkClass}>
-            试卷中心
+            试卷库
           </NavLink>
         </nav>
 
@@ -76,7 +76,7 @@ export default function Header() {
                   题库中心
                 </NavLink>
                 <NavLink to="/question/paper" onClick={() => setSheetOpen(false)} className={mobileLinkClass}>
-                  试卷中心
+                  试卷库
                 </NavLink>
               </nav>
 

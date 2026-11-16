@@ -25,7 +25,7 @@ export function meta({}: Route.MetaArgs) {
     { title: '章节/知识点' },
     {
       name: 'description',
-      content: '个人中心, 系统设置, 维护7级教材目录章节和考点层级关系',
+      content: '个人中心, 系统设置, 维护7级教材目录章节和知识点层级关系',
     },
   ];
 }
@@ -152,11 +152,11 @@ export default function Index() {
       {/* 错误提示 */}
       {firstLevelsErr && <SimpleAlert title="学段信息获取失败" message={firstLevelsErr.message} />}
       {secondLevelsErr && <SimpleAlert title="学科信息获取失败" message={secondLevelsErr.message} />}
-      {thirdLevelsErr && <SimpleAlert title="章节/考点信息获取失败" message={thirdLevelsErr.message} />}
-      {forthLevelsErr && <SimpleAlert title="出版社/考点名称获取失败" message={forthLevelsErr.message} />}
-      {fifthLevelsErr && <SimpleAlert title="教材/考点名称获取失败" message={fifthLevelsErr.message} />}
-      {sixthLevelsErr && <SimpleAlert title="教材章节/考点名称获取失败" message={sixthLevelsErr.message} />}
-      {seventhLevelsErr && <SimpleAlert title="教材小节/考点名称获取失败" message={seventhLevelsErr.message} />}
+      {thirdLevelsErr && <SimpleAlert title="章节/知识点信息获取失败" message={thirdLevelsErr.message} />}
+      {forthLevelsErr && <SimpleAlert title="出版社/知识点名称获取失败" message={forthLevelsErr.message} />}
+      {fifthLevelsErr && <SimpleAlert title="教材/知识点名称获取失败" message={fifthLevelsErr.message} />}
+      {sixthLevelsErr && <SimpleAlert title="教材章节/知识点名称获取失败" message={sixthLevelsErr.message} />}
+      {seventhLevelsErr && <SimpleAlert title="教材小节/知识点名称获取失败" message={seventhLevelsErr.message} />}
 
       <div className="space-y-3 min-h-200 bg-background">
         <div className="text-base font-bold bg-card p-3">七级菜单维护</div>
@@ -213,7 +213,7 @@ export default function Index() {
             open={thirdCollapsibleOpen}
             setOpen={setThirdCollapsibleOpen}
             levelName="第 3 级菜单"
-            levelDesc="章节/考点"
+            levelDesc="章节/知识点"
             levels={thirdLevels}
             onClear={(id) => {
               if (thirdLevelParentId !== id) {
@@ -236,7 +236,7 @@ export default function Index() {
             open={forthCollapsibleOpen}
             setOpen={setForthCollapsibleOpen}
             levelName="第 4 级菜单"
-            levelDesc="章节/考点"
+            levelDesc="章节/知识点"
             levels={forthLevels}
             onClear={(id) => {
               if (forthLevelParentId !== id) {
@@ -266,7 +266,7 @@ export default function Index() {
             open={fifthCollapsibleOpen}
             setOpen={setFifthCollapsibleOpen}
             levelName="第 5 级菜单"
-            levelDesc="章节/考点"
+            levelDesc="章节/知识点"
             levels={fifthLevels}
             onClear={(id) => {
               if (fifthLevelParentId !== id) {
@@ -295,7 +295,7 @@ export default function Index() {
             open={sixthCollapsibleOpen}
             setOpen={setSixthCollapsibleOpen}
             levelName="第 6 级菜单"
-            levelDesc="章节/考点"
+            levelDesc="章节/知识点"
             levels={sixthLevels}
             onClear={(id) => {
               if (sixthLevelParentId !== id) {
@@ -321,7 +321,7 @@ export default function Index() {
             open={seventhCollapsibleOpen}
             setOpen={setSeventhCollapsibleOpen}
             levelName="第 7 级菜单"
-            levelDesc="章节/考点"
+            levelDesc="章节/知识点"
             levels={seventhLevels}
             onClear={(id) => {}}
             onEdit={(item) => handleEdit(seventhLevelName, 7, item, seventhLevelsMutate, seventhLevelParentId)}

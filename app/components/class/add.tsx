@@ -1,6 +1,6 @@
 import { GradeSelect } from '@/components/class/grade';
 import { SemesterSelect } from '@/components/class/semester';
-import { YearSelect } from '@/components/class/year';
+import { YearSelect } from '@/components/common/year';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';

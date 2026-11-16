@@ -43,7 +43,7 @@ export function useQuestionOtherDictList(twoLevelId: number, typeCodes: string[]
   return useSWRImmutable<TextbookOtherDictListResp>(key, () => httpClient.post<TextbookOtherDictListResp>(reqPath, req), defaultErrConfig);
 }
 
-// 教材/考点题型列表-第5层标识同时获取题型列表
+// 教材/知识点题型列表-第5层标识同时获取题型列表
 export function useQuestionCates(fiveLevelId: number) {
   const key = fiveLevelId > 0 ? `/textbook/list/${fiveLevelId}/children` : null;
   return useSWR<TextbookResp[]>(key, httpClient.get, defaultErrConfig);
@@ -130,7 +130,7 @@ export function useTextbookLevel(parentId: number = 0) {
   return useSWRImmutable<TextbookResp[]>(key, httpClient.get, defaultErrConfig);
 }
 
-// 通过章节或者考点拉去关联关系
+// 通过章节或者知识点拉去关联关系
 export function useChapterKnowledgeList(sevenLevelId: number) {
   const key = sevenLevelId > 0 ? `/chapter-knowledge/list/${sevenLevelId}` : null;
   return useSWR<ChapterKnowledgeResp[]>(key, httpClient.get, defaultErrConfig);

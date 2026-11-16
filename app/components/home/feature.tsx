@@ -26,7 +26,7 @@ const coreFeatures: Feature[] = [
     id: 1,
     icon: Book,
     title: '题库中心·精准选题',
-    desc: '按学段/科目/年级/考点五级目录精确定位，母子题分层体系。',
+    desc: '按学段/科目/年级/知识点五级目录精确定位，母子题分层体系。',
     color: 'blue',
     url: '/question',
   },

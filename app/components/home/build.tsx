@@ -54,8 +54,6 @@ export default function Build() {
               <Separator />
 
               <div className="no-scrollbar max-h-[50vh] px-4 overflow-y-auto space-y-4">
-                <div className="flex items-center justify-center text-base font-semibold text-blue-700">终于等到你，还好我没放弃！</div>
-
                 <div className="text-sm text-gray-700">欢迎申请成为「教师用户」—— 我们最珍视的伙伴</div>
 
                 <div className="space-y-4 text-sm">

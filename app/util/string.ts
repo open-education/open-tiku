@@ -1,4 +1,4 @@
-import { AccountStatus, QuestionStatus, StudentStatus } from '@/type/enum';
+import { AccountStatus, ExamType, PaperDifficultyType, PaperLevelType, QuestionStatus, StudentStatus, UploadFileType } from '@/type/enum';
 
 // 部分字符串常量维护
 export const StringConst = {
@@ -68,13 +68,13 @@ export const StringConst = {
   textbookPathTypes: [
     { id: 1, value: 'common', label: '公共' },
     { id: 2, value: 'chapter', label: '章节' },
-    { id: 3, value: 'knowledge', label: '考点' },
+    { id: 3, value: 'knowledge', label: '知识点' },
   ],
   // 菜单路径名称
   textbookPathTypeNames: new Map<string, string>([
     ['common', '公共'],
     ['chapter', '章节'],
-    ['knowledge', '考点'],
+    ['knowledge', '知识点'],
   ]),
   // 任务类型是上传题目
   taskTypeUploadQuestion: 1,
@@ -83,6 +83,32 @@ export const StringConst = {
     { id: 1, value: StudentStatus.Active, label: '激活' },
     { id: 2, value: StudentStatus.Pause, label: '暂停' },
     { id: 3, value: StudentStatus.Disabled, label: '停用' },
+  ],
+  // 支持上传试卷的文件类型
+  uploadFileTypeList: [
+    { id: 1, value: UploadFileType.Pdf, label: 'PDF' },
+    { id: 2, value: UploadFileType.Word, label: 'Word' },
+    { id: 3, value: UploadFileType.Image, label: '图片' },
+  ],
+  // 考试类型
+  examTypeList: [
+    { id: 1, value: ExamType.UnitTest, label: '单元测试' },
+    { id: 2, value: ExamType.Midterm, label: '期中考试' },
+    { id: 3, value: ExamType.Final, label: '期末考试' },
+    { id: 4, value: ExamType.ZhongkaoMock, label: '中考模拟' },
+    { id: 5, value: ExamType.MonthlyExam, label: '月考' },
+    { id: 6, value: ExamType.TopicPaper, label: '专题卷' },
+  ],
+  // 试卷级别类型
+  paperLevelTypeList: [
+    { id: 1, value: PaperLevelType.Standard, label: '普通' },
+    { id: 2, value: PaperLevelType.Premium, label: '精品' },
+  ],
+  // 试卷难度类型
+  paperDifficultyTypeList: [
+    { id: 1, value: PaperDifficultyType.Easy, label: '容易' },
+    { id: 2, value: PaperDifficultyType.Medium, label: '适中' },
+    { id: 3, value: PaperDifficultyType.Hard, label: '困难' },
   ],
 };
 

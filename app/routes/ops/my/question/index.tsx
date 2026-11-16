@@ -5,6 +5,7 @@ import { SimpleAlert } from '@/components/common/alert';
 import { Loading } from '@/components/common/load';
 import QuestionSearchList from '@/components/question/search';
 import { StatusList } from '@/components/question/status';
+import { useDelayedLoading } from '@/hooks/delayed-loading';
 import type { QuestionSearch } from '@/type/question';
 import { useCountQuestionList } from '@/util/fetcher';
 import { ArrayUtil } from '@/util/object';
@@ -48,6 +49,8 @@ export default function Index() {
     return ArrayUtil.arrayToDict(countListResp, 'status');
   }, [countListResp]);
 
+  const showLoading = useDelayedLoading(countListRespLoading);
+
   return (
     <div className="space-y-3">
       <div className="px-3 py-1 bg-card">
@@ -64,7 +67,7 @@ export default function Index() {
 
       <div className="px-3">
         {countListRespErr && <SimpleAlert title="题目状态统计信息出错" message={countListRespErr.message} />}
-        {countListRespLoading && <Loading />}
+        {showLoading && <Loading />}
       </div>
 
       <QuestionSearchList

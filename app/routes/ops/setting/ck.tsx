@@ -35,7 +35,7 @@ export function meta({}: Route.MetaArgs) {
     { title: '挂载题型' },
     {
       name: 'description',
-      content: '个人中心, 系统设置, 关联教材章节和知识点考点的关联关系',
+      content: '个人中心, 系统设置, 关联教材章节和知识点知识点的关联关系',
     },
   ];
 }
@@ -198,8 +198,8 @@ export default function Index() {
     <div className="bg-card">
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-bold">建立 章节/考点 第7级 关联关系, 挂载题型</CardTitle>
-          <CardDescription>未关联请建立 章节/考点 的关联关系后才能挂载题型, 没有题型的请 新增题型</CardDescription>
+          <CardTitle className="text-sm font-bold">建立 章节/知识点 第7级 关联关系, 挂载题型</CardTitle>
+          <CardDescription>未关联请建立 章节/知识点 的关联关系后才能挂载题型, 没有题型的请 新增题型</CardDescription>
           <CardAction>
             <Button variant="outline" onClick={handleLinkOpen}>
               <Link2 />
@@ -211,9 +211,9 @@ export default function Index() {
           <div className="text-xs">
             {/* 搜索选项 */}
             <div className="flex flex-col gap-3">
-              {/* 章节/考点 */}
+              {/* 章节/知识点 */}
               <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                <div className="md:w-24 shrink-0 font-medium">章节/考点:</div>
+                <div className="md:w-24 shrink-0 font-medium">知识点/章节:</div>
                 <div className="flex-1 min-w-0">
                   <ChapterDropdownNav
                     textbooks={textbooks}
@@ -231,7 +231,7 @@ export default function Index() {
                       setCurrentTextbook(current);
                     }}
                     defaultSelectedKeys={[]}
-                    placeholder="请选择章节/考点"
+                    placeholder="请选择知识点/章节"
                     maxDepth={7}
                   />
                 </div>
@@ -247,14 +247,14 @@ export default function Index() {
 
             {/* 错误信息 */}
             {textbooksErr && <SimpleAlert title="7级菜单获取失败" message={textbooksErr.message} />}
-            {ckListErr && <SimpleAlert title="章节考点关联关系获取失败" message={ckListErr.message} />}
+            {ckListErr && <SimpleAlert title="章节知识点关联关系获取失败" message={ckListErr.message} />}
 
             {/* 关联关系列表 */}
             <div>
               <div className={`${rowClass} text-sm`}>
                 <div className="w-20 shrink-0">ID</div>
                 <div className="flex-1">章节</div>
-                <div className="flex-1">考点</div>
+                <div className="flex-1">知识点</div>
                 <div className="w-45 shrink-0">操作</div>
               </div>
 
@@ -340,14 +340,14 @@ export default function Index() {
                 <DialogHeader>
                   <DialogTitle className="text-sm font-bold">关联</DialogTitle>
                 </DialogHeader>
-                <DialogDescription>选择待关联的 章节/考点 第7级菜单</DialogDescription>
+                <DialogDescription>选择待关联的 章节/知识点 第7级菜单</DialogDescription>
 
                 <div className="space-y-4 py-2">
                   {/* 搜索选项 */}
                   <div className="flex flex-col gap-3">
-                    {/* 章节/考点 */}
+                    {/* 章节/知识点 */}
                     <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-                      <div className="md:w-24 shrink-0 font-medium">章节/考点:</div>
+                      <div className="md:w-24 shrink-0 font-medium">章节/知识点:</div>
                       <div className="flex-1 min-w-0">
                         <ChapterDropdownNav
                           textbooks={textbooks}
@@ -368,7 +368,7 @@ export default function Index() {
                             setRelationNodeNames(selectedItems.map((item) => item.label));
                           }}
                           defaultSelectedKeys={[]}
-                          placeholder="请选择章节/考点"
+                          placeholder="请选择章节/知识点"
                           maxDepth={7}
                           longText={true}
                         />

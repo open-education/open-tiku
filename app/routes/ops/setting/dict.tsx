@@ -170,7 +170,7 @@ export default function Index() {
           {/* 搜索选项 */}
           <div>
             <div className="flex flex-col gap-3">
-              {/* 章节/考点 */}
+              {/* 章节/知识点 */}
               <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
                 <div className="text-sm md:w-24 shrink-0 font-medium">科目:</div>
                 <div className="flex-1 min-w-0">

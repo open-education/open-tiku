@@ -52,7 +52,7 @@ export const ObjectUtil = {
   },
 };
 
-// 章节考点数据处理工具
+// 章节知识点数据处理工具
 export const TextbookUtil = {
   /**
    * 构建 ID 到 完整节点路径数组 的映射
