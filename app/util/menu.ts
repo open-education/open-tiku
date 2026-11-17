@@ -179,10 +179,13 @@ export const getMenuMap = () => {
 };
 
 // 辅助函数：统一判断单个菜单项（父级或子级）是否有权展示
-export const checkAccess = (user: UserInfoResp | null, item: {
-  login: boolean;
-  role: UserRoleType
-} | null): boolean => {
+export const checkAccess = (
+  user: UserInfoResp | null,
+  item: {
+    login: boolean;
+    role: UserRoleType;
+  } | null,
+): boolean => {
   if (!item) return false;
 
   // 不需要登录的菜单直接放行

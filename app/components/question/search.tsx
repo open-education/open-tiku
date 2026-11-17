@@ -29,13 +29,13 @@ interface QuestionSearchListProps {
 }
 
 export default function QuestionSearchList({
-                                             pageSource,
-                                             showFilter,
-                                             noDataDesc,
-                                             questionSearch,
-                                             updateQuestionSearch,
-                                             countListRespMutate,
-                                           }: QuestionSearchListProps) {
+  pageSource,
+  showFilter,
+  noDataDesc,
+  questionSearch,
+  updateQuestionSearch,
+  countListRespMutate,
+}: QuestionSearchListProps) {
   // 网站主要导航
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks();
   // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
@@ -68,7 +68,11 @@ export default function QuestionSearchList({
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(questionSearch.fiveLevelId);
 
   // 用户个性化配置
-  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList({
+  const {
+    data: customListResp = [],
+    isLoading: customListRespLoading,
+    error: customListRespErr,
+  } = useCustomList({
     userSource: CustomUserSource.Person,
     pageSource: CustomPageSource.Default,
   });

@@ -56,42 +56,42 @@ interface AddProps {
 }
 
 export default function Add({
-                              questionSearch = {
-                                twoLevelId: 0,
-                                fiveLevelId: 0,
-                                eightIds: [],
-                                typeId: 0,
-                                tagIds: [],
-                                dimensionIds: [],
-                                id: 0,
-                                fiveLevelSelectKeys: [],
-                                eightLevelSelectKeys: [],
-                                levelIds: [],
-                                sceneIds: [],
-                                mistakeTipIds: [],
-                              },
-                              infoResp = {
-                                baseInfo: {
-                                  id: 0,
-                                  questionCateId: 0,
-                                  questionTypeId: 0,
-                                  originalName: '',
-                                  title: '',
-                                  contentPlain: '',
-                                  comment: '',
-                                  difficultyLevel: 1.0,
-                                  status: 0,
-                                  approveName: '',
-                                  createdAt: '',
-                                  updatedAt: '',
-                                  relationType: 0,
-                                  levelId: 0,
-                                },
-                                extraInfo: {},
-                              },
-                              addRelationType,
-                              questionListRespMutate,
-                            }: AddProps) {
+  questionSearch = {
+    twoLevelId: 0,
+    fiveLevelId: 0,
+    eightIds: [],
+    typeId: 0,
+    tagIds: [],
+    dimensionIds: [],
+    id: 0,
+    fiveLevelSelectKeys: [],
+    eightLevelSelectKeys: [],
+    levelIds: [],
+    sceneIds: [],
+    mistakeTipIds: [],
+  },
+  infoResp = {
+    baseInfo: {
+      id: 0,
+      questionCateId: 0,
+      questionTypeId: 0,
+      originalName: '',
+      title: '',
+      contentPlain: '',
+      comment: '',
+      difficultyLevel: 1.0,
+      status: 0,
+      approveName: '',
+      createdAt: '',
+      updatedAt: '',
+      relationType: 0,
+      levelId: 0,
+    },
+    extraInfo: {},
+  },
+  addRelationType,
+  questionListRespMutate,
+}: AddProps) {
   const navigate = useNavigate();
 
   // 初始化数据状态管理
@@ -187,7 +187,11 @@ export default function Add({
   const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
 
   // 用户个性化配置
-  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList({
+  const {
+    data: customListResp = [],
+    isLoading: customListRespLoading,
+    error: customListRespErr,
+  } = useCustomList({
     userSource: CustomUserSource.Person,
     pageSource: CustomPageSource.Default,
   });
@@ -331,8 +335,7 @@ export default function Add({
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {
-          },
+          onClick: () => {},
         },
       });
       return;
@@ -342,8 +345,7 @@ export default function Add({
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {
-          },
+          onClick: () => {},
         },
       });
       return;
@@ -353,8 +355,7 @@ export default function Add({
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {
-          },
+          onClick: () => {},
         },
       });
       return;
@@ -364,8 +365,7 @@ export default function Add({
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {
-          },
+          onClick: () => {},
         },
       });
       return;
@@ -375,8 +375,7 @@ export default function Add({
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {
-          },
+          onClick: () => {},
         },
       });
       return;
@@ -386,8 +385,7 @@ export default function Add({
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {
-          },
+          onClick: () => {},
         },
       });
       return;

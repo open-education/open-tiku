@@ -161,10 +161,7 @@ export const DictUtil = {
 // 个性化配置工具
 export const CustomUtil = {
   // 题目搜索个性化更新
-  updateSearchFiveLevelInfo: (
-    listResp: CustomResp[],
-    update: (key: keyof QuestionSearch, value: number | number[] | string[]) => void,
-  ) => {
+  updateSearchFiveLevelInfo: (listResp: CustomResp[], update: (key: keyof QuestionSearch, value: number | number[] | string[]) => void) => {
     // 如果存在预设默认值则覆盖初始化值
     const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
     if (!customTextbook) {
@@ -172,7 +169,6 @@ export const CustomUtil = {
     }
 
     if (customTextbook.textbook) {
-      // 更新默认显示
       if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
         update('fiveLevelId', customTextbook.textbook.fifth);
       }
@@ -183,11 +179,7 @@ export const CustomUtil = {
   },
 
   // 题目添加个性化更新
-  updateTaskFiveInfo: (
-    listResp: CustomResp[],
-    setFiveLevelId: (val: number) => void,
-    setDefaultFiveKeys: (val: string[]) => void,
-  ) => {
+  updateTaskFiveInfo: (listResp: CustomResp[], setFiveLevelId: (val: number) => void, setDefaultFiveKeys: (val: string[]) => void) => {
     // 如果存在预设默认值则覆盖初始化值
     const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
     if (!customTextbook) {
@@ -195,7 +187,6 @@ export const CustomUtil = {
     }
 
     if (customTextbook.textbook) {
-      // 更新默认显示
       if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
         setFiveLevelId(customTextbook.textbook.fifth);
       }
