@@ -45,6 +45,7 @@ export default [
     route('/ops/review/paper', 'routes/ops/review/paper.tsx'),
 
     // 系统设置
+    route('/ops/setting', 'routes/ops/setting/index.tsx'),
     route('/ops/setting/textbook', 'routes/ops/setting/textbook.tsx'),
     route('/ops/setting/ck', 'routes/ops/setting/ck.tsx'),
     route('/ops/setting/dict', 'routes/ops/setting/dict.tsx'),

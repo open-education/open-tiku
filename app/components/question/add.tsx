@@ -18,12 +18,12 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { CustomType, QuestionRelationType } from '@/type/enum';
+import { CustomPageSource, CustomUserSource, QuestionRelationType } from '@/type/enum';
 import type { Content, CreateQuestionReq, QuestionInfoResp, QuestionListResp, QuestionOption, QuestionSearch } from '@/type/question';
 import type { TextbookResp } from '@/type/textbook';
 import { useCustomList, useQuestionCates, useQuestionOtherDictList, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
-import { ObjectUtil, TextbookUtil } from '@/util/object';
+import { CustomUtil, ObjectUtil, TextbookUtil } from '@/util/object';
 import { StringConst, StringValidator } from '@/util/string';
 import { getUserInfo } from '@/util/user';
 import {
@@ -56,42 +56,42 @@ interface AddProps {
 }
 
 export default function Add({
-  questionSearch = {
-    twoLevelId: 0,
-    fiveLevelId: 0,
-    eightIds: [],
-    typeId: 0,
-    tagIds: [],
-    dimensionIds: [],
-    id: 0,
-    fiveLevelSelectKeys: [],
-    eightLevelSelectKeys: [],
-    levelIds: [],
-    sceneIds: [],
-    mistakeTipIds: [],
-  },
-  infoResp = {
-    baseInfo: {
-      id: 0,
-      questionCateId: 0,
-      questionTypeId: 0,
-      originalName: '',
-      title: '',
-      contentPlain: '',
-      comment: '',
-      difficultyLevel: 1.0,
-      status: 0,
-      approveName: '',
-      createdAt: '',
-      updatedAt: '',
-      relationType: 0,
-      levelId: 0,
-    },
-    extraInfo: {},
-  },
-  addRelationType,
-  questionListRespMutate,
-}: AddProps) {
+                              questionSearch = {
+                                twoLevelId: 0,
+                                fiveLevelId: 0,
+                                eightIds: [],
+                                typeId: 0,
+                                tagIds: [],
+                                dimensionIds: [],
+                                id: 0,
+                                fiveLevelSelectKeys: [],
+                                eightLevelSelectKeys: [],
+                                levelIds: [],
+                                sceneIds: [],
+                                mistakeTipIds: [],
+                              },
+                              infoResp = {
+                                baseInfo: {
+                                  id: 0,
+                                  questionCateId: 0,
+                                  questionTypeId: 0,
+                                  originalName: '',
+                                  title: '',
+                                  contentPlain: '',
+                                  comment: '',
+                                  difficultyLevel: 1.0,
+                                  status: 0,
+                                  approveName: '',
+                                  createdAt: '',
+                                  updatedAt: '',
+                                  relationType: 0,
+                                  levelId: 0,
+                                },
+                                extraInfo: {},
+                              },
+                              addRelationType,
+                              questionListRespMutate,
+                            }: AddProps) {
   const navigate = useNavigate();
 
   // 初始化数据状态管理
@@ -150,15 +150,19 @@ export default function Add({
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
   // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
-  const pathMap: Map<string, TextbookResp[]> = TextbookUtil.createTextbookPathDict(textbooks);
+  const pathMap = useMemo(() => {
+    return TextbookUtil.createTextbookPathDict(textbooks);
+  }, [textbooks]);
 
   useEffect(() => {
-    // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再2层深度上, 因此只要有2层深度就可以把题型类型和标签返回, 后续如果有优化再处理
-    // 很明显 fiveLevelId 是选择下拉菜单触发的优先级最高
+    if (fiveLevelId <= 0 || pathMap.size == 0) {
+      return;
+    }
+
     const nodes = pathMap.get(fiveLevelId.toString()) ?? [];
     const twoLevelId = nodes.length > 2 ? nodes[1].id : 0;
     setTwoLevelId(twoLevelId);
-  }, [fiveLevelId]);
+  }, [fiveLevelId, pathMap]);
 
   // 查询题目类型和标签
   const {
@@ -183,23 +187,12 @@ export default function Add({
   const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
 
   // 用户个性化配置
-  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList();
+  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList({
+    userSource: CustomUserSource.Person,
+    pageSource: CustomPageSource.Default,
+  });
   useEffect(() => {
-    // 如果存在预设默认值则覆盖初始化值
-    const customTextbook = customListResp.find((item) => item.customType === CustomType.Textbook);
-    if (!customTextbook) {
-      return;
-    }
-
-    if (customTextbook.textbook) {
-      // 更新默认显示
-      if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
-        setFiveLevelId(customTextbook.textbook.fifth);
-      }
-      if (customTextbook.textbook.fifthKeys && customTextbook.textbook.fifthKeys.length > 0) {
-        setDefaultFiveKeys(customTextbook.textbook.fifthKeys);
-      }
-    }
+    CustomUtil.updateTaskFiveInfo(customListResp, setFiveLevelId, setDefaultFiveKeys);
   }, [customListResp]);
 
   // 是否是选择题, 列表页可能携带需要填充默认值
@@ -338,7 +331,8 @@ export default function Add({
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {},
+          onClick: () => {
+          },
         },
       });
       return;
@@ -348,7 +342,8 @@ export default function Add({
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {},
+          onClick: () => {
+          },
         },
       });
       return;
@@ -358,7 +353,8 @@ export default function Add({
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {},
+          onClick: () => {
+          },
         },
       });
       return;
@@ -368,7 +364,8 @@ export default function Add({
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {},
+          onClick: () => {
+          },
         },
       });
       return;
@@ -378,7 +375,8 @@ export default function Add({
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {},
+          onClick: () => {
+          },
         },
       });
       return;
@@ -388,7 +386,8 @@ export default function Add({
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {},
+          onClick: () => {
+          },
         },
       });
       return;

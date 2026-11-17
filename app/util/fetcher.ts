@@ -1,16 +1,11 @@
 import type { BoardResp } from '@/type/bord';
 import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentListReq, ClassStudentResp } from '@/type/class';
-import type { CustomResp } from '@/type/custom';
+import type { CustomListReq, CustomResp } from '@/type/custom';
 import { QuestionPageSource } from '@/type/enum';
 import type { CountQuestionResp, QuestionListReq, QuestionListResp, QuestionSearch } from '@/type/question';
 import type { ChapterKnowledgeResp, QuestionCateResp } from '@/type/question-cate';
 import type { TaskListReq, TaskListResp } from '@/type/task';
-import type {
-  TextbookOtherDictListReq,
-  TextbookOtherDictListResp,
-  TextbookOtherDictResp,
-  TextbookResp,
-} from '@/type/textbook';
+import type { TextbookOtherDictListReq, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
 import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from '@/type/user';
 import { httpClient } from '@/util/http';
 import { StringConst, StringValidator } from '@/util/string';
@@ -205,9 +200,10 @@ export function useClassStudentList(classIds: number[]) {
 }
 
 // 获取个性化配置列表
-export function useCustomList() {
-  const key = '/custom/list';
-  return useSWR<CustomResp[]>(key, httpClient.get, defaultErrConfig);
+export function useCustomList(req: CustomListReq) {
+  const reqPath = '/custom/list';
+  const key = [reqPath, JSON.stringify(req)];
+  return useSWR<CustomResp[]>(key, () => httpClient.post<CustomResp[]>(reqPath, req), defaultErrConfig);
 }
 
 // 获取个性化配置列表

@@ -1,17 +1,15 @@
 import type { StudentAccountParseResult } from '@/type/class';
 import type { OtherDictListRecord, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
 import { StringConst } from '@/util/string';
+import type { CustomResp } from '@/type/custom';
+import { CustomType } from '@/type/enum';
+import type { QuestionSearch } from '@/type/question';
 
 // 对象工具
 export const ObjectUtil = {
   // 处理错误类型
   isError: (error: unknown): error is Error => {
     return error instanceof Error;
-  },
-
-  // 生成一个随机字符
-  getRandomStr: (): string => {
-    return Math.random().toString(36).substring(2, 9);
   },
 
   // 格式化当前时间
@@ -121,6 +119,21 @@ export const TextbookUtil = {
       questionMistakeTipDict,
     };
   },
+
+  // 更新第二层菜单值
+  updateSearchTwoLevelId: (
+    fiveLevelId: number,
+    pathMap: Map<string, TextbookResp[]>,
+    update: (key: keyof QuestionSearch, value: number | number[] | string[]) => void,
+  ) => {
+    if (!fiveLevelId || pathMap.size === 0) {
+      return;
+    }
+
+    const nodes = pathMap.get(fiveLevelId.toString()) ?? [];
+    const twoLevelId = nodes.length > 2 ? nodes[1].id : 0;
+    update('twoLevelId', twoLevelId);
+  },
 };
 
 // 数组相关操作工具
@@ -142,5 +155,53 @@ export const DictUtil = {
 
   getItemValues: (ids: number[], dict: Record<number, TextbookOtherDictResp>): string[] => {
     return ids.map((id) => dict[id]?.itemValue).filter((name): name is string => name !== undefined);
+  },
+};
+
+// 个性化配置工具
+export const CustomUtil = {
+  // 题目搜索个性化更新
+  updateSearchFiveLevelInfo: (
+    listResp: CustomResp[],
+    update: (key: keyof QuestionSearch, value: number | number[] | string[]) => void,
+  ) => {
+    // 如果存在预设默认值则覆盖初始化值
+    const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
+    if (!customTextbook) {
+      return;
+    }
+
+    if (customTextbook.textbook) {
+      // 更新默认显示
+      if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
+        update('fiveLevelId', customTextbook.textbook.fifth);
+      }
+      if (customTextbook.textbook.fifthKeys && customTextbook.textbook.fifthKeys.length > 0) {
+        update('fiveLevelSelectKeys', customTextbook.textbook.fifthKeys);
+      }
+    }
+  },
+
+  // 题目添加个性化更新
+  updateTaskFiveInfo: (
+    listResp: CustomResp[],
+    setFiveLevelId: (val: number) => void,
+    setDefaultFiveKeys: (val: string[]) => void,
+  ) => {
+    // 如果存在预设默认值则覆盖初始化值
+    const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
+    if (!customTextbook) {
+      return;
+    }
+
+    if (customTextbook.textbook) {
+      // 更新默认显示
+      if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
+        setFiveLevelId(customTextbook.textbook.fifth);
+      }
+      if (customTextbook.textbook.fifthKeys && customTextbook.textbook.fifthKeys.length > 0) {
+        setDefaultFiveKeys(customTextbook.textbook.fifthKeys);
+      }
+    }
   },
 };

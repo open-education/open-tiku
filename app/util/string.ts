@@ -10,7 +10,7 @@ export const StringConst = {
 
   // 题目审核状态
   questionStatusList: [
-    { id: 1, value: QuestionStatus.Drafing, label: '草稿中' },
+    { id: 1, value: QuestionStatus.Drafting, label: '草稿中' },
     { id: 2, value: QuestionStatus.Pending, label: '待审核' },
     { id: 3, value: QuestionStatus.Published, label: '已发布' },
     { id: 4, value: QuestionStatus.Rejected, label: '已拒绝' },

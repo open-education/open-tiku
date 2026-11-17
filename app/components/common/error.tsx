@@ -51,7 +51,7 @@ const secondNavLinks: LinkProps[] = [
 
 function Error({ message, details, stack }: ErrorProps) {
   return (
-    <section className="py-40 w-full flex items-center">
+    <section className="w-full min-h-svh flex items-center justify-center px-6 py-12">
       <div className="w-full px-4 text-center md:px-6">
         <p className="text-7xl font-bold tracking-tight text-muted-foreground md:text-8xl">{message}</p>
         <h1 className="mt-6 text-balance text-3xl font-bold tracking-tight md:text-4xl">{details}</h1>

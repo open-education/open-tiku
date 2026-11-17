@@ -1,18 +1,7 @@
 import { UserRoleType } from '@/type/enum';
 import type { OpsMenu } from '@/type/menu';
 import type { UserInfoResp } from '@/type/user';
-import {
-  Bot,
-  ChartColumnIcon,
-  CircleCheckBig,
-  LayoutDashboard,
-  School,
-  Settings,
-  Settings2,
-  Trophy,
-  Users,
-  Wand,
-} from 'lucide-react';
+import { Bot, ChartColumnIcon, CircleCheckBig, LayoutDashboard, School, Settings, Settings2, Trophy, Users, Wand } from 'lucide-react';
 
 // 左侧菜单内容
 // 权限配置注意, 会优先直接放行 父路径
@@ -25,7 +14,7 @@ export const menuItems: OpsMenu[] = [
     role: UserRoleType.Normal,
   },
   {
-    title: '个性化设置',
+    title: '我的个性化',
     url: '',
     icon: Settings2,
     login: true,
@@ -138,6 +127,7 @@ export const menuItems: OpsMenu[] = [
     login: true,
     role: UserRoleType.Teacher,
     items: [
+      { title: '默认菜单', url: '/ops/setting', login: true, role: UserRoleType.Teacher },
       { title: '知识点/章节', url: '/ops/setting/textbook', login: true, role: UserRoleType.Teacher },
       { title: '挂载题型', url: '/ops/setting/ck', login: true, role: UserRoleType.Teacher },
       { title: '通用字典', url: '/ops/setting/dict', login: true, role: UserRoleType.Teacher },
@@ -178,7 +168,7 @@ export const getMenuMap = () => {
     }
   }
 
-  // 不配置导航栏的特殊菜单, 比如编辑路由
+  // 未配置导航栏的特殊菜单, 比如编辑路由
   map['/ops/my/question/edit'] = {
     title: '题目编辑',
     login: true,

@@ -8,12 +8,12 @@ import { NavTreeList, SearchList } from '@/components/question/nav';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { CustomType, QuestionPageSource } from '@/type/enum';
+import { CustomPageSource, CustomUserSource, QuestionPageSource } from '@/type/enum';
 import type { CountQuestionResp, QuestionSearch } from '@/type/question';
 import type { TextbookResp } from '@/type/textbook';
 import { useCustomList, useQuestionCates, useQuestionList, useQuestionOtherDictList, useTextbooks } from '@/util/fetcher';
 import { formatNumber } from '@/util/fmt';
-import { TextbookUtil } from '@/util/object';
+import { CustomUtil, TextbookUtil } from '@/util/object';
 import { StringConst } from '@/util/string';
 import { useEffect, useMemo, useState } from 'react';
 import type { KeyedMutator } from 'swr';
@@ -29,13 +29,13 @@ interface QuestionSearchListProps {
 }
 
 export default function QuestionSearchList({
-  pageSource,
-  showFilter,
-  noDataDesc,
-  questionSearch,
-  updateQuestionSearch,
-  countListRespMutate,
-}: QuestionSearchListProps) {
+                                             pageSource,
+                                             showFilter,
+                                             noDataDesc,
+                                             questionSearch,
+                                             updateQuestionSearch,
+                                             countListRespMutate,
+                                           }: QuestionSearchListProps) {
   // 网站主要导航
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks();
   // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
@@ -43,18 +43,8 @@ export default function QuestionSearchList({
     return TextbookUtil.createTextbookPathDict(textbooks);
   }, [textbooks]);
 
-  // 如果已登录过则使用默认菜单导航
-
   useEffect(() => {
-    // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再2层深度上, 因此只要有2层深度就可以把题型类型和标签返回, 后续如果有优化再处理
-    // 很明显 fiveLevelId 是选择下拉菜单触发的优先级最高
-    if (!questionSearch.fiveLevelId || pathMap.size === 0) {
-      return;
-    }
-
-    const nodes = pathMap.get(questionSearch.fiveLevelId.toString()) ?? [];
-    const twoLevelId = nodes.length > 2 ? nodes[1].id : 0;
-    updateQuestionSearch('twoLevelId', twoLevelId);
+    TextbookUtil.updateSearchTwoLevelId(questionSearch.fiveLevelId, pathMap, updateQuestionSearch);
   }, [questionSearch.fiveLevelId, pathMap]);
 
   // 查询题目类型和标签等信息
@@ -78,23 +68,12 @@ export default function QuestionSearchList({
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(questionSearch.fiveLevelId);
 
   // 用户个性化配置
-  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList();
+  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList({
+    userSource: CustomUserSource.Person,
+    pageSource: CustomPageSource.Default,
+  });
   useEffect(() => {
-    // 如果存在预设默认值则覆盖初始化值
-    const customTextbook = customListResp.find((item) => item.customType === CustomType.Textbook);
-    if (!customTextbook) {
-      return;
-    }
-
-    if (customTextbook.textbook) {
-      // 更新默认显示
-      if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
-        updateQuestionSearch('fiveLevelId', customTextbook.textbook.fifth);
-      }
-      if (customTextbook.textbook.fifthKeys && customTextbook.textbook.fifthKeys.length > 0) {
-        updateQuestionSearch('fiveLevelSelectKeys', customTextbook.textbook.fifthKeys);
-      }
-    }
+    CustomUtil.updateSearchFiveLevelInfo(customListResp, updateQuestionSearch);
   }, [customListResp]);
 
   // 查询题目列表

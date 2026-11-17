@@ -234,7 +234,7 @@ function QuestionOperateList({
 
   const [approveReq, setApproveReq] = useState<QuestionApproveReq>({
     id: baseInfoResp.id,
-    status: QuestionStatus.Drafing,
+    status: QuestionStatus.Drafting,
     rejectReason: '',
   });
   const updateApproveReq = (key: keyof QuestionApproveReq, value: number | string) => {
@@ -313,7 +313,7 @@ function QuestionOperateList({
         </Button>
 
         {/* 我的题目草稿中编辑题目, 提交题目审核 */}
-        {pageSource === QuestionPageSource.MyQuestion && baseInfoResp.status === QuestionStatus.Drafing && (
+        {pageSource === QuestionPageSource.MyQuestion && baseInfoResp.status === QuestionStatus.Drafting && (
           <>
             <Button size="sm" variant="outline">
               <Link to={'/ops/my/question/edit'} target="_blank">编辑</Link>

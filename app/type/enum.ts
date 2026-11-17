@@ -8,7 +8,7 @@ export enum UserRoleType {
 
 // 题目状态枚举定义
 export enum QuestionStatus {
-  Drafing = 0, // 草稿中
+  Drafting = 0, // 草稿中
   Pending = 1, // 待审核
   Published = 2, // 已发布
   Rejected = 3, // 已拒绝
@@ -85,4 +85,16 @@ export enum PaperDifficultyType {
   Easy = 1, // 容易
   Medium = 2, // 适中
   Hard = 3, // 困难
+}
+
+// 个性化用户来源
+export enum CustomUserSource {
+  Person = 1, // 个人
+  System = 2, // 系统
+}
+
+// 个性化页面来源
+export enum CustomPageSource {
+  Default = 1, // 默认, 非登录用户获取系统默认配置, 登录用户没有配置则获取系统默认配置
+  My = 2,      // 我的个性化, 只获取我的个性化配置
 }

@@ -37,7 +37,7 @@ export const STAT_LIST: StatItem[] = [
   {
     id: 2,
     title: '草稿中',
-    value: QuestionStatus.Drafing,
+    value: QuestionStatus.Drafting,
     icon: PencilLine,
     desc: '可编辑的题目',
     theme: {

@@ -10,14 +10,14 @@ import type { TaskSaveReq } from '@/type/task';
 import type { TextbookResp } from '@/type/textbook';
 import { useCustomList, useQuestionCates, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
-import { TextbookUtil } from '@/util/object';
+import { CustomUtil, TextbookUtil } from '@/util/object';
 import { StringConst, StringValidator } from '@/util/string';
 import { FileImage, Save } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useDelayedLoading } from '@/hooks/delayed-loading';
-import { CustomType } from '@/type/enum';
+import { CustomPageSource, CustomUserSource } from '@/type/enum';
 import { useNavigate } from 'react-router';
 import type { Route } from './+types/upload';
 
@@ -56,43 +56,35 @@ export default function Index() {
 
   // 两层导航信息要单独管理
   const [fiveLevelId, setFiveLevelId] = useState<number>(0);
+  const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
 
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
   // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
-  const pathMap: Map<string, TextbookResp[]> = TextbookUtil.createTextbookPathDict(textbooks);
+  const pathMap = useMemo(() => {
+    return TextbookUtil.createTextbookPathDict(textbooks);
+  }, [textbooks]);
 
   useEffect(() => {
-    // 5层深度时才能添加题目和查看题目列表, 但是题目类型和标签再2层深度上, 因此只要有2层深度就可以把题型类型和标签返回, 后续如果有优化再处理
-    // 很明显 fiveLevelId 是选择下拉菜单触发的优先级最高
+    if (fiveLevelId <= 0 || pathMap.size == 0) {
+      return;
+    }
+
     const nodes = pathMap.get(fiveLevelId.toString()) ?? [];
     const twoLevelId = nodes.length > 2 ? nodes[1].id : 0;
     updateAddReq('textbookId', twoLevelId);
-  }, [fiveLevelId]);
+  }, [fiveLevelId, pathMap]);
 
   // 获取教材/知识点题型列表
   const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
 
-  const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
-
   // 用户个性化配置
-  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList();
+  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList({
+    userSource: CustomUserSource.Person,
+    pageSource: CustomPageSource.Default,
+  });
   useEffect(() => {
-    // 如果存在预设默认值则覆盖初始化值
-    const customTextbook = customListResp.find((item) => item.customType === CustomType.Textbook);
-    if (!customTextbook) {
-      return;
-    }
-
-    if (customTextbook.textbook) {
-      // 更新默认显示
-      if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
-        setFiveLevelId(customTextbook.textbook.fifth);
-      }
-      if (customTextbook.textbook.fifthKeys && customTextbook.textbook.fifthKeys.length > 0) {
-        setDefaultFiveKeys(customTextbook.textbook.fifthKeys);
-      }
-    }
+    CustomUtil.updateTaskFiveInfo(customListResp, setFiveLevelId, setDefaultFiveKeys);
   }, [customListResp]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -106,7 +98,8 @@ export default function Index() {
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {},
+          onClick: () => {
+          },
         },
       });
       return;
@@ -116,7 +109,8 @@ export default function Index() {
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {},
+          onClick: () => {
+          },
         },
       });
       return;
@@ -126,7 +120,8 @@ export default function Index() {
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {},
+          onClick: () => {
+          },
         },
       });
       return;
@@ -136,7 +131,8 @@ export default function Index() {
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {},
+          onClick: () => {
+          },
         },
       });
       return;

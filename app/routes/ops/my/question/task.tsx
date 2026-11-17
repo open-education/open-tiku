@@ -16,9 +16,10 @@ import { StringConst } from '@/util/string';
 import { CalendarDays, Clock, FileText, Mail, User } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
-import { CustomType } from '@/type/enum';
+import { CustomPageSource, CustomUserSource } from '@/type/enum';
 import { formatNumber } from '@/util/fmt';
 import type { Route } from './+types/task';
+import { CustomUtil } from '@/util/object';
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -67,6 +68,7 @@ export default function Index() {
 
   // 两层导航信息要单独管理
   const [fiveLevelId, setFiveLevelId] = useState<number>(0);
+  const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
 
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
@@ -86,26 +88,13 @@ export default function Index() {
     error: listRespErr,
   } = useTaskList(listReq, pageNo, StringConst.pageSize);
 
-  const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
-
   // 用户个性化配置
-  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList();
+  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList({
+    userSource: CustomUserSource.Person,
+    pageSource: CustomPageSource.Default,
+  });
   useEffect(() => {
-    // 如果存在预设默认值则覆盖初始化值
-    const customTextbook = customListResp.find((item) => item.customType === CustomType.Textbook);
-    if (!customTextbook) {
-      return;
-    }
-
-    if (customTextbook.textbook) {
-      // 更新默认显示
-      if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
-        setFiveLevelId(customTextbook.textbook.fifth);
-      }
-      if (customTextbook.textbook.fifthKeys && customTextbook.textbook.fifthKeys.length > 0) {
-        setDefaultFiveKeys(customTextbook.textbook.fifthKeys);
-      }
-    }
+    CustomUtil.updateTaskFiveInfo(customListResp, setFiveLevelId, setDefaultFiveKeys);
   }, [customListResp]);
 
   const showLoading = useDelayedLoading(textbooksLoading || questionCatesLoading || listRespLoading || customListRespLoading);
