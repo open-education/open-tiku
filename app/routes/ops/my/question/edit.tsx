@@ -1,13 +1,13 @@
 import { GlobalError } from '@/components/common/error';
 import { Loading } from '@/components/common/load';
 import Add from '@/components/question/add';
+import { QuestionEditMode, QuestionRelationType } from '@/type/enum';
 import type { CreateQuestionReq, QuestionInfoResp } from '@/type/question';
 import { httpClient } from '@/util/http';
 import { ObjectUtil } from '@/util/object';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import type { Route } from './+types/edit';
-import { QuestionEditMode, QuestionRelationType } from '@/type/enum';
 
 /// 题目编辑或添加变式题
 

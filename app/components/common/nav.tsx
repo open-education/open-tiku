@@ -17,7 +17,7 @@ import type { TextbookResp } from '@/type/textbook';
 import { StringConst } from '@/util/string';
 import { cn } from 'cn';
 import { Check, ChevronDown, ChevronRight } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // 章节导航选择
 // 前5层级标识

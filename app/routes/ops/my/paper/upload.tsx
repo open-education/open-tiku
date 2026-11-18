@@ -1,3 +1,4 @@
+import CitySelect from '@/components/common/city';
 import { ChapterExpandNav } from '@/components/common/nav';
 import FileUpload from '@/components/common/upload';
 import { YearSelect } from '@/components/common/year';
@@ -11,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CustomPageSource, CustomUserSource, QuestionStatus, UploadFileType } from '@/type/enum';
 import type { QuestionSearch } from '@/type/question';
-import { useCustomList, useTextbooks } from '@/util/fetcher';
+import { useCityList, useCustomList, useTextbooks } from '@/util/fetcher';
 import { CustomUtil } from '@/util/object';
 import { Check, Save, Send } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -62,6 +63,8 @@ export default function Index() {
   useEffect(() => {
     CustomUtil.questionSearchUpdate(customListResp, updateQuestionSearch);
   }, [customListResp]);
+
+  const { data: cityRespList = [], isLoading: cityRespListLoading, error: cityRespListErr } = useCityList();
 
   // 左边选择试卷关联关系
   const leftContent = (
@@ -137,8 +140,12 @@ export default function Index() {
         <FieldDescription>✨ AI 已自动识别试卷名称，未识别或识别失败请手动输入</FieldDescription>
       </div>
 
-      <FieldRow label="省市区学校">
-        <div className="text-xs">省市区学校联动待补充</div>
+      <FieldRow label="选择省和城市">
+        <CitySelect cityRespList={cityRespList} />
+      </FieldRow>
+
+      <FieldRow label="学校名称">
+        <Textarea className="min-h-25 resize-y" value="" onChange={() => {}} placeholder="输入学校名称..." />
       </FieldRow>
 
       <FieldRow label="选择学年">

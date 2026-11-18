@@ -1,7 +1,6 @@
-import { CustomPageSource, CustomUserSource } from '@/type/enum';
-import React from 'react';
-import type { Route } from './+types/index';
 import Textbook from '@/components/custom/textbook';
+import { CustomPageSource, CustomUserSource } from '@/type/enum';
+import type { Route } from './+types/index';
 
 // 定制我的菜单
 
