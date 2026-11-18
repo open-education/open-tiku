@@ -272,7 +272,7 @@ export default function Index() {
             文件名称:<span className="text-destructive">*</span>
           </div>
           <div className="min-w-0 flex-1">
-            <Input id="task-file-name" placeholder="例如 题型S-1-1-1 有理数的概念.md" value={addReq.name} disabled />
+            <Input id="task-file-name" className="lg:w-[30%]" placeholder="例如 题型S-1-1-1 有理数的概念.md" value={addReq.name} disabled />
           </div>
         </div>
 
@@ -281,7 +281,7 @@ export default function Index() {
             文件标识:<span className="text-destructive">*</span>
           </div>
           <div className="min-w-0 flex-1">
-            <Input id="task-file-id" placeholder="文件标识, 右上角上传文件获得" value={addReq.url} disabled />
+            <Input id="task-file-id" className="lg:w-[30%]" placeholder="文件标识, 右上角上传文件获得" value={addReq.url} disabled />
           </div>
         </div>
 
@@ -290,6 +290,7 @@ export default function Index() {
           <div className="min-w-0 flex-1">
             <Input
               id="task-file-email"
+              className="lg:w-[30%]"
               placeholder="邮箱地址"
               value={addReq.email}
               onChange={(e) => {
