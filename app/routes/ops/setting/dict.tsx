@@ -104,12 +104,12 @@ export default function Index() {
 
     httpClient
       .post<number>('other/dict/add', addReq)
-      .then((res) => {
+      .then((_) => {
         // 添加成功则清除表单其它项
         setAddReq({ ...addReq, id: 0, itemValue: '', sortOrder: 0, isSelect: false });
         setDialogOpen(false);
         // 同时要重新刷新字典列表
-        otherDictsMutate();
+        otherDictsMutate().then((_) => {});
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">{err.message}</div>, {
@@ -135,10 +135,10 @@ export default function Index() {
 
     httpClient
       .get<boolean>(`other/dict/remove/${id}`)
-      .then((res) => {
+      .then((_) => {
         setDialogOpen(false);
         // 同时要重新刷新字典列表
-        otherDictsMutate();
+        otherDictsMutate().then((_) => {});
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">{err.message}</div>, {

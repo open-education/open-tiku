@@ -155,8 +155,8 @@ export default function Index() {
 
     httpClient
       .post<number>('/chapter-knowledge/add', req)
-      .then((res) => {
-        ckListMutate();
+      .then((_) => {
+        ckListMutate().then((_) => {});
         setRelationSuccess(true);
         setRelationDialogOpen(false);
       })
@@ -181,8 +181,8 @@ export default function Index() {
 
     httpClient
       .post('/chapter-knowledge/remove', req)
-      .then((res) => {
-        ckListMutate();
+      .then((_) => {
+        ckListMutate().then((_) => {});
         setRemoveSuccess(true);
         setRemoveDialogOpen(false);
       })

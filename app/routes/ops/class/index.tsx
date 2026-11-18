@@ -40,9 +40,6 @@ const defaultSearchReq: ClassSearchReq = {
 export default function Index() {
   // 存储搜索信息
   const [searchReq, setSearchReq] = useState<ClassSearchReq>(defaultSearchReq);
-  const updateSearchReq = (key: keyof ClassSearchReq, value: string) => {
-    setSearchReq((prev) => ({ ...prev, [key]: value }));
-  };
 
   // 班级列表
   const [pageNo, setPageNo] = useState<number>(1);

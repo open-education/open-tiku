@@ -528,7 +528,7 @@ function Add({ parentId, pathDepth, path = '', item, onClose, mutateCallback }: 
 
     httpClient
       .post('/textbook/add', addReq)
-      .then((res) => {
+      .then((_) => {
         // 刷新列表
         mutateCallback?.();
         setSuccess(true);
@@ -604,7 +604,7 @@ function Delete({ item, onClose, mutateCallback }: DeleteProps) {
 
     httpClient
       .get<boolean>(`/textbook/delete/${item.id}`)
-      .then((res) => {
+      .then((_) => {
         mutateCallback?.();
         setSuccess(true);
       })

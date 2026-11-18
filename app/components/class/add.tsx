@@ -91,12 +91,12 @@ export default function ClassAdd({ open, setOpen, searchReq, infoResp, classList
 
     httpClient
       .post('/class/add', addReq)
-      .then((res) => {
+      .then((_) => {
         // 添加成功则清除表单其它项
         setAddReq({ ...addReq, ...searchReq });
         setOpen(false);
         // 同时要重新刷新班级列表
-        classListMutate();
+        classListMutate().then((_) => {});
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">{err.message}</div>, {

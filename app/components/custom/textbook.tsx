@@ -120,7 +120,7 @@ export default function Textbook({ userSource, pageSource }: TextbookProps) {
 
     httpClient
       .post('/custom/add', addReq)
-      .then((res) => {
+      .then((_) => {
         // 添加成功提示即可
         toast.info(<div className="text-blue-700">添加成功，可去其它页面查看默认菜单是否正确</div>);
         return;

@@ -189,8 +189,8 @@ function QuestionOperateList({
     };
     httpClient
       .post('/edit/question/status', req)
-      .then((res) => {
-        questionListRespMutate();
+      .then((_) => {
+        questionListRespMutate().then((_) => {});
         countListRespMutate?.();
         setOpenSubmitApprove(false);
       })
@@ -215,8 +215,8 @@ function QuestionOperateList({
 
     httpClient
       .post('/question/delete', req)
-      .then((res) => {
-        questionListRespMutate();
+      .then((_) => {
+        questionListRespMutate().then((_) => {});
         countListRespMutate?.();
         setOpenDelete(false);
       })
@@ -246,8 +246,8 @@ function QuestionOperateList({
 
     httpClient
       .post('/edit/question/status', approveReq)
-      .then((res) => {
-        questionListRespMutate().then((r) => {});
+      .then((_) => {
+        questionListRespMutate().then((_) => {});
         countListRespMutate?.();
         setOpenConfirmApprove(false);
       })

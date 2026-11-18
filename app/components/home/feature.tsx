@@ -36,7 +36,7 @@ const coreFeatures: Feature[] = [
     title: '智能组卷·一键成卷',
     desc: 'AI智能组卷+手动组卷+分层组卷，多种模式灵活选择。',
     color: 'purple',
-    url: '',
+    url: '/question/paper',
   },
   {
     id: 3,

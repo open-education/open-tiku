@@ -112,7 +112,7 @@ function FileUpload({ isImage }: FileUploadProps) {
     const req: DeleteFileReq = { filename: fileId, isImage };
     httpClient
       .post<boolean>('/file/delete/file', req)
-      .then((res) => {})
+      .then((_) => {})
       .catch((err) => setFileErr(err.message))
       .finally(() => {
         handleRemoveFile();

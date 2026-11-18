@@ -105,7 +105,7 @@ export default function UploadStudentAccount({ open, setOpen, infoResp }: Upload
     };
 
     try {
-      const res = await httpClient.post<number>('/class/student/add', addReq);
+      await httpClient.post<number>('/class/student/add', addReq);
       setOpen(false);
       setAccounts(''); // 导入成功后清除上一次输入的账户内容
 

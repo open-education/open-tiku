@@ -300,7 +300,7 @@ interface LevelExtProps {
 }
 
 function LevelExt(props: LevelExtProps) {
-  const { levelKey, keyDesc, enabled, isSelected, optionKeys, textbookMap, selectedKey, onSelect } = props;
+  const { keyDesc, enabled, isSelected, optionKeys, textbookMap, selectedKey, onSelect } = props;
 
   // 将 keys 转换为 Textbook 对象（仅当需要显示时）
   const options = useMemo(() => {

@@ -1,5 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangleIcon, InfoIcon } from 'lucide-react';
+import React from 'react';
 
 type AlertVariant = React.ComponentProps<typeof Alert>['variant'];
 

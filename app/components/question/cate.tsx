@@ -98,8 +98,8 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
 
     httpClient
       .post<number>('/question-cate/add', addReq)
-      .then((res) => {
-        catesMutate();
+      .then((_) => {
+        catesMutate().then((_) => {});
         setSuccess(true);
         setDialogOpen(false);
       })
@@ -122,8 +122,8 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
 
     httpClient
       .get(`/question-cate/remove/${item.id}`)
-      .then((res) => {
-        catesMutate();
+      .then((_) => {
+        catesMutate().then((_) => {});
         setRemoveSuccess(true);
         setRemoveDialogOpen(false);
       })

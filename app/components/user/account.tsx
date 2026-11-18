@@ -74,12 +74,12 @@ function AccountEdit({ open, setOpen, infoResp, accountListRespMutate }: Account
     // 请求编辑账户更新
     httpClient
       .post<boolean>('/user/account/edit', editReq)
-      .then((res) => {
+      .then((_) => {
         setOpen(false);
         setEditReq({ ...defaultAccountEditReq });
 
         // 刷新账户列表, 重新查询列表页面
-        accountListRespMutate();
+        accountListRespMutate().then((_) => {});
       })
       .catch((err) => {
         toast.error(<div className="text-red-700">编辑账户信息出错: {err.message}</div>, {

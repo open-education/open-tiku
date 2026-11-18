@@ -5,6 +5,7 @@ import type { QuestionBaseInfoResp } from '@/type/question';
 import type { OtherDictListRecord, TextbookOtherDictResp } from '@/type/textbook';
 import { DictUtil } from '@/util/object';
 import { StringConst } from '@/util/string';
+import React from 'react';
 
 interface MultiTagSelectProps {
   /** 标签数据列表 */
@@ -103,7 +104,7 @@ function TagTopShow({ questionInfo, otherDictListRecord }: TagShowProps) {
     // 题目类型
     let typeValue = DictUtil.getItemValue(questionInfo.questionTypeId, otherDictListRecord.questionTypeDict);
     const typeNode: React.ReactNode = (
-      <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300" key={questionInfo.questionTypeId}>
+      <Badge className="bg-blue-50 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-300" key={questionInfo.questionTypeId}>
         {typeValue}
       </Badge>
     );

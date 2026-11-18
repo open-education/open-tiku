@@ -248,11 +248,11 @@ function StudentEdit({ infoResp, setOpen, classStudentMapRespMutate }: StudentEd
     // 请求编辑账户更新
     httpClient
       .post<boolean>('/class/student/edit', editReq)
-      .then((res) => {
+      .then((_) => {
         setEditReq({ ...defaultStudentEditReq });
 
         // 刷新账户列表, 重新查询列表页面
-        classStudentMapRespMutate();
+        classStudentMapRespMutate().then((_) => {});
 
         setOpen(false);
       })

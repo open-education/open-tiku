@@ -374,11 +374,10 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
 
     // 知识点用逗号分割
     if (addReq.knowledge && StringValidator.isNonEmpty(addReq.knowledge)) {
-      let knowledge = addReq.knowledge
+      addReq.knowledge = addReq.knowledge
         .split(/\s*[、，,]\s*/)
         .filter(Boolean)
         .join(', ');
-      addReq.knowledge = knowledge;
     }
 
     // 添加题目成功并预览详情, 未提交的题目只能在 我的题目 中可见
@@ -434,15 +433,9 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
                 <ChapterDropdownNav
                   textbooks={textbooks}
                   onSelect={(selectedItems: TextbookResp[]) => {
-                    if (!selectedItems) {
-                      updateAddReq('twoLevelId', 0);
-                      updateAddReq('fiveLevelId', 0);
-                      return;
-                    }
-
-                    const current: TextbookResp = selectedItems[selectedItems.length - 1];
-                    // todo 第2层标识
-                    updateAddReq('fiveLevelId', current.id);
+                    const [, secondItem = null, , , fifthItem = null] = selectedItems ?? [];
+                    updateAddReq('twoLevelId', secondItem ? secondItem.id : 0);
+                    updateAddReq('fiveLevelId', fifthItem ? fifthItem.id : 0);
                   }}
                   defaultSelectedKeys={fillLevel.fiveLevelKeys}
                   placeholder="请选择知识点/章节"

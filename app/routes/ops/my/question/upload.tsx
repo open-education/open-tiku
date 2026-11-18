@@ -142,7 +142,7 @@ export default function Index() {
 
     httpClient
       .post<number>('/task/add', addReq)
-      .then((taskId) => {
+      .then((_) => {
         // 添加成功后跳转到任务列表
         navigation('/ops/my/question/task', { replace: true });
       })
