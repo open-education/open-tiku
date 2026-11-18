@@ -1,8 +1,9 @@
 import { CustomPageSource, type CustomUserSource } from '@/type/enum';
 
 export interface CustomTextbook {
-  fifth?: number; // 是否选择了第5层菜单, 用户展开题型列表
-  fifthKeys?: string[]; // 前5层菜单 key
+  twoLevelId?: number;
+  fiveLevelId?: number; // 是否选择了第5层菜单, 用户展开题型列表
+  fiveLevelKeys?: string[]; // 前5层菜单 key
 }
 
 // 个性化信息保存

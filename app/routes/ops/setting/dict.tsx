@@ -24,7 +24,7 @@ export function meta({}: Route.MetaArgs) {
     { title: '通用字典维护' },
     {
       name: 'description',
-      content: '个人中心, 系统设置, 题目类型, 标签, 核心素养等通用字典维护',
+      content: '系统设置, 题目类型, 标签, 核心素养等通用字典维护',
     },
   ];
 }

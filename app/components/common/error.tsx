@@ -49,7 +49,7 @@ const secondNavLinks: LinkProps[] = [
   },
 ];
 
-function Error({ message, details, stack }: ErrorProps) {
+function GlobalError({ message, details, stack }: ErrorProps) {
   return (
     <section className="w-full min-h-svh flex items-center justify-center px-6 py-12">
       <div className="w-full px-4 text-center md:px-6">
@@ -102,4 +102,4 @@ function Error({ message, details, stack }: ErrorProps) {
   );
 }
 
-export { Error };
+export { GlobalError };

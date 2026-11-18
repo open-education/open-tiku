@@ -35,7 +35,7 @@ export function meta({}: Route.MetaArgs) {
     { title: '挂载题型' },
     {
       name: 'description',
-      content: '个人中心, 系统设置, 关联教材章节和知识点知识点的关联关系',
+      content: '系统设置, 关联教材章节和知识点知识点的关联关系',
     },
   ];
 }

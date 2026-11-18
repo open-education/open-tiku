@@ -10,16 +10,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
 import type { TaskListReq } from '@/type/task';
-import type { TextbookResp } from '@/type/textbook';
+import type { TextbookFillLevel, TextbookResp } from '@/type/textbook';
 import { useCustomList, useQuestionCates, useTaskList, useTextbooks } from '@/util/fetcher';
 import { StringConst } from '@/util/string';
 import { CalendarDays, Clock, FileText, Mail, User } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { CustomPageSource, CustomUserSource } from '@/type/enum';
 import { formatNumber } from '@/util/fmt';
-import type { Route } from './+types/task';
 import { CustomUtil } from '@/util/object';
+import type { Route } from './+types/task';
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -50,31 +50,31 @@ const getStatusBadgeClasses = (status: number): string => {
 export default function Index() {
   const [pageNo, setPageNo] = useState<number>(1);
 
-  const initAddReq = useMemo(() => {
-    // 初始化部分默认值
-    const initAddDefault: TaskListReq = {
-      questionCateId: 0,
-      taskType: StringConst.taskTypeUploadQuestion,
-      pageNo: pageNo,
-      pageSize: StringConst.pageSize,
-    };
-
-    return initAddDefault;
-  }, []);
-  const [listReq, setListReq] = useState<TaskListReq>(initAddReq);
+  const [listReq, setListReq] = useState<TaskListReq>({
+    twoLevelId: 0,
+    fiveLevelId: 0,
+    questionCateId: 0,
+    taskType: StringConst.taskTypeUploadQuestion,
+    pageNo: pageNo,
+    pageSize: StringConst.pageSize,
+  });
   const updateListReq = (key: keyof TaskListReq, value: number | string) => {
     setListReq((prev) => ({ ...prev, [key]: value }));
   };
 
-  // 两层导航信息要单独管理
-  const [fiveLevelId, setFiveLevelId] = useState<number>(0);
-  const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
+  const [fillLevel, setFillLevel] = useState<TextbookFillLevel>({
+    fiveLevelKeys: [],
+    eightLevelKeys: [],
+  });
+  const updateFillLevel = (key: keyof TextbookFillLevel, value: string[]) => {
+    setFillLevel((prev) => ({ ...prev, [key]: value }));
+  };
 
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
 
   // 获取教材/知识点题型列表
-  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
+  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(listReq.fiveLevelId || 0);
 
   // 查询任务列表
   const {
@@ -89,12 +89,16 @@ export default function Index() {
   } = useTaskList(listReq, pageNo, StringConst.pageSize);
 
   // 用户个性化配置
-  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList({
+  const {
+    data: customListResp = [],
+    isLoading: customListRespLoading,
+    error: customListRespErr,
+  } = useCustomList({
     userSource: CustomUserSource.Person,
     pageSource: CustomPageSource.Default,
   });
   useEffect(() => {
-    CustomUtil.updateTaskFiveInfo(customListResp, setFiveLevelId, setDefaultFiveKeys);
+    CustomUtil.questionTaskListUpdate(customListResp, updateListReq, updateFillLevel);
   }, [customListResp]);
 
   const showLoading = useDelayedLoading(textbooksLoading || questionCatesLoading || listRespLoading || customListRespLoading);
@@ -113,15 +117,11 @@ export default function Index() {
             <ChapterDropdownNav
               textbooks={textbooks}
               onSelect={(selectedItems: TextbookResp[]) => {
-                if (!selectedItems) {
-                  setFiveLevelId(0);
-                  return;
-                }
-
-                const current: TextbookResp = selectedItems[selectedItems.length - 1];
-                setFiveLevelId(current.id);
+                const [, secondItem = null, , , fifthItem = null] = selectedItems ?? [];
+                updateListReq('twoLevelId', secondItem ? secondItem.id : 0);
+                updateListReq('fiveLevelId', fifthItem ? fifthItem.id : 0);
               }}
-              defaultSelectedKeys={defaultFiveKeys}
+              defaultSelectedKeys={fillLevel.fiveLevelKeys}
               placeholder="请选择知识点/章节"
             />
           </div>
@@ -144,7 +144,7 @@ export default function Index() {
                 const current: TextbookResp = selectedItems[selectedItems.length - 1];
                 updateListReq('questionCateId', current.id);
               }}
-              defaultSelectedKeys={[]}
+              defaultSelectedKeys={fillLevel.eightLevelKeys}
               placeholder="请选择题型"
             />
           </div>

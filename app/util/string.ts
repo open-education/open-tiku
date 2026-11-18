@@ -89,6 +89,7 @@ export const StringConst = {
     { id: 1, value: UploadFileType.Pdf, label: 'PDF' },
     { id: 2, value: UploadFileType.Word, label: 'Word' },
     { id: 3, value: UploadFileType.Image, label: '图片' },
+    { id: 4, value: UploadFileType.Markdown, label: 'Markdown' },
   ],
   // 考试类型
   examTypeList: [

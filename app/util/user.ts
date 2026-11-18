@@ -31,7 +31,7 @@ export const getUserInfo = (): { isLogin: boolean; username: string } => {
   return { isLogin, username };
 };
 
-// 用户换取 roken 登录
+// 用户换取 token 登录
 export const finalUserLogin = (navigate: NavigateFunction) => {
   const params = new URLSearchParams(window.location.search);
   const tempToken = params.get('token');

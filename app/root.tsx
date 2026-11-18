@@ -1,7 +1,7 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
 import '@/app.css';
-import { Error } from '@/components/common/error';
+import { GlobalError } from '@/components/common/error';
 import { InitLoading } from '@/components/common/load';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -60,7 +60,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   return (
     <main className="pt-16 p-4 container mx-auto">
-      <Error message={message} details={details} stack={stack} />
+      <GlobalError message={message} details={details} stack={stack} />
     </main>
   );
 }

@@ -1,14 +1,13 @@
 import Add from '@/components/question/add';
 import { QuestionRelationType } from '@/type/enum';
-import type { QuestionInfoResp, QuestionListResp, QuestionSearch } from '@/type/question';
-import type { KeyedMutator } from 'swr';
+import type { CreateQuestionReq } from '@/type/question';
 import type { Route } from './+types/add';
 
-/// 题目添加
+/// 添加母题
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '添加母题/变式题' },
+    { title: '添加母题' },
     {
       name: 'description',
       content: '收集整理网站常见的疑问和做一些适当的说明',
@@ -16,17 +15,22 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-interface IndexProps {
-  questionSearch: QuestionSearch; // 列表页面搜索携带的信息
-  infoResp?: QuestionInfoResp; // 初始化数据信息, 比如修改时会是详情完整信息
-  addRelationType?: QuestionRelationType; // 添加题目类型
+// 初始化部分默认值
+const initAddDefaultReq: CreateQuestionReq = {
+  twoLevelId: 0,
+  fiveLevelId: 0,
+  questionCateId: 0,
+  questionTypeId: 0,
+  originalName: '',
+  title: '',
+  difficultyLevel: 1.0,
+  optionsLayout: 1,
+  source: '',
+  status: 0,
+  relationType: QuestionRelationType.Base, // 默认均添加母题
+  levelId: 0,
+};
 
-  questionListRespMutate?: KeyedMutator<QuestionListResp>; // 编辑时也要刷新列表
-}
-
-export default function Index({ questionSearch, infoResp, addRelationType, questionListRespMutate }: IndexProps) {
-  return (
-    <Add questionSearch={questionSearch} infoResp={infoResp} addRelationType={addRelationType}
-         questionListRespMutate={questionListRespMutate} />
-  );
+export default function Index() {
+  return <Add key="add" initAddReq={initAddDefaultReq} />;
 }

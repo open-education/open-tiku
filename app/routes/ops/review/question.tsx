@@ -11,7 +11,7 @@ export function meta({}: Route.MetaArgs) {
     { title: '题目审核' },
     {
       name: 'description',
-      content: '个人中心, 系统设置, 关联教材章节和知识点知识点的关联关系',
+      content: '对分配给我的题目进行审核, 按要求分析并做出是否通过的决定',
     },
   ];
 }

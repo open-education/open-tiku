@@ -18,9 +18,9 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { CustomPageSource, CustomUserSource, QuestionRelationType } from '@/type/enum';
-import type { Content, CreateQuestionReq, QuestionInfoResp, QuestionListResp, QuestionOption, QuestionSearch } from '@/type/question';
-import type { TextbookResp } from '@/type/textbook';
+import { CustomPageSource, CustomUserSource, QuestionRelationType, TextbookFillLevelType } from '@/type/enum';
+import type { Content, CreateQuestionReq, QuestionListResp, QuestionOption } from '@/type/question';
+import type { TextbookFillLevel, TextbookResp } from '@/type/textbook';
 import { useCustomList, useQuestionCates, useQuestionOtherDictList, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
 import { CustomUtil, ObjectUtil, TextbookUtil } from '@/util/object';
@@ -47,129 +47,39 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import type { KeyedMutator } from 'swr';
 
-interface AddProps {
-  questionSearch: QuestionSearch; // 列表页面搜索携带的信息
-  infoResp?: QuestionInfoResp; // 初始化数据信息, 比如修改时会是详情完整信息
-  addRelationType?: QuestionRelationType; // 添加题目类型
+// 题目添加和编辑
 
+interface AddProps {
+  initAddReq: CreateQuestionReq; // 父组件负责初始化默认值
   questionListRespMutate?: KeyedMutator<QuestionListResp>; // 编辑时也要刷新列表
 }
 
-export default function Add({
-  questionSearch = {
-    twoLevelId: 0,
-    fiveLevelId: 0,
-    eightIds: [],
-    typeId: 0,
-    tagIds: [],
-    dimensionIds: [],
-    id: 0,
-    fiveLevelSelectKeys: [],
-    eightLevelSelectKeys: [],
-    levelIds: [],
-    sceneIds: [],
-    mistakeTipIds: [],
-  },
-  infoResp = {
-    baseInfo: {
-      id: 0,
-      questionCateId: 0,
-      questionTypeId: 0,
-      originalName: '',
-      title: '',
-      contentPlain: '',
-      comment: '',
-      difficultyLevel: 1.0,
-      status: 0,
-      approveName: '',
-      createdAt: '',
-      updatedAt: '',
-      relationType: 0,
-      levelId: 0,
-    },
-    extraInfo: {},
-  },
-  addRelationType,
-  questionListRespMutate,
-}: AddProps) {
+export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
   const navigate = useNavigate();
 
-  // 初始化数据状态管理
-  const initAddDefaultReq = useMemo(() => {
-    // infoResp 为详情传递过来的完整信息, 优先级最高
-    if (infoResp && infoResp.baseInfo.id > 0) {
-      return { ...infoResp.baseInfo, difficultyLevel: Number(infoResp.baseInfo.difficultyLevel), ...infoResp.extraInfo };
-    }
-
-    // 初始化部分默认值
-    const initAddDefault: CreateQuestionReq = {
-      questionCateId: 0,
-      questionTypeId: 0,
-      originalName: '',
-      title: '',
-      difficultyLevel: 1.0,
-      optionsLayout: 1,
-      source: '',
-      status: 0,
-      relationType: addRelationType || QuestionRelationType.Base, // 默认均添加母题
-      levelId: 0,
-    };
-
-    // questionSearch 为列表页传递过来的数据, 可能选也可能为空
-    if (questionSearch.eightIds && questionSearch.eightIds.length > 0) {
-      initAddDefault.questionCateId = questionSearch.eightIds[0];
-    }
-    if (questionSearch.typeId > 0) {
-      initAddDefault.questionTypeId = questionSearch.typeId;
-    }
-    if (questionSearch.tagIds.length > 0) {
-      initAddDefault.questionTagIds = questionSearch.tagIds;
-    }
-    if (questionSearch.sourceId && questionSearch.sourceId > 0) {
-      // 此时为变式题母题标识id
-      initAddDefault.sourceId = questionSearch.sourceId;
-    }
-    if (questionSearch.sceneIds.length > 0) {
-      initAddDefault.sceneIds = questionSearch.sceneIds;
-    }
-    if (questionSearch.mistakeTipIds.length > 0) {
-      initAddDefault.mistakeTipIds = questionSearch.mistakeTipIds;
-    }
-
-    return initAddDefault;
-  }, []);
-  const [addReq, setAddReq] = useState<CreateQuestionReq>(initAddDefaultReq);
+  const [addReq, setAddReq] = useState<CreateQuestionReq>(initAddReq);
   const updateAddReq = (key: keyof CreateQuestionReq, value: number | number[] | string | string[]) => {
     setAddReq((prev) => ({ ...prev, [key]: value }));
   };
 
-  // 两层导航信息要单独管理
-  const [twoLevelId, setTwoLevelId] = useState<number>(questionSearch.twoLevelId);
-  const [fiveLevelId, setFiveLevelId] = useState<number>(questionSearch.fiveLevelId);
+  // 当前是否为母题添加, 不存在主键并且类型是母题
+  const isBaseQuestionAdd = (!addReq.id || addReq.id === 0) && addReq.relationType === QuestionRelationType.Base;
 
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
-  // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
   const pathMap = useMemo(() => {
-    return TextbookUtil.createTextbookPathDict(textbooks);
-  }, [textbooks]);
-
-  useEffect(() => {
-    if (fiveLevelId <= 0 || pathMap.size == 0) {
-      return;
+    if (isBaseQuestionAdd || textbooks.length === 0) {
+      return new Map<string, TextbookResp[]>();
     }
-
-    const nodes = pathMap.get(fiveLevelId.toString()) ?? [];
-    const twoLevelId = nodes.length > 2 ? nodes[1].id : 0;
-    setTwoLevelId(twoLevelId);
-  }, [fiveLevelId, pathMap]);
+    return TextbookUtil.createTextbookPathDict(textbooks);
+  }, [isBaseQuestionAdd, textbooks]);
 
   // 查询题目类型和标签
   const {
     data: dictListResp = { map: {} },
     isLoading: dictListRespLoading,
     error: dictListRespErr,
-  } = useQuestionOtherDictList(twoLevelId, [
+  } = useQuestionOtherDictList(addReq.twoLevelId, [
     'question_type',
     'question_tag',
     'question_dimension',
@@ -182,22 +92,56 @@ export default function Add({
   }, [dictListResp]);
 
   // 获取教材/知识点题型列表
-  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
+  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(addReq.fiveLevelId);
+  const cateMap = useMemo(() => {
+    if (isBaseQuestionAdd || questionCates.length === 0) {
+      return new Map<string, TextbookResp[]>();
+    }
+    return TextbookUtil.createTextbookPathDict(questionCates);
+  }, [isBaseQuestionAdd, questionCates]);
 
-  const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
+  // 处理默认填充前5层和后3层菜单默认选中
+  const [fillLevel, setFillLevel] = useState<TextbookFillLevel>({
+    fiveLevelKeys: [],
+    eightLevelKeys: [],
+  });
+  const updateFillLevel = (key: keyof TextbookFillLevel, val: string[]) => {
+    setFillLevel((prev) => ({ ...prev, [key]: val }));
+  };
 
-  // 用户个性化配置
+  // 用户个性化配置, 只有添加母题才需要填充个性化默认值, 其它情况均属于编辑需要处理填充的默认值
   const {
     data: customListResp = [],
     isLoading: customListRespLoading,
     error: customListRespErr,
-  } = useCustomList({
-    userSource: CustomUserSource.Person,
-    pageSource: CustomPageSource.Default,
-  });
+  } = useCustomList(
+    {
+      userSource: CustomUserSource.Person,
+      pageSource: CustomPageSource.Default,
+    },
+    isBaseQuestionAdd,
+  );
+
+  // 添加母题时用默认个性化配置填充
   useEffect(() => {
-    CustomUtil.updateTaskFiveInfo(customListResp, setFiveLevelId, setDefaultFiveKeys);
-  }, [customListResp]);
+    if (isBaseQuestionAdd) {
+      CustomUtil.questionAddUpdate(customListResp, updateAddReq, updateFillLevel);
+    }
+  }, [isBaseQuestionAdd, customListResp]);
+
+  // 非母题添加时需要用题目本身的信息去初始化菜单
+  useEffect(() => {
+    if (isBaseQuestionAdd || pathMap.size === 0) {
+      return;
+    }
+    CustomUtil.questionEditLevelUpdate(TextbookFillLevelType.Five, pathMap, addReq, updateFillLevel);
+  }, [isBaseQuestionAdd, pathMap]);
+  useEffect(() => {
+    if (isBaseQuestionAdd || cateMap.size === 0) {
+      return;
+    }
+    CustomUtil.questionEditLevelUpdate(TextbookFillLevelType.Eight, cateMap, addReq, updateFillLevel);
+  }, [isBaseQuestionAdd, cateMap]);
 
   // 是否是选择题, 列表页可能携带需要填充默认值
   const [isChoice, setIsChoice] = useState<boolean>(otherDictListRecord.questionTypeDict[addReq.questionTypeId]?.isSelect);
@@ -330,6 +274,28 @@ export default function Add({
   // 提交, 如果是编辑实际上要刷新列表页面
   const handleAddSubmit = (status: number) => {
     // 检查必填参数是否为空
+    if (addReq.twoLevelId <= 0) {
+      toast.error(<div className="text-red-700">第2级菜单科目不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: '关闭',
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    // 检查必填参数是否为空
+    if (addReq.fiveLevelId <= 0) {
+      toast.error(<div className="text-red-700">第5级菜单知识点/章节不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: '关闭',
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    // 检查必填参数是否为空
     if (addReq.questionCateId <= 0) {
       toast.error(<div className="text-red-700">第8级菜单题型不能为空</div>, {
         duration: Infinity,
@@ -341,7 +307,7 @@ export default function Add({
       return;
     }
     if (addReq.questionTypeId <= 0) {
-      toast.error(<div className="text-red-700">类型不能为空</div>, {
+      toast.error(<div className="text-red-700">题目类型不能为空</div>, {
         duration: Infinity,
         action: {
           label: '关闭',
@@ -425,6 +391,7 @@ export default function Add({
             toast.success('题目添加成功');
             // 题目添加成功后跳转到我的题目页面
             navigate('/ops/my/question', { replace: true });
+            questionListRespMutate?.();
           })
           .catch((err) => {
             setAddWarnInfo(<SimpleAlert title="查询题目详情失败" message={err.message} />);
@@ -440,7 +407,7 @@ export default function Add({
       });
   };
 
-  const showLoading = useDelayedLoading(isLoading || textbooksLoading || questionCatesLoading || dictListRespLoading);
+  const showLoading = useDelayedLoading(isLoading || textbooksLoading || questionCatesLoading || dictListRespLoading || customListRespLoading);
   const { username } = getUserInfo();
 
   // 左边区域
@@ -468,15 +435,18 @@ export default function Add({
                   textbooks={textbooks}
                   onSelect={(selectedItems: TextbookResp[]) => {
                     if (!selectedItems) {
-                      setFiveLevelId(0);
+                      updateAddReq('twoLevelId', 0);
+                      updateAddReq('fiveLevelId', 0);
                       return;
                     }
 
                     const current: TextbookResp = selectedItems[selectedItems.length - 1];
-                    setFiveLevelId(current.id);
+                    // todo 第2层标识
+                    updateAddReq('fiveLevelId', current.id);
                   }}
-                  defaultSelectedKeys={defaultFiveKeys}
+                  defaultSelectedKeys={fillLevel.fiveLevelKeys}
                   placeholder="请选择知识点/章节"
+                  disable={!isBaseQuestionAdd}
                 />
               </div>
             </div>
@@ -504,8 +474,9 @@ export default function Add({
 
                     updateAddReq('questionCateId', current.id);
                   }}
-                  defaultSelectedKeys={[]}
+                  defaultSelectedKeys={fillLevel.eightLevelKeys}
                   placeholder="请选择题型"
+                  disable={!isBaseQuestionAdd}
                 />
               </div>
             </div>
@@ -997,6 +968,7 @@ export default function Add({
         </div>
         <div>3. 母题才能添加变式题, 变式题本身已是最末级不再关联其它题目</div>
         <div>4. 标签中的 母题 变式题 为特殊标签, 方便你区分当前的题目依赖关系, 这个关系为冗余仅提供给你直觉区分题目类型, 不会做逻辑验证</div>
+        <div>5. 编辑时 知识点/章节 和 题型 分类不支持修改, 涉及母题和变式题的关联无法保证其它题新的归属是否正确</div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2 bg-card p-3">
@@ -1021,6 +993,7 @@ export default function Add({
         {textbooksErr && <SimpleAlert title="学段/年级列表获取失败" message={textbooksErr.message} />}
         {dictListRespErr && <SimpleAlert title="教材通用字典获取失败" message={dictListRespErr.message} />}
         {questionCatesErr && <SimpleAlert title="题型类型获取失败" message={questionCatesErr.message} />}
+        {customListRespErr && <SimpleAlert title="个性化配置获取失败" message={customListRespErr.message} />}
       </div>
 
       <div>
@@ -1044,7 +1017,7 @@ export default function Add({
                   <span className="font-medium text-sm">解析题目</span>
                 </div>
               ),
-              content: <ParseQuestion textbookId={twoLevelId} onFill={(req) => replaceAddReq(req)} />,
+              content: <ParseQuestion textbookId={addReq.twoLevelId} onFill={(req) => replaceAddReq(req)} />,
             },
           ]}
           defaultToolId="tool-file-upload"

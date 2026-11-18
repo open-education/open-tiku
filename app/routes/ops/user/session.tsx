@@ -17,7 +17,7 @@ export function meta({}: Route.MetaArgs) {
     { title: '活跃用户 Session 列表' },
     {
       name: 'description',
-      content: '个人中心用户 Session 管理; 活跃用户 Session 列表',
+      content: '用户 Session 管理; 活跃用户 Session 列表',
     },
   ];
 }

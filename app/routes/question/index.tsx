@@ -9,7 +9,7 @@ export function meta({}: Route.MetaArgs) {
     { title: '题库中心' },
     {
       name: 'description',
-      content: '收集整理网站常见的疑问和做一些适当的说明',
+      content: '对中小学教材按章节/知识点进行分类, 精选各学科/各类型的原创题目, 整理解析和归类已有的题目',
     },
   ];
 }

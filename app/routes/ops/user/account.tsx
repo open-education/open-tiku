@@ -21,7 +21,7 @@ export function meta({}: Route.MetaArgs) {
     { title: '第三方账户列表' },
     {
       name: 'description',
-      content: '个人中心用户账户管理; 第三方登录账户列表',
+      content: '第三方登录账户列表',
     },
   ];
 }

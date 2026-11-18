@@ -1,23 +1,22 @@
 import { SimpleAlert } from '@/components/common/alert';
-import { FileUpload } from '@/components/common/file';
 import { Loading } from '@/components/common/load';
 import { ChapterDropdownNav } from '@/components/common/nav';
-import { QuickToolList } from '@/components/common/tool';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import type { TaskSaveReq } from '@/type/task';
-import type { TextbookResp } from '@/type/textbook';
+import type { TextbookFillLevel, TextbookResp } from '@/type/textbook';
 import { useCustomList, useQuestionCates, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
-import { CustomUtil, TextbookUtil } from '@/util/object';
+import { CustomUtil } from '@/util/object';
 import { StringConst, StringValidator } from '@/util/string';
-import { FileImage, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
+import FileUpload from '@/components/common/upload';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
-import { CustomPageSource, CustomUserSource } from '@/type/enum';
+import { CustomPageSource, CustomUserSource, UploadFileType } from '@/type/enum';
 import { useNavigate } from 'react-router';
 import type { Route } from './+types/upload';
 
@@ -39,12 +38,13 @@ export default function Index() {
   const initAddReq = useMemo(() => {
     // 初始化部分默认值
     const initAddDefault: TaskSaveReq = {
+      twoLevelId: 0,
+      fiveLevelId: 0,
       questionCateId: 0,
       taskType: StringConst.taskTypeUploadQuestion,
       name: '',
       url: '',
       email: '',
-      textbookId: 0,
     };
 
     return initAddDefault;
@@ -54,37 +54,31 @@ export default function Index() {
     setAddReq((prev) => ({ ...prev, [key]: value }));
   };
 
-  // 两层导航信息要单独管理
-  const [fiveLevelId, setFiveLevelId] = useState<number>(0);
-  const [defaultFiveKeys, setDefaultFiveKeys] = useState<string[]>([]);
+  const [fillLevel, setFillLevel] = useState<TextbookFillLevel>({
+    fiveLevelKeys: [],
+    eightLevelKeys: [],
+  });
+  const updateFillLevel = (key: keyof TextbookFillLevel, value: string[]) => {
+    setFillLevel((prev) => ({ ...prev, [key]: value }));
+  };
 
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
-  // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
-  const pathMap = useMemo(() => {
-    return TextbookUtil.createTextbookPathDict(textbooks);
-  }, [textbooks]);
-
-  useEffect(() => {
-    if (fiveLevelId <= 0 || pathMap.size == 0) {
-      return;
-    }
-
-    const nodes = pathMap.get(fiveLevelId.toString()) ?? [];
-    const twoLevelId = nodes.length > 2 ? nodes[1].id : 0;
-    updateAddReq('textbookId', twoLevelId);
-  }, [fiveLevelId, pathMap]);
 
   // 获取教材/知识点题型列表
-  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
+  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(addReq.fiveLevelId);
 
   // 用户个性化配置
-  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList({
+  const {
+    data: customListResp = [],
+    isLoading: customListRespLoading,
+    error: customListRespErr,
+  } = useCustomList({
     userSource: CustomUserSource.Person,
     pageSource: CustomPageSource.Default,
   });
   useEffect(() => {
-    CustomUtil.updateTaskFiveInfo(customListResp, setFiveLevelId, setDefaultFiveKeys);
+    CustomUtil.questionTaskUploadUpdate(customListResp, updateAddReq, updateFillLevel);
   }, [customListResp]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -93,24 +87,32 @@ export default function Index() {
   // 添加任务
   const handleAddTask = () => {
     // 必要的参数校验
-    if (addReq.textbookId <= 0) {
-      toast.error(<div className="text-red-700">章节/知识点不能为空</div>, {
+    if (addReq.twoLevelId <= 0) {
+      toast.error(<div className="text-red-700">第2层级菜单科目不能为空</div>, {
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {
-          },
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (addReq.fiveLevelId <= 0) {
+      toast.error(<div className="text-red-700">第5层级菜单章节/知识点不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: '关闭',
+          onClick: () => {},
         },
       });
       return;
     }
     if (addReq.questionCateId <= 0) {
-      toast.error(<div className="text-red-700">第8级菜单题型不能为空</div>, {
+      toast.error(<div className="text-red-700">第8层级菜单题型不能为空</div>, {
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {
-          },
+          onClick: () => {},
         },
       });
       return;
@@ -120,8 +122,7 @@ export default function Index() {
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {
-          },
+          onClick: () => {},
         },
       });
       return;
@@ -131,8 +132,7 @@ export default function Index() {
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {
-          },
+          onClick: () => {},
         },
       });
       return;
@@ -170,24 +170,6 @@ export default function Index() {
 
       <Separator />
 
-      <div>
-        <QuickToolList
-          tools={[
-            {
-              id: 'tool-file-upload',
-              label: (
-                <div className="flex items-center gap-2">
-                  <FileImage className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-sm">上传文件</span>
-                </div>
-              ),
-              content: <FileUpload isImage={false} />,
-            },
-          ]}
-          defaultToolId="tool-file-upload"
-        />
-      </div>
-
       {showLoading && <Loading />}
 
       <div className="space-y-2">
@@ -221,15 +203,11 @@ export default function Index() {
             <ChapterDropdownNav
               textbooks={textbooks}
               onSelect={(selectedItems: TextbookResp[]) => {
-                if (!selectedItems) {
-                  setFiveLevelId(0);
-                  return;
-                }
-
-                const current: TextbookResp = selectedItems[selectedItems.length - 1];
-                setFiveLevelId(current.id);
+                const [, secondItem = null, , , fifthItem = null] = selectedItems ?? [];
+                updateAddReq('twoLevelId', secondItem ? secondItem.id : 0);
+                updateAddReq('fiveLevelId', fifthItem ? fifthItem.id : 0);
               }}
-              defaultSelectedKeys={defaultFiveKeys}
+              defaultSelectedKeys={fillLevel.fiveLevelKeys}
               placeholder="请选择知识点/章节"
             />
           </div>
@@ -258,8 +236,33 @@ export default function Index() {
 
                 updateAddReq('questionCateId', current.id);
               }}
-              defaultSelectedKeys={[]}
+              defaultSelectedKeys={fillLevel.eightLevelKeys}
               placeholder="请选择题型"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <div className="w-[6em] shrink-0 whitespace-nowrap">
+            上传文件:<span className="text-destructive">*</span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <FileUpload
+              fileType={UploadFileType.Markdown}
+              className="lg:w-[20%]"
+              onChange={(values) => {
+                // 只支持上传一个文件
+                if (!values) {
+                  return;
+                }
+                if (values.length != 1) {
+                  setWarnInfo(<SimpleAlert title="文件数量检查失败" message="上传题目仅支持上传一个文件" />);
+                  return;
+                }
+                const val = values[0].resp;
+                updateAddReq('name', val.originalName);
+                updateAddReq('url', val.url);
+              }}
             />
           </div>
         </div>
@@ -269,14 +272,7 @@ export default function Index() {
             文件名称:<span className="text-destructive">*</span>
           </div>
           <div className="min-w-0 flex-1">
-            <Input
-              id="task-file-name"
-              placeholder="例如 题型S-1-1-1 有理数的概念.md"
-              value={addReq.name}
-              onChange={(e) => {
-                updateAddReq('name', e.target.value);
-              }}
-            />
+            <Input id="task-file-name" placeholder="例如 题型S-1-1-1 有理数的概念.md" value={addReq.name} disabled />
           </div>
         </div>
 
@@ -285,21 +281,12 @@ export default function Index() {
             文件标识:<span className="text-destructive">*</span>
           </div>
           <div className="min-w-0 flex-1">
-            <Input
-              id="task-file-id"
-              placeholder="文件标识, 右上角上传文件获得"
-              value={addReq.url}
-              onChange={(e) => {
-                updateAddReq('url', e.target.value);
-              }}
-            />
+            <Input id="task-file-id" placeholder="文件标识, 右上角上传文件获得" value={addReq.url} disabled />
           </div>
         </div>
 
         <div className="flex items-center gap-1">
-          <div className="w-[6em] shrink-0 whitespace-nowrap">
-            邮箱地址:<span className="text-destructive">*</span>
-          </div>
+          <div className="w-[6em] shrink-0 whitespace-nowrap">邮箱地址:</div>
           <div className="min-w-0 flex-1">
             <Input
               id="task-file-email"

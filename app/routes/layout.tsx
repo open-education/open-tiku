@@ -1,4 +1,4 @@
-import { Error } from '@/components/common/error';
+import { GlobalError } from '@/components/common/error';
 import { Logo, MenuList } from '@/components/common/sidebar';
 import Auth from '@/components/home/auth';
 import { Separator } from '@/components/ui/separator';
@@ -46,7 +46,7 @@ export default function Layout() {
   // 当前菜单项目
   const currentMenu = menuMap[currentPath] || null;
   if (!checkAccess(user, currentMenu)) {
-    return <Error message="401" details="你没有权限访问这些内容" />;
+    return <GlobalError message="401" details="你没有权限访问这些内容" />;
   }
 
   return (

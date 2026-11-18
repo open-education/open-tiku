@@ -665,10 +665,11 @@ interface ChapterDropdownNavProps {
   placeholder?: string;
   maxDepth?: number;
   longText?: boolean; // 是否是长文本, 长文本只显示最后一项
+  disable?: boolean; // 是否禁用触发选择
 }
 // 下拉菜单样式的导航-适用于紧凑搜索一类的列表页
 function ChapterDropdownNav(props: ChapterDropdownNavProps) {
-  const { textbooks, onSelect, defaultSelectedKeys = [], placeholder = '请选择学段', maxDepth = 5, longText = false } = props;
+  const { textbooks, onSelect, defaultSelectedKeys = [], placeholder = '请选择学段', maxDepth = 5, longText = false, disable = false } = props;
 
   const [selectedPath, setSelectedPath] = useState<TextbookResp[]>([]);
   const [open, setOpen] = useState(false);
@@ -879,7 +880,7 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger
         render={
-          <Button variant="outline" className="w-full sm:w-auto justify-between">
+          <Button disabled={disable} variant="outline" className="w-full sm:w-auto justify-between">
             <span className="truncate text-xs">{getDisplayText()}</span>
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>

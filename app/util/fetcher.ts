@@ -52,10 +52,14 @@ export function useQuestionCates(fiveLevelId: number) {
 // 题目列表
 export function useQuestionList(source: QuestionPageSource, search: QuestionSearch, pageNo: number) {
   const req: QuestionListReq = {
+    twoLevelId: search.twoLevelId,
     source,
     pageNo: pageNo,
     pageSize: StringConst.pageSize,
   };
+  if (search.fiveLevelId > 0) {
+    req.fiveLevelId = search.fiveLevelId;
+  }
   if (search.eightIds && search.eightIds.length > 0) {
     req.questionCateIds = search.eightIds;
   }
@@ -85,7 +89,7 @@ export function useQuestionList(source: QuestionPageSource, search: QuestionSear
   }
 
   const reqPath = '/question/list';
-  const key = [reqPath, JSON.stringify(req)];
+  const key = req.twoLevelId > 0 ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>(reqPath, req), defaultErrConfig);
 }
 
@@ -145,17 +149,20 @@ export function useQuestionCateList(relatedId: number) {
 // 题目上传任务列表
 export function useTaskList(reqInit: TaskListReq, pageNo: number, pageSize: number) {
   let req: TaskListReq = {
+    twoLevelId: reqInit.twoLevelId,
     taskType: reqInit.taskType,
     pageNo,
     pageSize,
   };
-
+  if (reqInit.fiveLevelId && reqInit.fiveLevelId > 0) {
+    req.fiveLevelId = reqInit.fiveLevelId;
+  }
   if (reqInit.questionCateId && reqInit.questionCateId > 0) {
     req.questionCateId = reqInit.questionCateId;
   }
 
   const reqPath = '/task/list';
-  const key = [reqPath, JSON.stringify(req)];
+  const key = req.twoLevelId > 0 ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<TaskListResp>(key, () => httpClient.post<TaskListResp>(reqPath, req), defaultErrConfig);
 }
 
@@ -200,9 +207,9 @@ export function useClassStudentList(classIds: number[]) {
 }
 
 // 获取个性化配置列表
-export function useCustomList(req: CustomListReq) {
+export function useCustomList(req: CustomListReq, enable: boolean = true) {
   const reqPath = '/custom/list';
-  const key = [reqPath, JSON.stringify(req)];
+  const key = enable ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<CustomResp[]>(key, () => httpClient.post<CustomResp[]>(reqPath, req), defaultErrConfig);
 }
 

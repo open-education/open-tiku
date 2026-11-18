@@ -6,7 +6,8 @@ import type { DeleteFileReq, UploadFileResp } from '@/type/file';
 import { httpClient } from '@/util/http';
 import { cn } from 'cn';
 import { FileImage, ImageUp, Loader2, Trash2 } from 'lucide-react';
-import { useRef, useState, type ChangeEvent } from 'react';
+import { type ChangeEvent, useRef, useState } from 'react';
+import { ObjectUtil } from '@/util/object';
 
 /// 文件工具
 
@@ -46,12 +47,6 @@ function FileUpload({ isImage }: FileUploadProps) {
     fileInputRef.current?.click();
   };
 
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-
   // 文件上传
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -64,7 +59,7 @@ function FileUpload({ isImage }: FileUploadProps) {
       return;
     }
 
-    if (file.size > 1 * 1024 * 1024) {
+    if (file.size > 1024 * 1024) {
       setFileErr('文件大小不能超过 1MB');
       return;
     }
@@ -81,7 +76,7 @@ function FileUpload({ isImage }: FileUploadProps) {
         setFileUrl(isImage ? `/images/${url}` : `/files/${url}`);
         setFileId(name || '');
         setOriginalFileName(originalName || '');
-        setFileSize(formatFileSize(size));
+        setFileSize(ObjectUtil.formatFileSize(size));
       })
       .catch((err) => {
         setFileErr(err.message);

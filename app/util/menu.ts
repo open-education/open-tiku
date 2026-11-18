@@ -63,7 +63,7 @@ export const menuItems: OpsMenu[] = [
         role: UserRoleType.Normal,
       },
       {
-        title: '添加题目',
+        title: '添加母题',
         url: '/ops/my/question/add',
         login: true,
         role: UserRoleType.Normal,
@@ -170,7 +170,7 @@ export const getMenuMap = () => {
 
   // 未配置导航栏的特殊菜单, 比如编辑路由
   map['/ops/my/question/edit'] = {
-    title: '题目编辑',
+    title: '题目编辑或添加变式题',
     login: true,
     role: UserRoleType.Normal,
   };

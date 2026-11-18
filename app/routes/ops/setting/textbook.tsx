@@ -25,7 +25,7 @@ export function meta({}: Route.MetaArgs) {
     { title: '章节/知识点' },
     {
       name: 'description',
-      content: '个人中心, 系统设置, 维护7级教材目录章节和知识点层级关系',
+      content: '系统设置, 维护7级教材目录章节和知识点层级关系',
     },
   ];
 }

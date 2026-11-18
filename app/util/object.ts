@@ -1,9 +1,10 @@
 import type { StudentAccountParseResult } from '@/type/class';
-import type { OtherDictListRecord, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
-import { StringConst } from '@/util/string';
 import type { CustomResp } from '@/type/custom';
-import { CustomType } from '@/type/enum';
-import type { QuestionSearch } from '@/type/question';
+import { CustomType, TextbookFillLevelType } from '@/type/enum';
+import type { CreateQuestionReq, QuestionSearch } from '@/type/question';
+import type { TaskListReq, TaskSaveReq } from '@/type/task';
+import type { OtherDictListRecord, TextbookFillLevel, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
+import { StringConst } from '@/util/string';
 
 // 对象工具
 export const ObjectUtil = {
@@ -23,6 +24,7 @@ export const ObjectUtil = {
     return `${date} ${time}`;
   },
 
+  // 解析学生账户
   getStudentAccount: (input: string): StudentAccountParseResult => {
     // 1. 按行分割，清洗，过滤空行
     const lines = input.split('\n');
@@ -47,6 +49,24 @@ export const ObjectUtil = {
       commaSeparated,
       duplicates,
     };
+  },
+
+  // 格式化文件尺寸
+  formatFileSize: (bytes: number): string => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  },
+
+  // 根据当前日期创建一个 id 有概率重复
+  createId: (): string => {
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  },
+
+  // 字符串转为数字, 失败时返回0
+  strToNumber: (raw: string | null): number => {
+    const num = raw && raw.trim() !== '' ? Number(raw) : undefined;
+    return num !== undefined && Number.isFinite(num) && num > 0 ? num : 0;
   },
 };
 
@@ -119,21 +139,6 @@ export const TextbookUtil = {
       questionMistakeTipDict,
     };
   },
-
-  // 更新第二层菜单值
-  updateSearchTwoLevelId: (
-    fiveLevelId: number,
-    pathMap: Map<string, TextbookResp[]>,
-    update: (key: keyof QuestionSearch, value: number | number[] | string[]) => void,
-  ) => {
-    if (!fiveLevelId || pathMap.size === 0) {
-      return;
-    }
-
-    const nodes = pathMap.get(fiveLevelId.toString()) ?? [];
-    const twoLevelId = nodes.length > 2 ? nodes[1].id : 0;
-    update('twoLevelId', twoLevelId);
-  },
 };
 
 // 数组相关操作工具
@@ -161,7 +166,7 @@ export const DictUtil = {
 // 个性化配置工具
 export const CustomUtil = {
   // 题目搜索个性化更新
-  updateSearchFiveLevelInfo: (listResp: CustomResp[], update: (key: keyof QuestionSearch, value: number | number[] | string[]) => void) => {
+  questionSearchUpdate: (listResp: CustomResp[], update: (key: keyof QuestionSearch, value: number | number[] | string[]) => void) => {
     // 如果存在预设默认值则覆盖初始化值
     const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
     if (!customTextbook) {
@@ -169,17 +174,24 @@ export const CustomUtil = {
     }
 
     if (customTextbook.textbook) {
-      if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
-        update('fiveLevelId', customTextbook.textbook.fifth);
+      if (customTextbook.textbook.twoLevelId && customTextbook.textbook.twoLevelId > 0) {
+        update('twoLevelId', customTextbook.textbook.twoLevelId);
       }
-      if (customTextbook.textbook.fifthKeys && customTextbook.textbook.fifthKeys.length > 0) {
-        update('fiveLevelSelectKeys', customTextbook.textbook.fifthKeys);
+      if (customTextbook.textbook.fiveLevelId && customTextbook.textbook.fiveLevelId > 0) {
+        update('fiveLevelId', customTextbook.textbook.fiveLevelId);
+      }
+      if (customTextbook.textbook.fiveLevelKeys && customTextbook.textbook.fiveLevelKeys.length > 0) {
+        update('fiveLevelSelectKeys', customTextbook.textbook.fiveLevelKeys);
       }
     }
   },
 
   // 题目添加个性化更新
-  updateTaskFiveInfo: (listResp: CustomResp[], setFiveLevelId: (val: number) => void, setDefaultFiveKeys: (val: string[]) => void) => {
+  questionAddUpdate: (
+    listResp: CustomResp[],
+    updateAddReq: (key: keyof CreateQuestionReq, value: number | number[] | string | string[]) => void,
+    updateFillLevel: (key: keyof TextbookFillLevel, val: string[]) => void,
+  ) => {
     // 如果存在预设默认值则覆盖初始化值
     const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
     if (!customTextbook) {
@@ -187,11 +199,83 @@ export const CustomUtil = {
     }
 
     if (customTextbook.textbook) {
-      if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
-        setFiveLevelId(customTextbook.textbook.fifth);
+      if (customTextbook.textbook.twoLevelId && customTextbook.textbook.twoLevelId > 0) {
+        updateAddReq('twoLevelId', customTextbook.textbook.twoLevelId);
       }
-      if (customTextbook.textbook.fifthKeys && customTextbook.textbook.fifthKeys.length > 0) {
-        setDefaultFiveKeys(customTextbook.textbook.fifthKeys);
+      if (customTextbook.textbook.fiveLevelId && customTextbook.textbook.fiveLevelId > 0) {
+        updateAddReq('fiveLevelId', customTextbook.textbook.fiveLevelId);
+      }
+      if (customTextbook.textbook.fiveLevelKeys && customTextbook.textbook.fiveLevelKeys.length > 0) {
+        updateFillLevel('fiveLevelKeys', customTextbook.textbook.fiveLevelKeys);
+      }
+    }
+  },
+
+  // 题目编辑前5层菜单更新
+  questionEditLevelUpdate: (
+    level: TextbookFillLevelType,
+    dict: Map<string, TextbookResp[]>,
+    addReq: CreateQuestionReq,
+    updateFillLevel: (key: keyof TextbookFillLevel, val: string[]) => void,
+  ) => {
+    if (level === TextbookFillLevelType.Five) {
+      const nodes = dict.get(addReq.fiveLevelId.toString()) || [];
+      const keys = nodes.map((node) => node.key);
+      updateFillLevel('fiveLevelKeys', keys);
+    } else if (level === TextbookFillLevelType.Eight) {
+      const key = `${addReq.questionCateId}${StringConst.dictPath}`;
+      const nodes = dict.get(key) || [];
+      const keys = nodes.map((node) => node.key);
+      updateFillLevel('eightLevelKeys', keys);
+    }
+  },
+
+  // 题目任务上传菜单更新
+  questionTaskUploadUpdate: (
+    listResp: CustomResp[],
+    updateAddReq: (key: keyof TaskSaveReq, value: number | string) => void,
+    updateFillLevel: (key: keyof TextbookFillLevel, val: string[]) => void,
+  ) => {
+    // 如果存在预设默认值则覆盖初始化值
+    const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
+    if (!customTextbook) {
+      return;
+    }
+
+    if (customTextbook.textbook) {
+      if (customTextbook.textbook.twoLevelId && customTextbook.textbook.twoLevelId > 0) {
+        updateAddReq('twoLevelId', customTextbook.textbook.twoLevelId);
+      }
+      if (customTextbook.textbook.fiveLevelId && customTextbook.textbook.fiveLevelId > 0) {
+        updateAddReq('fiveLevelId', customTextbook.textbook.fiveLevelId);
+      }
+      if (customTextbook.textbook.fiveLevelKeys && customTextbook.textbook.fiveLevelKeys.length > 0) {
+        updateFillLevel('fiveLevelKeys', customTextbook.textbook.fiveLevelKeys);
+      }
+    }
+  },
+
+  // 题目任务查看菜单更新
+  questionTaskListUpdate: (
+    listResp: CustomResp[],
+    updateListReq: (key: keyof TaskListReq, value: number | string) => void,
+    updateFillLevel: (key: keyof TextbookFillLevel, val: string[]) => void,
+  ) => {
+    // 如果存在预设默认值则覆盖初始化值
+    const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
+    if (!customTextbook) {
+      return;
+    }
+
+    if (customTextbook.textbook) {
+      if (customTextbook.textbook.twoLevelId && customTextbook.textbook.twoLevelId > 0) {
+        updateListReq('twoLevelId', customTextbook.textbook.twoLevelId);
+      }
+      if (customTextbook.textbook.fiveLevelId && customTextbook.textbook.fiveLevelId > 0) {
+        updateListReq('fiveLevelId', customTextbook.textbook.fiveLevelId);
+      }
+      if (customTextbook.textbook.fiveLevelKeys && customTextbook.textbook.fiveLevelKeys.length > 0) {
+        updateFillLevel('fiveLevelKeys', customTextbook.textbook.fiveLevelKeys);
       }
     }
   },

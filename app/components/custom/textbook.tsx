@@ -10,9 +10,8 @@ import type { QuestionSearch } from '@/type/question';
 import type { TextbookResp } from '@/type/textbook';
 import { useCustomList, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
-import { TextbookUtil } from '@/util/object';
 import { Save } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 // 教材层级配置
@@ -25,10 +24,6 @@ interface TextbookProps {
 export default function Textbook({ userSource, pageSource }: TextbookProps) {
   // 网站主要导航
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks();
-  // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
-  const pathMap = useMemo(() => {
-    return TextbookUtil.createTextbookPathDict(textbooks);
-  }, [textbooks]);
 
   // 搜索对象维护
   const [questionSearch, setQuestionSearch] = useState<QuestionSearch>({
@@ -64,10 +59,6 @@ export default function Textbook({ userSource, pageSource }: TextbookProps) {
     }));
   };
 
-  useEffect(() => {
-    TextbookUtil.updateSearchTwoLevelId(questionSearch.fiveLevelId, pathMap, updateQuestionSearch);
-  }, [questionSearch.fiveLevelId, pathMap]);
-
   // 用户个性化配置
   const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList({ userSource, pageSource });
   useEffect(() => {
@@ -83,11 +74,14 @@ export default function Textbook({ userSource, pageSource }: TextbookProps) {
     if (customTextbook.textbook) {
       updateAddReq('textbook', customTextbook.textbook);
       // 更新默认显示
-      if (customTextbook.textbook.fifth && customTextbook.textbook.fifth > 0) {
-        updateQuestionSearch('fiveLevelId', customTextbook.textbook.fifth);
+      if (customTextbook.textbook.twoLevelId && customTextbook.textbook.twoLevelId > 0) {
+        updateQuestionSearch('twoLevelId', customTextbook.textbook.twoLevelId);
       }
-      if (customTextbook.textbook.fifthKeys && customTextbook.textbook.fifthKeys.length > 0) {
-        updateQuestionSearch('fiveLevelSelectKeys', customTextbook.textbook.fifthKeys);
+      if (customTextbook.textbook.fiveLevelId && customTextbook.textbook.fiveLevelId > 0) {
+        updateQuestionSearch('fiveLevelId', customTextbook.textbook.fiveLevelId);
+      }
+      if (customTextbook.textbook.fiveLevelKeys && customTextbook.textbook.fiveLevelKeys.length > 0) {
+        updateQuestionSearch('fiveLevelSelectKeys', customTextbook.textbook.fiveLevelKeys);
       }
     }
   }, [customListResp]);
@@ -104,20 +98,18 @@ export default function Textbook({ userSource, pageSource }: TextbookProps) {
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {
-          },
+          onClick: () => {},
         },
       });
       return;
     }
     // 前5层级至少选择到第二层
-    if (!addReq.textbook.fifthKeys || addReq.textbook.fifthKeys.length < 2) {
+    if (!addReq.textbook.fiveLevelKeys || addReq.textbook.fiveLevelKeys.length < 2) {
       toast.error(<div className="text-red-700">前5层级最少需要选择到第二层科目</div>, {
         duration: Infinity,
         action: {
           label: '关闭',
-          onClick: () => {
-          },
+          onClick: () => {},
         },
       });
       return;
@@ -184,6 +176,9 @@ export default function Textbook({ userSource, pageSource }: TextbookProps) {
             }
             if (selectedTextbooks.second) {
               selectedKeys.push(selectedTextbooks.second.key);
+              const twoCurrent: TextbookResp = selectedTextbooks.second;
+              updateQuestionSearch('twoLevelId', twoCurrent.id);
+              updateTextbook({ twoLevelId: twoCurrent.id });
             }
             if (selectedTextbooks.third) {
               selectedKeys.push(selectedTextbooks.third.key);
@@ -194,17 +189,17 @@ export default function Textbook({ userSource, pageSource }: TextbookProps) {
 
             if (!selectedTextbooks || !selectedTextbooks.fifth) {
               updateQuestionSearch('fiveLevelId', 0);
-              updateTextbook({ fifth: 0 });
+              updateTextbook({ fiveLevelId: 0 });
             } else {
-              const current: TextbookResp = selectedTextbooks.fifth;
-              selectedKeys.push(current.key);
-              updateQuestionSearch('fiveLevelId', current.id);
-              updateTextbook({ fifth: current.id });
+              const fiveCurrent: TextbookResp = selectedTextbooks.fifth;
+              selectedKeys.push(fiveCurrent.key);
+              updateQuestionSearch('fiveLevelId', fiveCurrent.id);
+              updateTextbook({ fiveLevelId: fiveCurrent.id });
             }
 
             // 选中多少层就收集多少层
             updateQuestionSearch('fiveLevelSelectKeys', selectedKeys);
-            updateTextbook({ fifthKeys: selectedKeys });
+            updateTextbook({ fiveLevelKeys: selectedKeys });
           }}
         />
       </div>

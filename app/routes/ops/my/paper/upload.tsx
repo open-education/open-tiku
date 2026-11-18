@@ -1,7 +1,7 @@
 import { ChapterExpandNav } from '@/components/common/nav';
+import FileUpload from '@/components/common/upload';
 import { YearSelect } from '@/components/common/year';
 import { DifficultyTypeSelect, ExamTypeSelect, FileTypeSelect, LevelTypeSelect } from '@/components/paper/tag';
-import FileUpload from '@/components/paper/upload';
 import { Button } from '@/components/ui/button';
 import { FieldDescription } from '@/components/ui/field';
 import { Label } from '@/components/ui/label';
@@ -12,10 +12,10 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { CustomPageSource, CustomUserSource, QuestionStatus, UploadFileType } from '@/type/enum';
 import type { QuestionSearch } from '@/type/question';
 import { useCustomList, useTextbooks } from '@/util/fetcher';
+import { CustomUtil } from '@/util/object';
 import { Check, Save, Send } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { Route } from './+types/upload';
-import { CustomUtil } from '@/util/object';
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -51,37 +51,41 @@ export default function Index() {
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks();
 
   // 用户个性化配置
-  const { data: customListResp = [], isLoading: customListRespLoading, error: customListRespErr } = useCustomList({
+  const {
+    data: customListResp = [],
+    isLoading: customListRespLoading,
+    error: customListRespErr,
+  } = useCustomList({
     userSource: CustomUserSource.Person,
     pageSource: CustomPageSource.Default,
   });
   useEffect(() => {
-    CustomUtil.updateSearchFiveLevelInfo(customListResp, updateQuestionSearch);
+    CustomUtil.questionSearchUpdate(customListResp, updateQuestionSearch);
   }, [customListResp]);
 
   // 左边选择试卷关联关系
   const leftContent = (
     <div className="bg-card p-3">
-      <ChapterExpandNav textbooks={textbooks} defaultValues={questionSearch.fiveLevelSelectKeys} onSelectionChange={() => {
-      }} />
+      <ChapterExpandNav textbooks={textbooks} defaultValues={questionSearch.fiveLevelSelectKeys} onSelectionChange={() => {}} />
     </div>
   );
 
   // 中间文件上传区域
+  const [selectFileType, setSelectFileType] = useState<UploadFileType>(UploadFileType.Pdf);
+
   const middleContent = (
     <div className="bg-card p-3 space-y-3">
       <div className="space-y-3 text-sm bg-card">
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
           <div className="md:w-24 shrink-0 font-medium">文件类型:</div>
           <div className="flex-1 min-w-0">
-            <FileTypeSelect onSelect={(val) => {
-            }} />
+            <FileTypeSelect defaultValue={selectFileType} onSelect={(val) => setSelectFileType(val)} />
           </div>
         </div>
       </div>
 
       <div>
-        <FileUpload fileType={UploadFileType.Image} />
+        <FileUpload fileType={selectFileType} onChange={(values) => console.log(values)} />
       </div>
     </div>
   );
@@ -126,8 +130,7 @@ export default function Index() {
         <Label htmlFor="title" className="text-sm">
           试卷名称 <Required />
         </Label>
-        <Textarea id="title" className="min-h-25 resize-y" value="" onChange={() => {
-        }} placeholder="输入试卷名称..." />
+        <Textarea id="title" className="min-h-25 resize-y" value="" onChange={() => {}} placeholder="输入试卷名称..." />
         <Button size="sm" variant="outline">
           识别试卷名称
         </Button>
@@ -139,31 +142,26 @@ export default function Index() {
       </FieldRow>
 
       <FieldRow label="选择学年">
-        <YearSelect value={year} startYear={2020} onValueChange={() => {
-        }} placeholder="选择学年" />
+        <YearSelect value={year} startYear={2020} onValueChange={() => {}} placeholder="选择学年" />
       </FieldRow>
 
       <FieldRow label="考试类型">
-        <ExamTypeSelect defaultValue={1} onSelect={() => {
-        }} />
+        <ExamTypeSelect defaultValue={1} onSelect={() => {}} />
       </FieldRow>
 
       <FieldRow label="试卷级别">
-        <LevelTypeSelect defaultValue={1} onSelect={() => {
-        }} />
+        <LevelTypeSelect defaultValue={1} onSelect={() => {}} />
       </FieldRow>
 
       <FieldRow label="试卷难度">
-        <DifficultyTypeSelect defaultValue={1} onSelect={() => {
-        }} />
+        <DifficultyTypeSelect defaultValue={1} onSelect={() => {}} />
       </FieldRow>
 
       <div className="space-y-2">
         <Label htmlFor="desc" className="text-sm">
           试卷说明
         </Label>
-        <Textarea id="desc" className="min-h-25 resize-y" value="" onChange={() => {
-        }} placeholder="输入试卷说明..." />
+        <Textarea id="desc" className="min-h-25 resize-y" value="" onChange={() => {}} placeholder="输入试卷说明..." />
       </div>
 
       <div className="mt-6 mb-5 flex items-center gap-2.5 bg-emerald-50 px-4.5 py-3.5 text-[13px] text-emerald-700">

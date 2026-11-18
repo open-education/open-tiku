@@ -83,3 +83,9 @@ export interface CreateTextbookReq {
   pathDepth?: number;
   path: string;
 }
+
+// 题目添加时默认第5层后3层菜单填充
+export interface TextbookFillLevel {
+  fiveLevelKeys: string[];
+  eightLevelKeys: string[];
+}

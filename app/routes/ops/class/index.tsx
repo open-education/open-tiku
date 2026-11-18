@@ -25,7 +25,7 @@ export function meta({}: Route.MetaArgs) {
     { title: '我的班级' },
     {
       name: 'description',
-      content: '个人中心我的班级管理; 导入班级学生账号, 生成学生账户登录密码',
+      content: '我的班级管理; 导入班级学生账号, 生成学生账户登录密码',
     },
   ];
 }

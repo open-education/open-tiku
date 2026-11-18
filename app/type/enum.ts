@@ -62,6 +62,7 @@ export enum UploadFileType {
   Pdf = 1, // PDF 文件
   Word = 2, // Word 文件
   Image = 3, // 图片
+  Markdown = 4, // Markdown 文档
 }
 
 // 考试类型
@@ -96,5 +97,17 @@ export enum CustomUserSource {
 // 个性化页面来源
 export enum CustomPageSource {
   Default = 1, // 默认, 非登录用户获取系统默认配置, 登录用户没有配置则获取系统默认配置
-  My = 2,      // 我的个性化, 只获取我的个性化配置
+  My = 2, // 我的个性化, 只获取我的个性化配置
+}
+
+// 填充默认菜单类型
+export enum TextbookFillLevelType {
+  Five = 1, // 前5层
+  Eight = 2, // 后3层
+}
+
+// 题目编辑类型
+export enum QuestionEditMode {
+  Edit = 1, // 编辑
+  AddSimilar = 2, // 添加变式题
 }

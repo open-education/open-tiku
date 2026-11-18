@@ -5,7 +5,7 @@ const milestones = [
   { year: '3-5年', title: '开放生态多学科融合', desc: 'API开放 + 多学科 + 区域应用' },
 ];
 
-export default function Raodmap() {
+export default function Roadmap() {
   return (
     <div className="bg-white py-20">
       <div className="mx-auto max-w-300 px-10">

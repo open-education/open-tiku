@@ -10,7 +10,7 @@ export function meta({}: Route.MetaArgs) {
     { title: '默认菜单' },
     {
       name: 'description',
-      content: '个性化定制化我的默认菜单',
+      content: '个性化定制化系统默认菜单, 主要提供给未登录用户使用, 已登录用户推荐使用 我的个性化配置',
     },
   ];
 }

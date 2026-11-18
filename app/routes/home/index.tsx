@@ -6,7 +6,7 @@ import Feature from '@/components/home/feature';
 import Hero from '@/components/home/hero';
 import Layered from '@/components/home/layered';
 import Mission from '@/components/home/mission';
-import Raodmap from '@/components/home/roadmap';
+import Roadmap from '@/components/home/roadmap';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
 import { useBoardList, useTextbooks } from '@/util/fetcher';
 import { TextbookUtil } from '@/util/object';
@@ -45,7 +45,7 @@ export default function Index() {
       <Layered />
       <Board pathMap={pathMap} boardResp={boardResp} />
       <Mission />
-      <Raodmap />
+      <Roadmap />
       <Build />
     </>
   );

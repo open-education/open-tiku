@@ -10,7 +10,6 @@ import { useDelayedLoading } from '@/hooks/delayed-loading';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CustomPageSource, CustomUserSource, QuestionPageSource } from '@/type/enum';
 import type { CountQuestionResp, QuestionSearch } from '@/type/question';
-import type { TextbookResp } from '@/type/textbook';
 import { useCustomList, useQuestionCates, useQuestionList, useQuestionOtherDictList, useTextbooks } from '@/util/fetcher';
 import { formatNumber } from '@/util/fmt';
 import { CustomUtil, TextbookUtil } from '@/util/object';
@@ -38,14 +37,6 @@ export default function QuestionSearchList({
 }: QuestionSearchListProps) {
   // 网站主要导航
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks();
-  // 将教材字典转化为 Map 格式, 存储 id 对应的所有层
-  const pathMap = useMemo(() => {
-    return TextbookUtil.createTextbookPathDict(textbooks);
-  }, [textbooks]);
-
-  useEffect(() => {
-    TextbookUtil.updateSearchTwoLevelId(questionSearch.fiveLevelId, pathMap, updateQuestionSearch);
-  }, [questionSearch.fiveLevelId, pathMap]);
 
   // 查询题目类型和标签等信息
   const {
@@ -77,7 +68,7 @@ export default function QuestionSearchList({
     pageSource: CustomPageSource.Default,
   });
   useEffect(() => {
-    CustomUtil.updateSearchFiveLevelInfo(customListResp, updateQuestionSearch);
+    CustomUtil.questionSearchUpdate(customListResp, updateQuestionSearch);
   }, [customListResp]);
 
   // 查询题目列表
@@ -101,13 +92,12 @@ export default function QuestionSearchList({
       questionCates={questionCates}
       questionSearch={questionSearch}
       onTextbook={(selectedTextbooks) => {
-        if (!selectedTextbooks || !selectedTextbooks.fifth) {
-          updateQuestionSearch('fiveLevelId', 0);
-          updateQuestionSearch('fiveLevelSelectKeys', []);
+        if (!selectedTextbooks) {
           return;
         }
-        const current: TextbookResp = selectedTextbooks.fifth;
-        updateQuestionSearch('fiveLevelId', current.id);
+
+        updateQuestionSearch('twoLevelId', selectedTextbooks.second ? selectedTextbooks.second.id : 0);
+        updateQuestionSearch('fiveLevelId', selectedTextbooks.fifth ? selectedTextbooks.fifth.id : 0);
       }}
       onQuestionCate={(selectedItems: CheckboxTreeNode[]) => {
         if (!selectedItems) {

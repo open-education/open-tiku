@@ -10,3 +10,11 @@ export interface UploadFileResp {
   name: string; // 文件标识
   url: string; // 文件标识, 目前这两个字段都是一样的值, 但是语义上 name 是服务端存储的文件名
 }
+
+// 收集文件上传列表信息
+export interface FinalUploadItem {
+  id: string;
+  file: File;
+  resp: UploadFileResp;
+  isImage: boolean;
+}

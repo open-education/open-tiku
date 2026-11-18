@@ -30,9 +30,9 @@ import type {
 import type { OtherDictListRecord } from '@/type/textbook';
 import { httpClient } from '@/util/http';
 import React, { useState } from 'react';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
 import type { KeyedMutator } from 'swr';
-import { Link } from 'react-router';
 
 // 题目操作列表
 interface QuestionOperateListProps {
@@ -44,12 +44,12 @@ interface QuestionOperateListProps {
 }
 
 function QuestionOperateList({
-                               pageSource,
-                               otherDictListRecord,
-                               baseInfoResp,
-                               questionListRespMutate,
-                               countListRespMutate,
-                             }: QuestionOperateListProps) {
+  pageSource,
+  otherDictListRecord,
+  baseInfoResp,
+  questionListRespMutate,
+  countListRespMutate,
+}: QuestionOperateListProps) {
   const [isAnswerOpen, setIsAnswerOpen] = useState(false);
   const [viewAnswerIng, setViewAnswerIng] = useState<boolean>(false);
   const [viewAnswerErr, setViewAnswerErr] = useState<React.ReactNode>(null);
@@ -127,8 +127,8 @@ function QuestionOperateList({
         toast.error(<div className="text-red-700">查询题目详情失败: {(err as Error).message}, 无法复制</div>, {
           duration: Infinity,
           action: {
-            label: '关闭', onClick: () => {
-            },
+            label: '关闭',
+            onClick: () => {},
           },
         });
         return;
@@ -247,7 +247,7 @@ function QuestionOperateList({
     httpClient
       .post('/edit/question/status', approveReq)
       .then((res) => {
-        questionListRespMutate();
+        questionListRespMutate().then((r) => {});
         countListRespMutate?.();
         setOpenConfirmApprove(false);
       })
@@ -263,8 +263,7 @@ function QuestionOperateList({
     <div className="w-full space-y-3">
       {/* 答案解析内容 */}
       <Collapsible open={isAnswerOpen}>
-        <CollapsibleContent
-          className="transition-all data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down mt-3 p-3 bg-secondary border border-dotted border-blue-100">
+        <CollapsibleContent className="transition-all data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down mt-3 p-3 bg-secondary border border-dotted border-blue-100">
           {viewAnswerErr || <AnswerInfo infoResp={infoResp} />}
         </CollapsibleContent>
       </Collapsible>
@@ -298,7 +297,9 @@ function QuestionOperateList({
         {/* 添加变式题 */}
         {pageSource === QuestionPageSource.MyQuestion && (
           <Button size="sm" variant="outline">
-            <Link to={'/ops/my/question/add'} target="_blank">添加变式题</Link>
+            <Link to={`/ops/my/question/edit?id=${baseInfoResp.id}&type=2`} target="_blank">
+              添加变式题
+            </Link>
           </Button>
         )}
 
@@ -316,7 +317,9 @@ function QuestionOperateList({
         {pageSource === QuestionPageSource.MyQuestion && baseInfoResp.status === QuestionStatus.Drafting && (
           <>
             <Button size="sm" variant="outline">
-              <Link to={'/ops/my/question/edit'} target="_blank">编辑</Link>
+              <Link to={`/ops/my/question/edit?id=${baseInfoResp.id}&type=1`} target="_blank">
+                编辑
+              </Link>
             </Button>
             <Dialog open={openSubmitApprove} onOpenChange={setOpenSubmitApprove}>
               <DialogTrigger
@@ -329,8 +332,7 @@ function QuestionOperateList({
               <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
                 <DialogHeader>
                   <DialogTitle className="text-sm font-bold">提交审核</DialogTitle>
-                  <DialogDescription>请确认题目没有包含违规, 涉黄,
-                    侵权和法律法规不允许传播的信息等内容</DialogDescription>
+                  <DialogDescription>请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
                 </DialogHeader>
 
                 <Separator />
@@ -403,8 +405,7 @@ function QuestionOperateList({
             <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
               <DialogHeader>
                 <DialogTitle className="text-sm font-bold">题目审核</DialogTitle>
-                <DialogDescription>请确认题目没有包含违规, 涉黄,
-                  侵权和法律法规不允许传播的信息等内容</DialogDescription>
+                <DialogDescription>请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
               </DialogHeader>
 
               <Separator />
@@ -416,8 +417,7 @@ function QuestionOperateList({
                   <p>2. 题目本身信息要完整</p>
                   <p>3. 图片等信息不能缺失</p>
                   <p>4. 题目和答案本身要符合常识</p>
-                  <p className="text-red-500 font-bold">5. 若你审核通过的题目后续被投诉等纠纷较多,
-                    我们有权利降低你的账号等级</p>
+                  <p className="text-red-500 font-bold">5. 若你审核通过的题目后续被投诉等纠纷较多, 我们有权利降低你的账号等级</p>
                 </div>
               </div>
 
@@ -452,8 +452,7 @@ function QuestionOperateList({
 
       {/* 变式题列表内容 */}
       <Collapsible open={isSimilarOpen}>
-        <CollapsibleContent
-          className="transition-all data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down pb-3">
+        <CollapsibleContent className="transition-all data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down pb-3">
           {viewSimilarErr || <SimilarListShow otherDictListRecord={otherDictListRecord} listResp={similarListResp} />}
         </CollapsibleContent>
       </Collapsible>
