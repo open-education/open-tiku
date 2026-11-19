@@ -98,7 +98,7 @@ export default function Index() {
     pageSource: CustomPageSource.Default,
   });
   useEffect(() => {
-    CustomUtil.questionTaskListUpdate(customListResp, updateListReq, updateFillLevel);
+    CustomUtil.defaultTextbookUpdate(customListResp, updateListReq, updateFillLevel);
   }, [customListResp]);
 
   const showLoading = useDelayedLoading(textbooksLoading || questionCatesLoading || listRespLoading || customListRespLoading);

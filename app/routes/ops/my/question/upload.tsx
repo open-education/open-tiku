@@ -78,7 +78,7 @@ export default function Index() {
     pageSource: CustomPageSource.Default,
   });
   useEffect(() => {
-    CustomUtil.questionTaskUploadUpdate(customListResp, updateAddReq, updateFillLevel);
+    CustomUtil.defaultTextbookUpdate(customListResp, updateAddReq, updateFillLevel);
   }, [customListResp]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);

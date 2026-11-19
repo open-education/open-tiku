@@ -2,7 +2,6 @@ import type { StudentAccountParseResult } from '@/type/class';
 import type { CustomResp } from '@/type/custom';
 import { CustomType, TextbookFillLevelType } from '@/type/enum';
 import type { CreateQuestionReq, QuestionSearch } from '@/type/question';
-import type { TaskListReq, TaskSaveReq } from '@/type/task';
 import type { OtherDictListRecord, TextbookFillLevel, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
 import { StringConst } from '@/util/string';
 
@@ -165,7 +164,27 @@ export const DictUtil = {
 
 // 个性化配置工具
 export const CustomUtil = {
-  // 题目搜索个性化更新
+  // 如果约定的更新键一致则直接使用即可
+  defaultTextbookUpdate: (
+    listResp: CustomResp[],
+    updateAddReq: (key: 'twoLevelId' | 'fiveLevelId', value: number) => void,
+    updateFillLevel: (key: 'fiveLevelKeys', val: string[]) => void,
+  ) => {
+    const textbook = listResp.find((item) => item.customType === CustomType.Textbook)?.textbook;
+    if (!textbook) return;
+
+    if (textbook.twoLevelId && textbook.twoLevelId > 0) {
+      updateAddReq('twoLevelId', textbook.twoLevelId);
+    }
+    if (textbook.fiveLevelId && textbook.fiveLevelId > 0) {
+      updateAddReq('fiveLevelId', textbook.fiveLevelId);
+    }
+    if (textbook.fiveLevelKeys?.length) {
+      updateFillLevel('fiveLevelKeys', textbook.fiveLevelKeys);
+    }
+  },
+
+  // todo 题目搜索个性化更新, 后续合并至默认更新中
   questionSearchUpdate: (listResp: CustomResp[], update: (key: keyof QuestionSearch, value: number | number[] | string[]) => void) => {
     // 如果存在预设默认值则覆盖初始化值
     const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
@@ -186,31 +205,6 @@ export const CustomUtil = {
     }
   },
 
-  // 题目添加个性化更新
-  questionAddUpdate: (
-    listResp: CustomResp[],
-    updateAddReq: (key: keyof CreateQuestionReq, value: number | number[] | string | string[]) => void,
-    updateFillLevel: (key: keyof TextbookFillLevel, val: string[]) => void,
-  ) => {
-    // 如果存在预设默认值则覆盖初始化值
-    const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
-    if (!customTextbook) {
-      return;
-    }
-
-    if (customTextbook.textbook) {
-      if (customTextbook.textbook.twoLevelId && customTextbook.textbook.twoLevelId > 0) {
-        updateAddReq('twoLevelId', customTextbook.textbook.twoLevelId);
-      }
-      if (customTextbook.textbook.fiveLevelId && customTextbook.textbook.fiveLevelId > 0) {
-        updateAddReq('fiveLevelId', customTextbook.textbook.fiveLevelId);
-      }
-      if (customTextbook.textbook.fiveLevelKeys && customTextbook.textbook.fiveLevelKeys.length > 0) {
-        updateFillLevel('fiveLevelKeys', customTextbook.textbook.fiveLevelKeys);
-      }
-    }
-  },
-
   // 题目编辑前5层菜单更新
   questionEditLevelUpdate: (
     level: TextbookFillLevelType,
@@ -227,56 +221,6 @@ export const CustomUtil = {
       const nodes = dict.get(key) || [];
       const keys = nodes.map((node) => node.key);
       updateFillLevel('eightLevelKeys', keys);
-    }
-  },
-
-  // 题目任务上传菜单更新
-  questionTaskUploadUpdate: (
-    listResp: CustomResp[],
-    updateAddReq: (key: keyof TaskSaveReq, value: number | string) => void,
-    updateFillLevel: (key: keyof TextbookFillLevel, val: string[]) => void,
-  ) => {
-    // 如果存在预设默认值则覆盖初始化值
-    const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
-    if (!customTextbook) {
-      return;
-    }
-
-    if (customTextbook.textbook) {
-      if (customTextbook.textbook.twoLevelId && customTextbook.textbook.twoLevelId > 0) {
-        updateAddReq('twoLevelId', customTextbook.textbook.twoLevelId);
-      }
-      if (customTextbook.textbook.fiveLevelId && customTextbook.textbook.fiveLevelId > 0) {
-        updateAddReq('fiveLevelId', customTextbook.textbook.fiveLevelId);
-      }
-      if (customTextbook.textbook.fiveLevelKeys && customTextbook.textbook.fiveLevelKeys.length > 0) {
-        updateFillLevel('fiveLevelKeys', customTextbook.textbook.fiveLevelKeys);
-      }
-    }
-  },
-
-  // 题目任务查看菜单更新
-  questionTaskListUpdate: (
-    listResp: CustomResp[],
-    updateListReq: (key: keyof TaskListReq, value: number | string) => void,
-    updateFillLevel: (key: keyof TextbookFillLevel, val: string[]) => void,
-  ) => {
-    // 如果存在预设默认值则覆盖初始化值
-    const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
-    if (!customTextbook) {
-      return;
-    }
-
-    if (customTextbook.textbook) {
-      if (customTextbook.textbook.twoLevelId && customTextbook.textbook.twoLevelId > 0) {
-        updateListReq('twoLevelId', customTextbook.textbook.twoLevelId);
-      }
-      if (customTextbook.textbook.fiveLevelId && customTextbook.textbook.fiveLevelId > 0) {
-        updateListReq('fiveLevelId', customTextbook.textbook.fiveLevelId);
-      }
-      if (customTextbook.textbook.fiveLevelKeys && customTextbook.textbook.fiveLevelKeys.length > 0) {
-        updateFillLevel('fiveLevelKeys', customTextbook.textbook.fiveLevelKeys);
-      }
     }
   },
 };

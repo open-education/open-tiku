@@ -8,7 +8,7 @@ interface SimpleNoDataProps {
 }
 function SimpleNoData({ desc }: SimpleNoDataProps) {
   return (
-    <Empty>
+    <Empty className="bg-card">
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <Trash />

@@ -7,7 +7,7 @@ import { httpClient } from '@/util/http';
 import { ObjectUtil } from '@/util/object';
 import { cn } from 'cn';
 import { Eye, FileText, LoaderCircle, Upload, X } from 'lucide-react';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface FileUploadProps {
   fileType: UploadFileType;
@@ -17,6 +17,11 @@ export interface FileUploadProps {
 }
 
 const fileTypeList: Record<UploadFileType, { accept: string; title: string; hint: string }> = {
+  [UploadFileType.None]: {
+    accept: 'None',
+    title: 'None',
+    hint: 'None',
+  },
   [UploadFileType.Pdf]: {
     accept: '.pdf,application/pdf',
     title: 'PDF 文件上传',
@@ -69,25 +74,20 @@ export default function FileUpload({ fileType, maxSizeMB = 2, onChange, classNam
   const inputRef = useRef<HTMLInputElement>(null);
 
   const execHandleUpload = async (incoming: File[]) => {
-    try {
-      return await Promise.all(
-        incoming.map(async (file) => {
-          const isImage = file.type.startsWith('image/');
-          const formData = new FormData();
-          formData.append('file', file);
-          const res = await httpClient.post<UploadFileResp>(isImage ? '/file/upload/image' : '/file/upload/file', formData, undefined, true);
-          return {
-            id: ObjectUtil.createId(),
-            file,
-            resp: res,
-            isImage,
-          };
-        }),
-      );
-    } catch (err) {
-      setError(<SimpleAlert title="文件上传失败" message={`${err}`} />);
-      return;
-    }
+    return Promise.all(
+      incoming.map(async (file) => {
+        const isImage = file.type.startsWith('image/');
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await httpClient.post<UploadFileResp>(isImage ? '/file/upload/image' : '/file/upload/file', formData, undefined, true);
+        return {
+          id: ObjectUtil.createId(),
+          file,
+          resp: res,
+          isImage,
+        };
+      }),
+    );
   };
 
   const addFiles = useCallback(
@@ -116,21 +116,37 @@ export default function FileUpload({ fileType, maxSizeMB = 2, onChange, classNam
         return;
       }
 
-      const respList = await execHandleUpload(incoming);
-      if (!respList || respList.length === 0) {
-        setError(<SimpleAlert title="校验上传后成功的文件为空" message={'请重新上传, 如果依然为空请练习网站管理员'} />);
-        return;
-      }
+      try {
+        const respList = await execHandleUpload(incoming);
+        if (respList.length === 0) {
+          setError(<SimpleAlert title="校验上传后成功的文件为空" message="请重新上传, 如果依然为空请联系网站管理员" />);
+          return;
+        }
 
-      // 使用函数式更新，避免 useCallback 依赖缺失导致的旧状态覆盖问题
-      setItems((prev) => {
-        const curItems = [...prev, ...respList];
-        onChange?.(curItems);
-        return curItems;
-      });
+        setItems((prev) => {
+          const curItems = [...prev, ...respList];
+          return curItems;
+        });
+      } catch (err) {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        setError(<SimpleAlert title="文件上传失败" message={errMsg} />);
+      }
     },
     [fileType, maxSizeMB, onChange],
   );
+
+  // 文件内容有变更时通知父组件
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    onChange?.(items);
+  }, [items]);
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -181,7 +197,7 @@ export default function FileUpload({ fileType, maxSizeMB = 2, onChange, classNam
       <input ref={inputRef} type="file" multiple accept={config.accept} className="hidden" onChange={handleInputChange} />
 
       {/* 错误提示 */}
-      {error && <p className="mt-3 w-full text-xs leading-relaxed text-red-500">{error}</p>}
+      {error && <div className="mt-3 w-full text-xs leading-relaxed text-red-500">{error}</div>}
 
       {/* 已上传列表 */}
       {items.length > 0 && (

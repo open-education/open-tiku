@@ -35,7 +35,6 @@ export default function QuestionSearchList({
   updateQuestionSearch,
   countListRespMutate,
 }: QuestionSearchListProps) {
-  // 网站主要导航
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks();
 
   // 查询题目类型和标签等信息
@@ -113,12 +112,12 @@ export default function QuestionSearchList({
 
   // 右边内容
   const rightContent = (
-    <>
+    <div className="space-y-3">
       {showFilter && (
         <SearchList otherDictListRecord={otherDictListRecord} questionSearch={questionSearch} updateQuestionSearch={updateQuestionSearch} />
       )}
 
-      <div className="py-3">
+      <div>
         {/* 空数据提示 */}
         {questionListResp.total == 0 && <SimpleNoData desc={noDataDesc} />}
         {questionListResp.total > 0 && <div className="bg-card p-3">共找到 {formatNumber(questionListResp.total)} 道题</div>}
@@ -162,7 +161,7 @@ export default function QuestionSearchList({
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 
   // 移动端兼容

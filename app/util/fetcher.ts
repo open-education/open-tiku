@@ -3,6 +3,7 @@ import type { CityResp } from '@/type/city';
 import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentListReq, ClassStudentResp } from '@/type/class';
 import type { CustomListReq, CustomResp } from '@/type/custom';
 import { QuestionPageSource } from '@/type/enum';
+import type { CountPaperResp, PaperListReq, PaperListResp } from '@/type/paper';
 import type { CountQuestionResp, QuestionListReq, QuestionListResp, QuestionSearch } from '@/type/question';
 import type { ChapterKnowledgeResp, QuestionCateResp } from '@/type/question-cate';
 import type { TaskListReq, TaskListResp } from '@/type/task';
@@ -214,7 +215,7 @@ export function useCustomList(req: CustomListReq, enable: boolean = true) {
   return useSWR<CustomResp[]>(key, () => httpClient.post<CustomResp[]>(reqPath, req), defaultErrConfig);
 }
 
-// 获取个性化配置列表
+// 获取我的题目计数
 export function useCountQuestionList() {
   const key = '/question/count';
   return useSWR<CountQuestionResp[]>(key, httpClient.get, defaultErrConfig);
@@ -224,4 +225,17 @@ export function useCountQuestionList() {
 export function useCityList() {
   const key = '/city/list';
   return useSWR<CityResp[]>(key, httpClient.get, defaultErrConfig);
+}
+
+// 获取我的试卷计数
+export function useCountPaperList() {
+  const key = '/paper/count';
+  return useSWR<CountPaperResp[]>(key, httpClient.get, defaultErrConfig);
+}
+
+// 试卷列表
+export function usePaperList(req: PaperListReq) {
+  const reqPath = '/paper/list';
+  const key = req.twoLevelId > 0 ? [reqPath, JSON.stringify(req)] : null;
+  return useSWR<PaperListResp>(key, () => httpClient.post<PaperListResp>(reqPath, req), defaultErrConfig);
 }

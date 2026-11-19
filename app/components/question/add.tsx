@@ -125,7 +125,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
   // 添加母题时用默认个性化配置填充
   useEffect(() => {
     if (isBaseQuestionAdd) {
-      CustomUtil.questionAddUpdate(customListResp, updateAddReq, updateFillLevel);
+      CustomUtil.defaultTextbookUpdate(customListResp, updateAddReq, updateFillLevel);
     }
   }, [isBaseQuestionAdd, customListResp]);
 

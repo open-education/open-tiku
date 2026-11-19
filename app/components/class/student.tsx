@@ -1,5 +1,5 @@
-import { StatusSelect } from '@/components/class/status';
 import { SimpleAlert } from '@/components/common/alert';
+import { ListSelect } from '@/components/common/list';
 import { Loading } from '@/components/common/load';
 import { SimpleTooltip } from '@/components/common/tooltip';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import { useDelayedLoading } from '@/hooks/delayed-loading';
 import type { ClassInfoResp, ClassStudentEditReq, ClassStudentResp } from '@/type/class';
 import { useClassStudentList } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
-import { StringValidator } from '@/util/string';
+import { StringConst, StringValidator } from '@/util/string';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -283,7 +283,7 @@ function StudentEdit({ infoResp, setOpen, classStudentMapRespMutate }: StudentEd
       {/* 状态 */}
       <div className="flex items-center gap-4">
         <label className="text-sm w-20 shrink-0">状态:</label>
-        <StatusSelect defaultValue={editReq.status} onSelect={(val) => updateEditReq('status', val)} />
+        <ListSelect options={StringConst.studentStatusList} defaultValue={editReq.status} onSelect={(val) => updateEditReq('status', val)} />
       </div>
 
       {/* 重置密码 */}

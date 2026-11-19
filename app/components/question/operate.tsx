@@ -1,7 +1,7 @@
 import { SimpleAlert } from '@/components/common/alert';
+import { ListSelect } from '@/components/common/list';
 import { AnswerInfo } from '@/components/question/info';
 import { SimilarListShow } from '@/components/question/list';
-import { StatusSelect } from '@/components/question/status';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
@@ -29,6 +29,7 @@ import type {
 } from '@/type/question';
 import type { OtherDictListRecord } from '@/type/textbook';
 import { httpClient } from '@/util/http';
+import { StringConst } from '@/util/string';
 import React, { useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
@@ -426,7 +427,11 @@ function QuestionOperateList({
               <div className="flex-1 overflow-y-auto px-4 space-y-3">
                 <div className="grid grid-cols-[100px_1fr] gap-4 items-center">
                   <span className="text-xs font-semibold text-right">审核状态:</span>
-                  <StatusSelect defaultValue={approveReq.status} onSelect={(val) => updateApproveReq('status', val)} />
+                  <ListSelect
+                    options={StringConst.questionStatusList}
+                    defaultValue={approveReq.status}
+                    onSelect={(val) => updateApproveReq('status', val)}
+                  />
 
                   <span className="text-xs font-semibold text-right">拒绝理由:</span>
                   <Textarea

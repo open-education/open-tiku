@@ -8,11 +8,11 @@ export enum UserRoleType {
 
 // 题目状态枚举定义
 export enum QuestionStatus {
+  None = -1, // 无状态
   Drafting = 0, // 草稿中
   Pending = 1, // 待审核
   Published = 2, // 已发布
   Rejected = 3, // 已拒绝
-  None = -1, // 无状态
 }
 
 // 题目关系
@@ -28,12 +28,22 @@ export enum UserLoginSource {
   Student = 2, // 学生
 }
 
-// 页面来源
+// 题库页面来源
 export enum QuestionPageSource {
   /** 普通的搜索列表 */
   List = 'list',
   /** 我的题目：只有查看和编辑 */
   MyQuestion = 'myQuestion',
+  /** 我的审核：只有查看 */
+  MyReview = 'myReview',
+}
+
+// 试卷页面来源
+export enum PaperPageSource {
+  /** 普通的搜索列表 */
+  List = 'list',
+  /** 我的试卷：只有查看和编辑 */
+  MyPaper = 'myPaper',
   /** 我的审核：只有查看 */
   MyReview = 'myReview',
 }
@@ -59,6 +69,7 @@ export enum CustomType {
 
 // 文件类型列表
 export enum UploadFileType {
+  None = 0, // 无意义
   Pdf = 1, // PDF 文件
   Word = 2, // Word 文件
   Image = 3, // 图片
@@ -110,4 +121,19 @@ export enum TextbookFillLevelType {
 export enum QuestionEditMode {
   Edit = 1, // 编辑
   AddSimilar = 2, // 添加变式题
+}
+
+// 试卷类型
+export enum PaperType {
+  Upload = 1, // 上传试卷
+  Manual = 2, // 手动组卷
+}
+
+// 试卷状态枚举定义
+export enum PaperStatus {
+  None = -1, // 无状态
+  Drafting = 1, // 草稿中
+  Pending = 2, // 待审核
+  Published = 3, // 已发布
+  Rejected = 10, // 已拒绝
 }

@@ -5,6 +5,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuPortal,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -24,14 +25,14 @@ export interface CityResp {
 
 interface CitySelectProps {
   cityRespList: CityResp[];
-  value?: number;
-  onChange?: (city: CityResp, province?: CityResp) => void;
+  provinceId?: number;
+  cityId?: number;
+  onChange?: (province: CityResp, city?: CityResp) => void;
   placeholder?: string;
   disabled?: boolean;
   className?: string;
 }
 
-// 按 pinyinInitial 小写字母升序分组，同字母保留原数组顺序
 function groupByInitial(list: CityResp[]) {
   const map = new Map<string, CityResp[]>();
   for (const item of list) {
@@ -44,22 +45,29 @@ function groupByInitial(list: CityResp[]) {
 
 export default function CitySelect({
   cityRespList = [],
-  value,
+  provinceId,
+  cityId,
   onChange,
   placeholder = '请选择省 / 市',
   disabled = false,
   className,
 }: CitySelectProps) {
-  // 增加内部状态兜底：即使外部未传 value，选中后也能立即显示
-  const [internalValue, setInternalValue] = useState<number | undefined>(value);
-  const currentValue = value !== undefined ? value : internalValue;
+  const [internalSelection, setInternalSelection] = useState<{ provinceId?: number; cityId?: number }>({
+    provinceId,
+    cityId,
+  });
+  const [open, setOpen] = useState(false);
 
-  const handleSelectItem = (city: CityResp, province?: CityResp) => {
-    setInternalValue(city.id);
-    onChange?.(city, province);
+  const isControlled = provinceId !== undefined || cityId !== undefined;
+  const activeProvinceId = isControlled ? provinceId : internalSelection.provinceId;
+  const activeCityId = isControlled ? cityId : internalSelection.cityId;
+
+  const handleSelectItem = (province: CityResp, city?: CityResp) => {
+    setInternalSelection({ provinceId: province.id, cityId: city?.id });
+    onChange?.(province, city);
+    setOpen(false);
   };
 
-  // 整理省市层级与分组
   const { provinceGroups, cityGroupsMap, selectedLabel } = useMemo(() => {
     const provinces: CityResp[] = [];
     const provinceMap = new Map<number, CityResp>();
@@ -79,23 +87,20 @@ export default function CitySelect({
       }
     }
 
-    // 为每个省的城市列表按首字母分组
     const cGroupsMap = new Map<number, [string, CityResp[]][]>();
     citiesByParent.forEach((cities, parentId) => {
       cGroupsMap.set(parentId, groupByInitial(cities));
     });
 
-    // 计算回显文案（使用 == 兼容后端 id 偶发为 string 或 number 的情况）
     let label = '';
-    if (currentValue != null) {
-      const targetId = Number(currentValue);
-      const city = cityMap.get(targetId);
+    if (activeCityId && activeCityId > 0) {
+      const city = cityMap.get(activeCityId);
       if (city) {
-        const parent = city.parentId ? provinceMap.get(city.parentId) : undefined;
+        const parent = activeProvinceId ? provinceMap.get(activeProvinceId) : city.parentId ? provinceMap.get(city.parentId) : undefined;
         label = parent && parent.name !== city.name ? `${parent.name} / ${city.name}` : city.name;
-      } else {
-        label = provinceMap.get(targetId)?.name || '';
       }
+    } else if (activeProvinceId && activeProvinceId > 0) {
+      label = provinceMap.get(activeProvinceId)?.name || '';
     }
 
     return {
@@ -103,10 +108,10 @@ export default function CitySelect({
       cityGroupsMap: cGroupsMap,
       selectedLabel: label,
     };
-  }, [cityRespList, currentValue]);
+  }, [cityRespList, activeProvinceId, activeCityId]);
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger
         disabled={disabled}
         render={
@@ -127,29 +132,42 @@ export default function CitySelect({
           <DropdownMenuGroup key={initial}>
             {provinces.map((province) => {
               const cityGroups = cityGroupsMap.get(province.id) || [];
+              const isProvinceOnlySelected = activeProvinceId === province.id && !activeCityId;
+              const isProvinceActive = activeProvinceId === province.id;
 
-              // 无下级城市时直接作为普通菜单项
               if (cityGroups.length === 0) {
                 return (
                   <DropdownMenuItem key={province.id} onClick={() => handleSelectItem(province)}>
                     <span className="flex-1">{province.name}</span>
-                    {Number(currentValue) === province.id && <Check className="h-4 w-4" />}
+                    {isProvinceOnlySelected && <Check className="h-4 w-4" />}
                   </DropdownMenuItem>
                 );
               }
 
-              // 有下级城市时渲染级联子菜单
               return (
                 <DropdownMenuSub key={province.id}>
-                  <DropdownMenuSubTrigger>{province.name}</DropdownMenuSubTrigger>
+                  <DropdownMenuSubTrigger
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleSelectItem(province);
+                    }}
+                  >
+                    <span className="flex-1">{province.name}</span>
+                    {isProvinceActive && <Check className="mr-1 h-4 w-4" />}
+                  </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent className="w-44 max-h-80 overflow-y-auto">
+                      <DropdownMenuItem onClick={() => handleSelectItem(province)}>
+                        <span className="flex-1 font-medium">{province.name}（全省）</span>
+                        {isProvinceOnlySelected && <Check className="h-4 w-4" />}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
                       {cityGroups.map(([cInitial, cities]) => (
                         <DropdownMenuGroup key={cInitial}>
                           {cities.map((city) => (
-                            <DropdownMenuItem key={city.id} onClick={() => handleSelectItem(city, province)}>
+                            <DropdownMenuItem key={city.id} onClick={() => handleSelectItem(province, city)}>
                               <span className="flex-1">{city.name}</span>
-                              {Number(currentValue) === city.id && <Check className="h-4 w-4" />}
+                              {activeCityId === city.id && <Check className="h-4 w-4" />}
                             </DropdownMenuItem>
                           ))}
                         </DropdownMenuGroup>
