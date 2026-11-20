@@ -235,7 +235,6 @@ export function useCountPaperList() {
 
 // 试卷列表
 export function usePaperList(req: PaperListReq) {
-  console.log('req: ', req);
   const reqPath = '/paper/list';
   const key = req.twoLevelId > 0 ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<PaperListResp>(key, () => httpClient.post<PaperListResp>(reqPath, req), defaultErrConfig);

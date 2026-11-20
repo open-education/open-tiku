@@ -9,14 +9,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import type { Route } from './+types/edit';
 
-/// 题目编辑或添加变式题
+/// 编辑题目或添加变式题
 
 export function meta({}: Route.MetaArgs) {
   return [
     { title: '编辑题目或添加变式题' },
     {
       name: 'description',
-      content: '收集整理网站常见的疑问和做一些适当的说明',
+      content: '编辑我草稿中的题目或添加变式题',
     },
   ];
 }

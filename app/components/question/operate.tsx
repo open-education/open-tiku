@@ -308,7 +308,7 @@ function QuestionOperateList({
         <Button
           variant={copied ? 'default' : 'outline'}
           size="sm"
-          title="复制 Markdown 格式的题干和答案, 数学公式语法为 LaTeX（行内 $...$、块级 $$...$$）"
+          title="复制 Markdown 格式的题干和答案, 数学公式语法为 KaTeX（行内 $...$、块级 $$...$$）"
           onClick={handleCopyInfo}
         >
           {copied ? '已复制' : '复制'}
@@ -389,7 +389,7 @@ function QuestionOperateList({
         {/* 我的题目审核通过可以撤回草稿中即下线, 后续上线需要重新审核 */}
         {pageSource === QuestionPageSource.MyQuestion && baseInfoResp.status === QuestionStatus.Published && (
           <Button size="sm" variant="destructive" onClick={() => alert('撤回草稿')}>
-            撤回草稿
+            退回草稿
           </Button>
         )}
 

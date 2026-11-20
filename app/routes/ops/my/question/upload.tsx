@@ -157,7 +157,7 @@ export default function Index() {
   return (
     <div className="bg-card p-3 space-y-3">
       <div className="text-sm space-y-2">
-        <div>1. 文件标识请使用右上角的 快捷工具-上传文件 上传文件后获得</div>
+        <div>1. 文件上传成功后会自动填充文件名称和标识</div>
         <div>2. 模板请参考下面下载模板, 如果模板有变更需要练习管理员更新支持后才会生效</div>
       </div>
 
@@ -252,7 +252,7 @@ export default function Index() {
               className="lg:w-[20%]"
               onChange={(values) => {
                 // 只支持上传一个文件
-                if (!values) {
+                if (!values || values.length === 0) {
                   return;
                 }
                 if (values.length != 1) {

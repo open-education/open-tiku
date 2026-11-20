@@ -170,7 +170,12 @@ export const getMenuMap = () => {
 
   // 未配置导航栏的特殊菜单, 比如编辑路由
   map['/ops/my/question/edit'] = {
-    title: '题目编辑或添加变式题',
+    title: '编辑题目或添加变式题',
+    login: true,
+    role: UserRoleType.Normal,
+  };
+  map['/ops/my/paper/edit'] = {
+    title: '编辑试卷',
     login: true,
     role: UserRoleType.Normal,
   };

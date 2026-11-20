@@ -1,9 +1,23 @@
+import { ListSelect } from '@/components/common/list';
 import { SimpleTooltip } from '@/components/common/tooltip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 import type { CityResp } from '@/type/city';
-import { PaperDifficultyType, PaperLevelType, UploadFileType } from '@/type/enum';
-import type { PaperResp } from '@/type/paper';
+import { PaperDifficultyType, PaperLevelType, PaperPageSource, PaperStatus, UploadFileType } from '@/type/enum';
+import type { CountPaperResp, PaperApproveReq, PaperDeleteReq, PaperListResp, PaperResp } from '@/type/paper';
+import { httpClient } from '@/util/http';
 import { ObjectUtil } from '@/util/object';
 import { StringConst } from '@/util/string';
 import {
@@ -22,11 +36,15 @@ import {
   Image as ImageIcon,
   Layers,
   MapPin,
+  NotebookText,
   School,
   User,
   type LucideIcon,
 } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router';
+import { toast } from 'sonner';
+import type { KeyedMutator } from 'swr';
 
 // 试卷列表
 
@@ -114,12 +132,10 @@ function CommonPart({ item, cityMap }: CommonPartProps) {
   const fileCount = item.fileList.length;
 
   return (
-    <div className="p-3 flex items-start gap-4">
+    <div className="p-3 flex items-center gap-4">
       {/* 左侧载体图标, 带多附件角标 */}
       <div className="relative shrink-0">
-        <div
-          className={`flex flex-col items-center justify-center w-15 h-15 rounded-lg border select-none ${typeInfo.bgClass} ${typeInfo.borderClass}`}
-        >
+        <div className={`flex flex-col items-center justify-center w-17 h-17 border select-none ${typeInfo.bgClass} ${typeInfo.borderClass}`}>
           <TypeIcon className={`w-5 h-5 mb-1 ${typeInfo.textClass}`} />
           <span className={`text-xs font-semibold tracking-tight leading-none ${typeInfo.textClass}`}>{typeInfo.label}</span>
         </div>
@@ -142,17 +158,17 @@ function CommonPart({ item, cityMap }: CommonPartProps) {
               精品
             </Badge>
           )}
-          <h3
-            className="text-base font-semibold group-hover:text-primary transition-colors cursor-pointer leading-snug line-clamp-2"
+          <div
+            className="text-sm font-semibold group-hover:text-primary transition-colors cursor-pointer leading-snug line-clamp-2"
             title={item.title}
           >
             {item.title}
-          </h3>
+          </div>
         </div>
 
         {/* 教育属性标签 难度 年份 省市 学校 */}
-        <div className="flex items-center flex-wrap gap-x-3 gap-y-1.5 text-xs">
-          <Badge variant="outline" className={`px-1.5 py-0 text-[11px] font-normal ${diffInfo.badgeClass}`}>
+        <div className="flex items-center flex-wrap gap-x-3 text-xs">
+          <Badge variant="outline" className={`px-1.5 py-0 text-xs font-normal ${diffInfo.badgeClass}`}>
             难度 · {diffInfo.label}
           </Badge>
 
@@ -188,6 +204,20 @@ function CommonPart({ item, cityMap }: CommonPartProps) {
               </span>
             </>
           )}
+
+          {item.remark && (
+            <>
+              <span>|</span>
+              <SimpleTooltip
+                tip={
+                  <span className="inline-flex items-center gap-1 truncate max-w-65">
+                    <NotebookText className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{item.remark}</span>
+                  </span>
+                }
+              />
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -206,21 +236,30 @@ function ExtPart({ item }: ExtPartProps) {
         {item.authorName}
       </span>
 
-      {item.approveAt && (
-        <SimpleTooltip
-          tip={
-            <span className="inline-flex items-center gap-1.5 cursor-help hover:text-foreground transition-colors">
-              <Clock className="w-3.5 h-3.5" />
-              审核于 {item.approveAt}
-            </span>
-          }
-          content={
-            <div className="space-y-2">
-              <div>创建时间：{item.createdAt}</div>
-              <div>审核通过：{item.approveAt}</div>
-            </div>
-          }
-        />
+      <SimpleTooltip
+        tip={
+          <span className="inline-flex items-center gap-1.5 cursor-help hover:text-foreground transition-colors">
+            <Clock className="w-3.5 h-3.5" />
+            创建于 {item.createdAt}
+          </span>
+        }
+        content={
+          <div className="space-y-2">
+            <div>创建时间：{item.createdAt}</div>
+            {item.approveAt && (
+              <>
+                <div>审核人: {item.approveName}</div>
+                <div>审核通过：{item.approveAt}</div>
+              </>
+            )}
+            <div>更新时间：{item.updatedAt}</div>
+          </div>
+        }
+      />
+
+      {/* 显示拒绝原因, 不用判读来源和状态, 只有我的题目能看到该状态 */}
+      {item.status === PaperStatus.Rejected && item.rejectReason && (
+        <SimpleTooltip tip={<div className="text-xs font-semibold text-red-700">拒绝原因: ${item.rejectReason}</div>} />
       )}
 
       {item.fileList && item.fileList.length > 0 && (
@@ -234,37 +273,260 @@ function ExtPart({ item }: ExtPartProps) {
 
 // 操作部分
 interface OperatePartProps {
+  source: PaperPageSource;
   item: PaperResp;
   selectedIds: Record<number, boolean>;
   onPreview: (val: PaperResp) => void;
+  paperListRespMutate?: KeyedMutator<PaperListResp>; // 审核删除等操作需要重置列表接口重新请求数据
+  countListRespMutate?: KeyedMutator<CountPaperResp[]>; // 我的试卷提交审核等操作需要重置列表状态计数接口重新请求数据
 }
-function OperatePart({ item, selectedIds, onPreview }: OperatePartProps) {
+function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate, countListRespMutate }: OperatePartProps) {
   const isExpanded = !!selectedIds[item.id];
+
+  // 提交审核
+  const [openSubmitApprove, setOpenSubmitApprove] = useState<boolean>(false);
+  const [submitApproving, setSubmitApproving] = useState<boolean>(false);
+
+  const handleSubmitApprove = () => {
+    setSubmitApproving(true);
+
+    const req: PaperApproveReq = {
+      id: item.id,
+      status: PaperStatus.Pending,
+      rejectReason: '',
+    };
+    httpClient
+      .post('/edit/paper/status', req)
+      .then((_) => {
+        paperListRespMutate?.().then((_) => {});
+        countListRespMutate?.();
+        setOpenSubmitApprove(false);
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">提交审核操作出错: {err.message}</div>);
+      })
+      .finally(() => {
+        setSubmitApproving(false);
+      });
+  };
+
+  // 审核试卷
+  const [openConfirmApprove, setOpenConfirmApprove] = useState<boolean>(false);
+  const [confirmApproving, setConfirmApproving] = useState<boolean>(false);
+
+  const [approveReq, setApproveReq] = useState<PaperApproveReq>({
+    id: item.id,
+    status: PaperStatus.Drafting,
+    rejectReason: '',
+  });
+  const updateApproveReq = (key: keyof PaperApproveReq, value: number | string) => {
+    setApproveReq((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleApprove = () => {
+    setConfirmApproving(true);
+
+    httpClient
+      .post('/edit/paper/status', approveReq)
+      .then((_) => {
+        paperListRespMutate?.().then((_) => {});
+        countListRespMutate?.();
+        setOpenConfirmApprove(false);
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">审核操作出错: {err.message}</div>);
+      })
+      .finally(() => {
+        setConfirmApproving(false);
+      });
+  };
+
+  // 删除试卷
+  const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<boolean>(false);
+
+  const handleDelete = () => {
+    setDeleting(true);
+
+    const req: PaperDeleteReq = {
+      id: item.id,
+    };
+
+    httpClient
+      .post('/paper/delete', req)
+      .then((_) => {
+        paperListRespMutate?.().then((_) => {});
+        countListRespMutate?.();
+        setOpenDelete(false);
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">删除题目出错: {err.message}</div>);
+      })
+      .finally(() => {
+        setDeleting(false);
+      });
+  };
 
   return (
     <div className="flex items-center justify-end gap-2 shrink-0">
+      {/* 详情和预览 */}
       {item.fileType === UploadFileType.None ? (
         <Button
           size="sm"
           onClick={() => {
             alert('在线试卷查看详情待设计');
           }}
-          className="h-8 px-3.5 text-xs gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs"
+          className="text-xs gap-1.5"
         >
           详情
           <ArrowUpRight className="w-3.5 h-3.5" />
         </Button>
       ) : (
-        <Button
-          variant={isExpanded ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => onPreview(item)}
-          className="h-8 px-3 text-xs gap-1.5 hover:border-primary/40"
-        >
+        <Button variant={isExpanded ? 'default' : 'outline'} size="sm" onClick={() => onPreview(item)} className="text-xs gap-1.5">
           <Eye className="w-3.5 h-3.5" />
           <span>预览 ({item.fileList.length})</span>
           {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
         </Button>
+      )}
+
+      {/* 编辑和提交审核 */}
+      {source === PaperPageSource.MyPaper && item.status === PaperStatus.Drafting && (
+        <>
+          <Link to={`/ops/my/paper/edit?id=${item.id}`} target="_blank">
+            <Button size="sm" variant="outline">
+              编辑
+            </Button>
+          </Link>
+
+          <Dialog open={openSubmitApprove} onOpenChange={setOpenSubmitApprove}>
+            <DialogTrigger
+              render={
+                <Button size="sm" variant="outline">
+                  提交审核
+                </Button>
+              }
+            />
+            <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
+              <DialogHeader>
+                <DialogTitle className="text-sm font-bold">提交审核</DialogTitle>
+                <DialogDescription>请确认试卷没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
+              </DialogHeader>
+
+              <Separator />
+
+              <div className="space-y-3 px-4">
+                <div className="font-semibold">检查步骤</div>
+                <div className="text-xs space-y-2">
+                  <p>1. 试卷不能是抄袭的, 避免投诉和版权纠纷</p>
+                  <p>2. 试卷本身信息要完整</p>
+                  <p>3. 图片等信息如果有不能缺失</p>
+                  <p>4. 试卷和答案本身如果有要符合常识</p>
+                </div>
+              </div>
+
+              <Separator />
+
+              <DialogFooter>
+                <DialogClose render={<Button variant="outline">关闭</Button>} />
+                <Button onClick={handleSubmitApprove} disabled={submitApproving}>
+                  {submitApproving ? '提交审核中' : '提交审核'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={openDelete} onOpenChange={setOpenDelete}>
+            <DialogTrigger
+              render={
+                <Button size="sm" variant="destructive">
+                  删除
+                </Button>
+              }
+            />
+            <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
+              <DialogHeader>
+                <DialogTitle className="text-sm font-bold">删除试卷</DialogTitle>
+                <DialogDescription>试卷删除后不可恢复, 如果不确定, 可以保留等后续确认后再删除</DialogDescription>
+              </DialogHeader>
+
+              <Separator />
+
+              <DialogFooter>
+                <DialogClose render={<Button variant="outline">关闭</Button>} />
+                <Button onClick={handleDelete} disabled={deleting} variant="destructive">
+                  {deleting ? '删除中' : '删除'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
+      {/* 撤回草稿 */}
+      {source === PaperPageSource.MyPaper && item.status === PaperStatus.Published && (
+        <Button size="sm" variant="destructive">
+          退回草稿
+        </Button>
+      )}
+
+      {/* 审核 */}
+      {source === PaperPageSource.MyReview && item.status === PaperStatus.Pending && (
+        <Dialog open={openConfirmApprove} onOpenChange={setOpenConfirmApprove}>
+          <DialogTrigger
+            render={
+              <Button size="sm" variant="destructive">
+                审核
+              </Button>
+            }
+          />
+          <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
+            <DialogHeader>
+              <DialogTitle className="text-sm font-bold">试卷审核</DialogTitle>
+              <DialogDescription>请确认试卷没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
+            </DialogHeader>
+
+            <Separator />
+
+            <div className="space-y-3 px-4">
+              <div className="font-semibold">检查步骤</div>
+              <div className="text-xs space-y-2">
+                <p>1. 试卷不能是抄袭的, 避免投诉和版权纠纷</p>
+                <p>2. 试卷本身信息要完整</p>
+                <p>3. 图片等信息如果有不能缺失</p>
+                <p>4. 题目和答案本身如果有要符合常识</p>
+                <p className="text-red-500 font-bold">5. 若你审核通过的试卷后续被投诉等纠纷较多, 我们有权利降低你的账号等级</p>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="flex-1 overflow-y-auto px-4 space-y-3">
+              <div className="grid grid-cols-[100px_1fr] gap-4 items-center">
+                <span className="text-xs font-semibold text-right">审核状态:</span>
+                <ListSelect
+                  options={StringConst.paperStatusList}
+                  defaultValue={approveReq.status}
+                  onSelect={(val) => updateApproveReq('status', val)}
+                />
+
+                <span className="text-xs font-semibold text-right">拒绝理由:</span>
+                <Textarea
+                  value={approveReq.rejectReason}
+                  onChange={(e) => updateApproveReq('rejectReason', e.target.value)}
+                  placeholder="拒绝时需要说明拒绝原因"
+                />
+              </div>
+            </div>
+
+            <Separator />
+
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline">关闭</Button>} />
+              <Button onClick={handleApprove} disabled={confirmApproving}>
+                {confirmApproving ? '审核中' : '审核'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );
@@ -301,8 +563,8 @@ function PreviewPart({ item }: PreviewPartProps) {
             className="flex items-center justify-between gap-3 px-3 py-2 border border-border/70 hover:border-primary/40 transition-colors"
           >
             {/* 文件序号与名称 */}
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <span className="w-5 h-5 bg-muted text-xs font-semibold flex items-center justify-center shrink-0">{idx + 1}</span>
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <span className="w-5 h-5 bg-muted text-xs font-semibold flex items-center justify-center shrink-0">{idx + 1}. </span>
               <span
                 onClick={() => handlePreview(item.fileType, file.url, file.name)}
                 className="text-xs font-medium hover:text-primary truncate cursor-pointer"
@@ -310,7 +572,7 @@ function PreviewPart({ item }: PreviewPartProps) {
               >
                 {file.name}
               </span>
-              <span className="text-[11px] shrink-0">({ObjectUtil.formatFileSize(file.size)})</span>
+              <span className="text-xs shrink-0">({ObjectUtil.formatFileSize(file.size)})</span>
             </div>
 
             {/* 单文件独立操作, Word 需要下载, 其它浏览器支持浏览 */}
@@ -342,11 +604,14 @@ function PreviewPart({ item }: PreviewPartProps) {
 }
 
 export interface PaperListProps {
+  source: PaperPageSource;
   items: PaperResp[];
   cityMap: Record<number, CityResp>;
+  paperListRespMutate?: KeyedMutator<PaperListResp>; // 审核删除等操作需要重置列表接口重新请求数据
+  countListRespMutate?: KeyedMutator<CountPaperResp[]>; // 我的试卷提交审核等操作需要重置列表状态计数接口重新请求数据
 }
 
-export function PaperList({ items, cityMap }: PaperListProps) {
+export function PaperList({ source, items, cityMap, paperListRespMutate, countListRespMutate }: PaperListProps) {
   // 记录当前展开/隐藏预览抽屉 的试卷 ID, 可同时展开多个
   const [expandedIds, setExpandedIds] = useState<Record<number, boolean>>({});
 
@@ -392,7 +657,14 @@ export function PaperList({ items, cityMap }: PaperListProps) {
               <ExtPart item={item} />
 
               {/* 统一操作按钮组 */}
-              <OperatePart item={item} selectedIds={expandedIds} onPreview={(val) => handlePreview(val)} />
+              <OperatePart
+                source={source}
+                item={item}
+                selectedIds={expandedIds}
+                onPreview={(val) => handlePreview(val)}
+                paperListRespMutate={paperListRespMutate}
+                countListRespMutate={countListRespMutate}
+              />
             </div>
 
             {/* 底部隐藏展开区 多文件预览明细 */}

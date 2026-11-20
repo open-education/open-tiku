@@ -1,4 +1,13 @@
-import { AccountStatus, ExamType, PaperDifficultyType, PaperLevelType, QuestionStatus, StudentStatus, UploadFileType } from '@/type/enum';
+import {
+  AccountStatus,
+  ExamType,
+  PaperDifficultyType,
+  PaperLevelType,
+  PaperStatus,
+  QuestionStatus,
+  StudentStatus,
+  UploadFileType,
+} from '@/type/enum';
 
 // 部分字符串常量维护
 export const StringConst = {
@@ -14,6 +23,13 @@ export const StringConst = {
     { id: 2, value: QuestionStatus.Pending, label: '待审核' },
     { id: 3, value: QuestionStatus.Published, label: '已发布' },
     { id: 4, value: QuestionStatus.Rejected, label: '已拒绝' },
+  ],
+  // 试卷审核状态
+  paperStatusList: [
+    { id: 1, value: PaperStatus.Drafting, label: '草稿中' },
+    { id: 2, value: PaperStatus.Pending, label: '待审核' },
+    { id: 3, value: PaperStatus.Published, label: '已发布' },
+    { id: 4, value: PaperStatus.Rejected, label: '已拒绝' },
   ],
 
   // 查看变式题列表时需要忽略的分层体系

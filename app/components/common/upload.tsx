@@ -11,6 +11,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface FileUploadProps {
   fileType: UploadFileType;
+  defaultList?: FinalUploadItem[];
   maxSizeMB?: number;
   onChange?: (files: FinalUploadItem[]) => void;
   className?: string;
@@ -66,12 +67,22 @@ function isFileMatched(file: File, fileType: UploadFileType): boolean {
   }
 }
 
-export default function FileUpload({ fileType, maxSizeMB = 2, onChange, className }: FileUploadProps) {
+export default function FileUpload({ fileType, defaultList = [], maxSizeMB = 2, onChange, className }: FileUploadProps) {
   const config = fileTypeList[fileType];
   const [loading, setLoading] = useState<boolean>(false);
   const [items, setItems] = useState<FinalUploadItem[]>([]);
   const [error, setError] = useState<React.ReactNode | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (defaultList.length <= 0) return;
+    setItems(defaultList);
+  }, [defaultList]);
+
+  // 文件类型变更后清空已上传的文件
+  useEffect(() => {
+    setItems([]);
+  }, [fileType]);
 
   const execHandleUpload = async (incoming: File[]) => {
     return Promise.all(
@@ -233,7 +244,7 @@ export default function FileUpload({ fileType, maxSizeMB = 2, onChange, classNam
                   </div>
 
                   {/* 底部文件名遮罩 */}
-                  <div className="absolute inset-x-0 bottom-0 truncate bg-black/50 px-2.5 py-1 text-xs text-white">{item.file.name}</div>
+                  <div className="absolute inset-x-0 bottom-0 truncate bg-black/50 px-2.5 py-1 text-xs text-white">{item.resp.originalName}</div>
                 </div>
               ) : (
                 /* 文件项 */
@@ -241,10 +252,10 @@ export default function FileUpload({ fileType, maxSizeMB = 2, onChange, classNam
                   <div className="flex min-w-0 flex-1 items-center gap-2.5">
                     <FileText className="h-4 w-4 shrink-0 text-blue-500" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-medium text-gray-700" title={item.file.name}>
-                        {item.file.name}
+                      <p className="truncate text-xs font-medium text-gray-700" title={item.resp.originalName}>
+                        {item.resp.originalName}
                       </p>
-                      <p className="text-[10px] text-gray-400">{ObjectUtil.formatFileSize(item.file.size)}</p>
+                      <p className="text-[10px] text-gray-400">{ObjectUtil.formatFileSize(item.resp.size)}</p>
                     </div>
                   </div>
 

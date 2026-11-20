@@ -140,6 +140,7 @@ export default function Index() {
         listReq={listReq}
         noDataDesc="没有查找到任何试卷，如有试卷，可以尝试上传试卷，管理员审核通过后，其他人就可以看到该试卷了。"
         updateListReq={updateListReq}
+        countListRespMutate={countListRespMutate}
       />
       ;
     </div>

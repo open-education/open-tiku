@@ -16,13 +16,14 @@ import { useDelayedLoading } from '@/hooks/delayed-loading';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { CityResp } from '@/type/city';
 import { CustomPageSource, CustomUserSource } from '@/type/enum';
-import type { PaperListReq } from '@/type/paper';
+import type { CountPaperResp, PaperListReq } from '@/type/paper';
 import type { TextbookFillLevel } from '@/type/textbook';
 import { useCityList, useCustomList, usePaperList, useTextbooks } from '@/util/fetcher';
 import { formatNumber } from '@/util/fmt';
 import { ArrayUtil, CustomUtil } from '@/util/object';
 import { StringConst } from '@/util/string';
 import { useEffect, useMemo, useState } from 'react';
+import type { KeyedMutator } from 'swr';
 
 // 试卷列表页面
 
@@ -30,8 +31,9 @@ interface PaperSearchListProps {
   listReq: PaperListReq;
   noDataDesc: string;
   updateListReq: (key: keyof PaperListReq, value: string | number) => void;
+  countListRespMutate?: KeyedMutator<CountPaperResp[]>; // 我的试卷提交审核等操作需要重置列表状态计数接口重新请求数据
 }
-export default function PaperSearchList({ listReq, noDataDesc, updateListReq }: PaperSearchListProps) {
+export default function PaperSearchList({ listReq, noDataDesc, updateListReq, countListRespMutate }: PaperSearchListProps) {
   const [fillLevel, setFillLevel] = useState<TextbookFillLevel>({
     fiveLevelKeys: [],
     eightLevelKeys: [],
@@ -65,6 +67,7 @@ export default function PaperSearchList({ listReq, noDataDesc, updateListReq }: 
     data: paperListResp = { list: [], total: 0, pageNo: 1, pageSize: StringConst.pageSize },
     isLoading: paperListRespLoading,
     error: paperListRespErr,
+    mutate: paperListRespMutate,
   } = usePaperList(listReq);
 
   const showLoading = useDelayedLoading(textbooksIsLoading || customListRespLoading || cityListRespLoading || paperListRespLoading);
@@ -198,7 +201,13 @@ export default function PaperSearchList({ listReq, noDataDesc, updateListReq }: 
       <div>
         {/* 试卷列表 */}
         <div>
-          <PaperList items={paperListResp.list} cityMap={cityMap} />
+          <PaperList
+            source={listReq.source}
+            items={paperListResp.list}
+            cityMap={cityMap}
+            paperListRespMutate={paperListRespMutate}
+            countListRespMutate={countListRespMutate}
+          />
         </div>
 
         {/* 分页 */}

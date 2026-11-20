@@ -57,13 +57,8 @@ interface AddProps {
 export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
   const navigate = useNavigate();
 
-  const [addReq, setAddReq] = useState<CreateQuestionReq>(initAddReq);
-  const updateAddReq = (key: keyof CreateQuestionReq, value: number | number[] | string | string[]) => {
-    setAddReq((prev) => ({ ...prev, [key]: value }));
-  };
-
   // 当前是否为母题添加, 不存在主键并且类型是母题
-  const isBaseQuestionAdd = (!addReq.id || addReq.id === 0) && addReq.relationType === QuestionRelationType.Base;
+  const isBaseQuestionAdd = (!initAddReq.id || initAddReq.id <= 0) && initAddReq.relationType === QuestionRelationType.Base;
 
   // 5层导航信息
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
@@ -73,6 +68,11 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
     }
     return TextbookUtil.createTextbookPathDict(textbooks);
   }, [isBaseQuestionAdd, textbooks]);
+
+  const [addReq, setAddReq] = useState<CreateQuestionReq>(initAddReq);
+  const updateAddReq = (key: keyof CreateQuestionReq, value: number | number[] | string | string[]) => {
+    setAddReq((prev) => ({ ...prev, [key]: value }));
+  };
 
   // 查询题目类型和标签
   const {
@@ -124,24 +124,24 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
 
   // 添加母题时用默认个性化配置填充
   useEffect(() => {
-    if (isBaseQuestionAdd) {
+    if (isBaseQuestionAdd || customListResp.length > 0) {
       CustomUtil.defaultTextbookUpdate(customListResp, updateAddReq, updateFillLevel);
     }
   }, [isBaseQuestionAdd, customListResp]);
 
   // 非母题添加时需要用题目本身的信息去初始化菜单
   useEffect(() => {
-    if (isBaseQuestionAdd || pathMap.size === 0) {
+    if (isBaseQuestionAdd || pathMap.size <= 0 || initAddReq.fiveLevelId <= 0) {
       return;
     }
-    CustomUtil.questionEditLevelUpdate(TextbookFillLevelType.Five, pathMap, addReq, updateFillLevel);
-  }, [isBaseQuestionAdd, pathMap]);
+    CustomUtil.editInitTextbookUpdate(TextbookFillLevelType.Five, initAddReq.fiveLevelId, pathMap, updateFillLevel);
+  }, [isBaseQuestionAdd, pathMap, initAddReq.fiveLevelId]);
   useEffect(() => {
-    if (isBaseQuestionAdd || cateMap.size === 0) {
+    if (isBaseQuestionAdd || cateMap.size <= 0 || initAddReq.questionCateId <= 0) {
       return;
     }
-    CustomUtil.questionEditLevelUpdate(TextbookFillLevelType.Eight, cateMap, addReq, updateFillLevel);
-  }, [isBaseQuestionAdd, cateMap]);
+    CustomUtil.editInitTextbookUpdate(TextbookFillLevelType.Eight, initAddReq.questionCateId, cateMap, updateFillLevel);
+  }, [isBaseQuestionAdd, cateMap, initAddReq.questionCateId]);
 
   // 是否是选择题, 列表页可能携带需要填充默认值
   const [isChoice, setIsChoice] = useState<boolean>(otherDictListRecord.questionTypeDict[addReq.questionTypeId]?.isSelect);

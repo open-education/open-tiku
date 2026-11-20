@@ -14,7 +14,6 @@ export interface UploadFileResp {
 // 收集文件上传列表信息
 export interface FinalUploadItem {
   id: string;
-  file: File;
   resp: UploadFileResp;
   isImage: boolean;
 }

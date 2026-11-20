@@ -1,8 +1,8 @@
 import type { StudentAccountParseResult } from '@/type/class';
 import type { CustomResp } from '@/type/custom';
 import { CustomType, TextbookFillLevelType } from '@/type/enum';
-import type { CreateQuestionReq, QuestionSearch } from '@/type/question';
-import type { OtherDictListRecord, TextbookFillLevel, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
+import type { QuestionSearch } from '@/type/question';
+import type { OtherDictListRecord, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
 import { StringConst } from '@/util/string';
 
 // 对象工具
@@ -164,7 +164,7 @@ export const DictUtil = {
 
 // 个性化配置工具
 export const CustomUtil = {
-  // 如果约定的更新键一致则直接使用即可
+  // 如果约定的更新键一致则直接使用即可-初始页面个性化配置覆盖
   defaultTextbookUpdate: (
     listResp: CustomResp[],
     updateAddReq: (key: 'twoLevelId' | 'fiveLevelId', value: number) => void,
@@ -181,6 +181,25 @@ export const CustomUtil = {
     }
     if (textbook.fiveLevelKeys?.length) {
       updateFillLevel('fiveLevelKeys', textbook.fiveLevelKeys);
+    }
+  },
+
+  // 如果约定的更新键一致则直接使用即可-编辑时覆盖
+  editInitTextbookUpdate: (
+    level: TextbookFillLevelType,
+    levelId: number,
+    dict: Map<string, TextbookResp[]>,
+    updateFillLevel: (key: 'fiveLevelKeys' | 'eightLevelKeys', val: string[]) => void,
+  ) => {
+    if (level === TextbookFillLevelType.Five) {
+      const nodes = dict.get(levelId.toString()) || [];
+      const keys = nodes.map((node) => node.key);
+      updateFillLevel('fiveLevelKeys', keys);
+    } else if (level === TextbookFillLevelType.Eight) {
+      const key = `${levelId}${StringConst.dictPath}`;
+      const nodes = dict.get(key) || [];
+      const keys = nodes.map((node) => node.key);
+      updateFillLevel('eightLevelKeys', keys);
     }
   },
 
@@ -202,25 +221,6 @@ export const CustomUtil = {
       if (customTextbook.textbook.fiveLevelKeys && customTextbook.textbook.fiveLevelKeys.length > 0) {
         update('fiveLevelSelectKeys', customTextbook.textbook.fiveLevelKeys);
       }
-    }
-  },
-
-  // 题目编辑前5层菜单更新
-  questionEditLevelUpdate: (
-    level: TextbookFillLevelType,
-    dict: Map<string, TextbookResp[]>,
-    addReq: CreateQuestionReq,
-    updateFillLevel: (key: keyof TextbookFillLevel, val: string[]) => void,
-  ) => {
-    if (level === TextbookFillLevelType.Five) {
-      const nodes = dict.get(addReq.fiveLevelId.toString()) || [];
-      const keys = nodes.map((node) => node.key);
-      updateFillLevel('fiveLevelKeys', keys);
-    } else if (level === TextbookFillLevelType.Eight) {
-      const key = `${addReq.questionCateId}${StringConst.dictPath}`;
-      const nodes = dict.get(key) || [];
-      const keys = nodes.map((node) => node.key);
-      updateFillLevel('eightLevelKeys', keys);
     }
   },
 };

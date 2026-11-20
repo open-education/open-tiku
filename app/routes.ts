@@ -33,6 +33,7 @@ export default [
     route('/ops/my/question/task', 'routes/ops/my/question/task.tsx'),
     route('/ops/my/paper', 'routes/ops/my/paper/index.tsx'),
     route('/ops/my/paper/upload', 'routes/ops/my/paper/upload.tsx'),
+    route('/ops/my/paper/edit', 'routes/ops/my/paper/edit.tsx'),
 
     // 班级
     route('/ops/class', 'routes/ops/class/index.tsx'),
