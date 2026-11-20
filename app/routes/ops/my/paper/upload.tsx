@@ -23,7 +23,7 @@ import {
   PaperType,
   UploadFileType,
 } from '@/type/enum';
-import type { PaperAddReq } from '@/type/paper';
+import type { FileInfo, PaperAddReq } from '@/type/paper';
 import type { TextbookFillLevel } from '@/type/textbook';
 import { useCityList, useCustomList, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
@@ -53,7 +53,7 @@ export default function Index() {
     fiveLevelId: 0,
     paperType: PaperType.Upload,
     fileType: UploadFileType.Pdf,
-    fileIds: [],
+    fileList: [],
     provinceId: 0,
     cityId: 0,
     examType: ExamType.UnitTest,
@@ -65,7 +65,7 @@ export default function Index() {
     status: PaperStatus.Drafting,
     remark: '',
   });
-  const updateAddReq = (key: keyof PaperAddReq, value: string | number | number[] | string[]) => {
+  const updateAddReq = (key: keyof PaperAddReq, value: string | number | number[] | string[] | FileInfo[]) => {
     setAddReq((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -112,7 +112,7 @@ export default function Index() {
       });
       return;
     }
-    if (addReq.fileIds && addReq.fileIds.length === 0) {
+    if (addReq.fileList && addReq.fileList.length === 0) {
       toast.error(<div className="text-red-700">试卷文件不能为空</div>, {
         duration: Infinity,
         action: {
@@ -228,8 +228,15 @@ export default function Index() {
           onChange={(values) => {
             if (!values) return;
             updateAddReq(
-              'fileIds',
-              values.filter((item) => item.resp && item.resp.url).map((item) => item.resp.url),
+              'fileList',
+              values
+                .filter((item) => item.resp && item.resp.size > 0)
+                .map(({ resp }, idx) => ({
+                  id: idx + 1,
+                  name: resp.originalName,
+                  url: resp.name,
+                  size: resp.size,
+                })),
             );
           }}
         />

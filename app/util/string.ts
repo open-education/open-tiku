@@ -100,6 +100,15 @@ export const StringConst = {
     { id: 5, value: ExamType.MonthlyExam, label: '月考' },
     { id: 6, value: ExamType.TopicPaper, label: '专题卷' },
   ],
+  // 考试类型枚举获取
+  examTypeNames: new Map<number, string>([
+    [ExamType.UnitTest, '单元测试'],
+    [ExamType.Midterm, '期中考试'],
+    [ExamType.Final, '期末考试'],
+    [ExamType.ZhongkaoMock, '中考模拟'],
+    [ExamType.MonthlyExam, '月考'],
+    [ExamType.TopicPaper, '专题卷'],
+  ]),
   // 试卷级别类型
   paperLevelTypeList: [
     { id: 1, value: PaperLevelType.Standard, label: '普通' },

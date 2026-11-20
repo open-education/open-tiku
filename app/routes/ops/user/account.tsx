@@ -100,7 +100,7 @@ export default function Index() {
                       <TableCell>{item.statusDesc}</TableCell>
                       <TableCell>{item.createdAt}</TableCell>
                       <TableCell>
-                        <SimpleTooltip children={item.remark} />
+                        <SimpleTooltip tip={item.remark} />
                       </TableCell>
                       <TableCell>
                         <Button

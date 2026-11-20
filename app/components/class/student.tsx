@@ -122,7 +122,7 @@ function StudentList({ infoResp }: StudentAccountListProps) {
                     <TableCell>{student.lastLoginTime}</TableCell>
                     <TableCell>{student.loginCount}</TableCell>
                     <TableCell>
-                      <SimpleTooltip children={student.remark || '-'} />
+                      <SimpleTooltip tip={student.remark || '-'} />
                     </TableCell>
                     <TableCell className="text-sm">
                       <Button

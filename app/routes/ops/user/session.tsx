@@ -89,7 +89,7 @@ export default function Index() {
                       <TableCell>{item.renewCnt}</TableCell>
                       <TableCell>{item.clientIp}</TableCell>
                       <TableCell>
-                        <SimpleTooltip children={item.userAgent} />
+                        <SimpleTooltip tip={item.userAgent} />
                       </TableCell>
                       <TableCell>{item.createdAt}</TableCell>
                     </TableRow>

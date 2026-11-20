@@ -151,11 +151,11 @@ export default function Index() {
                           <TableCell>{item.semester}</TableCell>
                           <TableCell>{item.label}</TableCell>
                           <TableCell>
-                            <SimpleTooltip children={item.email} />
+                            <SimpleTooltip tip={item.email} />
                           </TableCell>
                           <TableCell>{item.sortOrder}</TableCell>
                           <TableCell>
-                            <SimpleTooltip children={item.remark} />
+                            <SimpleTooltip tip={item.remark} />
                           </TableCell>
                           <TableCell>{item.createdAt}</TableCell>
                           <TableCell className="flex">

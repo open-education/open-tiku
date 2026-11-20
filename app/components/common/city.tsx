@@ -11,17 +11,10 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import type { CityResp } from '@/type/city';
 import { cn } from 'cn';
 import { Check, ChevronDown } from 'lucide-react';
 import { useMemo, useState } from 'react';
-
-export interface CityResp {
-  id: number;
-  parentId?: number;
-  name: string;
-  pinyinInitial: string;
-  level: number;
-}
 
 interface CitySelectProps {
   cityRespList: CityResp[];
@@ -119,7 +112,7 @@ export default function CitySelect({
             type="button"
             variant="outline"
             disabled={disabled}
-            className={cn('w-full sm:w-auto justify-between', !selectedLabel && 'text-muted-foreground', className)}
+            className={cn('justify-between', !selectedLabel && 'text-muted-foreground', className)}
           >
             <span className="truncate">{selectedLabel || placeholder}</span>
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

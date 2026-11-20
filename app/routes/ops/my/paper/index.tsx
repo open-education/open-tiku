@@ -1,10 +1,13 @@
 import { SimpleAlert } from '@/components/common/alert';
 import { ListCard, type StatItem } from '@/components/common/list';
 import { Loading } from '@/components/common/load';
+import PaperSearchList from '@/components/paper/search';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
-import { PaperStatus } from '@/type/enum';
+import { PaperPageSource, PaperStatus } from '@/type/enum';
+import type { PaperListReq } from '@/type/paper';
 import { useCountPaperList } from '@/util/fetcher';
 import { ArrayUtil } from '@/util/object';
+import { StringConst } from '@/util/string';
 import { BookOpen, Check, Clock, PencilLine, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import type { Route } from './+types/index';
@@ -105,6 +108,17 @@ export default function Index() {
 
   const showLoading = useDelayedLoading(countListRespLoading);
 
+  const [listReq, setListReq] = useState<PaperListReq>({
+    source: PaperPageSource.MyPaper,
+    twoLevelId: 0,
+    status: activeStatus,
+    pageNo: 1,
+    pageSize: StringConst.pageSize,
+  });
+  const updateListReq = (key: keyof PaperListReq, value: string | number) => {
+    setListReq((prev) => ({ ...prev, [key]: value }));
+  };
+
   return (
     <div className="space-y-3">
       <div className="px-3 py-1 bg-card">
@@ -114,14 +128,20 @@ export default function Index() {
           activeStatus={activeStatus}
           onSelectStatus={(status) => {
             setActiveStatus(status);
+            updateListReq('status', status);
           }}
         />
       </div>
-
       <div className="px-3">
         {countListRespErr && <SimpleAlert title="试卷状态统计信息出错" message={countListRespErr.message} />}
         {showLoading && <Loading />}
       </div>
+      <PaperSearchList
+        listReq={listReq}
+        noDataDesc="没有查找到任何试卷，如有试卷，可以尝试上传试卷，管理员审核通过后，其他人就可以看到该试卷了。"
+        updateListReq={updateListReq}
+      />
+      ;
     </div>
   );
 }

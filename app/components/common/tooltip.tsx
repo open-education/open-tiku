@@ -1,18 +1,14 @@
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import React from 'react';
 
 // 简单长文本内容提示
 
-function SimpleTooltip({ children }: { children: React.ReactNode }) {
+function SimpleTooltip({ tip, content }: { tip: React.ReactNode; content?: React.ReactNode }) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger render={<span className="block max-w-50 truncate">{children}</span>} />
-        <TooltipContent>
-          <p>{children}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger render={<span className="block max-w-50 truncate">{tip}</span>} />
+      <TooltipContent>{content ? content : tip}</TooltipContent>
+    </Tooltip>
   );
 }
 

@@ -1,13 +1,21 @@
 // 试卷添加请求
 import { PaperDifficultyType, PaperLevelType, PaperPageSource, PaperType, UploadFileType } from '@/type/enum';
 
+// 文件信息
+export interface FileInfo {
+  id: number;
+  name: string;
+  url: string;
+  size: number;
+}
+
 export interface PaperAddReq {
   id?: number;
   twoLevelId: number; // 第2层菜单标识
   fiveLevelId?: number; // 第5层菜单标识
   paperType: PaperType; // 试卷类型: 1 上传试卷, 2 手动组卷 (默认 1)
   fileType: UploadFileType; // 文件类型: 0 无意义, 1 PDF 文件, 2 Word 文件, 3 图片, 4 Markdown 文档
-  fileIds?: string[]; // 文件地址信息
+  fileList?: FileInfo[]; // 文件信息
   provinceId?: number; // 省标识
   cityId?: number; // 城市标识
   schoolName?: string; // 学校名称
@@ -38,6 +46,7 @@ export interface PaperListReq {
   twoLevelId: number;
   fiveLevelId?: number;
   year?: string;
+  examType?: number;
   levelType?: number;
   difficultyType?: number;
   provinceId?: number;
@@ -55,7 +64,7 @@ export interface PaperResp {
   fiveLevelId?: number; // 第5层菜单标识
   paperType: PaperType; // 试卷类型: 1 上传试卷, 2 手动组卷 (默认 1)
   fileType: UploadFileType; // 文件类型: 0 无意义, 1 PDF 文件, 2 Word 文件, 3 图片, 4 Markdown 文档
-  fileIds?: string[]; // 文件地址信息
+  fileList: FileInfo[]; // 文件地址信息
   provinceId?: number; // 省标识
   cityId?: number; // 城市标识
   schoolName?: string; // 学校名称
