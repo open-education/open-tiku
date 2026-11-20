@@ -44,7 +44,7 @@ export default function Add({ initAddReq }: AddProps) {
       id: ObjectUtil.createId(),
       resp: {
         originalName: item.name,
-        name: item.name,
+        name: item.url,
         size: item.size,
         url: item.url,
       },
@@ -242,7 +242,7 @@ export default function Add({ initAddReq }: AddProps) {
                 .map(({ resp }, idx) => ({
                   id: idx + 1,
                   name: resp.originalName,
-                  url: resp.name,
+                  url: resp.url,
                   size: resp.size,
                 })),
             );
