@@ -1,7 +1,6 @@
 import type { StudentAccountParseResult } from '@/type/class';
 import type { CustomResp } from '@/type/custom';
-import { CustomType, TextbookFillLevelType } from '@/type/enum';
-import type { QuestionSearch } from '@/type/question';
+import { CustomModeType, CustomType, TextbookFillLevelType } from '@/type/enum';
 import type { OtherDictListRecord, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
 import { StringConst } from '@/util/string';
 
@@ -138,6 +137,56 @@ export const TextbookUtil = {
       questionMistakeTipDict,
     };
   },
+
+  // 根据列表判断应该写入章节还是知识点
+  textbookPathUpdate: (
+    items: TextbookResp[],
+    update?: (key: 'chapterPath' | 'knowledgePath', val: string) => void,
+    setFiveLevelId?: (val: number) => void,
+    setTwoLevelId?: (val: number) => void,
+  ) => {
+    if (!items || items.length === 0) return;
+
+    if (update) {
+      // 使用 .at(-1) 安全获取最后一个节点
+      const lastItem = items.at(-1);
+      const path = lastItem ? `${lastItem.path}/${lastItem.id}/` : '';
+
+      // 章节和知识点只能存在其中之一
+      if (lastItem?.pathType === 'knowledge') {
+        update?.('knowledgePath', path);
+        update?.('chapterPath', '');
+      } else {
+        update?.('chapterPath', path);
+        update?.('knowledgePath', '');
+      }
+    }
+
+    // 更新第5层菜单标识, 最多也只有第5层
+    setTwoLevelId?.(items.length >= 2 ? items[1].id : 0);
+    setFiveLevelId?.(items.length === 5 ? items[items.length - 1].id : 0);
+  },
+
+  // 试卷更新菜单完整路径
+  paperTextbookPathUpdate: (items: TextbookResp[], update: (key: 'textbookPath', val: string) => void) => {
+    if (!items || items.length === 0) return;
+
+    const idFullPath = items.length > 0 ? `/${items.map((item) => item.id).join('/')}/` : '';
+
+    update('textbookPath', idFullPath);
+  },
+
+  // 通过路径获取指定标识, 如果不足最大深度则获取末级标识
+  getPathId: (path: string, deep: number): number => {
+    const paths = path?.split('/').filter(Boolean);
+    if (!paths || paths.length === 0) return 0;
+
+    // 达到深度则获取指定深度的标识id（deep 从 1 开始计数，对应索引 deep - 1）
+    const target = deep > 0 && paths.length >= deep ? paths[deep - 1] : paths[paths.length - 1];
+    const id = Number(target);
+
+    return Number.isNaN(id) ? 0 : id;
+  },
 };
 
 // 数组相关操作工具
@@ -167,21 +216,53 @@ export const CustomUtil = {
   // 如果约定的更新键一致则直接使用即可-初始页面个性化配置覆盖
   defaultTextbookUpdate: (
     listResp: CustomResp[],
-    updateAddReq: (key: 'twoLevelId' | 'fiveLevelId', value: number) => void,
-    updateFillLevel: (key: 'fiveLevelKeys', val: string[]) => void,
+    updateFillLevel: (key: 'fiveLevelKeys', val: string[]) => void, // 填充前5层菜单默认选中
+    update?: (key: 'chapterPath' | 'knowledgePath', val: string) => void, // 更新第5层菜单对应的完整路径
+    setFiveLevelId?: (val: number) => void, // 指定第5层标识, 需要触发后3层菜单列表
+    setTwoLevelId?: (val: number) => void, // 指定第2层标识, 比如题型等通用字典
   ) => {
     const textbook = listResp.find((item) => item.customType === CustomType.Textbook)?.textbook;
     if (!textbook) return;
 
-    if (textbook.twoLevelId && textbook.twoLevelId > 0) {
-      updateAddReq('twoLevelId', textbook.twoLevelId);
+    const { keys, mode, path = '' } = textbook;
+
+    if (keys?.length) {
+      updateFillLevel('fiveLevelKeys', keys);
     }
-    if (textbook.fiveLevelId && textbook.fiveLevelId > 0) {
-      updateAddReq('fiveLevelId', textbook.fiveLevelId);
+
+    // 需要更新才执行更新
+    if (update) {
+      switch (mode) {
+        case CustomModeType.Chapter:
+          update?.('chapterPath', path);
+          break;
+        case CustomModeType.Knowledge:
+          update?.('knowledgePath', path);
+          break;
+      }
     }
-    if (textbook.fiveLevelKeys?.length) {
-      updateFillLevel('fiveLevelKeys', textbook.fiveLevelKeys);
+
+    // 如果需要更新第5层菜单标识, 比如需要拉取默认的题型列表
+    setTwoLevelId?.(Number(path?.split('/').filter(Boolean).at(1)) || 0);
+    setFiveLevelId?.(Number(path?.split('/').filter(Boolean).at(4)) || 0);
+  },
+
+  // 如果约定的更新键一致则直接使用即可-初始页面个性化配置覆盖
+  defaultPaperTextbookUpdate: (
+    listResp: CustomResp[],
+    updateFillLevel: (key: 'fiveLevelKeys', val: string[]) => void,
+    update: (key: 'textbookPath', val: string) => void,
+  ) => {
+    const textbook = listResp.find((item) => item.customType === CustomType.Textbook)?.textbook;
+    if (!textbook) return;
+
+    const { keys, mode, path = '' } = textbook;
+
+    if (keys?.length) {
+      updateFillLevel('fiveLevelKeys', keys);
     }
+
+    update('textbookPath', path);
   },
 
   // 如果约定的更新键一致则直接使用即可-编辑时覆盖
@@ -200,27 +281,6 @@ export const CustomUtil = {
       const nodes = dict.get(key) || [];
       const keys = nodes.map((node) => node.key);
       updateFillLevel('eightLevelKeys', keys);
-    }
-  },
-
-  // todo 题目搜索个性化更新, 后续合并至默认更新中
-  questionSearchUpdate: (listResp: CustomResp[], update: (key: keyof QuestionSearch, value: number | number[] | string[]) => void) => {
-    // 如果存在预设默认值则覆盖初始化值
-    const customTextbook = listResp.find((item) => item.customType === CustomType.Textbook);
-    if (!customTextbook) {
-      return;
-    }
-
-    if (customTextbook.textbook) {
-      if (customTextbook.textbook.twoLevelId && customTextbook.textbook.twoLevelId > 0) {
-        update('twoLevelId', customTextbook.textbook.twoLevelId);
-      }
-      if (customTextbook.textbook.fiveLevelId && customTextbook.textbook.fiveLevelId > 0) {
-        update('fiveLevelId', customTextbook.textbook.fiveLevelId);
-      }
-      if (customTextbook.textbook.fiveLevelKeys && customTextbook.textbook.fiveLevelKeys.length > 0) {
-        update('fiveLevelSelectKeys', customTextbook.textbook.fiveLevelKeys);
-      }
     }
   },
 };

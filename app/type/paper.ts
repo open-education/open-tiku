@@ -11,8 +11,7 @@ export interface FileInfo {
 
 export interface PaperAddReq {
   id?: number;
-  twoLevelId: number; // 第2层菜单标识
-  fiveLevelId?: number; // 第5层菜单标识
+  textbookPath: string; // 菜单完整路径
   paperType: PaperType; // 试卷类型: 1 上传试卷, 2 手动组卷 (默认 1)
   fileType: UploadFileType; // 文件类型: 0 无意义, 1 PDF 文件, 2 Word 文件, 3 图片, 4 Markdown 文档
   fileList?: FileInfo[]; // 文件信息
@@ -43,8 +42,7 @@ export interface CountPaperResp {
 // 试卷搜索
 export interface PaperListReq {
   source: PaperPageSource;
-  twoLevelId: number;
-  fiveLevelId?: number;
+  textbookPath: string;
   year?: string;
   examType?: number;
   levelType?: number;
@@ -60,8 +58,7 @@ export interface PaperListReq {
 // 试卷返回基本信息
 export interface PaperResp {
   id: number;
-  twoLevelId: number; // 第2层菜单标识
-  fiveLevelId?: number; // 第5层菜单标识
+  textbookPath: string; // 菜单层级信息
   paperType: PaperType; // 试卷类型: 1 上传试卷, 2 手动组卷 (默认 1)
   fileType: UploadFileType; // 文件类型: 0 无意义, 1 PDF 文件, 2 Word 文件, 3 图片, 4 Markdown 文档
   fileList: FileInfo[]; // 文件地址信息

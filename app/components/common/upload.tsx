@@ -193,7 +193,7 @@ export default function FileUpload({ fileType, defaultList = [], maxSizeMB = 2, 
         role="button"
         tabIndex={loading ? -1 : 0}
         aria-disabled={loading}
-        onClick={() => !loading && inputRef.current?.click()}
+        onClick={() => !loading && items.length < 5 && inputRef.current?.click()}
         className={cn(
           'flex h-55 w-full cursor-pointer flex-col items-center justify-center gap-3.5 rounded-[10px] border-2 border-dashed bg-[#fafbfc] transition-all duration-200',
           'border-gray-300 hover:border-blue-500 hover:bg-blue-50',
@@ -296,6 +296,8 @@ export default function FileUpload({ fileType, defaultList = [], maxSizeMB = 2, 
           <li>确保文件内容清晰可识别</li>
           <li>单个文件大小 ≤ {maxSizeMB}MB</li>
           <li>如果支持一次选择多个文件，后续上传自动追加</li>
+          <li>试卷上传最大支持 5 个文件</li>
+          <li>题目上传最大支持 1 个文件</li>
           <li>审核通过后将进入公共试题/试卷库</li>
         </ul>
       </div>

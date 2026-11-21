@@ -1,6 +1,7 @@
 import QuestionSearchList from '@/components/question/search';
 import { QuestionPageSource, QuestionStatus } from '@/type/enum';
-import type { QuestionSearch } from '@/type/question';
+import type { QuestionListReq } from '@/type/question';
+import { StringConst } from '@/util/string';
 import { useState } from 'react';
 import type { Route } from './+types/question';
 
@@ -18,23 +19,14 @@ export function meta({}: Route.MetaArgs) {
 
 // 题型关联
 export default function Index() {
-  // 搜索对象维护
-  const [questionSearch, setQuestionSearch] = useState<QuestionSearch>({
-    twoLevelId: 0,
-    fiveLevelId: 0,
-    fiveLevelSelectKeys: [],
-    eightIds: [],
-    eightLevelSelectKeys: [],
-    typeId: 0,
-    tagIds: [],
-    dimensionIds: [],
-    levelIds: [],
-    sceneIds: [],
-    mistakeTipIds: [],
+  const [listReq, setListReq] = useState<QuestionListReq>({
+    source: QuestionPageSource.MyReview,
     status: QuestionStatus.Pending,
+    pageNo: 1,
+    pageSize: StringConst.pageSize,
   });
-  const updateQuestionSearch = (key: keyof QuestionSearch, value: number | number[] | string[]) => {
-    setQuestionSearch((prev) => ({ ...prev, [key]: value }));
+  const updateListReq = (key: keyof QuestionListReq, val: string | number[] | number) => {
+    setListReq((prev) => ({ ...prev, [key]: val }));
   };
 
   return (
@@ -42,8 +34,8 @@ export default function Index() {
       pageSource={QuestionPageSource.MyReview}
       showFilter={false}
       noDataDesc="当前没有查找到任何需要你审核的题目。"
-      questionSearch={questionSearch}
-      updateQuestionSearch={updateQuestionSearch}
+      listReq={listReq}
+      updateListReq={updateListReq}
     />
   );
 }

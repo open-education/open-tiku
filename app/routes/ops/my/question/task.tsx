@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react';
 
 import { CustomPageSource, CustomUserSource } from '@/type/enum';
 import { formatNumber } from '@/util/fmt';
-import { CustomUtil } from '@/util/object';
+import { CustomUtil, TextbookUtil } from '@/util/object';
 import type { Route } from './+types/task';
 
 export function meta({}: Route.MetaArgs) {
@@ -51,8 +51,8 @@ export default function Index() {
   const [pageNo, setPageNo] = useState<number>(1);
 
   const [listReq, setListReq] = useState<TaskListReq>({
-    twoLevelId: 0,
-    fiveLevelId: 0,
+    chapterPath: '',
+    knowledgePath: '',
     questionCateId: 0,
     taskType: StringConst.taskTypeUploadQuestion,
     pageNo: pageNo,
@@ -74,7 +74,21 @@ export default function Index() {
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
 
   // 获取教材/知识点题型列表
-  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(listReq.fiveLevelId || 0);
+  const [fiveLevelId, setFiveLevelId] = useState<number>(0);
+  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
+
+  // 用户个性化配置
+  const {
+    data: customListResp = [],
+    isLoading: customListRespLoading,
+    error: customListRespErr,
+  } = useCustomList({
+    userSource: CustomUserSource.Person,
+    pageSource: CustomPageSource.Default,
+  });
+  useEffect(() => {
+    CustomUtil.defaultTextbookUpdate(customListResp, updateFillLevel, updateListReq, setFiveLevelId);
+  }, [customListResp]);
 
   // 查询任务列表
   const {
@@ -87,19 +101,6 @@ export default function Index() {
     isLoading: listRespLoading,
     error: listRespErr,
   } = useTaskList(listReq, pageNo, StringConst.pageSize);
-
-  // 用户个性化配置
-  const {
-    data: customListResp = [],
-    isLoading: customListRespLoading,
-    error: customListRespErr,
-  } = useCustomList({
-    userSource: CustomUserSource.Person,
-    pageSource: CustomPageSource.Default,
-  });
-  useEffect(() => {
-    CustomUtil.defaultTextbookUpdate(customListResp, updateListReq, updateFillLevel);
-  }, [customListResp]);
 
   const showLoading = useDelayedLoading(textbooksLoading || questionCatesLoading || listRespLoading || customListRespLoading);
 
@@ -117,9 +118,7 @@ export default function Index() {
             <ChapterDropdownNav
               textbooks={textbooks}
               onSelect={(selectedItems: TextbookResp[]) => {
-                const [, secondItem = null, , , fifthItem = null] = selectedItems ?? [];
-                updateListReq('twoLevelId', secondItem ? secondItem.id : 0);
-                updateListReq('fiveLevelId', fifthItem ? fifthItem.id : 0);
+                TextbookUtil.textbookPathUpdate(selectedItems, updateListReq, setFiveLevelId);
               }}
               defaultSelectedKeys={fillLevel.fiveLevelKeys}
               placeholder="请选择知识点/章节"

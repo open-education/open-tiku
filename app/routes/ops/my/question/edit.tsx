@@ -43,6 +43,15 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
       };
     }
 
+    // 只有母题可以添加变式题
+    if (type === QuestionEditMode.AddSimilar && infoResp.baseInfo.relationType !== QuestionRelationType.Base) {
+      return {
+        error: '只有母题可以添加变式题',
+        initAddReq: null,
+        componentKey: '',
+      };
+    }
+
     // 根据编辑模式组装初始表单数据
     let initAddReq: CreateQuestionReq;
 
@@ -54,8 +63,8 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
       };
     } else {
       initAddReq = {
-        twoLevelId: infoResp.baseInfo.twoLevelId,
-        fiveLevelId: infoResp.baseInfo.fiveLevelId,
+        chapterPath: infoResp.baseInfo.chapterPath,
+        knowledgePath: infoResp.baseInfo.knowledgePath,
         questionCateId: infoResp.baseInfo.questionCateId,
         questionTypeId: 0,
         originalName: '',

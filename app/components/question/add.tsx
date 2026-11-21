@@ -75,11 +75,12 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
   };
 
   // 查询题目类型和标签
+  const [twoLevelId, setTwoLevelId] = useState<number>(0);
   const {
     data: dictListResp = { map: {} },
     isLoading: dictListRespLoading,
     error: dictListRespErr,
-  } = useQuestionOtherDictList(addReq.twoLevelId, [
+  } = useQuestionOtherDictList(twoLevelId, [
     'question_type',
     'question_tag',
     'question_dimension',
@@ -92,7 +93,8 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
   }, [dictListResp]);
 
   // 获取教材/知识点题型列表
-  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(addReq.fiveLevelId);
+  const [fiveLevelId, setFiveLevelId] = useState<number>(0);
+  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
   const cateMap = useMemo(() => {
     if (isBaseQuestionAdd || questionCates.length === 0) {
       return new Map<string, TextbookResp[]>();
@@ -125,17 +127,24 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
   // 添加母题时用默认个性化配置填充
   useEffect(() => {
     if (isBaseQuestionAdd || customListResp.length > 0) {
-      CustomUtil.defaultTextbookUpdate(customListResp, updateAddReq, updateFillLevel);
+      CustomUtil.defaultTextbookUpdate(customListResp, updateFillLevel, undefined, setFiveLevelId, setTwoLevelId);
     }
   }, [isBaseQuestionAdd, customListResp]);
 
   // 非母题添加时需要用题目本身的信息去初始化菜单
   useEffect(() => {
-    if (isBaseQuestionAdd || pathMap.size <= 0 || initAddReq.fiveLevelId <= 0) {
+    if (isBaseQuestionAdd || pathMap.size <= 0 || !StringValidator.isNonEmpty(initAddReq.knowledgePath)) {
       return;
     }
-    CustomUtil.editInitTextbookUpdate(TextbookFillLevelType.Five, initAddReq.fiveLevelId, pathMap, updateFillLevel);
-  }, [isBaseQuestionAdd, pathMap, initAddReq.fiveLevelId]);
+
+    const tId = Number(initAddReq.knowledgePath?.split('/').filter(Boolean).at(1)) || 0;
+    const fId = Number(initAddReq.knowledgePath?.split('/').filter(Boolean).at(4)) || 0;
+    CustomUtil.editInitTextbookUpdate(TextbookFillLevelType.Five, fId, pathMap, updateFillLevel);
+
+    // 更新前5层和后3层菜单, 默认按知识点维度维护
+    setTwoLevelId(tId);
+    setFiveLevelId(fId);
+  }, [isBaseQuestionAdd, pathMap, initAddReq.knowledgePath]);
   useEffect(() => {
     if (isBaseQuestionAdd || cateMap.size <= 0 || initAddReq.questionCateId <= 0) {
       return;
@@ -144,7 +153,12 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
   }, [isBaseQuestionAdd, cateMap, initAddReq.questionCateId]);
 
   // 是否是选择题, 列表页可能携带需要填充默认值
-  const [isChoice, setIsChoice] = useState<boolean>(otherDictListRecord.questionTypeDict[addReq.questionTypeId]?.isSelect);
+  const [isChoice, setIsChoice] = useState<boolean>(false);
+  useEffect(() => {
+    if (addReq.questionTypeId > 0 && Object.keys(otherDictListRecord.questionTypeDict).length > 0) {
+      setIsChoice(otherDictListRecord.questionTypeDict[addReq.questionTypeId]?.isSelect);
+    }
+  }, [otherDictListRecord.questionTypeDict, addReq.questionTypeId]);
 
   // 解析工具填充覆盖现有值, 选择性填充
   const replaceAddReq = (fillReq: CreateQuestionReq) => {
@@ -273,28 +287,6 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
 
   // 提交, 如果是编辑实际上要刷新列表页面
   const handleAddSubmit = (status: number) => {
-    // 检查必填参数是否为空
-    if (addReq.twoLevelId <= 0) {
-      toast.error(<div className="text-red-700">第2级菜单科目不能为空</div>, {
-        duration: Infinity,
-        action: {
-          label: '关闭',
-          onClick: () => {},
-        },
-      });
-      return;
-    }
-    // 检查必填参数是否为空
-    if (addReq.fiveLevelId <= 0) {
-      toast.error(<div className="text-red-700">第5级菜单知识点/章节不能为空</div>, {
-        duration: Infinity,
-        action: {
-          label: '关闭',
-          onClick: () => {},
-        },
-      });
-      return;
-    }
     // 检查必填参数是否为空
     if (addReq.questionCateId <= 0) {
       toast.error(<div className="text-red-700">第8级菜单题型不能为空</div>, {
@@ -433,9 +425,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
                 <ChapterDropdownNav
                   textbooks={textbooks}
                   onSelect={(selectedItems: TextbookResp[]) => {
-                    const [, secondItem = null, , , fifthItem = null] = selectedItems ?? [];
-                    updateAddReq('twoLevelId', secondItem ? secondItem.id : 0);
-                    updateAddReq('fiveLevelId', fifthItem ? fifthItem.id : 0);
+                    TextbookUtil.textbookPathUpdate(selectedItems, undefined, setFiveLevelId, setTwoLevelId);
                   }}
                   defaultSelectedKeys={fillLevel.fiveLevelKeys}
                   placeholder="请选择知识点/章节"
@@ -919,6 +909,8 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
       infoResp={{
         baseInfo: {
           id: 0,
+          chapterPath: '',
+          knowledgePath: '',
           contentPlain: '',
           authorName: username,
           createdAt: ObjectUtil.getFormatNow(),
@@ -1010,7 +1002,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
                   <span className="font-medium text-sm">解析题目</span>
                 </div>
               ),
-              content: <ParseQuestion textbookId={addReq.twoLevelId} onFill={(req) => replaceAddReq(req)} />,
+              content: <ParseQuestion textbookId={twoLevelId} onFill={(req) => replaceAddReq(req)} />,
             },
           ]}
           defaultToolId="tool-file-upload"

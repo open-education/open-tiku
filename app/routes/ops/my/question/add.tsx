@@ -17,8 +17,6 @@ export function meta({}: Route.MetaArgs) {
 
 // 初始化部分默认值
 const initAddDefaultReq: CreateQuestionReq = {
-  twoLevelId: 0,
-  fiveLevelId: 0,
   questionCateId: 0,
   questionTypeId: 0,
   originalName: '',

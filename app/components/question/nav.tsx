@@ -1,40 +1,14 @@
-import { ChapterExpandNav, ChapterTreeCheckboxNav, type CheckboxTreeNode, type LevelProps } from '@/components/common/nav';
 import { MultiTagSelect, TypeSelect } from '@/components/question/tag';
-import type { QuestionSearch } from '@/type/question';
-import type { OtherDictListRecord, TextbookResp } from '@/type/textbook';
-
-// 题目搜索条件树
-interface NavTreeListProps {
-  textbooks: TextbookResp[];
-  questionCates: CheckboxTreeNode[];
-  questionSearch: QuestionSearch;
-  onTextbook: (selectedTextbooks: Record<keyof LevelProps, TextbookResp | null>) => void;
-  onQuestionCate: (selectedItems: CheckboxTreeNode[]) => void;
-}
-function NavTreeList({ textbooks, questionCates, questionSearch, onTextbook, onQuestionCate }: NavTreeListProps) {
-  return (
-    <>
-      <div className="p-3 space-y-2 bg-card">
-        <ChapterExpandNav textbooks={textbooks} defaultValues={questionSearch.fiveLevelSelectKeys} onSelectionChange={onTextbook} />
-
-        <ChapterTreeCheckboxNav
-          textbooks={questionCates}
-          onSelect={onQuestionCate}
-          defaultSelectedKeys={questionSearch.eightLevelSelectKeys}
-          maxDepth={3}
-        />
-      </div>
-    </>
-  );
-}
+import type { QuestionListReq } from '@/type/question';
+import type { OtherDictListRecord } from '@/type/textbook';
 
 // 搜索条件
 interface SearchListProps {
   otherDictListRecord: OtherDictListRecord;
-  questionSearch: QuestionSearch;
-  updateQuestionSearch: (key: keyof QuestionSearch, value: number | number[] | string[]) => void;
+  listReq: QuestionListReq;
+  updateListReq: (key: keyof QuestionListReq, value: number | number[] | string) => void;
 }
-function SearchList({ otherDictListRecord, questionSearch, updateQuestionSearch }: SearchListProps) {
+function SearchList({ otherDictListRecord, listReq, updateListReq }: SearchListProps) {
   return (
     <div className="p-3 space-y-3 text-sm bg-card">
       {/* 分层体系 */}
@@ -43,9 +17,9 @@ function SearchList({ otherDictListRecord, questionSearch, updateQuestionSearch 
         <div className="flex-1 min-w-0">
           <MultiTagSelect
             options={otherDictListRecord.questionLevels}
-            value={questionSearch.levelIds}
+            value={listReq.levelIds || []}
             onChange={(val) => {
-              updateQuestionSearch('levelIds', val);
+              updateListReq('levelIds', val);
             }}
           />
         </div>
@@ -57,9 +31,9 @@ function SearchList({ otherDictListRecord, questionSearch, updateQuestionSearch 
         <div className="flex-1 min-w-0">
           <TypeSelect
             options={otherDictListRecord.questionTypes}
-            value={questionSearch.typeId}
+            value={listReq.questionTypeId}
             onSelect={(val) => {
-              updateQuestionSearch('typeId', val);
+              updateListReq('questionTypeId', val);
             }}
           />
         </div>
@@ -71,9 +45,9 @@ function SearchList({ otherDictListRecord, questionSearch, updateQuestionSearch 
         <div className="flex-1 min-w-0">
           <MultiTagSelect
             options={otherDictListRecord.questionDimensions}
-            value={questionSearch.dimensionIds}
+            value={listReq.dimensionIds || []}
             onChange={(val) => {
-              updateQuestionSearch('dimensionIds', val);
+              updateListReq('dimensionIds', val);
             }}
           />
         </div>
@@ -85,9 +59,9 @@ function SearchList({ otherDictListRecord, questionSearch, updateQuestionSearch 
         <div className="flex-1 min-w-0">
           <MultiTagSelect
             options={otherDictListRecord.questionScenes}
-            value={questionSearch.sceneIds}
+            value={listReq.sceneIds || []}
             onChange={(val) => {
-              updateQuestionSearch('sceneIds', val);
+              updateListReq('sceneIds', val);
             }}
           />
         </div>
@@ -99,9 +73,9 @@ function SearchList({ otherDictListRecord, questionSearch, updateQuestionSearch 
         <div className="flex-1 min-w-0">
           <MultiTagSelect
             options={otherDictListRecord.questionTags}
-            value={questionSearch.tagIds}
+            value={listReq.tagIds || []}
             onChange={(val) => {
-              updateQuestionSearch('tagIds', val);
+              updateListReq('tagIds', val);
             }}
           />
         </div>
@@ -113,9 +87,9 @@ function SearchList({ otherDictListRecord, questionSearch, updateQuestionSearch 
         <div className="flex-1 min-w-0">
           <MultiTagSelect
             options={otherDictListRecord.questionMistakeTips}
-            value={questionSearch.mistakeTipIds}
+            value={listReq.mistakeTipIds || []}
             onChange={(val) => {
-              updateQuestionSearch('mistakeTipIds', val);
+              updateListReq('mistakeTipIds', val);
             }}
           />
         </div>
@@ -124,4 +98,4 @@ function SearchList({ otherDictListRecord, questionSearch, updateQuestionSearch 
   );
 }
 
-export { NavTreeList, SearchList };
+export { SearchList };

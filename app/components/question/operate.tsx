@@ -96,6 +96,7 @@ function QuestionOperateList({
     setViewSimilarErr(null);
 
     const req: QuestionSimilarListReq = {
+      source: pageSource,
       questionId: baseInfoResp.id,
       questionCateId: baseInfoResp.questionCateId,
       pageNo: 1,
@@ -296,7 +297,7 @@ function QuestionOperateList({
         )}
 
         {/* 添加变式题 */}
-        {pageSource === QuestionPageSource.MyQuestion && (
+        {pageSource === QuestionPageSource.MyQuestion && baseInfoResp.relationType === QuestionRelationType.Base && (
           <Button size="sm" variant="outline">
             <Link to={`/ops/my/question/edit?id=${baseInfoResp.id}&type=2`} target="_blank">
               添加变式题

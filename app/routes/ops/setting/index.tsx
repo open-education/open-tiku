@@ -1,4 +1,4 @@
-import Textbook from '@/components/custom/textbook';
+import TextbookList from '@/components/custom/textbook';
 import { CustomPageSource, CustomUserSource } from '@/type/enum';
 import type { Route } from './+types/index';
 
@@ -15,5 +15,5 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Index() {
-  return <Textbook userSource={CustomUserSource.System} pageSource={CustomPageSource.Default} />;
+  return <TextbookList key="system-custom" userSource={CustomUserSource.System} pageSource={CustomPageSource.Default} />;
 }

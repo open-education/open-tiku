@@ -84,16 +84,16 @@ export default function Add({ initAddReq }: AddProps) {
   );
   useEffect(() => {
     if (isAdd || customListResp.length > 0) {
-      CustomUtil.defaultTextbookUpdate(customListResp, updateAddReq, updateFillLevel);
+      CustomUtil.defaultPaperTextbookUpdate(customListResp, updateFillLevel, updateAddReq);
     }
   }, [isAdd, customListResp]);
   // 非试卷添加时需要用题目本身的信息去初始化菜单
   useEffect(() => {
-    if (isAdd || pathMap.size === 0 || !initAddReq.fiveLevelId || initAddReq.fiveLevelId <= 0) {
+    if (isAdd || pathMap.size === 0 || !StringValidator.isNonEmpty(initAddReq.textbookPath)) {
       return;
     }
-    CustomUtil.editInitTextbookUpdate(TextbookFillLevelType.Five, initAddReq.fiveLevelId, pathMap, updateFillLevel);
-  }, [isAdd, pathMap, initAddReq.fiveLevelId]);
+    CustomUtil.editInitTextbookUpdate(TextbookFillLevelType.Five, TextbookUtil.getPathId(initAddReq.textbookPath, 4), pathMap, updateFillLevel);
+  }, [isAdd, pathMap, initAddReq.textbookPath]);
 
   const [addReq, setAddReq] = useState<PaperAddReq>(initAddReq);
   const updateAddReq = (key: keyof PaperAddReq, value: string | number | number[] | string[] | FileInfo[]) => {
@@ -109,8 +109,8 @@ export default function Add({ initAddReq }: AddProps) {
   const [addApproving, setAddApproving] = useState<boolean>(false);
   const [addErr, setAddErr] = useState<React.ReactNode>(null);
   const handleSubmit = (status: PaperStatus) => {
-    if (addReq.twoLevelId <= 0) {
-      toast.error(<div className="text-red-700">第2级菜单科目不能为空</div>, {
+    if (!StringValidator.isNonEmpty(addReq.textbookPath)) {
+      toast.error(<div className="text-red-700">菜单科目不能为空</div>, {
         duration: Infinity,
         action: {
           label: '关闭',
@@ -121,6 +121,16 @@ export default function Add({ initAddReq }: AddProps) {
     }
     if (addReq.fileList && addReq.fileList.length === 0) {
       toast.error(<div className="text-red-700">试卷文件不能为空</div>, {
+        duration: Infinity,
+        action: {
+          label: '关闭',
+          onClick: () => {},
+        },
+      });
+      return;
+    }
+    if (addReq.fileList && addReq.fileList.length > 5) {
+      toast.error(<div className="text-red-700">试卷文件不能超过5个</div>, {
         duration: Infinity,
         action: {
           label: '关闭',
@@ -207,11 +217,7 @@ export default function Add({ initAddReq }: AddProps) {
         textbooks={textbooks}
         defaultValues={fillLevel.fiveLevelKeys}
         onSelectionChange={(selectedTextbooks) => {
-          if (!selectedTextbooks) {
-            return;
-          }
-          updateAddReq('twoLevelId', selectedTextbooks.second ? selectedTextbooks.second.id : 0);
-          updateAddReq('fiveLevelId', selectedTextbooks.fifth ? selectedTextbooks.fifth.id : 0);
+          TextbookUtil.paperTextbookPathUpdate(selectedTextbooks, updateAddReq);
         }}
       />
     </div>

@@ -21,8 +21,8 @@ export interface QuestionSearch {
 // 题目列表请求
 export interface QuestionListReq {
   source: QuestionPageSource;
-  twoLevelId: number; // 第2层级菜单
-  fiveLevelId?: number; // 第5层级菜单
+  chapterPath?: string;
+  knowledgePath?: string;
   questionCateIds?: number[];
   questionTypeId?: number;
   ids?: number[];
@@ -60,8 +60,8 @@ export interface Step {
 // 题目基本信息返回
 export interface QuestionBaseInfoResp {
   id: number;
-  twoLevelId: number; // 第2层级菜单
-  fiveLevelId: number; // 第5层级菜单
+  chapterPath: string;
+  knowledgePath: string;
   questionCateId: number;
   questionTypeId: number;
   questionTagIds?: number[];
@@ -115,6 +115,7 @@ export interface QuestionInfoResp {
 
 // 题目变式题列表请求
 export interface QuestionSimilarListReq {
+  source: QuestionPageSource;
   questionId: number;
   questionCateId: number;
   questionTypeId?: number;
@@ -128,9 +129,9 @@ export interface CreateQuestionReq {
   id?: number; // 更新时需要主键, 新增时不能传递这个key
   sourceId?: number; // 母题标识, 默认无
   relationType: number; // 变式题分类
-  twoLevelId: number; // 第2层级菜单
-  fiveLevelId: number; // 第5层级菜单
   questionCateId: number; // 题目分类标识
+  chapterPath?: string; // 章节完整路径
+  knowledgePath?: string; // 知识点完整路径
   questionTypeId: number; // 题目类型标识
   questionTagIds?: number[]; // 题目标签
   questionDimensionIds?: number[]; // 核心素养

@@ -18,7 +18,7 @@ export function meta({}: Route.MetaArgs) {
 export default function Index() {
   const [listReq, setListReq] = useState<PaperListReq>({
     source: PaperPageSource.List,
-    twoLevelId: 0,
+    textbookPath: '',
     pageNo: 1,
     pageSize: StringConst.pageSize,
   });

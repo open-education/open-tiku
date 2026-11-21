@@ -7,9 +7,10 @@ import { ListCard } from '@/components/common/list';
 import { Loading } from '@/components/common/load';
 import QuestionSearchList from '@/components/question/search';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
-import type { QuestionSearch } from '@/type/question';
+import type { QuestionListReq } from '@/type/question';
 import { useCountQuestionList } from '@/util/fetcher';
 import { ArrayUtil } from '@/util/object';
+import { StringConst } from '@/util/string';
 import { Check, Clock, FileQuestion, PencilLine, X } from 'lucide-react';
 import type { Route } from './+types/index';
 
@@ -97,22 +98,9 @@ const defaultStatusList: StatItem[] = [
 export default function Index() {
   const [activeStatus, setActiveStatus] = useState<number>(QuestionStatus.None);
 
-  // 搜索对象维护
-  const [questionSearch, setQuestionSearch] = useState<QuestionSearch>({
-    twoLevelId: 0,
-    fiveLevelId: 0,
-    fiveLevelSelectKeys: [],
-    eightIds: [],
-    eightLevelSelectKeys: [],
-    typeId: 0,
-    tagIds: [],
-    dimensionIds: [],
-    levelIds: [],
-    sceneIds: [],
-    mistakeTipIds: [],
-  });
-  const updateQuestionSearch = (key: keyof QuestionSearch, value: number | number[] | string[]) => {
-    setQuestionSearch((prev) => ({ ...prev, [key]: value }));
+  const [listReq, setListReq] = useState<QuestionListReq>({ source: QuestionPageSource.MyQuestion, pageNo: 1, pageSize: StringConst.pageSize });
+  const updateListReq = (key: keyof QuestionListReq, val: string | number[] | number) => {
+    setListReq((prev) => ({ ...prev, [key]: val }));
   };
 
   const { data: countListResp = [], isLoading: countListRespLoading, error: countListRespErr, mutate: countListRespMutate } = useCountQuestionList();
@@ -138,7 +126,7 @@ export default function Index() {
           activeStatus={activeStatus}
           onSelectStatus={(status) => {
             setActiveStatus(status);
-            updateQuestionSearch('status', status);
+            updateListReq('status', status);
           }}
         />
       </div>
@@ -152,8 +140,8 @@ export default function Index() {
         pageSource={QuestionPageSource.MyQuestion}
         showFilter={true}
         noDataDesc="没有查找到任何题目，如有题目，可以尝试上传题目，管理员审核通过后，其他人就可以看到该题目了。"
-        questionSearch={questionSearch}
-        updateQuestionSearch={updateQuestionSearch}
+        listReq={listReq}
+        updateListReq={updateListReq}
         countListRespMutate={countListRespMutate}
       />
     </div>

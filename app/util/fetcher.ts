@@ -4,7 +4,7 @@ import type { ClassListReq, ClassListResp, ClassSearchReq, ClassStudentListReq, 
 import type { CustomListReq, CustomResp } from '@/type/custom';
 import { QuestionPageSource } from '@/type/enum';
 import type { CountPaperResp, PaperListReq, PaperListResp } from '@/type/paper';
-import type { CountQuestionResp, QuestionListReq, QuestionListResp, QuestionSearch } from '@/type/question';
+import type { CountQuestionResp, QuestionListReq, QuestionListResp } from '@/type/question';
 import type { ChapterKnowledgeResp, QuestionCateResp } from '@/type/question-cate';
 import type { TaskListReq, TaskListResp } from '@/type/task';
 import type { TextbookOtherDictListReq, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
@@ -52,27 +52,26 @@ export function useQuestionCates(fiveLevelId: number) {
 }
 
 // 题目列表
-export function useQuestionList(source: QuestionPageSource, search: QuestionSearch, pageNo: number) {
+export function useQuestionList(source: QuestionPageSource, search: QuestionListReq, pageNo: number) {
   const req: QuestionListReq = {
-    twoLevelId: search.twoLevelId,
     source,
     pageNo: pageNo,
     pageSize: StringConst.pageSize,
   };
-  if (search.fiveLevelId > 0) {
-    req.fiveLevelId = search.fiveLevelId;
+  if (StringValidator.isNonEmpty(search.chapterPath)) {
+    req.chapterPath = search.chapterPath;
   }
-  if (search.eightIds && search.eightIds.length > 0) {
-    req.questionCateIds = search.eightIds;
+  if (StringValidator.isNonEmpty(search.knowledgePath)) {
+    req.knowledgePath = search.knowledgePath;
   }
-  if (search.typeId > 0) {
-    req.questionTypeId = search.typeId;
+  if (search.questionCateIds && search.questionCateIds.length > 0) {
+    req.questionCateIds = search.questionCateIds;
+  }
+  if (search.questionTypeId && search.questionTypeId > 0) {
+    req.questionTypeId = search.questionTypeId;
   }
   if (search.tagIds && search.tagIds.length > 0) {
     req.tagIds = search.tagIds;
-  }
-  if (search.id && search.id > 0) {
-    req.ids = [search.id];
   }
   if (search.status !== undefined && search.status >= 0) {
     req.status = search.status;
@@ -91,7 +90,7 @@ export function useQuestionList(source: QuestionPageSource, search: QuestionSear
   }
 
   const reqPath = '/question/list';
-  const key = req.twoLevelId > 0 ? [reqPath, JSON.stringify(req)] : null;
+  const key = req.chapterPath || req.knowledgePath ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<QuestionListResp>(key, () => httpClient.post<QuestionListResp>(reqPath, req), defaultErrConfig);
 }
 
@@ -151,20 +150,22 @@ export function useQuestionCateList(relatedId: number) {
 // 题目上传任务列表
 export function useTaskList(reqInit: TaskListReq, pageNo: number, pageSize: number) {
   let req: TaskListReq = {
-    twoLevelId: reqInit.twoLevelId,
     taskType: reqInit.taskType,
     pageNo,
     pageSize,
   };
-  if (reqInit.fiveLevelId && reqInit.fiveLevelId > 0) {
-    req.fiveLevelId = reqInit.fiveLevelId;
+  if (StringValidator.isNonEmpty(reqInit.chapterPath)) {
+    req.chapterPath = reqInit.chapterPath;
+  }
+  if (StringValidator.isNonEmpty(reqInit.knowledgePath)) {
+    req.knowledgePath = reqInit.knowledgePath;
   }
   if (reqInit.questionCateId && reqInit.questionCateId > 0) {
     req.questionCateId = reqInit.questionCateId;
   }
 
   const reqPath = '/task/list';
-  const key = req.twoLevelId > 0 ? [reqPath, JSON.stringify(req)] : null;
+  const key = req.chapterPath || req.knowledgePath ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<TaskListResp>(key, () => httpClient.post<TaskListResp>(reqPath, req), defaultErrConfig);
 }
 
@@ -236,6 +237,6 @@ export function useCountPaperList() {
 // 试卷列表
 export function usePaperList(req: PaperListReq) {
   const reqPath = '/paper/list';
-  const key = req.twoLevelId > 0 ? [reqPath, JSON.stringify(req)] : null;
+  const key = StringValidator.isNonEmpty(req.textbookPath) ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<PaperListResp>(key, () => httpClient.post<PaperListResp>(reqPath, req), defaultErrConfig);
 }

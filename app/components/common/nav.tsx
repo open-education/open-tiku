@@ -19,24 +19,10 @@ import { cn } from 'cn';
 import { Check, ChevronDown, ChevronRight } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-// 章节导航选择
-// 前5层级标识
-interface LevelProps {
-  first: string | null;
-  second: string | null;
-  third: string | null;
-  fourth: string | null;
-  fifth: string | null;
-}
+// 层级标签配置（长度即最大支持层级数，目前为5层）
+const STEP_LABELS = ['学段', '科目', '知识点/章节选题', '知识点分类/出版社', '知识点名称/教材'];
 
-const steps: (keyof LevelProps)[] = ['first', 'second', 'third', 'fourth', 'fifth'];
-const stepLabels: Record<keyof LevelProps, string> = {
-  first: '学段',
-  second: '科目',
-  third: '知识点/章节选题',
-  fourth: '知识点分类/出版社',
-  fifth: '知识点名称/年级',
-};
+const EMPTY_TEXTBOOKS: TextbookResp[] = [];
 
 // 构建层级查找 Map，以 key 为索引
 interface TextbookMap {
@@ -53,7 +39,6 @@ function buildTextbookMap(textbooks: TextbookResp[]): TextbookMap {
   function traverse(items: TextbookResp[], parentKey?: string) {
     for (const item of items) {
       byKey.set(item.key, item);
-
       if (parentKey) {
         if (!childrenMap.has(parentKey)) {
           childrenMap.set(parentKey, []);
@@ -62,7 +47,6 @@ function buildTextbookMap(textbooks: TextbookResp[]): TextbookMap {
       } else {
         rootKeys.push(item.key);
       }
-
       if (item.children && item.children.length > 0) {
         traverse(item.children, item.key);
       }
@@ -73,58 +57,28 @@ function buildTextbookMap(textbooks: TextbookResp[]): TextbookMap {
   return { byKey, childrenMap, rootKeys };
 }
 
-// 根据选中的层级路径获取当前层级的选项（使用 Map 查找）
-function getOptionsAtLevel(textbookMap: TextbookMap, selectedValues: LevelProps, levelIndex: number): string[] {
-  if (levelIndex === 0) {
-    return textbookMap.rootKeys;
-  }
-
-  // 获取上一级的 key
-  const parentKey = steps[levelIndex - 1];
-  const parentValue = selectedValues[parentKey];
-
-  if (!parentValue) return [];
-
-  // 直接通过 Map 获取子节点
-  return textbookMap.childrenMap.get(parentValue) || [];
-}
-
-// 获取某个层级选中的完整 Textbook（使用 Map 查找）
-function getSelectedTextbookAtLevel(textbookMap: TextbookMap, selectedValues: LevelProps, levelIndex: number): TextbookResp | null {
-  const key = steps[levelIndex];
-  const value = selectedValues[key];
-
-  if (!value) return null;
-
-  // O(1) 查找
-  return textbookMap.byKey.get(value) || null;
-}
-
 /**
- * 按顺序填充默认值：遇到取不出来的 key 就停止，后续层级保持无默认值。
+ * 按顺序解析默认值数组：遇到不存在或断层的 key 就停止
  */
-function resolveDefaultValues(textbookMap: TextbookMap, defaultValue: string[]): LevelProps {
-  const result: LevelProps = {
-    first: null,
-    second: null,
-    third: null,
-    fourth: null,
-    fifth: null,
-  };
+function resolveDefaultKeys(textbookMap: TextbookMap, defaultValues: string[], maxDepth: number): string[] {
+  const result: string[] = [];
+  const limit = Math.min(defaultValues.length, maxDepth);
 
-  for (let i = 0; i < steps.length; i++) {
-    const value = defaultValue[i];
-    if (!value) break;
-    if (!textbookMap.byKey.has(value)) break;
+  for (let i = 0; i < limit; i++) {
+    const key = defaultValues[i];
+    if (!key || !textbookMap.byKey.has(key)) break;
 
-    result[steps[i]] = value;
+    // 校验父子级联关系是否合法（第0层必须在 rootKeys 中，后续层必须在上一层的 children 中）
+    const validOptions = i === 0 ? textbookMap.rootKeys : textbookMap.childrenMap.get(result[i - 1]) || [];
+    if (!validOptions.includes(key)) break;
+
+    result.push(key);
   }
-
   return result;
 }
 
-/** 比较两个默认值数组是否等价，避免内联数组每次渲染都触发应用 */
-function isSameDefaultValue(a: string[] | null, b: string[] | null): boolean {
+/** 比较两个字符串数组是否等价 */
+function isSameKeys(a: string[] | null | undefined, b: string[] | null | undefined): boolean {
   if (a === b) return true;
   if (!a || !b) return false;
   if (a.length !== b.length) return false;
@@ -132,154 +86,92 @@ function isSameDefaultValue(a: string[] | null, b: string[] | null): boolean {
 }
 
 interface ChapterExpandNavProps {
-  // textbooks 网站原始前5层级导航信息
+  /** textbooks 网站原始层级导航信息 */
   textbooks: TextbookResp[];
   /**
    * 默认选中值，按层级顺序指定 key 路径，如 ['primary', 'math', 'chapter-1']
-   * 在 textbooks 加载完成后应用；遇到取不出来的 key 就停止，后续层级无默认值。
-   * 语义：只要用户还没有手动选择过，defaultValue（包括异步到达、刷新后的重新挂载）
-   * 都会生效；用户一旦手动选择，则只以用户选择为准，不再被 defaultValue 覆盖。
+   * 语义：只要用户还没有手动选择过，defaultValues 都会生效；
+   * 用户一旦手动选择，则只以用户选择为准，不再被 defaultValues 覆盖。
    */
   defaultValues?: string[];
-  // 选择 Option 时监听选中项的外部函数
-  onSelectionChange?: (selectedTextbooks: Record<keyof LevelProps, TextbookResp | null>) => void;
+  /** 选择 Option 时监听选中项的外部函数，返回按层级顺序排列的已选节点数组（长度 1 ~ 5） */
+  onSelectionChange?: (selectedTextbooks: TextbookResp[]) => void;
 }
 
 // 平铺展开式的导航样式-适用于首页
 function ChapterExpandNav(props: ChapterExpandNavProps) {
-  const { textbooks = [], onSelectionChange, defaultValues } = props;
+  const { textbooks = EMPTY_TEXTBOOKS, onSelectionChange, defaultValues } = props;
 
-  // 构建 Map 索引（只在 textbooks 变化时重新构建）
+  const onSelectionChangeRef = useRef(onSelectionChange);
+  onSelectionChangeRef.current = onSelectionChange;
+
+  // 构建 Map 索引
   const textbookMap = useMemo(() => buildTextbookMap(textbooks), [textbooks]);
 
-  // 状态管理, value 存储 Textbook.key
-  const [selectedValues, setSelectedValues] = useState<LevelProps>({
-    first: null,
-    second: null,
-    third: null,
-    fourth: null,
-    fifth: null,
-  });
+  // 状态管理：直接按顺序存储选中的 key 数组，如 ['k1', 'k2']
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
 
-  // 用户是否已手动交互过；交互后默认值逻辑彻底失效
+  // 用户是否已手动交互过
   const userInteractedRef = useRef(false);
-  // 记录最近一次已应用的默认值，避免内联数组每次渲染都触发 setState
+
+  // 记录最近一次已应用的默认值
   const appliedDefaultRef = useRef<string[] | null>(null);
 
-  // textbooks 就绪后 / defaultValue 变化时，在用户未交互的前提下应用默认值
+  // 应用默认值
   useEffect(() => {
-    // 用户已交互，默认值不再参与
     if (userInteractedRef.current) return;
     if (!defaultValues || defaultValues.length === 0) return;
-
-    // textbooks 还未加载，等待下一次 effect
     if (textbookMap.rootKeys.length === 0) return;
+    if (isSameKeys(appliedDefaultRef.current, defaultValues)) return;
 
-    // 同一个默认值只应用一次
-    if (isSameDefaultValue(appliedDefaultRef.current, defaultValues)) return;
-
-    const resolved = resolveDefaultValues(textbookMap, defaultValues);
+    const resolved = resolveDefaultKeys(textbookMap, defaultValues, STEP_LABELS.length);
     appliedDefaultRef.current = defaultValues;
+    if (resolved.length === 0) return;
 
-    // 一个都取不出来就什么都不做，保持无选中
-    if (steps.every((key) => !resolved[key])) return;
-
-    setSelectedValues(resolved);
+    setSelectedKeys(resolved);
   }, [textbookMap, defaultValues]);
 
-  // 计算选中对象的缓存（避免重复计算）
-  const selectedTextbooks = useMemo(() => {
-    const result: Record<keyof LevelProps, TextbookResp | null> = {
-      first: null,
-      second: null,
-      third: null,
-      fourth: null,
-      fifth: null,
-    };
-
-    steps.forEach((key, index) => {
-      result[key] = getSelectedTextbookAtLevel(textbookMap, selectedValues, index);
-    });
-
-    return result;
-  }, [textbookMap, selectedValues]);
-
-  // 当选中状态变化时通知父组件
-  useEffect(() => {
-    // textbooks 未就绪，不通知
-    if (textbookMap.rootKeys.length === 0) return;
-    // 用户未交互过，init 阶段静默；父组件既然传了 defaultValues，自己就知道初始状态
-    if (!userInteractedRef.current) return;
-    onSelectionChange?.(selectedTextbooks);
-  }, [selectedTextbooks, textbookMap.rootKeys.length]);
-
-  // 处理层级选择
+  // 处理层级选择：截断当前层级及之后的所有选择，并追加新选中的 key
   const handleLevelSelect = useCallback(
-    (levelKey: keyof LevelProps, textbook: TextbookResp) => {
-      // 用户一旦手动操作，默认值逻辑彻底失效
-      userInteractedRef.current = true;
-
-      const levelIndex = steps.indexOf(levelKey);
-
-      // 清空当前层级及之后的所有层级
-      const newValues: LevelProps = {
-        first: selectedValues.first,
-        second: selectedValues.second,
-        third: selectedValues.third,
-        fourth: selectedValues.fourth,
-        fifth: selectedValues.fifth,
-      };
-
-      for (let i = levelIndex; i < steps.length; i++) {
-        const key = steps[i];
-        newValues[key] = null;
+    (levelIndex: number, textbook: TextbookResp) => {
+      // 如果点击的就是当前层级已经选中的项，且后面没有多余的子层级，直接忽略
+      if (selectedKeys[levelIndex] === textbook.key && selectedKeys.length === levelIndex + 1) {
+        return;
       }
 
-      newValues[levelKey] = textbook.key;
-      setSelectedValues(newValues);
-    },
-    [selectedValues],
-  );
+      userInteractedRef.current = true;
+      const nextKeys = [...selectedKeys.slice(0, levelIndex), textbook.key];
+      setSelectedKeys(nextKeys);
 
-  // 检查某个层级是否可用（前置层级已选择）
-  const isLevelEnabled = useCallback(
-    (levelIndex: number): boolean => {
-      if (levelIndex === 0) return textbookMap.rootKeys.length > 0;
-      const prevKey = steps[levelIndex - 1];
-      return selectedValues[prevKey] !== null;
-    },
-    [selectedValues, textbookMap.rootKeys.length],
-  );
+      const nextTextbooks = nextKeys.map((key) => textbookMap.byKey.get(key)).filter((item): item is TextbookResp => item !== undefined);
 
-  // 检查某个层级是否已被选中
-  const isLevelSelected = useCallback(
-    (levelIndex: number): boolean => {
-      const key = steps[levelIndex];
-      return selectedValues[key] !== null;
+      onSelectionChangeRef.current?.(nextTextbooks);
     },
-    [selectedValues],
+    [selectedKeys, textbookMap.byKey],
   );
 
   return (
     <div className="divide-y divide-dotted">
-      {steps.map((levelKey, index) => {
-        // 获取当前层级的选项 keys
-        const optionKeys = getOptionsAtLevel(textbookMap, selectedValues, index);
-        const enabled = isLevelEnabled(index);
-        const isSelected = isLevelSelected(index);
-        const selectedKey = selectedValues[levelKey];
+      {STEP_LABELS.map((label, index) => {
+        // 第 0 层取根节点，后续层取上一级选中节点的子节点
+        const optionKeys =
+          index === 0 ? textbookMap.rootKeys : selectedKeys[index - 1] ? textbookMap.childrenMap.get(selectedKeys[index - 1]) || [] : [];
+
+        // 第 0 层只要有数据就可用；后续层需要上一级已选中
+        const enabled = index === 0 ? textbookMap.rootKeys.length > 0 : Boolean(selectedKeys[index - 1]);
+        const selectedKey = selectedKeys[index] ?? null;
+        const isSelected = selectedKey !== null;
 
         return (
           <LevelExt
-            key={levelKey}
-            levelKey={levelKey}
-            keyDesc={stepLabels[levelKey] || ''}
+            key={index}
+            keyDesc={label}
             enabled={enabled}
             isSelected={isSelected}
             optionKeys={optionKeys}
             textbookMap={textbookMap}
             selectedKey={selectedKey}
-            onSelect={(textbook) => handleLevelSelect(levelKey, textbook)}
+            onSelect={(textbook) => handleLevelSelect(index, textbook)}
           />
         );
       })}
@@ -289,7 +181,6 @@ function ChapterExpandNav(props: ChapterExpandNavProps) {
 
 // 生成一个维度的层级信息
 interface LevelExtProps {
-  levelKey: keyof LevelProps;
   keyDesc: string;
   enabled: boolean;
   isSelected: boolean;
@@ -302,7 +193,6 @@ interface LevelExtProps {
 function LevelExt(props: LevelExtProps) {
   const { keyDesc, enabled, isSelected, optionKeys, textbookMap, selectedKey, onSelect } = props;
 
-  // 将 keys 转换为 Textbook 对象（仅当需要显示时）
   const options = useMemo(() => {
     return optionKeys.map((key) => textbookMap.byKey.get(key)).filter((item): item is TextbookResp => item !== undefined);
   }, [optionKeys, textbookMap.byKey]);
@@ -325,7 +215,6 @@ function LevelExt(props: LevelExtProps) {
           </span>
           <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">{keyDesc}</span>
         </div>
-
         <div className="flex flex-wrap gap-2 flex-1">
           {options.length > 0 ? (
             options.map((opt) => (
@@ -343,6 +232,7 @@ function LevelExt(props: LevelExtProps) {
 }
 
 // 树形展开导航菜单
+const EMPTY_KEYS: string[] = [];
 interface CheckboxTreeNode extends TextbookResp {
   children?: CheckboxTreeNode[];
 }
@@ -438,28 +328,31 @@ const renderTreeNodes = (
 };
 
 // 属性多选择树形组件 - 完全展开版本
-function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = [], maxDepth = 5 }: TreeCheckboxProps) {
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = EMPTY_KEYS, maxDepth = 5 }: TreeCheckboxProps) {
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(() => new Set(defaultSelectedKeys));
+  const [expandedKeys, setExpandedKeys] = useState<Set<string>>(new Set());
 
-  // 需要用接收来初始化, 该值为不受控组件值
+  // 当 textbooks 或 defaultSelectedKeys 变更时，重置选中状态并默认展开所有节点
   useEffect(() => {
-    setSelectedKeys(new Set(defaultSelectedKeys));
-  }, [defaultSelectedKeys]);
+    const validKeys = new Set<string>();
+    const allExpandableKeys = new Set<string>();
 
-  const [expandedKeys, setExpandedKeys] = useState<Set<string>>(() => {
-    // 默认展开所有节点
-    const allKeys = new Set<string>();
     const traverse = (nodes: CheckboxTreeNode[]) => {
       for (const node of nodes) {
+        validKeys.add(node.key);
         if (node.children && node.children.length > 0) {
-          allKeys.add(node.key);
+          allExpandableKeys.add(node.key);
           traverse(node.children);
         }
       }
     };
     traverse(textbooks);
-    return allKeys;
-  });
+
+    // 仅保留当前 textbooks 中存在的 defaultSelectedKeys 清空上一次切换留下的临时选中值
+    const nextSelected = new Set(defaultSelectedKeys.filter((key) => validKeys.has(key)));
+    setSelectedKeys(nextSelected);
+    setExpandedKeys(allExpandableKeys);
+  }, [textbooks, defaultSelectedKeys]);
 
   // 自动展开选中节点的路径
   useEffect(() => {
@@ -898,4 +791,4 @@ function ChapterDropdownNav(props: ChapterDropdownNavProps) {
 }
 
 export { ChapterDropdownNav, ChapterExpandNav, ChapterTreeCheckboxNav };
-export type { CheckboxTreeNode, LevelProps };
+export type { CheckboxTreeNode };

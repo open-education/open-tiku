@@ -137,3 +137,9 @@ export enum PaperStatus {
   Published = 3, // 已发布
   Rejected = 10, // 已拒绝
 }
+
+// 个性化配置菜单模式
+export enum CustomModeType {
+  Chapter = 1,
+  Knowledge = 2,
+}

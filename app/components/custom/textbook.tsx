@@ -5,9 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
 import type { CustomAddReq, CustomTextbook } from '@/type/custom';
-import { CustomPageSource, CustomType, CustomUserSource } from '@/type/enum';
-import type { QuestionSearch } from '@/type/question';
-import type { TextbookResp } from '@/type/textbook';
+import { CustomModeType, CustomPageSource, CustomType, CustomUserSource } from '@/type/enum';
+import type { TextbookFillLevel } from '@/type/textbook';
 import { useCustomList, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
 import { Save } from 'lucide-react';
@@ -21,26 +20,13 @@ interface TextbookProps {
   pageSource: CustomPageSource;
 }
 
-export default function Textbook({ userSource, pageSource }: TextbookProps) {
+export default function TextbookList({ userSource, pageSource }: TextbookProps) {
   // 网站主要导航
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks();
 
-  // 搜索对象维护
-  const [questionSearch, setQuestionSearch] = useState<QuestionSearch>({
-    twoLevelId: 0,
-    fiveLevelId: 0,
-    fiveLevelSelectKeys: [],
-    eightIds: [],
-    eightLevelSelectKeys: [],
-    typeId: 0,
-    tagIds: [],
-    dimensionIds: [],
-    levelIds: [],
-    sceneIds: [],
-    mistakeTipIds: [],
-  });
-  const updateQuestionSearch = (key: keyof QuestionSearch, value: number | number[] | string[]) => {
-    setQuestionSearch((prev) => ({ ...prev, [key]: value }));
+  const [fillLevel, setFillLevel] = useState<TextbookFillLevel>({ fiveLevelKeys: [], eightLevelKeys: [] });
+  const updateFillLevel = (key: keyof TextbookFillLevel, value: string[]) => {
+    setFillLevel((prev) => ({ ...prev, [key]: value }));
   };
 
   // 添加信息请求
@@ -51,12 +37,6 @@ export default function Textbook({ userSource, pageSource }: TextbookProps) {
   });
   const updateAddReq = (key: keyof CustomAddReq, value: number | CustomTextbook) => {
     setAddReq((prev) => ({ ...prev, [key]: value }));
-  };
-  const updateTextbook = (patch: Partial<CustomTextbook>) => {
-    setAddReq((prev) => ({
-      ...prev,
-      textbook: { ...(prev.textbook ?? {}), ...patch },
-    }));
   };
 
   // 用户个性化配置
@@ -73,15 +53,8 @@ export default function Textbook({ userSource, pageSource }: TextbookProps) {
 
     if (customTextbook.textbook) {
       updateAddReq('textbook', customTextbook.textbook);
-      // 更新默认显示
-      if (customTextbook.textbook.twoLevelId && customTextbook.textbook.twoLevelId > 0) {
-        updateQuestionSearch('twoLevelId', customTextbook.textbook.twoLevelId);
-      }
-      if (customTextbook.textbook.fiveLevelId && customTextbook.textbook.fiveLevelId > 0) {
-        updateQuestionSearch('fiveLevelId', customTextbook.textbook.fiveLevelId);
-      }
-      if (customTextbook.textbook.fiveLevelKeys && customTextbook.textbook.fiveLevelKeys.length > 0) {
-        updateQuestionSearch('fiveLevelSelectKeys', customTextbook.textbook.fiveLevelKeys);
+      if (customTextbook.textbook.keys && customTextbook.textbook.keys.length > 0) {
+        updateFillLevel('fiveLevelKeys', customTextbook.textbook.keys);
       }
     }
   }, [customListResp]);
@@ -104,7 +77,7 @@ export default function Textbook({ userSource, pageSource }: TextbookProps) {
       return;
     }
     // 前5层级至少选择到第二层
-    if (!addReq.textbook.fiveLevelKeys || addReq.textbook.fiveLevelKeys.length < 2) {
+    if (!addReq.textbook.keys || addReq.textbook.keys.length < 2) {
       toast.error(<div className="text-red-700">前5层级最少需要选择到第二层科目</div>, {
         duration: Infinity,
         action: {
@@ -164,42 +137,21 @@ export default function Textbook({ userSource, pageSource }: TextbookProps) {
       <div className="p-3 space-y-2 bg-card">
         <ChapterExpandNav
           textbooks={textbooks}
-          defaultValues={questionSearch.fiveLevelSelectKeys}
+          defaultValues={fillLevel.fiveLevelKeys}
           onSelectionChange={(selectedTextbooks) => {
             const isEmpty = Object.values(selectedTextbooks).every((item) => item === null);
             if (isEmpty) return;
+            const keys: string[] = selectedTextbooks.map((item) => item.key);
+            const idFullPath = selectedTextbooks.length > 0 ? `/${selectedTextbooks.map((item) => item.id).join('/')}/` : '';
 
-            // 收集选中的默认层级 key
-            let selectedKeys: string[] = [];
-            if (selectedTextbooks.first) {
-              selectedKeys.push(selectedTextbooks.first.key);
-            }
-            if (selectedTextbooks.second) {
-              selectedKeys.push(selectedTextbooks.second.key);
-              const twoCurrent: TextbookResp = selectedTextbooks.second;
-              updateQuestionSearch('twoLevelId', twoCurrent.id);
-              updateTextbook({ twoLevelId: twoCurrent.id });
-            }
-            if (selectedTextbooks.third) {
-              selectedKeys.push(selectedTextbooks.third.key);
-            }
-            if (selectedTextbooks.fourth) {
-              selectedKeys.push(selectedTextbooks.fourth.key);
+            let mode = CustomModeType.Chapter;
+            if (selectedTextbooks.length > 2) {
+              if (selectedTextbooks[selectedTextbooks.length - 1].pathType === 'knowledge') {
+                mode = CustomModeType.Knowledge;
+              }
             }
 
-            if (!selectedTextbooks || !selectedTextbooks.fifth) {
-              updateQuestionSearch('fiveLevelId', 0);
-              updateTextbook({ fiveLevelId: 0 });
-            } else {
-              const fiveCurrent: TextbookResp = selectedTextbooks.fifth;
-              selectedKeys.push(fiveCurrent.key);
-              updateQuestionSearch('fiveLevelId', fiveCurrent.id);
-              updateTextbook({ fiveLevelId: fiveCurrent.id });
-            }
-
-            // 选中多少层就收集多少层
-            updateQuestionSearch('fiveLevelSelectKeys', selectedKeys);
-            updateTextbook({ fiveLevelKeys: selectedKeys });
+            updateAddReq('textbook', { mode, path: idFullPath, keys });
           }}
         />
       </div>

@@ -208,14 +208,10 @@ function CommonPart({ item, cityMap }: CommonPartProps) {
           {item.remark && (
             <>
               <span>|</span>
-              <SimpleTooltip
-                tip={
-                  <span className="inline-flex items-center gap-1 truncate max-w-65">
-                    <NotebookText className="w-3.5 h-3.5 shrink-0" />
-                    <span className="truncate">{item.remark}</span>
-                  </span>
-                }
-              />
+              <div className="inline-flex items-center gap-1">
+                <NotebookText className="w-3.5 h-3.5 shrink-0" />
+                <SimpleTooltip tip={item.remark} />
+              </div>
             </>
           )}
         </div>

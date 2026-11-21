@@ -17,9 +17,7 @@ export default function Index() {
     <Add
       key="paper-add"
       initAddReq={{
-        id: 0,
-        twoLevelId: 0,
-        fiveLevelId: 0,
+        textbookPath: '',
         paperType: PaperType.Upload,
         fileType: UploadFileType.Pdf,
         fileList: [],

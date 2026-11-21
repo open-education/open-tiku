@@ -38,8 +38,6 @@ export default function Index() {
   const initAddReq = useMemo(() => {
     // 初始化部分默认值
     const initAddDefault: TaskSaveReq = {
-      twoLevelId: 0,
-      fiveLevelId: 0,
       questionCateId: 0,
       taskType: StringConst.taskTypeUploadQuestion,
       name: '',
@@ -66,7 +64,8 @@ export default function Index() {
   const { data: textbooks = [], isLoading: textbooksLoading, error: textbooksErr } = useTextbooks(5);
 
   // 获取教材/知识点题型列表
-  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(addReq.fiveLevelId);
+  const [fiveLevelId, setFiveLevelId] = useState<number>(0);
+  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
 
   // 用户个性化配置
   const {
@@ -78,7 +77,7 @@ export default function Index() {
     pageSource: CustomPageSource.Default,
   });
   useEffect(() => {
-    CustomUtil.defaultTextbookUpdate(customListResp, updateAddReq, updateFillLevel);
+    CustomUtil.defaultTextbookUpdate(customListResp, updateFillLevel, undefined, setFiveLevelId);
   }, [customListResp]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -87,26 +86,6 @@ export default function Index() {
   // 添加任务
   const handleAddTask = () => {
     // 必要的参数校验
-    if (addReq.twoLevelId <= 0) {
-      toast.error(<div className="text-red-700">第2层级菜单科目不能为空</div>, {
-        duration: Infinity,
-        action: {
-          label: '关闭',
-          onClick: () => {},
-        },
-      });
-      return;
-    }
-    if (addReq.fiveLevelId <= 0) {
-      toast.error(<div className="text-red-700">第5层级菜单章节/知识点不能为空</div>, {
-        duration: Infinity,
-        action: {
-          label: '关闭',
-          onClick: () => {},
-        },
-      });
-      return;
-    }
     if (addReq.questionCateId <= 0) {
       toast.error(<div className="text-red-700">第8层级菜单题型不能为空</div>, {
         duration: Infinity,
@@ -203,9 +182,7 @@ export default function Index() {
             <ChapterDropdownNav
               textbooks={textbooks}
               onSelect={(selectedItems: TextbookResp[]) => {
-                const [, secondItem = null, , , fifthItem = null] = selectedItems ?? [];
-                updateAddReq('twoLevelId', secondItem ? secondItem.id : 0);
-                updateAddReq('fiveLevelId', fifthItem ? fifthItem.id : 0);
+                setFiveLevelId?.(selectedItems && selectedItems.length === 5 ? selectedItems[selectedItems.length - 1].id : 0);
               }}
               defaultSelectedKeys={fillLevel.fiveLevelKeys}
               placeholder="请选择知识点/章节"

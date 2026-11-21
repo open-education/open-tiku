@@ -1,7 +1,5 @@
 // 任务上传请求
 export interface TaskSaveReq {
-  twoLevelId: number;
-  fiveLevelId: number;
   questionCateId: number;
   taskType: number; // 任务类型 1 题目上传
   name: string;
@@ -11,8 +9,8 @@ export interface TaskSaveReq {
 
 // 任务列表请求
 export interface TaskListReq {
-  twoLevelId: number;
-  fiveLevelId?: number;
+  chapterPath?: string;
+  knowledgePath?: string;
   questionCateId?: number;
   taskType: number;
   pageNo: number;
@@ -22,8 +20,8 @@ export interface TaskListReq {
 // 任务详情
 export interface TaskInfo {
   id: number;
-  twoLevelId: number;
-  fiveLevelId: number;
+  chapterPath: string;
+  knowledgePath: string;
   questionCateId: number;
   taskType: number;
   name: string;

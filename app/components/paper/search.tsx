@@ -20,7 +20,7 @@ import type { CountPaperResp, PaperListReq } from '@/type/paper';
 import type { TextbookFillLevel } from '@/type/textbook';
 import { useCityList, useCustomList, usePaperList, useTextbooks } from '@/util/fetcher';
 import { formatNumber } from '@/util/fmt';
-import { ArrayUtil, CustomUtil } from '@/util/object';
+import { ArrayUtil, CustomUtil, TextbookUtil } from '@/util/object';
 import { StringConst } from '@/util/string';
 import { useEffect, useMemo, useState } from 'react';
 import type { KeyedMutator } from 'swr';
@@ -54,7 +54,7 @@ export default function PaperSearchList({ listReq, noDataDesc, updateListReq, co
     pageSource: CustomPageSource.Default,
   });
   useEffect(() => {
-    CustomUtil.defaultTextbookUpdate(customListResp, updateListReq, updateFillLevel);
+    CustomUtil.defaultPaperTextbookUpdate(customListResp, updateFillLevel, updateListReq);
   }, [customListResp]);
 
   const { data: cityListResp = [], isLoading: cityListRespLoading, error: cityListRespErr } = useCityList();
@@ -80,11 +80,7 @@ export default function PaperSearchList({ listReq, noDataDesc, updateListReq, co
           textbooks={textbooks}
           defaultValues={fillLevel.fiveLevelKeys}
           onSelectionChange={(selectedTextbooks) => {
-            if (!selectedTextbooks) {
-              return;
-            }
-            updateListReq('twoLevelId', selectedTextbooks.second ? selectedTextbooks.second.id : 0);
-            updateListReq('fiveLevelId', selectedTextbooks.fifth ? selectedTextbooks.fifth.id : 0);
+            TextbookUtil.paperTextbookPathUpdate(selectedTextbooks, updateListReq);
           }}
         />
       </div>

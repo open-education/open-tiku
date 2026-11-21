@@ -33,7 +33,7 @@ const defaultStatusList: StatItem[] = [
     desc: '我的全部试卷',
     theme: {
       dot: 'bg-blue-500',
-      iconActive: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+      iconActive: 'bg-blue-500/10 text-blue-600',
       ring: 'border-blue-500/60 ring-2 ring-blue-500/10',
     },
   },
@@ -46,7 +46,7 @@ const defaultStatusList: StatItem[] = [
     desc: '可编辑的试卷',
     theme: {
       dot: 'bg-zinc-400',
-      iconActive: 'bg-zinc-500/10 text-zinc-700 dark:text-zinc-300',
+      iconActive: 'bg-zinc-500/10 text-zinc-700',
       ring: 'border-zinc-500/60 ring-2 ring-zinc-500/10',
     },
   },
@@ -59,7 +59,7 @@ const defaultStatusList: StatItem[] = [
     desc: '所有人可查看',
     theme: {
       dot: 'bg-emerald-500',
-      iconActive: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+      iconActive: 'bg-emerald-500/10 text-emerald-600',
       ring: 'border-emerald-500/60 ring-2 ring-emerald-500/10',
     },
   },
@@ -72,7 +72,7 @@ const defaultStatusList: StatItem[] = [
     desc: '不可编辑待他人审核',
     theme: {
       dot: 'bg-amber-500',
-      iconActive: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+      iconActive: 'bg-amber-500/10 text-amber-600',
       ring: 'border-amber-500/60 ring-2 ring-amber-500/10',
     },
   },
@@ -85,7 +85,7 @@ const defaultStatusList: StatItem[] = [
     desc: '按拒绝理由修改',
     theme: {
       dot: 'bg-rose-500',
-      iconActive: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
+      iconActive: 'bg-rose-500/10 text-rose-600',
       ring: 'border-rose-500/60 ring-2 ring-rose-500/10',
     },
   },
@@ -110,7 +110,7 @@ export default function Index() {
 
   const [listReq, setListReq] = useState<PaperListReq>({
     source: PaperPageSource.MyPaper,
-    twoLevelId: 0,
+    textbookPath: '',
     status: activeStatus,
     pageNo: 1,
     pageSize: StringConst.pageSize,

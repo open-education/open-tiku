@@ -1,15 +1,16 @@
 import { SimpleAlert } from '@/components/common/alert';
 import { SimpleNoData } from '@/components/common/empty';
 import { Loading } from '@/components/common/load';
-import { type CheckboxTreeNode } from '@/components/common/nav';
+import { ChapterExpandNav, ChapterTreeCheckboxNav } from '@/components/common/nav';
 import { SimplePagination } from '@/components/common/page';
 import { QuestionListShow } from '@/components/question/list';
-import { NavTreeList, SearchList } from '@/components/question/nav';
+import { SearchList } from '@/components/question/nav';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { useDelayedLoading } from '@/hooks/delayed-loading';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CustomPageSource, CustomUserSource, QuestionPageSource } from '@/type/enum';
-import type { CountQuestionResp, QuestionSearch } from '@/type/question';
+import type { CountQuestionResp, QuestionListReq } from '@/type/question';
+import type { TextbookFillLevel } from '@/type/textbook';
 import { useCustomList, useQuestionCates, useQuestionList, useQuestionOtherDictList, useTextbooks } from '@/util/fetcher';
 import { formatNumber } from '@/util/fmt';
 import { CustomUtil, TextbookUtil } from '@/util/object';
@@ -22,8 +23,8 @@ interface QuestionSearchListProps {
   pageSource: QuestionPageSource;
   showFilter: boolean;
   noDataDesc: string;
-  questionSearch: QuestionSearch;
-  updateQuestionSearch: (key: keyof QuestionSearch, value: number | number[] | string[]) => void;
+  listReq: QuestionListReq;
+  updateListReq: (key: keyof QuestionListReq, val: string | number[] | number) => void;
   countListRespMutate?: KeyedMutator<CountQuestionResp[]>; // 我的题目提交审核等操作需要重置列表状态计数接口重新请求数据
 }
 
@@ -31,18 +32,19 @@ export default function QuestionSearchList({
   pageSource,
   showFilter,
   noDataDesc,
-  questionSearch,
-  updateQuestionSearch,
+  listReq,
+  updateListReq,
   countListRespMutate,
 }: QuestionSearchListProps) {
   const { data: textbooks = [], isLoading: textbooksIsLoading, error: textbooksErr } = useTextbooks();
 
   // 查询题目类型和标签等信息
+  const [twoLevelId, setTwoLevelId] = useState<number>(0);
   const {
     data: dictListResp = { map: {} },
     isLoading: dictListRespLoading,
     error: dictListRespErr,
-  } = useQuestionOtherDictList(questionSearch.twoLevelId, [
+  } = useQuestionOtherDictList(twoLevelId, [
     'question_type',
     'question_tag',
     'question_dimension',
@@ -55,7 +57,13 @@ export default function QuestionSearchList({
   }, [dictListResp]);
 
   // 获取教材/知识点题型列表
-  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(questionSearch.fiveLevelId);
+  const [fiveLevelId, setFiveLevelId] = useState<number>(0);
+  const { data: questionCates = [], isLoading: questionCatesLoading, error: questionCatesErr } = useQuestionCates(fiveLevelId);
+
+  const [fillLevel, setFilleLevel] = useState<TextbookFillLevel>({ fiveLevelKeys: [], eightLevelKeys: [] });
+  const updateFillLevel = (key: keyof TextbookFillLevel, val: string[]) => {
+    setFilleLevel((prev) => ({ ...prev, [key]: val }));
+  };
 
   // 用户个性化配置
   const {
@@ -67,7 +75,7 @@ export default function QuestionSearchList({
     pageSource: CustomPageSource.Default,
   });
   useEffect(() => {
-    CustomUtil.questionSearchUpdate(customListResp, updateQuestionSearch);
+    CustomUtil.defaultTextbookUpdate(customListResp, updateFillLevel, updateListReq, setFiveLevelId, setTwoLevelId);
   }, [customListResp]);
 
   // 查询题目列表
@@ -77,7 +85,7 @@ export default function QuestionSearchList({
     isLoading: questionListRespLoading,
     error: questionListRespErr,
     mutate: questionListRespMutate,
-  } = useQuestionList(pageSource, questionSearch, pageNo);
+  } = useQuestionList(pageSource, listReq, pageNo);
 
   // 页面加载中
   const showLoading = useDelayedLoading(
@@ -86,36 +94,35 @@ export default function QuestionSearchList({
 
   // 左边内容
   const leftContent = (
-    <NavTreeList
-      textbooks={textbooks}
-      questionCates={questionCates}
-      questionSearch={questionSearch}
-      onTextbook={(selectedTextbooks) => {
-        if (!selectedTextbooks) {
-          return;
-        }
+    <div className="p-3 space-y-2 bg-card">
+      <ChapterExpandNav
+        textbooks={textbooks}
+        defaultValues={fillLevel.fiveLevelKeys}
+        onSelectionChange={(items) => {
+          TextbookUtil.textbookPathUpdate(items, updateListReq, setFiveLevelId, setTwoLevelId);
+          // 需要清空后3层菜单
+          if (items && items.length > 0) {
+            updateListReq('questionCateIds', []);
+          }
+        }}
+      />
 
-        updateQuestionSearch('twoLevelId', selectedTextbooks.second ? selectedTextbooks.second.id : 0);
-        updateQuestionSearch('fiveLevelId', selectedTextbooks.fifth ? selectedTextbooks.fifth.id : 0);
-      }}
-      onQuestionCate={(selectedItems: CheckboxTreeNode[]) => {
-        if (!selectedItems) {
-          updateQuestionSearch('eightIds', []);
-          return;
-        }
-        // tableName: "question_cate" 对应的为题型标识
-        const questionCateIds = selectedItems.filter((item) => item.tableName === StringConst.questionCateTableName).map((item) => item.id);
-        updateQuestionSearch('eightIds', questionCateIds);
-      }}
-    />
+      <ChapterTreeCheckboxNav
+        textbooks={questionCates}
+        onSelect={(items) => {
+          const ids = items.filter((item) => item.tableName === StringConst.questionCateTableName).map((item) => item.id);
+          updateListReq('questionCateIds', ids);
+        }}
+        defaultSelectedKeys={fillLevel.eightLevelKeys}
+        maxDepth={3}
+      />
+    </div>
   );
 
   // 右边内容
   const rightContent = (
     <div className="space-y-3">
-      {showFilter && (
-        <SearchList otherDictListRecord={otherDictListRecord} questionSearch={questionSearch} updateQuestionSearch={updateQuestionSearch} />
-      )}
+      {showFilter && <SearchList otherDictListRecord={otherDictListRecord} listReq={listReq} updateListReq={updateListReq} />}
 
       <div>
         {/* 空数据提示 */}
