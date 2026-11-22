@@ -1,13 +1,18 @@
+import type { UserInfoResp } from '@/type/user';
 import { useEffect, useState } from 'react';
-import type { UserInfoResp } from '~/type/user';
 
 // 获取用户信息
-export const useUserInfo = (): UserInfoResp | null => {
+export const useUserInfo = () => {
   const [user, setUser] = useState<UserInfoResp | null>(null);
 
   const updateUser = () => {
-    const raw = localStorage.getItem('user');
-    setUser(raw ? JSON.parse(raw) : null);
+    try {
+      const raw = localStorage.getItem('user');
+      setUser(raw ? JSON.parse(raw) : null);
+    } catch (err) {
+      console.log('获取用户信息出错: ', err);
+      setUser(null);
+    }
   };
 
   useEffect(() => {

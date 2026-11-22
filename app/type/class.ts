@@ -93,3 +93,10 @@ export interface ClassStudentEditReq {
   status: number;
   remark: string;
 }
+
+// 解析学生账户输入结果
+export interface StudentAccountParseResult {
+  cleaned: string[]; // 清洗后的账户数组
+  commaSeparated: string; // 逗号拼接的字符串
+  duplicates: string[]; // 重复的账户列表（仅列出重复值）
+}

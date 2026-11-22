@@ -65,7 +65,5 @@ export async function getEncryptPwd(password: string): Promise<string> {
   const publicKeyPem = await res.text();
 
   // 用公钥整体加密
-  const encryptedData = await encryptPassword(rawData, publicKeyPem);
-
-  return encryptedData;
+  return await encryptPassword(rawData, publicKeyPem);
 }

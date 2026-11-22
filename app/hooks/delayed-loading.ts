@@ -4,11 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 export function useDelayedLoading(
   isLoading: boolean,
   options?: {
-    enterDelay?: number; // 延迟出现时间（毫秒），默认 200
+    enterDelay?: number; // 延迟出现时间（毫秒），默认 800
     minDisplay?: number; // 最少展示时间（毫秒），默认 300
   },
 ) {
-  const { enterDelay = 200, minDisplay = 300 } = options || {};
+  const { enterDelay = 800, minDisplay = 300 } = options || {};
   const [show, setShow] = useState(false);
 
   // 用 ref 记录当前是否正在显示，避免闭包陷阱

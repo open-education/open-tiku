@@ -5,12 +5,13 @@ export interface TaskSaveReq {
   name: string;
   url: string;
   email: string;
-  textbookId: number; // 目前在第2层上, 跟题型标签一个维度
 }
 
 // 任务列表请求
 export interface TaskListReq {
-  questionCateId: number;
+  chapterPath?: string;
+  knowledgePath?: string;
+  questionCateId?: number;
   taskType: number;
   pageNo: number;
   pageSize: number;
@@ -19,6 +20,8 @@ export interface TaskListReq {
 // 任务详情
 export interface TaskInfo {
   id: number;
+  chapterPath: string;
+  knowledgePath: string;
   questionCateId: number;
   taskType: number;
   name: string;

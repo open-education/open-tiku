@@ -1,0 +1,794 @@
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import type { TextbookResp } from '@/type/textbook';
+import { StringConst } from '@/util/string';
+import { cn } from 'cn';
+import { Check, ChevronDown, ChevronRight } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+// 层级标签配置（长度即最大支持层级数，目前为5层）
+const STEP_LABELS = ['学段', '科目', '知识点/章节选题', '知识点分类/出版社', '知识点名称/教材'];
+
+const EMPTY_TEXTBOOKS: TextbookResp[] = [];
+
+// 构建层级查找 Map，以 key 为索引
+interface TextbookMap {
+  byKey: Map<string, TextbookResp>;
+  childrenMap: Map<string, string[]>; // key -> child keys
+  rootKeys: string[];
+}
+
+function buildTextbookMap(textbooks: TextbookResp[]): TextbookMap {
+  const byKey = new Map<string, TextbookResp>();
+  const childrenMap = new Map<string, string[]>();
+  const rootKeys: string[] = [];
+
+  function traverse(items: TextbookResp[], parentKey?: string) {
+    for (const item of items) {
+      byKey.set(item.key, item);
+      if (parentKey) {
+        if (!childrenMap.has(parentKey)) {
+          childrenMap.set(parentKey, []);
+        }
+        childrenMap.get(parentKey)!.push(item.key);
+      } else {
+        rootKeys.push(item.key);
+      }
+      if (item.children && item.children.length > 0) {
+        traverse(item.children, item.key);
+      }
+    }
+  }
+
+  traverse(textbooks);
+  return { byKey, childrenMap, rootKeys };
+}
+
+/**
+ * 按顺序解析默认值数组：遇到不存在或断层的 key 就停止
+ */
+function resolveDefaultKeys(textbookMap: TextbookMap, defaultValues: string[], maxDepth: number): string[] {
+  const result: string[] = [];
+  const limit = Math.min(defaultValues.length, maxDepth);
+
+  for (let i = 0; i < limit; i++) {
+    const key = defaultValues[i];
+    if (!key || !textbookMap.byKey.has(key)) break;
+
+    // 校验父子级联关系是否合法（第0层必须在 rootKeys 中，后续层必须在上一层的 children 中）
+    const validOptions = i === 0 ? textbookMap.rootKeys : textbookMap.childrenMap.get(result[i - 1]) || [];
+    if (!validOptions.includes(key)) break;
+
+    result.push(key);
+  }
+  return result;
+}
+
+/** 比较两个字符串数组是否等价 */
+function isSameKeys(a: string[] | null | undefined, b: string[] | null | undefined): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  return a.every((value, index) => value === b[index]);
+}
+
+interface ChapterExpandNavProps {
+  /** textbooks 网站原始层级导航信息 */
+  textbooks: TextbookResp[];
+  /**
+   * 默认选中值，按层级顺序指定 key 路径，如 ['primary', 'math', 'chapter-1']
+   * 语义：只要用户还没有手动选择过，defaultValues 都会生效；
+   * 用户一旦手动选择，则只以用户选择为准，不再被 defaultValues 覆盖。
+   */
+  defaultValues?: string[];
+  /** 选择 Option 时监听选中项的外部函数，返回按层级顺序排列的已选节点数组（长度 1 ~ 5） */
+  onSelectionChange?: (selectedTextbooks: TextbookResp[]) => void;
+}
+
+// 平铺展开式的导航样式-适用于首页
+function ChapterExpandNav(props: ChapterExpandNavProps) {
+  const { textbooks = EMPTY_TEXTBOOKS, onSelectionChange, defaultValues } = props;
+
+  const onSelectionChangeRef = useRef(onSelectionChange);
+  onSelectionChangeRef.current = onSelectionChange;
+
+  // 构建 Map 索引
+  const textbookMap = useMemo(() => buildTextbookMap(textbooks), [textbooks]);
+
+  // 状态管理：直接按顺序存储选中的 key 数组，如 ['k1', 'k2']
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+
+  // 用户是否已手动交互过
+  const userInteractedRef = useRef(false);
+
+  // 记录最近一次已应用的默认值
+  const appliedDefaultRef = useRef<string[] | null>(null);
+
+  // 应用默认值
+  useEffect(() => {
+    if (userInteractedRef.current) return;
+    if (!defaultValues || defaultValues.length === 0) return;
+    if (textbookMap.rootKeys.length === 0) return;
+    if (isSameKeys(appliedDefaultRef.current, defaultValues)) return;
+
+    const resolved = resolveDefaultKeys(textbookMap, defaultValues, STEP_LABELS.length);
+    appliedDefaultRef.current = defaultValues;
+    if (resolved.length === 0) return;
+
+    setSelectedKeys(resolved);
+  }, [textbookMap, defaultValues]);
+
+  // 处理层级选择：截断当前层级及之后的所有选择，并追加新选中的 key
+  const handleLevelSelect = useCallback(
+    (levelIndex: number, textbook: TextbookResp) => {
+      // 如果点击的就是当前层级已经选中的项，且后面没有多余的子层级，直接忽略
+      if (selectedKeys[levelIndex] === textbook.key && selectedKeys.length === levelIndex + 1) {
+        return;
+      }
+
+      userInteractedRef.current = true;
+      const nextKeys = [...selectedKeys.slice(0, levelIndex), textbook.key];
+      setSelectedKeys(nextKeys);
+
+      const nextTextbooks = nextKeys.map((key) => textbookMap.byKey.get(key)).filter((item): item is TextbookResp => item !== undefined);
+
+      onSelectionChangeRef.current?.(nextTextbooks);
+    },
+    [selectedKeys, textbookMap.byKey],
+  );
+
+  return (
+    <div className="divide-y divide-dotted">
+      {STEP_LABELS.map((label, index) => {
+        // 第 0 层取根节点，后续层取上一级选中节点的子节点
+        const optionKeys =
+          index === 0 ? textbookMap.rootKeys : selectedKeys[index - 1] ? textbookMap.childrenMap.get(selectedKeys[index - 1]) || [] : [];
+
+        // 第 0 层只要有数据就可用；后续层需要上一级已选中
+        const enabled = index === 0 ? textbookMap.rootKeys.length > 0 : Boolean(selectedKeys[index - 1]);
+        const selectedKey = selectedKeys[index] ?? null;
+        const isSelected = selectedKey !== null;
+
+        return (
+          <LevelExt
+            key={index}
+            keyDesc={label}
+            enabled={enabled}
+            isSelected={isSelected}
+            optionKeys={optionKeys}
+            textbookMap={textbookMap}
+            selectedKey={selectedKey}
+            onSelect={(textbook) => handleLevelSelect(index, textbook)}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+// 生成一个维度的层级信息
+interface LevelExtProps {
+  keyDesc: string;
+  enabled: boolean;
+  isSelected: boolean;
+  optionKeys: string[];
+  textbookMap: TextbookMap;
+  selectedKey: string | null;
+  onSelect: (textbook: TextbookResp) => void;
+}
+
+function LevelExt(props: LevelExtProps) {
+  const { keyDesc, enabled, isSelected, optionKeys, textbookMap, selectedKey, onSelect } = props;
+
+  const options = useMemo(() => {
+    return optionKeys.map((key) => textbookMap.byKey.get(key)).filter((item): item is TextbookResp => item !== undefined);
+  }, [optionKeys, textbookMap.byKey]);
+
+  return (
+    <div className={cn('py-1 first:pt-0 transition-opacity duration-200', !enabled && 'opacity-25 pointer-events-none select-none')}>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2.5 w-30 shrink-0 mt-1.5">
+          <span
+            className={cn(
+              'w-4 h-4 rounded-full shrink-0 border-2 flex items-center justify-center transition-colors',
+              isSelected ? 'bg-primary border-primary' : 'border-muted-foreground/35',
+            )}
+          >
+            {isSelected && (
+              <svg className="w-2.5 h-2.5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </span>
+          <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">{keyDesc}</span>
+        </div>
+        <div className="flex flex-wrap gap-2 flex-1">
+          {options.length > 0 ? (
+            options.map((opt) => (
+              <Button key={opt.key} variant={selectedKey === opt.key ? 'default' : 'outline'} onClick={() => onSelect(opt)} disabled={!enabled}>
+                {opt.label}
+              </Button>
+            ))
+          ) : (
+            <span className="text-xs text-muted-foreground/40 mt-1.5 italic">{enabled ? '暂无选项' : '请先完成上一步'}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 树形展开导航菜单
+const EMPTY_KEYS: string[] = [];
+interface CheckboxTreeNode extends TextbookResp {
+  children?: CheckboxTreeNode[];
+}
+
+interface TreeCheckboxProps {
+  textbooks: CheckboxTreeNode[];
+  onSelect?: (selectedItems: CheckboxTreeNode[]) => void;
+  defaultSelectedKeys?: string[];
+  maxDepth?: number; // 保留，让使用者控制深度
+}
+
+// 树节点渲染函数 - 完全展开版本
+const renderTreeNodes = (
+  items: CheckboxTreeNode[],
+  depth: number,
+  maxDepth: number,
+  selectedKeys: Set<string>,
+  expandedKeys: Set<string>,
+  onToggleExpand: (key: string) => void,
+  onToggleSelect: (node: CheckboxTreeNode, checked: boolean) => void,
+  onSelectLeaf?: (node: CheckboxTreeNode) => void,
+): React.ReactNode => {
+  return (
+    <div className="space-y-1">
+      {items.map((item) => {
+        const hasChildren = item.children && item.children.length > 0;
+        const isSelected = selectedKeys.has(item.key);
+        const isExpanded = expandedKeys.has(item.key);
+        const canExpand = hasChildren && depth < maxDepth - 1;
+
+        // 计算子节点选中状态
+        let childStatus: 'none' | 'all' | 'partial' = 'none';
+        if (hasChildren) {
+          const children = item.children!;
+          const total = children.length;
+          const selected = children.filter((child) => selectedKeys.has(child.key)).length;
+          if (selected === total) childStatus = 'all';
+          else if (selected > 0) childStatus = 'partial';
+        }
+
+        return (
+          <div key={item.key} className="relative">
+            <div
+              className={cn('flex items-center gap-2 p-2 hover:bg-accent/50 transition-colors', isSelected && 'bg-accent/30')}
+              style={{ paddingLeft: `${depth * 20 + 8}px` }}
+            >
+              {/* 展开/折叠按钮 */}
+              {canExpand && (
+                <button onClick={() => onToggleExpand(item.key)} className="p-0.5 hover:bg-accent transition-colors">
+                  {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                </button>
+              )}
+
+              {/* 占位空间 - 保持对齐 */}
+              {!canExpand && <div className="w-5" />}
+
+              {/* 复选框 */}
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={(checked) => {
+                  onToggleSelect(item, checked as boolean);
+                }}
+                onClick={(e) => e.stopPropagation()}
+                data-state={childStatus === 'partial' ? 'indeterminate' : undefined}
+                className="shrink-0"
+              />
+
+              {/* 标签 */}
+              <span className="text-xs flex-1">{item.label}</span>
+
+              {/* 子节点数量徽标 */}
+              {hasChildren && (
+                <Badge variant="secondary" className="text-xs h-5 px-1.5 shrink-0">
+                  {item.children?.length}
+                </Badge>
+              )}
+
+              {/* 选中标记 */}
+              {isSelected && <Check className="h-4 w-4 text-primary shrink-0" />}
+            </div>
+
+            {/* 递归渲染子节点 */}
+            {canExpand && isExpanded && hasChildren && (
+              <div className="border-l-2 border-muted ml-6">
+                {renderTreeNodes(item.children!, depth + 1, maxDepth, selectedKeys, expandedKeys, onToggleExpand, onToggleSelect, onSelectLeaf)}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+// 属性多选择树形组件 - 完全展开版本
+function ChapterTreeCheckboxNav({ textbooks, onSelect, defaultSelectedKeys = EMPTY_KEYS, maxDepth = 5 }: TreeCheckboxProps) {
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(() => new Set(defaultSelectedKeys));
+  const [expandedKeys, setExpandedKeys] = useState<Set<string>>(new Set());
+
+  // 当 textbooks 或 defaultSelectedKeys 变更时，重置选中状态并默认展开所有节点
+  useEffect(() => {
+    const validKeys = new Set<string>();
+    const allExpandableKeys = new Set<string>();
+
+    const traverse = (nodes: CheckboxTreeNode[]) => {
+      for (const node of nodes) {
+        validKeys.add(node.key);
+        if (node.children && node.children.length > 0) {
+          allExpandableKeys.add(node.key);
+          traverse(node.children);
+        }
+      }
+    };
+    traverse(textbooks);
+
+    // 仅保留当前 textbooks 中存在的 defaultSelectedKeys 清空上一次切换留下的临时选中值
+    const nextSelected = new Set(defaultSelectedKeys.filter((key) => validKeys.has(key)));
+    setSelectedKeys(nextSelected);
+    setExpandedKeys(allExpandableKeys);
+  }, [textbooks, defaultSelectedKeys]);
+
+  // 自动展开选中节点的路径
+  useEffect(() => {
+    if (selectedKeys.size > 0) {
+      const keysToExpand = new Set<string>();
+
+      const findPath = (nodes: CheckboxTreeNode[], targetKey: string): boolean => {
+        for (const node of nodes) {
+          if (node.key === targetKey) return true;
+          if (node.children) {
+            const found = findPath(node.children, targetKey);
+            if (found) {
+              keysToExpand.add(node.key);
+              return true;
+            }
+          }
+        }
+        return false;
+      };
+
+      selectedKeys.forEach((key) => {
+        findPath(textbooks, key);
+      });
+
+      setExpandedKeys((prev) => new Set([...prev, ...keysToExpand]));
+    }
+  }, [selectedKeys, textbooks]);
+
+  // 切换节点选中（递归处理子节点）
+  const toggleNodeSelect = useCallback(
+    (node: CheckboxTreeNode, checked: boolean) => {
+      const newSelected = new Set(selectedKeys);
+
+      const toggleRecursive = (currentNode: CheckboxTreeNode) => {
+        if (checked) {
+          newSelected.add(currentNode.key);
+        } else {
+          newSelected.delete(currentNode.key);
+        }
+
+        if (currentNode.children) {
+          currentNode.children.forEach((child) => toggleRecursive(child));
+        }
+      };
+
+      toggleRecursive(node);
+      setSelectedKeys(newSelected);
+
+      // 通知父组件
+      const selected: CheckboxTreeNode[] = [];
+      const collectSelected = (nodes: CheckboxTreeNode[]) => {
+        for (const n of nodes) {
+          if (newSelected.has(n.key)) {
+            selected.push(n);
+          }
+          if (n.children) {
+            collectSelected(n.children);
+          }
+        }
+      };
+      collectSelected(textbooks);
+      onSelect?.(selected);
+    },
+    [selectedKeys, textbooks, onSelect],
+  );
+
+  // 全选/取消全选
+  const toggleAll = useCallback(
+    (checked: boolean) => {
+      const newSelected = new Set<string>();
+      const traverse = (nodes: CheckboxTreeNode[]) => {
+        for (const node of nodes) {
+          if (checked) {
+            newSelected.add(node.key);
+          }
+          if (node.children) {
+            traverse(node.children);
+          }
+        }
+      };
+      traverse(textbooks);
+      setSelectedKeys(newSelected);
+
+      const selected: CheckboxTreeNode[] = [];
+      const collectSelected = (nodes: CheckboxTreeNode[]) => {
+        for (const n of nodes) {
+          if (newSelected.has(n.key)) {
+            selected.push(n);
+          }
+          if (n.children) {
+            collectSelected(n.children);
+          }
+        }
+      };
+      collectSelected(textbooks);
+      onSelect?.(selected);
+    },
+    [textbooks, onSelect],
+  );
+
+  const selectedCount = selectedKeys.size;
+
+  // 计算总节点数
+  const totalCount = useMemo(() => {
+    let count = 0;
+    const traverse = (nodes: CheckboxTreeNode[]) => {
+      for (const node of nodes) {
+        count++;
+        if (node.children) {
+          traverse(node.children);
+        }
+      }
+    };
+    traverse(textbooks);
+    return count;
+  }, [textbooks]);
+
+  // 切换所有节点的展开状态
+  const toggleAllExpand = useCallback(() => {
+    const allKeys = new Set<string>();
+    const traverse = (nodes: CheckboxTreeNode[]) => {
+      for (const node of nodes) {
+        if (node.children && node.children.length > 0) {
+          allKeys.add(node.key);
+          traverse(node.children);
+        }
+      }
+    };
+    traverse(textbooks);
+
+    // 如果所有节点都已展开，则全部折叠；否则全部展开
+    const allExpanded = Array.from(allKeys).every((key) => expandedKeys.has(key));
+    if (allExpanded) {
+      setExpandedKeys(new Set());
+    } else {
+      setExpandedKeys(allKeys);
+    }
+  }, [textbooks, expandedKeys]);
+
+  return (
+    <div className="w-full">
+      {/* 顶部工具栏 */}
+      <div className="flex items-center justify-between mb-4 p-2 border bg-background">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium">已选 {selectedCount} 项</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={toggleAllExpand}>
+            全部展开/折叠
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 px-2 text-xs"
+            onClick={() => {
+              const allSelected = selectedCount === totalCount;
+              toggleAll(!allSelected);
+            }}
+          >
+            {selectedCount === totalCount ? '取消全选' : '全选'}
+          </Button>
+        </div>
+      </div>
+
+      {/* 树形结构 */}
+      {textbooks.length > 0 && (
+        <div className="border p-2 max-h-150 overflow-y-auto">
+          {renderTreeNodes(
+            textbooks,
+            0,
+            maxDepth,
+            selectedKeys,
+            expandedKeys,
+            (key) => {
+              setExpandedKeys((prev) => {
+                const next = new Set(prev);
+                if (next.has(key)) {
+                  next.delete(key);
+                } else {
+                  next.add(key);
+                }
+                return next;
+              });
+            },
+            toggleNodeSelect,
+            (node) => {
+              // 点击叶子节点快速选择
+              if (!node.children || node.children.length === 0) {
+                toggleNodeSelect(node, !selectedKeys.has(node.key));
+              }
+            },
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface ChapterDropdownNavProps {
+  textbooks: TextbookResp[];
+  onSelect?: (selectedItems: TextbookResp[]) => void;
+  defaultSelectedKeys?: string[];
+  placeholder?: string;
+  maxDepth?: number;
+  longText?: boolean; // 是否是长文本, 长文本只显示最后一项
+  disable?: boolean; // 是否禁用触发选择
+}
+// 下拉菜单样式的导航-适用于紧凑搜索一类的列表页
+function ChapterDropdownNav(props: ChapterDropdownNavProps) {
+  const { textbooks, onSelect, defaultSelectedKeys = [], placeholder = '请选择学段', maxDepth = 5, longText = false, disable = false } = props;
+
+  const [selectedPath, setSelectedPath] = useState<TextbookResp[]>([]);
+  const [open, setOpen] = useState(false);
+
+  // 构建 key 到节点的映射表，优化查找性能 O(1)
+  const nodeMap = useMemo(() => {
+    const map = new Map<string, TextbookResp>();
+
+    const traverse = (nodes: TextbookResp[]) => {
+      for (const node of nodes) {
+        map.set(node.key, node);
+        if (node.children) {
+          traverse(node.children);
+        }
+      }
+    };
+
+    traverse(textbooks);
+    return map;
+  }, [textbooks]);
+
+  // 构建 key 到父级 key 的映射，用于快速获取路径
+  const parentMap = useMemo(() => {
+    const map = new Map<string, string | null>();
+
+    const traverse = (nodes: TextbookResp[], parentKey: string | null = null) => {
+      for (const node of nodes) {
+        map.set(node.key, parentKey);
+        if (node.children) {
+          traverse(node.children, node.key);
+        }
+      }
+    };
+
+    traverse(textbooks);
+    return map;
+  }, [textbooks]);
+
+  // 获取从根到指定节点的路径（使用映射表优化）
+  const getPathToNode = useCallback(
+    (key: string): TextbookResp[] | null => {
+      if (!nodeMap.has(key)) return null;
+
+      const path: TextbookResp[] = [];
+      let currentKey: string | null = key;
+
+      // 从当前节点向上遍历到根节点
+      while (currentKey) {
+        const node = nodeMap.get(currentKey);
+        if (!node) break;
+        path.unshift(node);
+        currentKey = parentMap.get(currentKey) || null;
+      }
+
+      return path;
+    },
+    [nodeMap, parentMap],
+  );
+
+  // 根据 key 数组查找路径（使用映射表优化）
+  const findPathByKeys = useCallback(
+    (keys: string[]): TextbookResp[] | null => {
+      if (keys.length === 0) return null;
+
+      // 验证所有 key 是否存在且是连续路径
+      const path: TextbookResp[] = [];
+      let parentKey: string | null = null;
+
+      for (const key of keys) {
+        const node = nodeMap.get(key);
+        if (!node) return null;
+
+        // 验证父子关系, 第8层级不满足这个要求, 第8层级不验证, 第8层的 tableName 字段为 question_cate
+        if (node.tableName !== StringConst.questionCateTableName && parentKey !== null && node.parentId !== nodeMap.get(parentKey)?.id) {
+          return null;
+        }
+
+        path.push(node);
+        parentKey = key;
+      }
+
+      return path;
+    },
+    [nodeMap],
+  );
+
+  // 初始化默认选中
+  useEffect(() => {
+    if (defaultSelectedKeys.length > 0) {
+      const path = findPathByKeys(defaultSelectedKeys);
+      if (path) {
+        setSelectedPath(path);
+      }
+    }
+  }, [defaultSelectedKeys, findPathByKeys]);
+
+  // 处理选择
+  const handleSelect = useCallback(
+    (item: TextbookResp) => {
+      const path = getPathToNode(item.key);
+      if (path) {
+        setSelectedPath(path);
+        if (onSelect) {
+          onSelect(path);
+        }
+        setOpen(false);
+      }
+    },
+    [onSelect, getPathToNode],
+  );
+
+  // 判断节点是否在选中路径中
+  const isNodeInSelectedPath = useCallback(
+    (key: string): boolean => {
+      return selectedPath.some((p) => p.key === key);
+    },
+    [selectedPath],
+  );
+
+  // 判断节点是否被选中（路径的最后一个）
+  const isNodeSelected = useCallback(
+    (key: string): boolean => {
+      return selectedPath.length > 0 && selectedPath[selectedPath.length - 1].key === key;
+    },
+    [selectedPath],
+  );
+
+  // 渲染菜单项（递归）
+  const renderMenuItems = useCallback(
+    (items: TextbookResp[], depth: number = 0): React.ReactNode => {
+      if (depth >= maxDepth) {
+        return (
+          <DropdownMenuGroup>
+            {items.map((item) => (
+              <DropdownMenuItem
+                key={item.key}
+                className={cn('flex items-center justify-between cursor-pointer', isNodeSelected(item.key) && 'bg-accent text-accent-foreground')}
+                onClick={() => handleSelect(item)}
+              >
+                <span className="text-xs">{item.label}</span>
+                {isNodeSelected(item.key) && <Check className="ml-2 h-4 w-4" />}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuGroup>
+        );
+      }
+
+      return (
+        <DropdownMenuGroup>
+          {items.map((item) => {
+            const hasChildren = item.children && item.children.length > 0;
+            const isSelected = isNodeSelected(item.key);
+            const isInPath = isNodeInSelectedPath(item.key);
+
+            if (hasChildren && depth < maxDepth - 1) {
+              return (
+                <DropdownMenuSub key={item.key}>
+                  <DropdownMenuSubTrigger
+                    className={cn('flex items-center justify-between cursor-pointer min-w-50 whitespace-nowrap', isInPath && 'bg-accent/50')}
+                  >
+                    <span className="text-xs">{item.label}</span>
+                    {isSelected && <Check className="ml-2 h-4 w-4" />}
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent className="min-w-50 p-1">
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem className="flex items-center justify-between cursor-pointer" onClick={() => handleSelect(item)}>
+                        <span className="text-xs">选择 {item.label}</span>
+                        {isSelected && <Check className="ml-2 h-4 w-4" />}
+                      </DropdownMenuItem>
+                      {item.children && item.children.length > 0 && (
+                        <>
+                          <DropdownMenuSeparator />
+                          {renderMenuItems(item.children, depth + 1)}
+                        </>
+                      )}
+                    </DropdownMenuGroup>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+              );
+            } else {
+              return (
+                <DropdownMenuItem
+                  key={item.key}
+                  className={cn('flex items-center justify-between cursor-pointer', isSelected && 'bg-accent text-accent-foreground')}
+                  onClick={() => handleSelect(item)}
+                >
+                  <span className="text-xs">{item.label}</span>
+                  {isSelected && <Check className="ml-2 h-4 w-4" />}
+                </DropdownMenuItem>
+              );
+            }
+          })}
+        </DropdownMenuGroup>
+      );
+    },
+    [maxDepth, handleSelect, isNodeSelected, isNodeInSelectedPath],
+  );
+
+  // 获取当前选中的显示文本
+  const getDisplayText = useCallback(() => {
+    if (selectedPath.length === 0) {
+      return placeholder;
+    }
+    return longText ? selectedPath[selectedPath.length - 1].label : selectedPath.map((item) => item.label).join(' / ');
+  }, [selectedPath, placeholder]);
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger
+        render={
+          <Button disabled={disable} variant="outline" className="w-full sm:w-auto justify-between">
+            <span className="truncate text-xs">{getDisplayText()}</span>
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        }
+      />
+      <DropdownMenuContent className="min-w-50 max-h-150 overflow-y-auto p-1">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-xs">选择学段</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {renderMenuItems(textbooks, 0)}
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export { ChapterDropdownNav, ChapterExpandNav, ChapterTreeCheckboxNav };
+export type { CheckboxTreeNode };

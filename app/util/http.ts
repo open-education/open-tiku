@@ -1,4 +1,4 @@
-import type { ApiResponse } from '~/type/response';
+import type { ApiResponse } from '@/type/response';
 
 class HttpClient {
   private readonly baseURL: string;
