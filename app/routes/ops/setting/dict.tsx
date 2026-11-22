@@ -13,6 +13,7 @@ import { useDelayedLoading } from '@/hooks/delayed-loading';
 import type { TextbookOtherDictReq, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
 import { useQuestionOtherDicts, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
+import { ArrayUtil } from '@/util/object';
 import { StringConst, StringValidator } from '@/util/string';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -298,7 +299,7 @@ function OtherDictListShow({ list, onEdit, onDelete }: OtherDictListShowProps) {
         list.map((item) => (
           <TableRow key={item.id}>
             <TableCell>{item.id}</TableCell>
-            <TableCell>{StringConst.questionOtherDictNames.get(item.typeCode) || ''}</TableCell>
+            <TableCell>{ArrayUtil.getOptionLabel(StringConst.questionOtherDictList, item.typeCode, '')}</TableCell>
             <TableCell>{item.itemValue}</TableCell>
             <TableCell>{item.sortOrder}</TableCell>
             <TableCell>{item.isSelect ? '是' : '否'}</TableCell>

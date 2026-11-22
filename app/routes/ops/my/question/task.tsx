@@ -13,9 +13,10 @@ import type { TaskListReq } from '@/type/task';
 import type { TextbookFillLevel, TextbookResp } from '@/type/textbook';
 import { useCustomList, useQuestionCates, useTaskList, useTextbooks } from '@/util/fetcher';
 import { StringConst } from '@/util/string';
-import { CalendarDays, Clock, FileText, Mail, User } from 'lucide-react';
+import { CalendarDays, ChevronDown, Clock, Download, FileText, Mail, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { CustomPageSource, CustomUserSource } from '@/type/enum';
 import { formatNumber } from '@/util/fmt';
 import { CustomUtil, TextbookUtil } from '@/util/object';
@@ -31,21 +32,67 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-// 根据 status 数字返回精确的 Badge 样式类
-const getStatusBadgeClasses = (status: number): string => {
+// 根据 status 数字返回精确的 Badge 样式类与状态圆点颜色
+const getStatusStyle = (status: number): { badge: string; dot: string } => {
   switch (status) {
     case 1:
-      return 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-100'; // 待处理 - 中性灰
+      return {
+        badge: 'bg-slate-100 text-slate-700 border-slate-200/80 hover:bg-slate-100',
+        dot: 'bg-slate-400',
+      }; // 待处理 - 中性灰
     case 2:
-      return 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-100'; // 处理中 - 动感蓝
+      return {
+        badge: 'bg-blue-50 text-blue-700 border-blue-200/80 hover:bg-blue-50',
+        dot: 'bg-blue-500 animate-pulse',
+      }; // 处理中 - 动感蓝
     case 3:
-      return 'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100'; // 成功 - 自然绿
+      return {
+        badge: 'bg-emerald-50 text-emerald-700 border-emerald-200/80 hover:bg-emerald-50',
+        dot: 'bg-emerald-500',
+      }; // 成功 - 自然绿
     case 10:
-      return 'bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-100'; // 失败 - 警示红
+      return {
+        badge: 'bg-rose-50 text-rose-700 border-rose-200/80 hover:bg-rose-50',
+        dot: 'bg-rose-500',
+      }; // 失败 - 警示红
     default:
-      return 'bg-gray-100 text-gray-500 border-gray-200'; // 未知状态兜底
+      return {
+        badge: 'bg-gray-100 text-gray-500 border-gray-200',
+        dot: 'bg-gray-400',
+      }; // 未知状态兜底
   }
 };
+
+// 在单条任务卡片内部（建议抽成一个独立的 TaskCard 子组件以便维护各自的展开状态）
+function TaskResultSection({ result }: { result: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="bg-background border border-border/50 p-2.5">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5 text-xs font-medium text-foreground/85">
+          <FileText size={13} className="shrink-0 text-muted-foreground" />
+          <span>处理结果明细</span>
+        </div>
+
+        <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+          <span>{isOpen ? '收起' : '展开'}</span>
+          <ChevronDown size={14} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        </CollapsibleTrigger>
+      </div>
+
+      <CollapsibleContent className="pt-2 mt-2 border-t border-border/40">
+        <div className="max-h-48 overflow-y-auto pr-1 flex flex-col gap-1 text-xs text-muted-foreground break-all">
+          {result.split('\n').map((line, index) => (
+            <div key={index} className="leading-relaxed">
+              <SimpleFullContent content={line} />
+            </div>
+          ))}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
 
 export default function Index() {
   const [pageNo, setPageNo] = useState<number>(1);
@@ -105,10 +152,10 @@ export default function Index() {
   const showLoading = useDelayedLoading(textbooksLoading || questionCatesLoading || listRespLoading || customListRespLoading);
 
   return (
-    <div className="bg-card p-3 space-y-3">
+    <div className="space-y-3">
       {showLoading && <Loading />}
 
-      <div className="flex flex-col gap-3 text-sm">
+      <div className="flex flex-col gap-3 text-sm bg-card p-3">
         {/* 选择前5层级 */}
         <div className="flex items-center gap-1">
           <div className="w-[6em] shrink-0 whitespace-nowrap">
@@ -150,8 +197,6 @@ export default function Index() {
         </div>
       </div>
 
-      <Separator />
-
       <div className="space-y-2">
         {textbooksErr && <SimpleAlert title="导航信息获取失败" message={textbooksErr.message} />}
         {questionCatesErr && <SimpleAlert title="题型信息获取失败" message={questionCatesErr.message} />}
@@ -163,69 +208,73 @@ export default function Index() {
 
       {listResp.total > 0 && <div>共找到 {formatNumber(listResp.total)} 个任务</div>}
 
-      {listResp.list.map((task) => (
-        <Card key={task.id} className="mt-3 transition-all duration-200 hover:shadow-lg hover:border-primary/10 flex flex-col border-border/60">
-          <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-semibold leading-6 line-clamp-1 pr-2">{task.name}</CardTitle>
-            <div>
-              <a
-                href={`/api/file/read/file/${task.url}`}
-                download={`${task.name}${task.name.toLowerCase().endsWith('.md') ? '' : '.md'}`}
-                target="_blank"
-              >
-                <Button variant="link">下载</Button>
-              </a>
-            </div>
-            <Badge className={`${getStatusBadgeClasses(task.status)} shrink-0 border font-normal`}>{task.statusDesc}</Badge>
-          </CardHeader>
+      {listResp.list.map((task) => {
+        const statusStyle = getStatusStyle(task.status);
+        const downloadFileName = `${task.name}${task.name.toLowerCase().endsWith('.md') ? '' : '.md'}`;
 
-          <CardContent className="flex-1 flex flex-col gap-3">
-            {/* 作者 & 邮箱 */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground">
-              <div className="flex items-center gap-1.5">
-                <User size={14} className="shrink-0" />
-                <span className="font-medium text-foreground">{task.author}</span>
+        return (
+          <Card key={task.id} className="mt-3 transition-all duration-200 hover:shadow-lg hover:border-primary/10 flex flex-col border-border/60">
+            <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0 pb-2.5 px-4">
+              {/* 左侧：任务名称 + 状态徽章 */}
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <CardTitle className="text-sm font-semibold leading-snug truncate text-foreground" title={task.name}>
+                  {task.name}
+                </CardTitle>
+                <Badge className={`${statusStyle.badge} shrink-0 border px-2 py-0.5 text-xs font-medium gap-1.5`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${statusStyle.dot}`} />
+                  {task.statusDesc}
+                </Badge>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Mail size={14} className="shrink-0" />
-                <span className="truncate max-w-37.5">{task.email}</span>
-              </div>
-            </div>
 
-            {/* 结果信息 */}
-            {task.result && (
-              <div className="flex items-start gap-1.5 p-2 bg-muted border border-border/40">
-                <FileText size={14} className="shrink-0 mt-0.5 text-muted-foreground" />
-                <div className="flex flex-col text-sm text-muted-foreground break-all w-full">
-                  <div className="text-xs font-medium text-foreground mb-1">处理结果明细：</div>
-                  <div className="max-h-25 overflow-y-auto pr-1 flex flex-col gap-0.5 scrollbar-thin">
-                    {task.result.split('\n').map((line, index) => (
-                      <div key={index}>
-                        <SimpleFullContent content={line} />
-                      </div>
-                    ))}
-                  </div>
+              {/* 右侧：下载按钮 */}
+              {task.url && (
+                <a href={`/api/file/read/file/${task.url}`} download={downloadFileName} target="_blank" rel="noreferrer" className="shrink-0">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 px-2.5 text-xs gap-1.5 hover:bg-primary hover:text-primary-foreground transition-colors"
+                  >
+                    <Download size={13} />
+                    <span>下载</span>
+                  </Button>
+                </a>
+              )}
+            </CardHeader>
+
+            <CardContent className="flex-1 flex flex-col gap-3">
+              {/* 作者 & 邮箱 */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <User size={14} className="shrink-0" />
+                  <span className="font-medium text-foreground">{task.author}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Mail size={14} className="shrink-0" />
+                  <span className="truncate max-w-37.5">{task.email}</span>
                 </div>
               </div>
-            )}
 
-            {/* 时间戳 - 置于底部 */}
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-1.5 mt-1 border-t border-border/40 text-xs text-muted-foreground">
-              <div className="flex items-center gap-1.5">
-                <CalendarDays size={13} />
-                <span>创建时间：{task.createdAt}</span>
+              {/* 结果信息 */}
+              {task.result && <TaskResultSection result={task.result} />}
+
+              {/* 时间戳 - 置于底部 */}
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1.5 mt-1 border-t border-border/40 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <CalendarDays size={13} />
+                  <span>创建时间：{task.createdAt}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Clock size={13} />
+                  <span>更新时间：{task.updatedAt}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Clock size={13} />
-                <span>更新时间：{task.updatedAt}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardContent>
+          </Card>
+        );
+      })}
 
       {listResp.total > 0 && (
-        <div className="mt-3">
+        <div className="py-3 bg-card">
           <SimplePagination pageNo={listResp.pageNo} pageSize={listResp.pageSize} total={listResp.total} onPageChange={(val) => setPageNo(val)} />
         </div>
       )}

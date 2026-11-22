@@ -198,6 +198,12 @@ export const ArrayUtil = {
       return acc;
     }, {} as any);
   },
+
+  // 针对一定的结构获取对应的描述值
+  // 对比的值是 value 返回的是 label
+  getOptionLabel(options: readonly { value: number | string; label: string }[], status: number | string, fallback = '未知状态'): string {
+    return options.find((item) => item.value === status)?.label ?? fallback;
+  },
 };
 
 // 字典相关工具函数

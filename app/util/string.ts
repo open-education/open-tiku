@@ -72,26 +72,12 @@ export const StringConst = {
     { id: 5, value: 'question_scene', label: '适用场景' },
     { id: 6, value: 'question_mistake_tip', label: '常见错误' },
   ],
-  questionOtherDictNames: new Map<string, string>([
-    ['question_type', '题型'],
-    ['question_tag', '标签'],
-    ['question_dimension', '核心素养'],
-    ['question_level', '分层体系'],
-    ['question_scene', '适用场景'],
-    ['question_mistake_tip', '常见错误'],
-  ]),
   // 菜单路径类型
   textbookPathTypes: [
     { id: 1, value: 'common', label: '公共' },
     { id: 2, value: 'chapter', label: '章节' },
     { id: 3, value: 'knowledge', label: '知识点' },
   ],
-  // 菜单路径名称
-  textbookPathTypeNames: new Map<string, string>([
-    ['common', '公共'],
-    ['chapter', '章节'],
-    ['knowledge', '知识点'],
-  ]),
   // 任务类型是上传题目
   taskTypeUploadQuestion: 1,
   // 学生账户状态
@@ -116,15 +102,6 @@ export const StringConst = {
     { id: 5, value: ExamType.MonthlyExam, label: '月考' },
     { id: 6, value: ExamType.TopicPaper, label: '专题卷' },
   ],
-  // 考试类型枚举获取
-  examTypeNames: new Map<number, string>([
-    [ExamType.UnitTest, '单元测试'],
-    [ExamType.Midterm, '期中考试'],
-    [ExamType.Final, '期末考试'],
-    [ExamType.ZhongkaoMock, '中考模拟'],
-    [ExamType.MonthlyExam, '月考'],
-    [ExamType.TopicPaper, '专题卷'],
-  ]),
   // 试卷级别类型
   paperLevelTypeList: [
     { id: 1, value: PaperLevelType.Standard, label: '普通' },

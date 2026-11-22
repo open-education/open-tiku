@@ -61,16 +61,14 @@ function ParseQuestion({ textbookId, onFill }: ParseQuestionProps) {
       </div>
 
       {/* 输入区 */}
-      <div className="space-y-3">
-        <Textarea
-          placeholder="在此粘贴 Markdown 内容..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          rows={6}
-          className="text-sm md:text-sm resize-y min-h-60 bg-background shadow-sm transition-shadow focus-visible:ring-2 focus-visible:ring-primary/50"
-          disabled={isLoading}
-        />
-      </div>
+      <Textarea
+        placeholder="在此粘贴 Markdown 内容..."
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        rows={6}
+        className="text-sm md:text-sm resize-y min-h-60 max-h-96 overflow-y-auto field-sizing-fixed bg-background shadow-sm transition-shadow focus-visible:ring-2 focus-visible:ring-primary/50"
+        disabled={isLoading}
+      />
 
       {/* 按钮 */}
       <div className="flex gap-3">

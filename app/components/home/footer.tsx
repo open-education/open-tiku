@@ -29,7 +29,7 @@ const links: LinksProps[] = [
     items: [
       {
         title: 'FAQs',
-        href: '/faqs',
+        href: '/help/faqs',
         target: '_self',
       },
     ],

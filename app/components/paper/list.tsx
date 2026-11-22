@@ -18,7 +18,7 @@ import type { CityResp } from '@/type/city';
 import { PaperDifficultyType, PaperLevelType, PaperPageSource, PaperStatus, UploadFileType } from '@/type/enum';
 import type { CountPaperResp, PaperApproveReq, PaperDeleteReq, PaperListResp, PaperResp } from '@/type/paper';
 import { httpClient } from '@/util/http';
-import { ObjectUtil } from '@/util/object';
+import { ArrayUtil, ObjectUtil } from '@/util/object';
 import { StringConst } from '@/util/string';
 import {
   ArrowUpRight,
@@ -181,7 +181,7 @@ function CommonPart({ item, cityMap }: CommonPartProps) {
 
           <span className="inline-flex items-center gap-1 font-medium">
             <BookOpenCheck className="w-3.5 h-3.5" />
-            {StringConst.examTypeNames.get(item.examType) || ''}
+            {ArrayUtil.getOptionLabel(StringConst.examTypeList, item.examType, '')}
           </span>
 
           {item.provinceId && item.provinceId > 0 && (
@@ -222,9 +222,10 @@ function CommonPart({ item, cityMap }: CommonPartProps) {
 
 // 扩展信息部分
 interface ExtPartProps {
+  source: PaperPageSource;
   item: PaperResp;
 }
-function ExtPart({ item }: ExtPartProps) {
+function ExtPart({ source, item }: ExtPartProps) {
   return (
     <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs">
       <span className="inline-flex items-center gap-1.5">
@@ -262,6 +263,13 @@ function ExtPart({ item }: ExtPartProps) {
         <span className="text-xs px-1.5 py-0.2 bg-background border border-border/60">
           文件约 {ObjectUtil.formatFileSize(item.fileList.reduce((sum, item) => sum + (item.size ?? 0), 0))}
         </span>
+      )}
+
+      {/* 试卷状态 */}
+      {source !== PaperPageSource.List && (
+        <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300" key={item.status}>
+          {ArrayUtil.getOptionLabel(StringConst.paperStatusList, item.status, '草稿中')}
+        </Badge>
       )}
     </div>
   );
@@ -547,9 +555,9 @@ function PreviewPart({ item }: PreviewPartProps) {
   };
 
   return (
-    <div className="px-4 sm:px-5 py-3 bg-muted/40 border-t border-border/60 animate-in fade-in slide-in-from-top-1 duration-150">
+    <div className="px-4 sm:px-5 py-3 border-t border-border/60 animate-in fade-in slide-in-from-top-1 duration-150">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs">共包含 {item.fileList.length} 份文件, 普通文档将在新标签页打开; Word 文档浏览器自动下载</span>
+        <span className="text-xs">共包含 {item.fileList.length} 份文件</span>
       </div>
 
       <div className="grid grid-cols-1 gap-1.5">
@@ -560,7 +568,7 @@ function PreviewPart({ item }: PreviewPartProps) {
           >
             {/* 文件序号与名称 */}
             <div className="flex items-center gap-2 min-w-0 flex-1">
-              <span className="w-5 h-5 bg-muted text-xs font-semibold flex items-center justify-center shrink-0">{idx + 1}. </span>
+              <span className="w-5 h-5 text-xs font-semibold flex items-center justify-center shrink-0">{idx + 1}. </span>
               <span
                 onClick={() => handlePreview(item.fileType, file.url, file.name)}
                 className="text-xs font-medium hover:text-primary truncate cursor-pointer"
@@ -650,7 +658,7 @@ export function PaperList({ source, items, cityMap, paperListRespMutate, countLi
             {/* 统一脚部栏 元数据 + 操作按钮 */}
             <div className="px-4 sm:px-5 py-2.5 border-t border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
               {/* 脚部左侧：作者、双时间 Tooltip、热度统计 */}
-              <ExtPart item={item} />
+              <ExtPart source={source} item={item} />
 
               {/* 统一操作按钮组 */}
               <OperatePart

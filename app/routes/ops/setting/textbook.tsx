@@ -17,6 +17,7 @@ import { CheckCircle2Icon, ChevronsUpDown, Edit, InfoIcon, Menu, Plus, X } from 
 import React, { useState } from 'react';
 import { type KeyedMutator } from 'swr';
 import type { Route } from './+types/textbook';
+import { ArrayUtil } from '@/util/object';
 
 /// 网站首页顶部和底部框架
 
@@ -449,9 +450,10 @@ function Item({ isSelected = false, item, onViewList, onEdit, onDelete }: ItemPr
           <div>
             类型:{' '}
             <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-              {StringConst.textbookPathTypeNames.get(item.pathType) || ''}
+              {ArrayUtil.getOptionLabel(StringConst.textbookPathTypes, item.pathType, '')}
             </Badge>
           </div>
+          <div>父路径: {item.path}</div>
         </div>
       </CardContent>
       <CardFooter>

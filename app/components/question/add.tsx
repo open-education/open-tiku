@@ -932,11 +932,11 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
   ) : (
     <ResizablePanelGroup orientation="horizontal" className="border bg-background">
       <ResizablePanel defaultSize="65%">
-        <div className="space-y-3">{leftContent}</div>
+        <div className="space-y-3 mr-1.5">{leftContent}</div>
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize="35%">
-        <div className="p-3 bg-card">{rightContent}</div>
+        <div className="p-3 bg-card ml-1.5">{rightContent}</div>
       </ResizablePanel>
     </ResizablePanelGroup>
   );

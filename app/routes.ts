@@ -6,8 +6,8 @@ export default [
     // 网站首页
     index('routes/home/index.tsx'),
 
-    // Faqs
-    route('/faqs', 'routes/help/faqs.tsx'),
+    // 帮助文档
+    route('/help/faqs', 'routes/help/faqs.tsx'), // Faqs
   ]),
 
   // 业务空间
