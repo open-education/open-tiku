@@ -67,7 +67,7 @@ function isFileMatched(file: File, fileType: UploadFileType): boolean {
   }
 }
 
-export default function FileUpload({ fileType, defaultList = [], maxSizeMB = 2, onChange, className }: FileUploadProps) {
+export default function FileUpload({ fileType, defaultList = [], maxSizeMB = 4, onChange, className }: FileUploadProps) {
   const config = fileTypeList[fileType];
   const [loading, setLoading] = useState<boolean>(false);
   const [items, setItems] = useState<FinalUploadItem[]>([]);

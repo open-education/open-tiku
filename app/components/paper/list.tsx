@@ -225,6 +225,7 @@ interface ExtPartProps {
   source: PaperPageSource;
   item: PaperResp;
 }
+
 function ExtPart({ source, item }: ExtPartProps) {
   return (
     <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs">
@@ -254,11 +255,6 @@ function ExtPart({ source, item }: ExtPartProps) {
         }
       />
 
-      {/* 显示拒绝原因, 不用判读来源和状态, 只有我的题目能看到该状态 */}
-      {item.status === PaperStatus.Rejected && item.rejectReason && (
-        <SimpleTooltip tip={<div className="text-xs font-semibold text-red-700">拒绝原因: ${item.rejectReason}</div>} />
-      )}
-
       {item.fileList && item.fileList.length > 0 && (
         <span className="text-xs px-1.5 py-0.2 bg-background border border-border/60">
           文件约 {ObjectUtil.formatFileSize(item.fileList.reduce((sum, item) => sum + (item.size ?? 0), 0))}
@@ -270,6 +266,11 @@ function ExtPart({ source, item }: ExtPartProps) {
         <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300" key={item.status}>
           {ArrayUtil.getOptionLabel(StringConst.paperStatusList, item.status, '草稿中')}
         </Badge>
+      )}
+
+      {/* 显示拒绝原因, 不用判读来源和状态, 只有我的题目能看到该状态 */}
+      {item.status === PaperStatus.Rejected && item.rejectReason && (
+        <SimpleTooltip tip={<div className="text-xs font-semibold text-red-700">原因: {item.rejectReason}</div>} />
       )}
     </div>
   );
@@ -284,6 +285,7 @@ interface OperatePartProps {
   paperListRespMutate?: KeyedMutator<PaperListResp>; // 审核删除等操作需要重置列表接口重新请求数据
   countListRespMutate?: KeyedMutator<CountPaperResp[]>; // 我的试卷提交审核等操作需要重置列表状态计数接口重新请求数据
 }
+
 function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate, countListRespMutate }: OperatePartProps) {
   const isExpanded = !!selectedIds[item.id];
 
@@ -394,7 +396,7 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
       )}
 
       {/* 编辑和提交审核 */}
-      {source === PaperPageSource.MyPaper && item.status === PaperStatus.Drafting && (
+      {source === PaperPageSource.MyPaper && (item.status === PaperStatus.Drafting || item.status === PaperStatus.Rejected) && (
         <>
           <Link to={`/ops/my/paper/edit?id=${item.id}`} target="_blank">
             <Button size="sm" variant="outline">
@@ -540,6 +542,7 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
 interface PreviewPartProps {
   item: PaperResp;
 }
+
 function PreviewPart({ item }: PreviewPartProps) {
   /**
    * 文件预览分流逻辑：

@@ -34,6 +34,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 import type { KeyedMutator } from 'swr';
+import { SimpleTooltip } from '../common/tooltip';
 
 // 题目操作列表
 interface QuestionOperateListProps {
@@ -316,76 +317,77 @@ function QuestionOperateList({
         </Button>
 
         {/* 我的题目草稿中编辑题目, 提交题目审核 */}
-        {pageSource === QuestionPageSource.MyQuestion && baseInfoResp.status === QuestionStatus.Drafting && (
-          <>
-            <Button size="sm" variant="outline">
-              <Link to={`/ops/my/question/edit?id=${baseInfoResp.id}&type=1`} target="_blank">
-                编辑
-              </Link>
-            </Button>
-            <Dialog open={openSubmitApprove} onOpenChange={setOpenSubmitApprove}>
-              <DialogTrigger
-                render={
-                  <Button size="sm" variant="outline">
-                    提交审核
-                  </Button>
-                }
-              />
-              <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
-                <DialogHeader>
-                  <DialogTitle className="text-sm font-bold">提交审核</DialogTitle>
-                  <DialogDescription>请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
-                </DialogHeader>
+        {pageSource === QuestionPageSource.MyQuestion &&
+          (baseInfoResp.status === QuestionStatus.Drafting || baseInfoResp.status === QuestionStatus.Rejected) && (
+            <>
+              <Button size="sm" variant="outline">
+                <Link to={`/ops/my/question/edit?id=${baseInfoResp.id}&type=1`} target="_blank">
+                  编辑
+                </Link>
+              </Button>
+              <Dialog open={openSubmitApprove} onOpenChange={setOpenSubmitApprove}>
+                <DialogTrigger
+                  render={
+                    <Button size="sm" variant="outline">
+                      提交审核
+                    </Button>
+                  }
+                />
+                <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
+                  <DialogHeader>
+                    <DialogTitle className="text-sm font-bold">提交审核</DialogTitle>
+                    <DialogDescription>请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
+                  </DialogHeader>
 
-                <Separator />
+                  <Separator />
 
-                <div className="space-y-3 px-4">
-                  <div className="font-semibold">检查步骤</div>
-                  <div className="text-xs space-y-2">
-                    <p>1. 题目不能是抄袭的, 避免投诉和版权纠纷</p>
-                    <p>2. 题目本身信息要完整</p>
-                    <p>3. 图片等信息不能缺失</p>
-                    <p>4. 题目和答案本身要符合常识</p>
+                  <div className="space-y-3 px-4">
+                    <div className="font-semibold">检查步骤</div>
+                    <div className="text-xs space-y-2">
+                      <p>1. 题目不能是抄袭的, 避免投诉和版权纠纷</p>
+                      <p>2. 题目本身信息要完整</p>
+                      <p>3. 图片等信息不能缺失</p>
+                      <p>4. 题目和答案本身要符合常识</p>
+                    </div>
                   </div>
-                </div>
 
-                <Separator />
+                  <Separator />
 
-                <DialogFooter>
-                  <DialogClose render={<Button variant="outline">关闭</Button>} />
-                  <Button onClick={handleSubmitApprove} disabled={submitApproving}>
-                    {submitApproving ? '提交审核中' : '提交审核'}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                  <DialogFooter>
+                    <DialogClose render={<Button variant="outline">关闭</Button>} />
+                    <Button onClick={handleSubmitApprove} disabled={submitApproving}>
+                      {submitApproving ? '提交审核中' : '提交审核'}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
 
-            <Dialog open={openDelete} onOpenChange={setOpenDelete}>
-              <DialogTrigger
-                render={
-                  <Button size="sm" variant="destructive">
-                    删除
-                  </Button>
-                }
-              />
-              <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
-                <DialogHeader>
-                  <DialogTitle className="text-sm font-bold">删除题目</DialogTitle>
-                  <DialogDescription>题目删除后不可恢复, 如果不确定, 可以保留等后续确认后再删除</DialogDescription>
-                </DialogHeader>
+              <Dialog open={openDelete} onOpenChange={setOpenDelete}>
+                <DialogTrigger
+                  render={
+                    <Button size="sm" variant="destructive">
+                      删除
+                    </Button>
+                  }
+                />
+                <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
+                  <DialogHeader>
+                    <DialogTitle className="text-sm font-bold">删除题目</DialogTitle>
+                    <DialogDescription>题目删除后不可恢复, 如果不确定, 可以保留等后续确认后再删除</DialogDescription>
+                  </DialogHeader>
 
-                <Separator />
+                  <Separator />
 
-                <DialogFooter>
-                  <DialogClose render={<Button variant="outline">关闭</Button>} />
-                  <Button onClick={handleDelete} disabled={deleting} variant="destructive">
-                    {deleting ? '删除中' : '删除'}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </>
-        )}
+                  <DialogFooter>
+                    <DialogClose render={<Button variant="outline">关闭</Button>} />
+                    <Button onClick={handleDelete} disabled={deleting} variant="destructive">
+                      {deleting ? '删除中' : '删除'}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </>
+          )}
 
         {/* 我的题目审核通过可以撤回草稿中即下线, 后续上线需要重新审核 */}
         {pageSource === QuestionPageSource.MyQuestion && baseInfoResp.status === QuestionStatus.Published && (
@@ -453,6 +455,18 @@ function QuestionOperateList({
               </DialogFooter>
             </DialogContent>
           </Dialog>
+        )}
+
+        {/* 拒绝理由 */}
+        {baseInfoResp.status === QuestionStatus.Rejected && (
+          <SimpleTooltip
+            tip={
+              <Button size="sm" variant="destructive">
+                已拒绝
+              </Button>
+            }
+            content={baseInfoResp.rejectReason}
+          />
         )}
       </div>
 

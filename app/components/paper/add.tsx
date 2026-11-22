@@ -344,7 +344,7 @@ export default function Add({ initAddReq }: AddProps) {
       </div>
 
       <CurFieldRow label="选择学年">
-        <YearSelect value={addReq.year} startYear={2024} onValueChange={(val) => updateAddReq('year', val || '')} placeholder="选择学年" />
+        <YearSelect value={addReq.year} startYear={2020} onValueChange={(val) => updateAddReq('year', val || '')} placeholder="选择学年" />
       </CurFieldRow>
 
       <CurFieldRow label="考试类型">
