@@ -181,7 +181,7 @@ export default function Index() {
             }}
             onEdit={(item) => handleEdit(firstLevelName, 1, item, firstLevelsMutate)}
             onDelete={(item) => handleDelete(firstLevelName, item, firstLevelsMutate)}
-            onAdd={() => handleAdd(firstLevelName, 1, '', firstLevelsMutate)}
+            onAdd={() => handleAdd(firstLevelName, 1, '/', firstLevelsMutate)}
           />
         </div>
 
@@ -205,7 +205,7 @@ export default function Index() {
             }}
             onEdit={(item) => handleEdit(secondLevelName, 2, item, secondLevelsMutate, secondLevelParentId)}
             onDelete={(item) => handleDelete(secondLevelName, item, secondLevelsMutate)}
-            onAdd={() => handleAdd(secondLevelName, 2, `${secondLevelParentId}`, secondLevelsMutate, secondLevelParentId)}
+            onAdd={() => handleAdd(secondLevelName, 2, `/${secondLevelParentId}`, secondLevelsMutate, secondLevelParentId)}
           />
         </div>
 
@@ -228,7 +228,7 @@ export default function Index() {
             }}
             onEdit={(item) => handleEdit(thirdLevelName, 3, item, thirdLevelsMutate, thirdLevelParentId)}
             onDelete={(item) => handleDelete(thirdLevelName, item, thirdLevelsMutate)}
-            onAdd={() => handleAdd(thirdLevelName, 3, `${secondLevelParentId}/${thirdLevelParentId}`, thirdLevelsMutate, thirdLevelParentId)}
+            onAdd={() => handleAdd(thirdLevelName, 3, `/${secondLevelParentId}/${thirdLevelParentId}`, thirdLevelsMutate, thirdLevelParentId)}
           />
         </div>
 
@@ -254,7 +254,7 @@ export default function Index() {
               handleAdd(
                 forthLevelName,
                 4,
-                `${secondLevelParentId}/${thirdLevelParentId}/${forthLevelParentId}`,
+                `/${secondLevelParentId}/${thirdLevelParentId}/${forthLevelParentId}`,
                 forthLevelsMutate,
                 forthLevelParentId,
               )
@@ -283,7 +283,7 @@ export default function Index() {
               handleAdd(
                 fifthLevelName,
                 5,
-                `${secondLevelParentId}/${thirdLevelParentId}/${forthLevelParentId}/${fifthLevelParentId}`,
+                `/${secondLevelParentId}/${thirdLevelParentId}/${forthLevelParentId}/${fifthLevelParentId}`,
                 fifthLevelsMutate,
                 fifthLevelParentId,
               )
@@ -309,7 +309,7 @@ export default function Index() {
               handleAdd(
                 sixthLevelName,
                 6,
-                `${secondLevelParentId}/${thirdLevelParentId}/${forthLevelParentId}/${fifthLevelParentId}/${sixthLevelParentId}`,
+                `/${secondLevelParentId}/${thirdLevelParentId}/${forthLevelParentId}/${fifthLevelParentId}/${sixthLevelParentId}`,
                 sixthLevelsMutate,
                 sixthLevelParentId,
               )
@@ -331,7 +331,7 @@ export default function Index() {
               handleAdd(
                 seventhLevelName,
                 7,
-                `${secondLevelParentId}/${thirdLevelParentId}/${forthLevelParentId}/${fifthLevelParentId}/${sixthLevelParentId}/${seventhLevelParentId}`,
+                `/${secondLevelParentId}/${thirdLevelParentId}/${forthLevelParentId}/${fifthLevelParentId}/${sixthLevelParentId}/${seventhLevelParentId}`,
                 seventhLevelsMutate,
                 seventhLevelParentId,
               )
@@ -482,7 +482,7 @@ interface AddProps {
   onClose: (val: boolean) => void; // 取消暂时什么都不做
   mutateCallback?: KeyedMutator<TextbookResp[]>; // 操作完毕后是否需要请求回调刷新缓存
 }
-function Add({ parentId, pathDepth, path = '', item, onClose, mutateCallback }: AddProps) {
+function Add({ parentId, pathDepth, path = '/', item, onClose, mutateCallback }: AddProps) {
   // 添加和编辑请求
   const defaultAddReq: CreateTextbookReq = item
     ? { ...item }
@@ -531,6 +531,7 @@ function Add({ parentId, pathDepth, path = '', item, onClose, mutateCallback }: 
     httpClient
       .post('/textbook/add', addReq)
       .then((_) => {
+        onClose(false);
         // 刷新列表
         mutateCallback?.();
         setSuccess(true);
@@ -607,6 +608,7 @@ function Delete({ item, onClose, mutateCallback }: DeleteProps) {
     httpClient
       .get<boolean>(`/textbook/delete/${item.id}`)
       .then((_) => {
+        onClose(false);
         mutateCallback?.();
         setSuccess(true);
       })
