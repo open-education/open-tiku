@@ -24,7 +24,7 @@ pnpm install
 
 ##### 2. 配置 caddy 代理
 
-开发环境 Caddyfile 配置, 安装自己系统的规范添加如下内容即可，本地不需要 https 域名证书指定 80 端口访问或者自行适配即可
+开发环境 Caddyfile 配置, 按照自己系统的规范添加如下内容即可，本地不需要 https 域名证书指定 80 端口访问或者自行适配即可
 
 ```bash
 [zhangguangxun@b760m open-tiku]$ cat /etc/caddy/conf.d/tiku
