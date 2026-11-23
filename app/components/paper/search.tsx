@@ -91,7 +91,7 @@ export default function PaperSearchList({ listReq, noDataDesc, updateListReq, co
           <div className="flex min-w-0">
             <Field>
               <ButtonGroup>
-                <YearSelect value={listReq.year} startYear={2024} onValueChange={(val) => updateListReq('year', val || '')} placeholder="选择年份" />
+                <YearSelect value={listReq.year} startYear={2020} onValueChange={(val) => updateListReq('year', val || '')} placeholder="选择年份" />
                 <Button
                   variant="outline"
                   onClick={() => {
