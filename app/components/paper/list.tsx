@@ -16,7 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import type { CityResp } from '@/type/city';
 import { PaperDifficultyType, PaperLevelType, PaperPageSource, PaperStatus, UploadFileType } from '@/type/enum';
-import type { CountPaperResp, PaperApproveReq, PaperDeleteReq, PaperListResp, PaperResp } from '@/type/paper';
+import type { CountPaperResp, PaperApproveReq, PaperDeleteReq, PaperListResp, PaperResp, PaperUndoReq } from '@/type/paper';
 import { httpClient } from '@/util/http';
 import { ArrayUtil, ObjectUtil } from '@/util/object';
 import { StringConst } from '@/util/string';
@@ -373,6 +373,32 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
       });
   };
 
+  // 退回试卷到草稿中
+  const [openUndo, setOpenUndo] = useState<boolean>(false);
+  const [undoing, setUndoing] = useState<boolean>(false);
+
+  const handleUndo = () => {
+    setUndoing(true);
+
+    const req: PaperUndoReq = {
+      id: item.id,
+    };
+
+    httpClient
+      .post('/paper/undo', req)
+      .then((_) => {
+        paperListRespMutate?.().then((_) => {});
+        countListRespMutate?.();
+        setOpenUndo(false);
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">退回试卷出错: {err.message}</div>);
+      })
+      .finally(() => {
+        setUndoing(false);
+      });
+  };
+
   return (
     <div className="flex items-center justify-end gap-2 shrink-0">
       {/* 详情和预览 */}
@@ -469,9 +495,30 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
       )}
       {/* 撤回草稿 */}
       {source === PaperPageSource.MyPaper && item.status === PaperStatus.Published && (
-        <Button size="sm" variant="destructive">
-          退回草稿
-        </Button>
+        <Dialog open={openUndo} onOpenChange={setOpenUndo}>
+          <DialogTrigger
+            render={
+              <Button size="sm" variant="destructive">
+                退回草稿
+              </Button>
+            }
+          />
+          <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
+            <DialogHeader>
+              <DialogTitle className="text-sm font-bold">退回草稿</DialogTitle>
+              <DialogDescription>试卷发布后发现错误或需要更新， 可退回草稿重新编辑后再次提交进入审核流程</DialogDescription>
+            </DialogHeader>
+
+            <Separator />
+
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline">关闭</Button>} />
+              <Button onClick={handleUndo} disabled={undoing} variant="destructive">
+                {undoing ? '退回草稿中' : '退回草稿'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* 审核 */}
