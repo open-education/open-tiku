@@ -1,5 +1,6 @@
 import { GlobalError } from '@/components/common/error';
 import Add from '@/components/paper/add';
+import { PaperStatus } from '@/type/enum';
 import type { PaperAddReq, PaperResp } from '@/type/paper';
 import { httpClient } from '@/util/http';
 import { ObjectUtil } from '@/util/object';
@@ -32,6 +33,8 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
     }
     const initAddReq: PaperAddReq = {
       ...res,
+      // 如果是已拒绝的编辑重置状态为草稿中
+      status: res.status === PaperStatus.Rejected ? PaperStatus.Drafting : res.status,
     };
     return { error: null, initAddReq, pId };
   } catch (err: any) {

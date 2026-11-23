@@ -1,6 +1,6 @@
 import { GlobalError } from '@/components/common/error';
 import Add from '@/components/question/add';
-import { QuestionEditMode, QuestionRelationType } from '@/type/enum';
+import { QuestionEditMode, QuestionRelationType, QuestionStatus } from '@/type/enum';
 import type { CreateQuestionReq, QuestionInfoResp } from '@/type/question';
 import { httpClient } from '@/util/http';
 import { ObjectUtil } from '@/util/object';
@@ -60,6 +60,8 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
         ...infoResp.baseInfo,
         difficultyLevel: Number(infoResp.baseInfo.difficultyLevel),
         ...infoResp.extraInfo,
+        // 如果是已拒绝的编辑重置状态为草稿中
+        status: infoResp.baseInfo.status === QuestionStatus.Rejected ? QuestionStatus.Drafting : infoResp.baseInfo.status,
       };
     } else {
       initAddReq = {
