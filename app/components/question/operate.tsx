@@ -1,5 +1,6 @@
 import { SimpleAlert } from '@/components/common/alert';
 import { ListSelect } from '@/components/common/list';
+import { SimpleTooltip } from '@/components/common/tooltip';
 import { AnswerInfo } from '@/components/question/info';
 import { SimilarListShow } from '@/components/question/list';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ import type {
   QuestionInfoResp,
   QuestionListResp,
   QuestionSimilarListReq,
+  QuestionUndoReq,
 } from '@/type/question';
 import type { OtherDictListRecord } from '@/type/textbook';
 import { httpClient } from '@/util/http';
@@ -34,7 +36,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 import type { KeyedMutator } from 'swr';
-import { SimpleTooltip } from '../common/tooltip';
 
 // 题目操作列表
 interface QuestionOperateListProps {
@@ -231,6 +232,32 @@ function QuestionOperateList({
       });
   };
 
+  // 退回题目到草稿中
+  const [openUndo, setOpenUndo] = useState<boolean>(false);
+  const [undoing, setUndoing] = useState<boolean>(false);
+
+  const handleUndo = () => {
+    setUndoing(true);
+
+    const req: QuestionUndoReq = {
+      id: baseInfoResp.id,
+    };
+
+    httpClient
+      .post('/question/undo', req)
+      .then((_) => {
+        questionListRespMutate().then((_) => {});
+        countListRespMutate?.();
+        setOpenUndo(false);
+      })
+      .catch((err) => {
+        toast.error(<div className="text-red-700">退回题目出错: {err.message}</div>);
+      })
+      .finally(() => {
+        setUndoing(false);
+      });
+  };
+
   // 审核题目
   const [openConfirmApprove, setOpenConfirmApprove] = useState<boolean>(false);
   const [confirmApproving, setConfirmApproving] = useState<boolean>(false);
@@ -391,9 +418,30 @@ function QuestionOperateList({
 
         {/* 我的题目审核通过可以撤回草稿中即下线, 后续上线需要重新审核 */}
         {pageSource === QuestionPageSource.MyQuestion && baseInfoResp.status === QuestionStatus.Published && (
-          <Button size="sm" variant="destructive" onClick={() => alert('撤回草稿')}>
-            退回草稿
-          </Button>
+          <Dialog open={openUndo} onOpenChange={setOpenUndo}>
+            <DialogTrigger
+              render={
+                <Button size="sm" variant="destructive">
+                  退回草稿
+                </Button>
+              }
+            />
+            <DialogContent className="w-auto! max-w-[90vw]! min-w-75">
+              <DialogHeader>
+                <DialogTitle className="text-sm font-bold">退回草稿</DialogTitle>
+                <DialogDescription>题目发布后发现错误或需要更新， 可退回草稿重新编辑后再次提交进入审核流程</DialogDescription>
+              </DialogHeader>
+
+              <Separator />
+
+              <DialogFooter>
+                <DialogClose render={<Button variant="outline">关闭</Button>} />
+                <Button onClick={handleUndo} disabled={undoing} variant="destructive">
+                  {undoing ? '退回草稿中' : '退回草稿'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         )}
 
         {/* 待审核的题目审核题目 */}

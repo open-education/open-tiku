@@ -173,6 +173,11 @@ export interface QuestionDeleteReq {
   id: number;
 }
 
+// 题目退回
+export interface QuestionUndoReq {
+  id: number;
+}
+
 // 题目计数信息
 export interface CountQuestionResp {
   status: number;

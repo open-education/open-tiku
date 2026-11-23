@@ -35,7 +35,7 @@ export default function Build() {
         </div>
 
         {/* 贡献激励 */}
-        <div className="flex items-center justify-between bg-linear-to-br px-12 py-10 bg-muted">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-linear-to-br px-6 py-8 md:px-12 md:py-10 bg-muted">
           <div>
             <div className="mb-2 text-xl font-bold">加入共建计划</div>
             <div className="text-sm leading-[1.8] opacity-90">上传题目获得下载/组卷次数 · 优秀贡献者可获骨干徽章与专家资格</div>

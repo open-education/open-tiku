@@ -107,3 +107,8 @@ export interface PaperApproveReq {
 export interface PaperDeleteReq {
   id: number;
 }
+
+// 试卷退回
+export interface PaperUndoReq {
+  id: number;
+}

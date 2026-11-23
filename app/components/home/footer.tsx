@@ -48,7 +48,7 @@ const showEdition = (): string => {
 
 export default function Footer() {
   return (
-    <footer className="lg:px-10 py-10 bg-muted">
+    <footer className="p-10 bg-muted">
       {/* 上部：描述信息与链接列表两端对齐 */}
       <div className="flex flex-wrap justify-between gap-8">
         {/* 描述信息（左） */}
