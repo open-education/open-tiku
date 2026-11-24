@@ -15,7 +15,7 @@ import type { Route } from './+types/index';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '手动组卷' },
+    { title: '选题组卷' },
     {
       name: 'description',
       content: '个人中心, 系统设置, 关联教材章节和知识点知识点的关联关系',

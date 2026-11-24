@@ -1,5 +1,5 @@
 import { SearchList } from '@/components/question/nav';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { QuestionListReq } from '@/type/question';
@@ -16,9 +16,10 @@ interface SearchListCardProps {
 
 function SearchListCard({ otherDictListRecord, listReq, updateListReq }: SearchListCardProps) {
   return (
-    <Card className="">
+    <Card>
       <CardHeader className="px-3">
         <CardTitle className="text-sm font-semibold">条件筛选</CardTitle>
+        <CardDescription>若需要更细致的筛选题目，请增加下面等细分条件</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3 p-0">
         <SearchList otherDictListRecord={otherDictListRecord} listReq={listReq} updateListReq={updateListReq} />
@@ -31,8 +32,9 @@ function SearchListCard({ otherDictListRecord, listReq, updateListReq }: SearchL
 function TitleInfoCard() {
   return (
     <Card className="p-3">
-      <CardHeader className="p-0 pb-4">
+      <CardHeader className="p-0">
         <CardTitle className="text-sm font-semibold">基本信息</CardTitle>
+        <CardDescription>填写试卷基础信息</CardDescription>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-3 p-0">
@@ -94,8 +96,9 @@ function QuestionTypesCard() {
 
   return (
     <Card className="p-3">
-      <CardHeader className="p-0 pb-4">
+      <CardHeader className="p-0">
         <CardTitle className="text-sm font-semibold">题型题量</CardTitle>
+        <CardDescription>按需配置题型、题量和分数，维护题目描述</CardDescription>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-3.5 p-0">
@@ -122,7 +125,7 @@ function QuestionTypesCard() {
 
         <div className="mt-1 flex justify-between border-t pt-3 text-sm">
           <span className="">合计</span>
-          <span className="font-semibold tabular-nums">23题 · 100分</span>
+          <span className="tabular-nums">23题 · 100分</span>
         </div>
       </CardContent>
     </Card>
@@ -139,8 +142,9 @@ function DifficultyDistributionCard() {
 
   return (
     <Card className="p-3">
-      <CardHeader className="p-0 pb-4">
+      <CardHeader className="p-0">
         <CardTitle className="text-sm font-semibold">难度分布</CardTitle>
+        <CardDescription>难度分布说明</CardDescription>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-3.5 p-0">
