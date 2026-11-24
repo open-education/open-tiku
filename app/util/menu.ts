@@ -44,10 +44,24 @@ export const menuItems: OpsMenu[] = [
   },
   {
     title: '智能组卷',
-    url: '/ops/paper',
+    url: '',
     icon: Wand,
     login: true,
     role: UserRoleType.Normal,
+    items: [
+      {
+        title: '选题组卷',
+        url: '/ops/paper',
+        login: true,
+        role: UserRoleType.Normal,
+      },
+      {
+        title: '分层组卷',
+        url: '/ops/paper/level',
+        login: true,
+        role: UserRoleType.Normal,
+      },
+    ],
   },
   {
     title: '我的贡献',

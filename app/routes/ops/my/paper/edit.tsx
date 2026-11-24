@@ -1,5 +1,5 @@
 import { GlobalError } from '@/components/common/error';
-import Add from '@/components/paper/add';
+import Upload from '@/components/paper/upload';
 import { PaperStatus } from '@/type/enum';
 import type { PaperAddReq, PaperResp } from '@/type/paper';
 import { httpClient } from '@/util/http';
@@ -49,5 +49,5 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     return <GlobalError message="401" details={error || '试卷编辑访问出现错误'} />;
   }
 
-  return <Add key={pId} initAddReq={initAddReq} />;
+  return <Upload key={pId} initAddReq={initAddReq} />;
 }

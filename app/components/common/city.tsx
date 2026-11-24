@@ -139,12 +139,7 @@ export default function CitySelect({
 
               return (
                 <DropdownMenuSub key={province.id}>
-                  <DropdownMenuSubTrigger
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleSelectItem(province);
-                    }}
-                  >
+                  <DropdownMenuSubTrigger>
                     <span className="flex-1">{province.name}</span>
                     {isProvinceActive && <Check className="mr-1 h-4 w-4" />}
                   </DropdownMenuSubTrigger>

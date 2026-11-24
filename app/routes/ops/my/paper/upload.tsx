@@ -1,4 +1,4 @@
-import Add from '@/components/paper/add';
+import Upload from '@/components/paper/upload';
 import { ExamType, PaperDifficultyType, PaperLevelType, PaperStatus, PaperType, UploadFileType } from '@/type/enum';
 import type { Route } from './+types/upload';
 
@@ -14,7 +14,7 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Index() {
   return (
-    <Add
+    <Upload
       key="paper-add"
       initAddReq={{
         textbookPath: '',

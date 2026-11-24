@@ -1,5 +1,6 @@
 import { SimpleAlert } from '@/components/common/alert';
 import { SimpleFullContent } from '@/components/common/content';
+import { SimpleTooltip } from '@/components/common/tooltip';
 import type { QuestionInfoResp } from '@/type/question';
 
 // 答案解析
@@ -40,11 +41,27 @@ function AnswerInfo({ infoResp }: AnswerInfoProps) {
     <div className="space-y-3 text-sm">
       {sections.map(({ id, title, content, color, dot }) => (
         <div key={id} className="space-y-1">
-          <div className={`flex items-center gap-1.5 font-bold ${color}`}>
-            <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
-            {title}
-          </div>
-          <div className="pl-3 text-slate-700">{id === otherInfoId ? otherInfo : <SimpleFullContent content={content} />}</div>
+          {id === otherInfoId ? (
+            <SimpleTooltip
+              tip={
+                <div className={`flex items-center gap-1.5 font-bold ${color}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
+                  {title}
+                </div>
+              }
+              content={otherInfo}
+            />
+          ) : (
+            <>
+              <div className={`flex items-center gap-1.5 font-bold ${color}`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
+                {title}
+              </div>
+              <div className="pl-3 text-slate-700">
+                <SimpleFullContent content={content} />
+              </div>
+            </>
+          )}
         </div>
       ))}
     </div>

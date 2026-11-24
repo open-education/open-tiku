@@ -15,7 +15,7 @@ import type { OtherDictListRecord, TextbookOtherDictResp } from '@/type/textbook
 import { httpClient } from '@/util/http';
 import { StringConst } from '@/util/string';
 import { cn } from 'cn';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import type { KeyedMutator } from 'swr';
 
 /// 题库题目列表展示
@@ -70,7 +70,7 @@ function QuestionListShow({ pageSource, otherDictListRecord, listResp, questionL
         return (
           <div
             key={questionInfo.id}
-            className="mt-3 first:mt-3 px-3 pt-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
+            className="mt-3 px-3 pt-3 bg-card transition-all duration-200 hover:shadow-lg hover:border-primary/10 border-border/60"
           >
             {/* 题干选项等部分 */}
             <SingleQuestionCommonPart pageSource={pageSource} otherDictListRecord={otherDictListRecord} questionInfo={questionInfo} />
@@ -91,6 +91,65 @@ function QuestionListShow({ pageSource, otherDictListRecord, listResp, questionL
         );
       })}
     </>
+  );
+}
+
+// 題目卡片展示
+interface QuestionCardItemProps {
+  question: QuestionBaseInfoResp;
+  displayIndex: number;
+  isOpen: boolean;
+  isLoading: boolean;
+  errorNode: React.ReactNode;
+  infoResp: QuestionInfoResp | null;
+  otherDictListRecord: OtherDictListRecord;
+  onToggle: (nextOpen: boolean, questionId: number) => void;
+}
+function QuestionCardItem({ question, displayIndex, isOpen, isLoading, errorNode, infoResp, otherDictListRecord, onToggle }: QuestionCardItemProps) {
+  return (
+    <Collapsible open={isOpen} onOpenChange={(nextOpen) => onToggle(nextOpen, question.id)}>
+      <div className={cn('overflow-hidden', isOpen ? 'border border-dotted border-blue-600 bg-green-50' : 'border border-gray-300')}>
+        <div className="grid grid-cols-[85%_15%] items-center p-2">
+          <div className="flex min-w-0 gap-2 wrap-break-word">
+            <div className="font-semibold tabular-nums">{displayIndex}.</div>
+            <TitleShow title={question.title} comment="" className="text-sm" />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <CollapsibleTrigger
+              render={
+                <Button size="sm" variant="outline">
+                  {isOpen ? '收起' : isLoading ? '查看中...' : '展开'}
+                </Button>
+              }
+            />
+          </div>
+        </div>
+
+        <CollapsibleContent className="overflow-hidden transition-[height] duration-200 ease-out data-ending-style:h-0">
+          {errorNode || (
+            <div className="space-y-2 border-t border-inherit bg-muted p-2">
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 text-sm font-bold text-amber-600">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                  题目全文
+                </div>
+                <div className="border border-dashed border-blue-300 p-3 text-slate-700">
+                  <SingleQuestionCommonPart
+                    pageSource={QuestionPageSource.List}
+                    otherDictListRecord={otherDictListRecord}
+                    questionInfo={question}
+                    optBgClassName=""
+                  />
+                </div>
+              </div>
+
+              <AnswerInfo infoResp={infoResp} />
+            </div>
+          )}
+        </CollapsibleContent>
+      </div>
+    </Collapsible>
   );
 }
 
@@ -158,33 +217,31 @@ function SimilarListShow({ otherDictListRecord, listResp }: SimilarListShowProps
   const [viewInfoErr, setViewInfoErr] = useState<React.ReactNode>(null);
   const [infoRespMap, setInfoRespMap] = useState<Record<number, QuestionInfoResp>>({});
 
-  // 查看详情
-  const handleViewInfo = (questionId: number | null) => {
-    setOpenQuestionId(questionId);
+  const handleViewInfo = useCallback(
+    (nextOpen: boolean, questionId: number) => {
+      if (!nextOpen) {
+        setOpenQuestionId(null);
+        return;
+      }
+      setOpenQuestionId(questionId);
+      if (infoRespMap[questionId]) return;
 
-    if (questionId === null) {
-      return;
-    }
-
-    if (infoRespMap[questionId]) {
-      return;
-    }
-
-    setViewInfoIng(true);
-    setViewInfoErr(null);
-
-    httpClient
-      .get<QuestionInfoResp>(`/question/info/${questionId}`)
-      .then((res) => {
-        setInfoRespMap((prev) => ({ ...prev, [questionId]: res }));
-      })
-      .catch((err) => {
-        setViewInfoErr(<SimpleAlert title="查看变式题详情出错" message={err.message} variant="default" />);
-      })
-      .finally(() => {
-        setViewInfoIng(false);
-      });
-  };
+      setViewInfoIng(true);
+      setViewInfoErr(null);
+      httpClient
+        .get<QuestionInfoResp>(`/question/info/${questionId}`)
+        .then((res) => {
+          setInfoRespMap((prev) => ({ ...prev, [questionId]: res }));
+        })
+        .catch((err) => {
+          setViewInfoErr(<SimpleAlert title="查看变式题详情出错" message={err.message} variant="default" />);
+        })
+        .finally(() => {
+          setViewInfoIng(false);
+        });
+    },
+    [infoRespMap],
+  );
 
   return (
     <div>
@@ -212,50 +269,17 @@ function SimilarListShow({ otherDictListRecord, listResp }: SimilarListShowProps
                 {pagedList.map((question, index) => {
                   const isOpen = openQuestionId === question.id;
                   return (
-                    <Collapsible key={question.id} open={isOpen} onOpenChange={() => handleViewInfo(isOpen ? null : question.id)}>
-                      <div className={cn('overflow-hidden', isOpen ? 'border-blue-600 border border-dotted bg-green-50' : 'border-gray-300 border')}>
-                        <div className="grid grid-cols-[85%_15%] items-center p-2">
-                          <div className="flex gap-2 min-w-0 wrap-break-word">
-                            <div className="tabular-nums font-semibold">{startIdx + index + 1}.</div>
-                            <TitleShow title={question.title} comment="" className="text-sm" />
-                          </div>
-
-                          <div className="flex flex-wrap items-center justify-end gap-2">
-                            <CollapsibleTrigger
-                              render={
-                                <Button size="sm" variant="outline">
-                                  {isOpen ? '收起' : viewInfoIng ? '查看中...' : '展开'}
-                                </Button>
-                              }
-                            />
-                          </div>
-                        </div>
-
-                        {/* 仅保留控制折叠展开的核心过渡动画样式 */}
-                        <CollapsibleContent className="transition-all data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-                          {viewInfoErr || (
-                            <div className="border-t border-inherit p-2 bg-muted space-y-2">
-                              <div className="space-y-1">
-                                <div className={'flex items-center text-sm  gap-1.5 font-bold text-amber-600'}>
-                                  <span className={'h-1.5 w-1.5 rounded-full bg-amber-500'} />
-                                  题目全文
-                                </div>
-                                <div className="p-3 text-slate-700 border border-dashed border-blue-300">
-                                  <SingleQuestionCommonPart
-                                    pageSource={QuestionPageSource.List}
-                                    otherDictListRecord={otherDictListRecord}
-                                    questionInfo={question}
-                                    optBgClassName=""
-                                  />
-                                </div>
-                              </div>
-
-                              <AnswerInfo infoResp={infoRespMap[question.id] ?? null} />
-                            </div>
-                          )}
-                        </CollapsibleContent>
-                      </div>
-                    </Collapsible>
+                    <QuestionCardItem
+                      key={question.id}
+                      question={question}
+                      displayIndex={startIdx + index + 1}
+                      isOpen={isOpen}
+                      isLoading={isOpen && viewInfoIng}
+                      errorNode={isOpen ? viewInfoErr : null}
+                      infoResp={infoRespMap[question.id] ?? null}
+                      otherDictListRecord={otherDictListRecord}
+                      onToggle={handleViewInfo}
+                    />
                   );
                 })}
               </div>
