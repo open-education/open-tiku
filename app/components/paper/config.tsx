@@ -167,20 +167,19 @@ function DifficultyDistributionCard() {
 
 function LevelInfo() {
   return (
-    <div className="rounded-lg border border-emerald-500/20 bg-emerald-50 px-3.5 py-2.5 text-xs leading-relaxed text-emerald-800">
-      <div className="mb-1 flex items-center gap-1 font-semibold">
-        <span className="text-[13px]">📊</span>
-        已联动学情分层
-      </div>
-
-      <div>A卷 → A等级（拓展层）学生</div>
-      <div>B卷 → B等级（提升层）学生</div>
-      <div>C卷 → C等级（基础层）学生</div>
-
-      <div className="mt-1 border-t border-dashed border-emerald-500/20 pt-1">
-        💡 临界生建议交叉配置：A临界生 = A卷+B卷混合；B临界生 = B卷+C卷混合
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-sm font-semibold">已联动学情分层</CardTitle>
+        <CardDescription>临界生建议交叉配置：A临界生 = A卷+B卷混合；B临界生 = B卷+C卷混合</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <div>A卷 → A等级（拓展层）学生</div>
+          <div>B卷 → B等级（提升层）学生</div>
+          <div>C卷 → C等级（基础层）学生</div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

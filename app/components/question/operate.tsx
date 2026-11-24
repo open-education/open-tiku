@@ -293,7 +293,7 @@ function QuestionOperateList({
     <div className="w-full space-y-3">
       {/* 答案解析内容 */}
       <Collapsible open={isAnswerOpen}>
-        <CollapsibleContent className="transition-all data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down mt-3 p-3 bg-secondary border border-dotted border-blue-100">
+        <CollapsibleContent className="transition-all data-[state=open]:animate-collapsible-down mt-3 p-3 bg-secondary border border-dotted border-blue-100">
           {viewAnswerErr || <AnswerInfo infoResp={infoResp} />}
         </CollapsibleContent>
       </Collapsible>

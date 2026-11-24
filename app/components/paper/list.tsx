@@ -247,7 +247,7 @@ function ExtPart({ source, item }: ExtPartProps) {
             {item.approveAt && (
               <>
                 <div>审核人: {item.approveName}</div>
-                <div>审核通过：{item.approveAt}</div>
+                <div>审核时间：{item.approveAt}</div>
               </>
             )}
             <div>更新时间：{item.updatedAt}</div>
