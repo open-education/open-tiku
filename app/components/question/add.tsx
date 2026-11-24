@@ -409,9 +409,9 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Settings2 className="w-5 h-5 text-primary" />
-            <CardTitle className="text-base font-medium">基础设置</CardTitle>
+            <CardTitle className="text-sm font-semibold">基础设置</CardTitle>
           </div>
-          <CardDescription className="text-sm">配置题目所属题型, 题目类型, 标签, 原创者名称, 来源和难度系数</CardDescription>
+          <CardDescription>配置题目所属题型, 题目类型, 标签, 原创者名称, 来源和难度系数</CardDescription>
         </CardHeader>
         <Separator />
         <CardContent>
@@ -565,7 +565,6 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
               <div className="min-w-0 flex-1">
                 <Input
                   id="originalName"
-                  className="text-sm md:text-sm"
                   value={addReq.originalName}
                   onChange={(e) => updateAddReq('originalName', e.target.value)}
                   placeholder="请输入原创者代号, 不要填写真实信息, 保护他人隐私"
@@ -578,7 +577,6 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
               <div className="min-w-0 flex-1">
                 <Input
                   id="source"
-                  className="text-sm md:text-sm"
                   value={addReq.source}
                   onChange={(e) => updateAddReq('source', e.target.value)}
                   placeholder="请输入题目来源, 标注版权信息"
@@ -594,9 +592,9 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
         <CardHeader>
           <div className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-primary" />
-            <CardTitle className="text-base font-medium">题干</CardTitle>
+            <CardTitle className="text-sm font-semibold">题干</CardTitle>
           </div>
-          <CardDescription className="text-sm">题目正文, 补充说明与相关图片</CardDescription>
+          <CardDescription>题目正文, 补充说明与相关图片</CardDescription>
         </CardHeader>
         <Separator />
         <CardContent>
@@ -606,7 +604,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
             </Label>
             <Textarea
               id="title"
-              className="min-h-25 resize-y text-sm md:text-sm"
+              className="min-h-25 resize-y"
               value={addReq.title || ''}
               onChange={(e) => updateAddReq('title', e.target.value)}
               placeholder="输入题目正文..."
@@ -618,7 +616,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
             </Label>
             <Textarea
               id="comment"
-              className="min-h-15 resize-y text-sm md:text-sm"
+              className="min-h-15 resize-y"
               value={addReq.comment || ''}
               onChange={(e) => updateAddReq('comment', e.target.value)}
               placeholder="例如：题目背景、特殊约束等"
@@ -650,12 +648,12 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
           <CardHeader>
             <div className="flex items-center gap-2">
               <ListChecks className="w-5 h-5 text-primary" />
-              <CardTitle className="text-base font-medium">选项设置</CardTitle>
-              <Badge variant="secondary" className="font-normal text-sm">
+              <CardTitle className="text-sm font-semibold">选项设置</CardTitle>
+              <Badge variant="secondary" className="font-normal">
                 选择题
               </Badge>
             </div>
-            <CardDescription className="text-sm">配置选项内容和布局</CardDescription>
+            <CardDescription>配置选项内容和布局</CardDescription>
           </CardHeader>
           <Separator />
           <CardContent>
@@ -671,9 +669,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
                 {StringConst.selectLayoutList.map(({ id, value, label }) => (
                   <div key={id} className="flex items-center gap-2">
                     <RadioGroupItem value={value} id={id} className="text-sm" />
-                    <Label htmlFor={id} className="text-sm">
-                      {label}
-                    </Label>
+                    <Label htmlFor={id}>{label}</Label>
                   </div>
                 ))}
               </RadioGroup>
@@ -704,7 +700,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
                     value={opt.content}
                     onChange={(e) => updateOption(optIdx, 'content', e.target.value)}
                     placeholder="输入选项内容"
-                    className="text-sm md:text-sm min-h-15 bg-background/60"
+                    className="min-h-15 bg-background/60"
                   />
 
                   {/* 选项内图片 */}
@@ -726,7 +722,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
                   />
                 </div>
               ))}
-              <Button type="button" variant="outline" className="text-sm md:text-sm w-full border-dashed h-11 gap-2" onClick={addOption}>
+              <Button type="button" variant="outline" className="w-full border-dashed h-11 gap-2" onClick={addOption}>
                 <Plus className="w-4 h-4" /> 添加选项
               </Button>
             </div>
@@ -739,7 +735,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
         <CardHeader>
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-primary" />
-            <CardTitle className="text-base font-medium">答案与知识点</CardTitle>
+            <CardTitle className="text-sm font-semibold">答案与知识点</CardTitle>
           </div>
         </CardHeader>
         <Separator />
@@ -750,7 +746,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
             </Label>
             <Textarea
               id="answer"
-              className="min-h-17.5 text-sm md:text-sm"
+              className="min-h-17.5"
               value={addReq.answer || ''}
               onChange={(e) => updateAddReq('answer', e.target.value)}
               placeholder="输入参考答案"
@@ -763,7 +759,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
             </Label>
             <Textarea
               id="knowledge"
-              className="min-h-17.5 text-sm md:text-sm"
+              className="min-h-17.5"
               value={addReq.knowledge || ''}
               onChange={(e) => updateAddReq('knowledge', e.target.value)}
               placeholder="输入知识点，多个可用逗号分隔"
@@ -777,7 +773,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Brain className="w-5 h-5 text-primary" />
-            <CardTitle className="text-base font-medium">解题分析</CardTitle>
+            <CardTitle className="text-sm font-semibold">解题分析</CardTitle>
           </div>
         </CardHeader>
         <Separator />
@@ -786,7 +782,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
             value={addReq.analysis?.content || ''}
             onChange={(e) => updateContent('analysis', 'content', e.target.value)}
             placeholder="详细的解题分析..."
-            className="min-h-20 text-sm md:text-sm"
+            className="min-h-20"
           />
 
           <ImageAdd
@@ -813,7 +809,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Wand2 className="w-5 h-5 text-primary" />
-            <CardTitle className="text-base font-medium">解题过程</CardTitle>
+            <CardTitle className="text-sm font-semibold">解题过程</CardTitle>
           </div>
         </CardHeader>
         <Separator />
@@ -822,7 +818,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
             value={addReq.process?.content || ''}
             onChange={(e) => updateContent('process', 'content', e.target.value)}
             placeholder="详细的解题步骤过程..."
-            className="min-h-20 text-sm md:text-sm"
+            className="min-h-20"
           />
 
           <ImageAdd
@@ -849,9 +845,9 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Footprints className="w-5 h-5 text-primary" />
-            <CardTitle className="text-base font-medium">解题步骤提示</CardTitle>
+            <CardTitle className="text-sm font-semibold">解题步骤提示</CardTitle>
           </div>
-          <CardDescription className="text-sm">分步骤引导学生思考</CardDescription>
+          <CardDescription>分步骤引导学生思考</CardDescription>
         </CardHeader>
         <Separator />
         <CardContent>
@@ -862,20 +858,20 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
                 value={step.content}
                 onChange={(e) => updateStep(idx, e.target.value)}
                 placeholder={`输入第 ${step.id} 步提示内容`}
-                className="min-h-12.5 bg-background/60 flex-1 text-sm md:text-sm"
+                className="min-h-12.5 bg-background/60 flex-1"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-destructive hover:text-destructive shrink-0 mt-1 text-sm md:text-sm"
+                className="h-8 w-8 text-destructive hover:text-destructive shrink-0 mt-1"
                 onClick={() => removeStep(idx)}
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
             </div>
           ))}
-          <Button type="button" variant="outline" className="w-full border-dashed h-11 gap-2 text-sm" onClick={addStep}>
+          <Button type="button" variant="outline" className="w-full border-dashed h-11 gap-2" onClick={addStep}>
             <Plus className="w-4 h-4" /> 添加步骤
           </Button>
         </CardContent>
@@ -886,7 +882,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
         <CardHeader>
           <div className="flex items-center gap-2">
             <MessageSquare className="w-5 h-5 text-primary" />
-            <CardTitle className="text-base font-medium">易错备注</CardTitle>
+            <CardTitle className="text-sm font-semibold">易错备注</CardTitle>
           </div>
         </CardHeader>
         <Separator />
@@ -895,7 +891,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
             value={addReq.remark || ''}
             onChange={(e) => updateAddReq('remark', e.target.value)}
             placeholder="例如：易错题型、解题技巧提醒等"
-            className="min-h-17.5 text-sm md:text-sm"
+            className="min-h-17.5"
           />
         </CardContent>
       </Card>

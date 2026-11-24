@@ -83,7 +83,7 @@ pnpm dev
 
 #### 格式化
 
-[VS Code](https://code.visualstudio.com/), 其它 IDE 注意不要引起代码大的格式化变动即可
+[VS Code](https://code.visualstudio.com/), 實際上我發掘 [Sublime Text](https://www.sublimetext.com/) 是最輕量的, 任意 IDE 注意不要引起代码大的格式化变动即可,
 
 [Prettier](https://prettier.io/) 代码格式化插件
 

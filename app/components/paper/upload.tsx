@@ -27,10 +27,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
-interface AddProps {
+interface UploadProps {
   initAddReq: PaperAddReq;
 }
-export default function Add({ initAddReq }: AddProps) {
+export default function Upload({ initAddReq }: UploadProps) {
   const navigate = useNavigate();
 
   // 是否是添加

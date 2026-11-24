@@ -24,6 +24,7 @@ export default [
 
     // 智能组卷
     route('/ops/paper', 'routes/ops/paper/index.tsx'),
+    route('/ops/paper/level', 'routes/ops/paper/level.tsx'),
 
     // 我的贡献
     route('/ops/my/question', 'routes/ops/my/question/index.tsx'),
