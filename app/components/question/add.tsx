@@ -24,7 +24,7 @@ import type { TextbookFillLevel, TextbookResp } from '@/type/textbook';
 import { useCustomList, useQuestionCates, useQuestionOtherDictList, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
 import { CustomUtil, ObjectUtil, TextbookUtil } from '@/util/object';
-import { StringConst, StringValidator } from '@/util/string';
+import { StringConst, StringUtil } from '@/util/string';
 import { getUserInfo } from '@/util/user';
 import {
   BookOpen,
@@ -133,7 +133,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
 
   // 非母题添加时需要用题目本身的信息去初始化菜单
   useEffect(() => {
-    if (isBaseQuestionAdd || pathMap.size <= 0 || !StringValidator.isNonEmpty(initAddReq.knowledgePath)) {
+    if (isBaseQuestionAdd || pathMap.size <= 0 || !StringUtil.isNonEmpty(initAddReq.knowledgePath)) {
       return;
     }
 
@@ -328,7 +328,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(addReq.title)) {
+    if (!StringUtil.isNonEmpty(addReq.title)) {
       toast.error(<div className="text-red-700">题目标题不能为空</div>, {
         duration: Infinity,
         action: {
@@ -365,7 +365,7 @@ export default function Add({ initAddReq, questionListRespMutate }: AddProps) {
     }
 
     // 知识点用逗号分割
-    if (addReq.knowledge && StringValidator.isNonEmpty(addReq.knowledge)) {
+    if (addReq.knowledge && StringUtil.isNonEmpty(addReq.knowledge)) {
       addReq.knowledge = addReq.knowledge
         .split(/\s*[、，,]\s*/)
         .filter(Boolean)

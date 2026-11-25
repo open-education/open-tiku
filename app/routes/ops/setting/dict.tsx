@@ -14,7 +14,7 @@ import type { TextbookOtherDictReq, TextbookOtherDictResp, TextbookResp } from '
 import { useQuestionOtherDicts, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
 import { ArrayUtil } from '@/util/object';
-import { StringConst, StringValidator } from '@/util/string';
+import { StringConst, StringUtil } from '@/util/string';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -80,7 +80,7 @@ export default function Index() {
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(addReq.typeCode)) {
+    if (!StringUtil.isNonEmpty(addReq.typeCode)) {
       toast.error(<div className="text-red-700">类型不能为空</div>, {
         duration: Infinity,
         action: {
@@ -90,7 +90,7 @@ export default function Index() {
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(addReq.itemValue)) {
+    if (!StringUtil.isNonEmpty(addReq.itemValue)) {
       toast.error(<div className="text-red-700">名称不能为空</div>, {
         duration: Infinity,
         action: {

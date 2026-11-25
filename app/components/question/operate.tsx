@@ -26,6 +26,7 @@ import type {
   QuestionDeleteReq,
   QuestionInfoResp,
   QuestionListResp,
+  QuestionPendingReq,
   QuestionSimilarListReq,
   QuestionUndoReq,
 } from '@/type/question';
@@ -186,13 +187,11 @@ function QuestionOperateList({
   const handleSubmitApprove = () => {
     setSubmitApproving(true);
 
-    const req: QuestionApproveReq = {
+    const req: QuestionPendingReq = {
       id: baseInfoResp.id,
-      status: QuestionStatus.Pending,
-      rejectReason: '',
     };
     httpClient
-      .post('/edit/question/status', req)
+      .post('/question/pending', req)
       .then((_) => {
         questionListRespMutate().then((_) => {});
         countListRespMutate?.();
@@ -352,42 +351,45 @@ function QuestionOperateList({
                   编辑
                 </Link>
               </Button>
-              <Dialog open={openSubmitApprove} onOpenChange={setOpenSubmitApprove}>
-                <DialogTrigger
-                  render={
-                    <Button size="sm" variant="outline">
-                      提交审核
-                    </Button>
-                  }
-                />
-                <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
-                  <DialogHeader>
-                    <DialogTitle className="text-sm font-bold">提交审核</DialogTitle>
-                    <DialogDescription>请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
-                  </DialogHeader>
 
-                  <Separator />
+              {baseInfoResp.status === QuestionStatus.Drafting && (
+                <Dialog open={openSubmitApprove} onOpenChange={setOpenSubmitApprove}>
+                  <DialogTrigger
+                    render={
+                      <Button size="sm" variant="outline">
+                        提交审核
+                      </Button>
+                    }
+                  />
+                  <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
+                    <DialogHeader>
+                      <DialogTitle className="text-sm font-bold">提交审核</DialogTitle>
+                      <DialogDescription>请确认题目没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
+                    </DialogHeader>
 
-                  <div className="space-y-3 px-4">
-                    <div className="font-semibold">检查步骤</div>
-                    <div className="text-xs space-y-2">
-                      <p>1. 题目不能是抄袭的, 避免投诉和版权纠纷</p>
-                      <p>2. 题目本身信息要完整</p>
-                      <p>3. 图片等信息不能缺失</p>
-                      <p>4. 题目和答案本身要符合常识</p>
+                    <Separator />
+
+                    <div className="space-y-3 px-4">
+                      <div className="font-semibold">检查步骤</div>
+                      <div className="text-xs space-y-2">
+                        <p>1. 题目不能是抄袭的, 避免投诉和版权纠纷</p>
+                        <p>2. 题目本身信息要完整</p>
+                        <p>3. 图片等信息不能缺失</p>
+                        <p>4. 题目和答案本身要符合常识</p>
+                      </div>
                     </div>
-                  </div>
 
-                  <Separator />
+                    <Separator />
 
-                  <DialogFooter>
-                    <DialogClose render={<Button variant="outline">关闭</Button>} />
-                    <Button onClick={handleSubmitApprove} disabled={submitApproving}>
-                      {submitApproving ? '提交审核中' : '提交审核'}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                    <DialogFooter>
+                      <DialogClose render={<Button variant="outline">关闭</Button>} />
+                      <Button onClick={handleSubmitApprove} disabled={submitApproving}>
+                        {submitApproving ? '提交审核中' : '提交审核'}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
 
               <Dialog open={openDelete} onOpenChange={setOpenDelete}>
                 <DialogTrigger

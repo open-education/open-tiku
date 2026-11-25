@@ -12,12 +12,12 @@ import { useDelayedLoading } from '@/hooks/delayed-loading';
 import type { CreateTextbookReq, TextbookResp } from '@/type/textbook';
 import { useTextbookLevel, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
-import { StringConst, StringValidator } from '@/util/string';
+import { ArrayUtil } from '@/util/object';
+import { StringConst, StringUtil } from '@/util/string';
 import { CheckCircle2Icon, ChevronsUpDown, Edit, InfoIcon, Menu, Plus, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { type KeyedMutator } from 'swr';
 import type { Route } from './+types/textbook';
-import { ArrayUtil } from '@/util/object';
 
 /// 网站首页顶部和底部框架
 
@@ -508,11 +508,11 @@ function Add({ parentId, pathDepth, path = '/', item, onClose, mutateCallback }:
       addReq.parentId = parentId;
     }
 
-    if (!StringValidator.isNonEmpty(addReq.label)) {
+    if (!StringUtil.isNonEmpty(addReq.label)) {
       setWarnInfo(<SimpleAlert title="必填检查" message="名称为空" />);
       return;
     }
-    if (!StringValidator.isNonEmpty(addReq.pathType)) {
+    if (!StringUtil.isNonEmpty(addReq.pathType)) {
       setWarnInfo(<SimpleAlert title="必填检查" message="类型为空" />);
       return;
     }

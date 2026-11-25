@@ -1,5 +1,5 @@
 import { table } from '@/components/common/table';
-import { StringValidator } from '@/util/string';
+import { StringUtil } from '@/util/string';
 import Markdown from 'react-markdown';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
@@ -19,7 +19,7 @@ function SimpleFullContent(props: SimpleFullContentProps) {
 
   return (
     <>
-      {StringValidator.isNonEmpty(content) && (
+      {StringUtil.isNonEmpty(content) && (
         <Markdown
           remarkPlugins={[remarkMath, remarkGfm, remarkBreaks]}
           rehypePlugins={[rehypeRaw, [rehypeKatex, { output: 'html', strict: 'ignore' }]]}

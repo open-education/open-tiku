@@ -15,7 +15,7 @@ import { useDelayedLoading } from '@/hooks/delayed-loading';
 import type { ClassInfoResp, ClassStudentEditReq, ClassStudentResp } from '@/type/class';
 import { useClassStudentList } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
-import { StringConst, StringValidator } from '@/util/string';
+import { StringConst, StringUtil } from '@/util/string';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -232,7 +232,7 @@ function StudentEdit({ infoResp, setOpen, classStudentMapRespMutate }: StudentEd
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(editReq.account)) {
+    if (!StringUtil.isNonEmpty(editReq.account)) {
       toast.error(<div className="text-red-700">账户为空</div>, {
         duration: Infinity,
         action: {

@@ -1,7 +1,7 @@
 import { SimpleFullContent } from '@/components/common/content';
 import { ImageZoom } from '@/components/common/image';
 import type { QuestionOption } from '@/type/question';
-import { StringValidator } from '@/util/string';
+import { StringUtil } from '@/util/string';
 import { cn } from 'cn';
 
 /// 选择题选项样式
@@ -49,7 +49,7 @@ function MultiOptionShow({ optionsLayout = 4, options, bgClassName = 'bg-card' }
               ) : (
                 // 文字模式：内容左对齐，自动换行
                 <span className={cn('wrap-break-word w-full text-left')}>
-                  {StringValidator.isNonEmpty(option.content) && <SimpleFullContent content={option.content} />}
+                  {StringUtil.isNonEmpty(option.content) && <SimpleFullContent content={option.content} />}
                 </span>
               )}
             </div>

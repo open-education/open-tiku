@@ -1,23 +1,22 @@
 import { SimpleAlert } from '@/components/common/alert';
 import { Loading } from '@/components/common/load';
 import { ChapterDropdownNav } from '@/components/common/nav';
+import FileUpload from '@/components/common/upload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { CustomPageSource, CustomUserSource, UploadFileType } from '@/type/enum';
 import type { TaskSaveReq } from '@/type/task';
 import type { TextbookFillLevel, TextbookResp } from '@/type/textbook';
 import { useCustomList, useQuestionCates, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
 import { CustomUtil } from '@/util/object';
-import { StringConst, StringValidator } from '@/util/string';
+import { StringConst, StringUtil } from '@/util/string';
 import { Save } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
-import { toast } from 'sonner';
-
-import FileUpload from '@/components/common/upload';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
-import { CustomPageSource, CustomUserSource, UploadFileType } from '@/type/enum';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import type { Route } from './+types/upload';
 
 export function meta({}: Route.MetaArgs) {
@@ -96,7 +95,7 @@ export default function Index() {
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(addReq.name)) {
+    if (!StringUtil.isNonEmpty(addReq.name)) {
       toast.error(<div className="text-red-700">文件名称不能为空</div>, {
         duration: Infinity,
         action: {
@@ -106,7 +105,7 @@ export default function Index() {
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(addReq.url)) {
+    if (!StringUtil.isNonEmpty(addReq.url)) {
       toast.error(<div className="text-red-700">文件标识不能为空</div>, {
         duration: Infinity,
         action: {
@@ -249,7 +248,13 @@ export default function Index() {
             文件名称:<span className="text-destructive">*</span>
           </div>
           <div className="min-w-0 flex-1">
-            <Input id="task-file-name" className="lg:w-[30%]" placeholder="例如 题型S-1-1-1 有理数的概念.md" value={addReq.name} disabled />
+            <Input
+              id="task-file-name"
+              className="lg:w-[30%]"
+              placeholder="例如 题型S-1-1-1 有理数的概念.md, 上传文件后自动写入"
+              value={addReq.name}
+              disabled
+            />
           </div>
         </div>
 
@@ -258,7 +263,7 @@ export default function Index() {
             文件标识:<span className="text-destructive">*</span>
           </div>
           <div className="min-w-0 flex-1">
-            <Input id="task-file-id" className="lg:w-[30%]" placeholder="文件标识, 右上角上传文件获得" value={addReq.url} disabled />
+            <Input id="task-file-id" className="lg:w-[30%]" placeholder="文件标识, 上传文件后自动写入" value={addReq.url} disabled />
           </div>
         </div>
 

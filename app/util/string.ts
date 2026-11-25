@@ -116,7 +116,69 @@ export const StringConst = {
 };
 
 // 字符串验证工具类
-export const StringValidator = {
+export const StringUtil = {
   // 检查是否为非空字符串
   isNonEmpty: (str: any): str is string => typeof str === 'string' && str.length > 0,
+
+  /**
+   * 截取标题为一段有效等长度-公式不要被中途截断, 结果可偏长
+   * 安全截断包含 $...$ 或 $$...$$ 的题目文本
+   * 到达 maxLen 后，若正处于公式内部，则自动向后顺延直到公式闭合
+   */
+  safeTruncateMath: (text: string, maxLen = 45): { content: string; truncated: boolean } => {
+    if (!text) return { content: '', truncated: false };
+
+    const chars = Array.from(text); // 正确处理 Unicode 字符
+    if (chars.length <= maxLen) {
+      return { content: text, truncated: false };
+    }
+
+    let inMath = false; // 是否在公式内部
+    let isDouble = false; // 当前公式是 $$ 还是 $
+    let i = 0;
+
+    while (i < chars.length) {
+      // 跳过转义的 \$
+      if (chars[i] === '\\' && chars[i + 1] === '$') {
+        i += 2;
+        continue;
+      }
+
+      // 遇到 $ 符号，切换公式状态
+      if (chars[i] === '$') {
+        if (!inMath) {
+          inMath = true;
+          isDouble = chars[i + 1] === '$';
+          i += isDouble ? 2 : 1;
+          continue;
+        } else {
+          if (isDouble && chars[i + 1] === '$') {
+            inMath = false;
+            isDouble = false;
+            i += 2;
+            // 刚闭合一个 $$ 公式，且已经达到或超过目标长度，直接在此截断
+            if (i >= maxLen) break;
+            continue;
+          } else if (!isDouble) {
+            inMath = false;
+            i += 1;
+            // 刚闭合一个 $ 公式，且已经达到或超过目标长度，直接在此截断
+            if (i >= maxLen) break;
+            continue;
+          }
+        }
+      }
+
+      i++;
+
+      // 不在公式内部，且已达到目标长度，直接停止
+      if (!inMath && i >= maxLen) {
+        break;
+      }
+    }
+
+    const truncated = i < chars.length;
+    const content = truncated ? chars.slice(0, i).join('') + '...' : text;
+    return { content, truncated };
+  },
 };

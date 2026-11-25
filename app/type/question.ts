@@ -161,6 +161,11 @@ export interface QuestionSnippetReq {
   content: string;
 }
 
+// 提交审核
+export interface QuestionPendingReq {
+  id: number;
+}
+
 // 题目审核
 export interface QuestionApproveReq {
   id: number;
