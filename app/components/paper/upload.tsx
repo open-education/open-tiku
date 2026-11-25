@@ -21,7 +21,7 @@ import type { TextbookFillLevel, TextbookResp } from '@/type/textbook';
 import { useCityList, useCustomList, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
 import { CustomUtil, ObjectUtil, TextbookUtil } from '@/util/object';
-import { StringConst, StringValidator } from '@/util/string';
+import { StringConst, StringUtil } from '@/util/string';
 import { Check, Save, Send } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -89,7 +89,7 @@ export default function Upload({ initAddReq }: UploadProps) {
   }, [isAdd, customListResp]);
   // 非试卷添加时需要用题目本身的信息去初始化菜单
   useEffect(() => {
-    if (isAdd || pathMap.size === 0 || !StringValidator.isNonEmpty(initAddReq.textbookPath)) {
+    if (isAdd || pathMap.size === 0 || !StringUtil.isNonEmpty(initAddReq.textbookPath)) {
       return;
     }
     CustomUtil.editInitTextbookUpdate(TextbookFillLevelType.Five, TextbookUtil.getPathId(initAddReq.textbookPath, 4), pathMap, updateFillLevel);
@@ -109,7 +109,7 @@ export default function Upload({ initAddReq }: UploadProps) {
   const [addApproving, setAddApproving] = useState<boolean>(false);
   const [addErr, setAddErr] = useState<React.ReactNode>(null);
   const handleSubmit = (status: PaperStatus) => {
-    if (!StringValidator.isNonEmpty(addReq.textbookPath)) {
+    if (!StringUtil.isNonEmpty(addReq.textbookPath)) {
       toast.error(<div className="text-red-700">菜单科目不能为空</div>, {
         duration: Infinity,
         action: {
@@ -139,7 +139,7 @@ export default function Upload({ initAddReq }: UploadProps) {
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(addReq.title)) {
+    if (!StringUtil.isNonEmpty(addReq.title)) {
       toast.error(<div className="text-red-700">试卷名称不能为空</div>, {
         duration: Infinity,
         action: {
@@ -149,7 +149,7 @@ export default function Upload({ initAddReq }: UploadProps) {
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(addReq.year)) {
+    if (!StringUtil.isNonEmpty(addReq.year)) {
       toast.error(<div className="text-red-700">学年不能为空</div>, {
         duration: Infinity,
         action: {

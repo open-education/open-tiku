@@ -21,7 +21,7 @@ import { useDelayedLoading } from '@/hooks/delayed-loading';
 import type { ChapterKnowledgeResp, CreateQuestionCateReq, QuestionCateResp } from '@/type/question-cate';
 import { useQuestionCateList } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
-import { StringValidator } from '@/util/string';
+import { StringUtil } from '@/util/string';
 import { CheckCircle2Icon, Pencil, Plus, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
@@ -76,7 +76,7 @@ function QuestionCateListShow({ ck }: QuestionCateListShowProps) {
       return;
     }
 
-    if (!StringValidator.isNonEmpty(addReq.label)) {
+    if (!StringUtil.isNonEmpty(addReq.label)) {
       toast.error(<div className="text-red-700">题型名称不能为空</div>, {
         duration: Infinity,
         action: {

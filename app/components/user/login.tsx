@@ -6,7 +6,7 @@ import { UserLoginSource } from '@/type/enum';
 import type { StudentLoginReq, UserInfoResp, UserLoginReq } from '@/type/user';
 import { httpClient } from '@/util/http';
 import { getEncryptPwd } from '@/util/pwd';
-import { StringValidator } from '@/util/string';
+import { StringUtil } from '@/util/string';
 import { clearAuth, saveAuth } from '@/util/user';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -36,11 +36,11 @@ export function Login() {
   const handleStudentLogin = async () => {
     setWarnInfo('');
 
-    if (!StringValidator.isNonEmpty(logInReq.account)) {
+    if (!StringUtil.isNonEmpty(logInReq.account)) {
       setWarnInfo(<SimpleAlert title="登录参数校验" message="账户为空" />);
       return;
     }
-    if (!StringValidator.isNonEmpty(logInReq.password)) {
+    if (!StringUtil.isNonEmpty(logInReq.password)) {
       setWarnInfo(<SimpleAlert title="登录参数校验" message="密码为空" />);
       return;
     }
@@ -62,7 +62,7 @@ export function Login() {
         .post<UserInfoResp>('/user/login', req)
         .then((userInfo) => {
           // 检查 token 信息
-          if (!StringValidator.isNonEmpty(userInfo.token)) {
+          if (!StringUtil.isNonEmpty(userInfo.token)) {
             setWarnInfo(<SimpleAlert title="登录失败" message="账户信息不完整" />);
             return;
           }

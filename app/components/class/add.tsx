@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import type { ClassInfoReq, ClassInfoResp, ClassListResp, ClassSearchReq } from '@/type/class';
 import { httpClient } from '@/util/http';
-import { StringValidator } from '@/util/string';
+import { StringUtil } from '@/util/string';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import type { KeyedMutator } from 'swr';
@@ -56,7 +56,7 @@ export default function ClassAdd({ open, setOpen, searchReq, infoResp, classList
 
   // 保存班级信息
   const handleSubmit = () => {
-    if (!StringValidator.isNonEmpty(addReq.year)) {
+    if (!StringUtil.isNonEmpty(addReq.year)) {
       toast.error(<div className="text-red-700">年份不能为空</div>, {
         duration: Infinity,
         action: {
@@ -66,7 +66,7 @@ export default function ClassAdd({ open, setOpen, searchReq, infoResp, classList
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(addReq.label)) {
+    if (!StringUtil.isNonEmpty(addReq.label)) {
       toast.error(<div className="text-red-700">班级名称不能为空</div>, {
         duration: Infinity,
         action: {

@@ -50,6 +50,7 @@ function AnswerInfo({ infoResp }: AnswerInfoProps) {
                 </div>
               }
               content={otherInfo}
+              className="max-w-20"
             />
           ) : (
             <>

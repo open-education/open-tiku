@@ -1,8 +1,10 @@
 import { TitleShow } from '@/components/common/title';
+import { SimpleTooltip } from '@/components/common/tooltip';
 import { Badge } from '@/components/ui/badge';
 import type { BoardResp } from '@/type/bord';
 import type { TextbookResp } from '@/type/textbook';
 import { formatNumber } from '@/util/fmt';
+import { StringUtil } from '@/util/string';
 import { cn } from 'cn';
 import { BookOpen, Clock, TrendingUp, Upload, Users } from 'lucide-react';
 
@@ -64,18 +66,31 @@ export default function Board({ pathMap, boardResp }: BoardProps) {
           </div>
           <div>
             {boardResp.latestQuestions?.length ? (
-              boardResp.latestQuestions.map((q, i) => (
-                <div
-                  key={q.id}
-                  className={cn('flex items-center justify-between gap-4 px-4 py-2 hover:bg-muted/30 transition-colors group', i > 0 && 'border-t')}
-                >
-                  <RankBadge n={i + 1} />
-                  <div className="min-w-0 flex-1">
-                    <TitleShow title={q.title} comment="" images={[]} />
+              boardResp.latestQuestions.map((q, i) => {
+                // 截断标题
+                const { content, truncated } = StringUtil.safeTruncateMath(q.title);
+
+                return (
+                  <div
+                    key={q.id}
+                    className={cn('flex items-center justify-between gap-4 px-4 py-2 hover:bg-muted/30 transition-colors group', i > 0 && 'border-t')}
+                  >
+                    <RankBadge n={i + 1} />
+                    <div className="min-w-0 flex-1">
+                      {truncated ? (
+                        <SimpleTooltip
+                          tip={<TitleShow title={content} comment="" images={[]} />}
+                          content={<TitleShow title={q.title} comment="" images={[]} />}
+                          className="max-w-100"
+                        />
+                      ) : (
+                        <TitleShow title={content} comment="" images={[]} />
+                      )}
+                    </div>
+                    <span className="text-xs text-muted-foreground shrink-0">{q.timeDesc}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground shrink-0">{q.timeDesc}</span>
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="px-4 py-8 text-center text-xs">暂无数据</div>
             )}

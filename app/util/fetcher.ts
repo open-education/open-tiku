@@ -10,7 +10,7 @@ import type { TaskListReq, TaskListResp } from '@/type/task';
 import type { TextbookOtherDictListReq, TextbookOtherDictListResp, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
 import type { UserIdentityListReq, UserIdentityListResp, UserSessionListReq, UserSessionListResp } from '@/type/user';
 import { httpClient } from '@/util/http';
-import { StringConst, StringValidator } from '@/util/string';
+import { StringConst, StringUtil } from '@/util/string';
 import useSWR from 'swr';
 import useSWRImmutable from 'swr/immutable';
 
@@ -58,10 +58,10 @@ export function useQuestionList(source: QuestionPageSource, search: QuestionList
     pageNo: pageNo,
     pageSize: StringConst.pageSize,
   };
-  if (StringValidator.isNonEmpty(search.chapterPath)) {
+  if (StringUtil.isNonEmpty(search.chapterPath)) {
     req.chapterPath = search.chapterPath;
   }
-  if (StringValidator.isNonEmpty(search.knowledgePath)) {
+  if (StringUtil.isNonEmpty(search.knowledgePath)) {
     req.knowledgePath = search.knowledgePath;
   }
   if (search.questionCateIds && search.questionCateIds.length > 0) {
@@ -125,7 +125,7 @@ export function useUserSessionList(pageNo: number) {
 
 // 题目其它通用字典获取
 export function useQuestionOtherDicts(twoLevelId: number, typeCode: string) {
-  const key = twoLevelId > 0 && StringValidator.isNonEmpty(typeCode) ? `/other/dict/list/${twoLevelId}/${typeCode}` : null;
+  const key = twoLevelId > 0 && StringUtil.isNonEmpty(typeCode) ? `/other/dict/list/${twoLevelId}/${typeCode}` : null;
   return useSWRImmutable<TextbookOtherDictResp[]>(key, httpClient.get, defaultErrConfig);
 }
 
@@ -154,10 +154,10 @@ export function useTaskList(reqInit: TaskListReq, pageNo: number, pageSize: numb
     pageNo,
     pageSize,
   };
-  if (StringValidator.isNonEmpty(reqInit.chapterPath)) {
+  if (StringUtil.isNonEmpty(reqInit.chapterPath)) {
     req.chapterPath = reqInit.chapterPath;
   }
-  if (StringValidator.isNonEmpty(reqInit.knowledgePath)) {
+  if (StringUtil.isNonEmpty(reqInit.knowledgePath)) {
     req.knowledgePath = reqInit.knowledgePath;
   }
   if (reqInit.questionCateId && reqInit.questionCateId > 0) {
@@ -176,13 +176,13 @@ export function useClassList(search: ClassSearchReq, pageNo: number) {
     pageSize: StringConst.pageSize,
   };
 
-  if (StringValidator.isNonEmpty(search.year)) {
+  if (StringUtil.isNonEmpty(search.year)) {
     req.year = search.year;
   }
-  if (StringValidator.isNonEmpty(search.grade)) {
+  if (StringUtil.isNonEmpty(search.grade)) {
     req.grade = search.grade;
   }
-  if (StringValidator.isNonEmpty(search.semester)) {
+  if (StringUtil.isNonEmpty(search.semester)) {
     req.semester = search.semester;
   }
 
@@ -237,6 +237,6 @@ export function useCountPaperList() {
 // 试卷列表
 export function usePaperList(req: PaperListReq) {
   const reqPath = '/paper/list';
-  const key = StringValidator.isNonEmpty(req.textbookPath) ? [reqPath, JSON.stringify(req)] : null;
+  const key = StringUtil.isNonEmpty(req.textbookPath) ? [reqPath, JSON.stringify(req)] : null;
   return useSWR<PaperListResp>(key, () => httpClient.post<PaperListResp>(reqPath, req), defaultErrConfig);
 }

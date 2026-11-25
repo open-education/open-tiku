@@ -8,7 +8,7 @@ import type { ClassInfoResp, ClassStudentReq } from '@/type/class';
 import { getClassStudentListKey } from '@/util/fetcher';
 import { httpClient } from '@/util/http';
 import { ObjectUtil } from '@/util/object';
-import { StringValidator } from '@/util/string';
+import { StringUtil } from '@/util/string';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useSWRConfig } from 'swr';
@@ -42,7 +42,7 @@ export default function UploadStudentAccount({ open, setOpen, infoResp }: Upload
       });
       return;
     }
-    if (!StringValidator.isNonEmpty(infoResp.email)) {
+    if (!StringUtil.isNonEmpty(infoResp.email)) {
       toast.error(<div className="text-red-700">没有配置个人邮箱, 无法接收账户登录密码等信息</div>, {
         duration: Infinity,
         action: {

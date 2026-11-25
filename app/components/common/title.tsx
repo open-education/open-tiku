@@ -1,6 +1,6 @@
 import { SimpleFullContent } from '@/components/common/content';
 import { ImageZoom } from '@/components/common/image';
-import { StringValidator } from '@/util/string';
+import { StringUtil } from '@/util/string';
 
 /// 标题设计--试卷和题库均使用后续移动到父级
 
@@ -20,13 +20,13 @@ function TitleShow({ no = 0, id = 0, title, comment, images = [], className = 't
   return (
     <div className={className}>
       {/* 题干 */}
-      {StringValidator.isNonEmpty(title) && (
+      {StringUtil.isNonEmpty(title) && (
         <div>
           <SimpleFullContent content={content} />
         </div>
       )}
       {/* 标记 */}
-      {StringValidator.isNonEmpty(comment) && <div className="mt-3">{comment}</div>}
+      {StringUtil.isNonEmpty(comment) && <div className="mt-3">{comment}</div>}
       {/* 图片 */}
       {images.length > 0 && (
         <div className="grid grid-cols-4 gap-4 items-center mt-3">

@@ -270,7 +270,7 @@ function ExtPart({ source, item }: ExtPartProps) {
 
       {/* 显示拒绝原因, 不用判读来源和状态, 只有我的题目能看到该状态 */}
       {item.status === PaperStatus.Rejected && item.rejectReason && (
-        <SimpleTooltip tip={<div className="text-xs font-semibold text-red-700">原因: {item.rejectReason}</div>} />
+        <SimpleTooltip tip={<div className="text-xs font-semibold text-red-700">原因: {item.rejectReason}</div>} className="max-w-25" />
       )}
     </div>
   );
@@ -428,42 +428,44 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
             </Button>
           </Link>
 
-          <Dialog open={openSubmitApprove} onOpenChange={setOpenSubmitApprove}>
-            <DialogTrigger
-              render={
-                <Button size="sm" variant="outline">
-                  提交审核
-                </Button>
-              }
-            />
-            <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
-              <DialogHeader>
-                <DialogTitle className="text-sm font-bold">提交审核</DialogTitle>
-                <DialogDescription>请确认试卷没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
-              </DialogHeader>
+          {item.status === PaperStatus.Drafting && (
+            <Dialog open={openSubmitApprove} onOpenChange={setOpenSubmitApprove}>
+              <DialogTrigger
+                render={
+                  <Button size="sm" variant="outline">
+                    提交审核
+                  </Button>
+                }
+              />
+              <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
+                <DialogHeader>
+                  <DialogTitle className="text-sm font-bold">提交审核</DialogTitle>
+                  <DialogDescription>请确认试卷没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
+                </DialogHeader>
 
-              <Separator />
+                <Separator />
 
-              <div className="space-y-3 px-4">
-                <div className="font-semibold">检查步骤</div>
-                <div className="text-xs space-y-2">
-                  <p>1. 试卷不能是抄袭的, 避免投诉和版权纠纷</p>
-                  <p>2. 试卷本身信息要完整</p>
-                  <p>3. 图片等信息如果有不能缺失</p>
-                  <p>4. 试卷和答案本身如果有要符合常识</p>
+                <div className="space-y-3 px-4">
+                  <div className="font-semibold">检查步骤</div>
+                  <div className="text-xs space-y-2">
+                    <p>1. 试卷不能是抄袭的, 避免投诉和版权纠纷</p>
+                    <p>2. 试卷本身信息要完整</p>
+                    <p>3. 图片等信息如果有不能缺失</p>
+                    <p>4. 试卷和答案本身如果有要符合常识</p>
+                  </div>
                 </div>
-              </div>
 
-              <Separator />
+                <Separator />
 
-              <DialogFooter>
-                <DialogClose render={<Button variant="outline">关闭</Button>} />
-                <Button onClick={handleSubmitApprove} disabled={submitApproving}>
-                  {submitApproving ? '提交审核中' : '提交审核'}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <DialogFooter>
+                  <DialogClose render={<Button variant="outline">关闭</Button>} />
+                  <Button onClick={handleSubmitApprove} disabled={submitApproving}>
+                    {submitApproving ? '提交审核中' : '提交审核'}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
 
           <Dialog open={openDelete} onOpenChange={setOpenDelete}>
             <DialogTrigger
