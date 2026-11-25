@@ -266,22 +266,26 @@ function SimilarListShow({ otherDictListRecord, listResp }: SimilarListShowProps
           return (
             <TabsContent key={cfg.id} value={cfg.id}>
               <div className="space-y-2">
-                {pagedList.map((question, index) => {
-                  const isOpen = openQuestionId === question.id;
-                  return (
-                    <QuestionCardItem
-                      key={question.id}
-                      question={question}
-                      displayIndex={startIdx + index + 1}
-                      isOpen={isOpen}
-                      isLoading={isOpen && viewInfoIng}
-                      errorNode={isOpen ? viewInfoErr : null}
-                      infoResp={infoRespMap[question.id] ?? null}
-                      otherDictListRecord={otherDictListRecord}
-                      onToggle={handleViewInfo}
-                    />
-                  );
-                })}
+                {pagedList.length > 0 ? (
+                  pagedList.map((question, index) => {
+                    const isOpen = openQuestionId === question.id;
+                    return (
+                      <QuestionCardItem
+                        key={question.id}
+                        question={question}
+                        displayIndex={startIdx + index + 1}
+                        isOpen={isOpen}
+                        isLoading={isOpen && viewInfoIng}
+                        errorNode={isOpen ? viewInfoErr : null}
+                        infoResp={infoRespMap[question.id] ?? null}
+                        otherDictListRecord={otherDictListRecord}
+                        onToggle={handleViewInfo}
+                      />
+                    );
+                  })
+                ) : (
+                  <SimpleAlert title="该类变式题列表为空" message="" variant="default" />
+                )}
               </div>
 
               {totalPages > 1 && (
