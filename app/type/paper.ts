@@ -96,6 +96,11 @@ export interface PaperListResp {
   total: number;
 }
 
+// 提交审核
+export interface PaperPendingReq {
+  id: number;
+}
+
 // 试卷审核
 export interface PaperApproveReq {
   id: number;

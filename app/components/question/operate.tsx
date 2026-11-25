@@ -26,6 +26,7 @@ import type {
   QuestionDeleteReq,
   QuestionInfoResp,
   QuestionListResp,
+  QuestionPendingReq,
   QuestionSimilarListReq,
   QuestionUndoReq,
 } from '@/type/question';
@@ -186,13 +187,11 @@ function QuestionOperateList({
   const handleSubmitApprove = () => {
     setSubmitApproving(true);
 
-    const req: QuestionApproveReq = {
+    const req: QuestionPendingReq = {
       id: baseInfoResp.id,
-      status: QuestionStatus.Pending,
-      rejectReason: '',
     };
     httpClient
-      .post('/edit/question/status', req)
+      .post('/question/pending', req)
       .then((_) => {
         questionListRespMutate().then((_) => {});
         countListRespMutate?.();

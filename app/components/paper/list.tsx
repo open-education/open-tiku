@@ -16,7 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import type { CityResp } from '@/type/city';
 import { PaperDifficultyType, PaperLevelType, PaperPageSource, PaperStatus, UploadFileType } from '@/type/enum';
-import type { CountPaperResp, PaperApproveReq, PaperDeleteReq, PaperListResp, PaperResp, PaperUndoReq } from '@/type/paper';
+import type { CountPaperResp, PaperApproveReq, PaperDeleteReq, PaperListResp, PaperPendingReq, PaperResp, PaperUndoReq } from '@/type/paper';
 import { httpClient } from '@/util/http';
 import { ArrayUtil, ObjectUtil } from '@/util/object';
 import { StringConst } from '@/util/string';
@@ -296,13 +296,11 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
   const handleSubmitApprove = () => {
     setSubmitApproving(true);
 
-    const req: PaperApproveReq = {
+    const req: PaperPendingReq = {
       id: item.id,
-      status: PaperStatus.Pending,
-      rejectReason: '',
     };
     httpClient
-      .post('/edit/paper/status', req)
+      .post('/paper/pending', req)
       .then((_) => {
         paperListRespMutate?.().then((_) => {});
         countListRespMutate?.();
