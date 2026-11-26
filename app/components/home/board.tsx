@@ -68,7 +68,7 @@ export default function Board({ pathMap, boardResp }: BoardProps) {
             {boardResp.latestQuestions?.length ? (
               boardResp.latestQuestions.map((q, i) => {
                 // 截断标题
-                const { content, truncated } = StringUtil.safeTruncateMath(q.title);
+                const { content, truncated } = StringUtil.safeTruncateMath(q.title, 25);
 
                 return (
                   <div
@@ -81,7 +81,7 @@ export default function Board({ pathMap, boardResp }: BoardProps) {
                         <SimpleTooltip
                           tip={<TitleShow title={content} comment="" images={[]} />}
                           content={<TitleShow title={q.title} comment="" images={[]} />}
-                          className="max-w-100"
+                          className="max-w-120"
                         />
                       ) : (
                         <TitleShow title={content} comment="" images={[]} />

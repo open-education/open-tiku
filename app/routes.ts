@@ -12,6 +12,13 @@ export default [
 
   // 业务空间
   layout('routes/layout.tsx', [
+    // 学生首页
+    route('/ops/student', 'routes/ops/student/index.tsx'),
+    // 作业类表
+    route('/ops/student/homework', 'routes/ops/student/homework.tsx'),
+    // 作答
+    route('/ops/student/homework/exam', 'routes/ops/student/exam.tsx'),
+
     // 工作台
     route('/ops', 'routes/ops/index.tsx'),
 
