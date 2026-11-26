@@ -12,7 +12,7 @@ import { ButtonGroup } from '@/components/ui/button-group';
 import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { CityResp } from '@/type/city';
 import { CustomPageSource, CustomUserSource } from '@/type/enum';

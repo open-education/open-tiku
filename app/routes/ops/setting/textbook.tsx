@@ -8,7 +8,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import type { CreateTextbookReq, TextbookResp } from '@/type/textbook';
 import { useTextbookLevel, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';

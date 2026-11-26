@@ -3,7 +3,7 @@ import { Loading } from '@/components/common/load';
 import { ChapterExpandNav } from '@/components/common/nav';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import type { CustomAddReq, CustomTextbook } from '@/type/custom';
 import { CustomModeType, CustomPageSource, CustomType, CustomUserSource } from '@/type/enum';
 import type { TextbookFillLevel } from '@/type/textbook';

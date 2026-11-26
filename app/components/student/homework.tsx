@@ -1,7 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import {
   AlertCircle,
   BookOpenCheck,
@@ -18,7 +17,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import React, { useState } from 'react';
-import { NavLink } from 'react-router';
+import { Link } from 'react-router';
 
 // 1. 类型定义
 export type AssignmentType = 'homework' | 'practice' | 'correction';
@@ -205,19 +204,19 @@ function HomeworkInfo({
   const renderPrimaryAction = () => {
     if (!progress || progress.status === 'not_started') {
       return (
-        <NavLink to="/student/homework/exam">
+        <Link to="/student/homework/exam" target="_blank">
           <Button className="gap-1.5 shadow-xs font-medium" onClick={() => onStart?.(item)}>
             <Play className="w-4 h-4 fill-current" />
             开始作答
           </Button>
-        </NavLink>
+        </Link>
       );
     }
 
     if (progress.status === 'in_progress') {
       const latestAttempt = item.history[0];
       return (
-        <NavLink to="/student/homework/exam">
+        <Link to="/student/homework/exam" target="_blank">
           <Button
             className="gap-1.5 bg-amber-600 hover:bg-amber-700 text-white shadow-xs font-medium"
             onClick={() => onContinue?.(item, latestAttempt?.attemptId)}
@@ -225,7 +224,7 @@ function HomeworkInfo({
             <Play className="w-4 h-4 fill-current" />
             继续作答
           </Button>
-        </NavLink>
+        </Link>
       );
     }
 
@@ -377,7 +376,7 @@ function HomeworkInfo({
 
                     {/* 单条历史操作按钮 */}
                     {isInProgress ? (
-                      <NavLink to="/student/homework/exam">
+                      <Link to="/student/homework/exam" target="_blank">
                         <Button
                           size="sm"
                           variant="default"
@@ -386,7 +385,7 @@ function HomeworkInfo({
                         >
                           继续作答
                         </Button>
-                      </NavLink>
+                      </Link>
                     ) : (
                       <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => onViewReport?.(item, record.attemptId)}>
                         查看详情

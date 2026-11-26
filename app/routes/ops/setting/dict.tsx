@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import type { TextbookOtherDictReq, TextbookOtherDictResp, TextbookResp } from '@/type/textbook';
 import { useQuestionOtherDicts, useTextbooks } from '@/util/fetcher';
 import { httpClient } from '@/util/http';

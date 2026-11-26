@@ -7,7 +7,7 @@ import Hero from '@/components/home/hero';
 import Layered from '@/components/home/layered';
 import Mission from '@/components/home/mission';
 import Roadmap from '@/components/home/roadmap';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import { useBoardList, useTextbooks } from '@/util/fetcher';
 import { TextbookUtil } from '@/util/object';
 import { useMemo } from 'react';

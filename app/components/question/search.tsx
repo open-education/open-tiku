@@ -6,7 +6,7 @@ import { SimplePagination } from '@/components/common/page';
 import { QuestionListShow } from '@/components/question/list';
 import { SearchList } from '@/components/question/nav';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CustomPageSource, CustomUserSource, QuestionPageSource } from '@/type/enum';
 import type { CountQuestionResp, QuestionListReq } from '@/type/question';
