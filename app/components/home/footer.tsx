@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { Link } from 'react-router';
 
 // 网站脚部信息
@@ -29,7 +28,7 @@ const links: LinksProps[] = [
     items: [
       {
         title: 'FAQs',
-        href: '/help/faqs',
+        href: '/faqs',
         target: '_self',
       },
     ],

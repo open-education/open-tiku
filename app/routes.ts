@@ -11,7 +11,7 @@ export default [
     route('question/paper', 'routes/home/paper.tsx'),
 
     // 帮助文档
-    route('help/faqs', 'routes/help/faqs.tsx'), // Faqs
+    route('faqs', 'routes/home/faqs.tsx'), // Faqs
   ]),
 
   // 业务空间
