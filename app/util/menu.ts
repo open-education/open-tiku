@@ -7,7 +7,7 @@ import { ChartColumnIcon, CircleCheckBig, House, LayoutDashboard, NotebookPen, S
 // 权限配置注意, 会优先直接放行 父路径
 export const menuItems: OpsMenu[] = [
   {
-    title: '学习首页',
+    title: '我的工作台',
     url: '/student',
     icon: House,
     login: true,
@@ -21,7 +21,7 @@ export const menuItems: OpsMenu[] = [
     role: UserRoleType.Student,
   },
   {
-    title: '工作台',
+    title: '我的工作台',
     url: '/ops',
     icon: LayoutDashboard,
     login: true,
@@ -102,7 +102,7 @@ export const menuItems: OpsMenu[] = [
     ],
   },
   {
-    title: '班级',
+    title: '我的班级',
     url: '',
     icon: School,
     login: true,
@@ -110,14 +110,14 @@ export const menuItems: OpsMenu[] = [
     items: [{ title: '我的班级', url: '/ops/class', login: true, role: UserRoleType.Teacher }],
   },
   {
-    title: '学情',
+    title: '我的学情',
     url: '/ops/my/analyze',
     icon: ChartColumnIcon,
     login: true,
     role: UserRoleType.Teacher,
   },
   {
-    title: '审核',
+    title: '我的审核',
     url: '',
     icon: CircleCheckBig,
     login: true,

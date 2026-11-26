@@ -26,10 +26,10 @@ const defaultSystemMenuItems: SystemMenuItem[] = [
 // 各角色专属菜单映射表
 const defaultRoleMenuMap: Record<number, SystemMenuItem[]> = {
   [UserRoleType.Student]: [
-    { key: 'student', url: '/student', label: '学习首页' },
+    { key: 'student', url: '/student', label: '我的工作台' },
     { key: 'homework', url: '/student/homework', label: '我的作业' },
   ],
-  [UserRoleType.Teacher]: [{ key: 'ops', url: '/ops', label: '工作台' }],
+  [UserRoleType.Teacher]: [{ key: 'ops', url: '/ops', label: '我的工作台' }],
 };
 
 export default function Header() {
