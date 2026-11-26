@@ -18,9 +18,21 @@ import { finalUserLogin } from '@/util/user';
 import { useEffect, useMemo } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 
+import type { Route } from './+types/main';
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: '题库管理' },
+    {
+      name: 'description',
+      content: '我的题库管理',
+    },
+  ];
+}
+
 // 网站布局样式
 
-export default function Layout() {
+export default function Main() {
   // 用户登录临时 token 换票
   const navigate = useNavigate();
 

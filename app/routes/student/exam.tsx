@@ -1026,7 +1026,7 @@ export default function ExamInfo() {
   // 移动端
   if (useIsMobile()) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-3 px-3">
         {topContent}
         {leftContent}
         {middleContent}
@@ -1037,7 +1037,7 @@ export default function ExamInfo() {
 
   // PC 端
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 px-3">
       {topContent}
 
       <ResizablePanelGroup orientation="horizontal" className="border flex-col! md:flex-row!">

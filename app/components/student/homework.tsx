@@ -205,7 +205,7 @@ function HomeworkInfo({
   const renderPrimaryAction = () => {
     if (!progress || progress.status === 'not_started') {
       return (
-        <NavLink to="/ops/student/homework/exam">
+        <NavLink to="/student/homework/exam">
           <Button className="gap-1.5 shadow-xs font-medium" onClick={() => onStart?.(item)}>
             <Play className="w-4 h-4 fill-current" />
             开始作答
@@ -217,7 +217,7 @@ function HomeworkInfo({
     if (progress.status === 'in_progress') {
       const latestAttempt = item.history[0];
       return (
-        <NavLink to="/ops/student/homework/exam">
+        <NavLink to="/student/homework/exam">
           <Button
             className="gap-1.5 bg-amber-600 hover:bg-amber-700 text-white shadow-xs font-medium"
             onClick={() => onContinue?.(item, latestAttempt?.attemptId)}
@@ -377,7 +377,7 @@ function HomeworkInfo({
 
                     {/* 单条历史操作按钮 */}
                     {isInProgress ? (
-                      <NavLink to="/ops/student/homework/exam">
+                      <NavLink to="/student/homework/exam">
                         <Button
                           size="sm"
                           variant="default"

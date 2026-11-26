@@ -13,5 +13,9 @@ export function meta({}: Route.MetaArgs) {
 
 // 我的作业
 export default function Index() {
-  return <HomeWorkList />;
+  return (
+    <div className="px-3">
+      <HomeWorkList />
+    </div>
+  );
 }
