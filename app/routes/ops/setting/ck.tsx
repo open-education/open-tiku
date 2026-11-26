@@ -19,7 +19,7 @@ import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle }
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import type { ChapterKnowledgeResp, CreateChapterKnowledgeReq, RemoveChapterKnowledgeReq } from '@/type/question-cate';
 import type { TextbookResp } from '@/type/textbook';
 import { useChapterKnowledgeList, useTextbooks } from '@/util/fetcher';

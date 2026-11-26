@@ -125,7 +125,7 @@ export const StringUtil = {
    * 安全截断包含 $...$ 或 $$...$$ 的题目文本
    * 到达 maxLen 后，若正处于公式内部，则自动向后顺延直到公式闭合
    */
-  safeTruncateMath: (text: string, maxLen = 45): { content: string; truncated: boolean } => {
+  safeTruncateMath: (text: string, maxLen = 25): { content: string; truncated: boolean } => {
     if (!text) return { content: '', truncated: false };
 
     const chars = Array.from(text); // 正确处理 Unicode 字符

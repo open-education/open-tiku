@@ -2,7 +2,7 @@ import { SimpleAlert } from '@/components/common/alert';
 import { ListCard, type StatItem } from '@/components/common/list';
 import { Loading } from '@/components/common/load';
 import PaperSearchList from '@/components/paper/search';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import { PaperPageSource, PaperStatus } from '@/type/enum';
 import type { PaperListReq } from '@/type/paper';
 import { useCountPaperList } from '@/util/fetcher';

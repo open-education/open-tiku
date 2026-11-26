@@ -4,7 +4,7 @@ import { SimplePagination } from '@/components/common/page';
 import { SimpleTooltip } from '@/components/common/tooltip';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import { useUserSessionList } from '@/util/fetcher';
 import { StringConst } from '@/util/string';
 import { useState } from 'react';

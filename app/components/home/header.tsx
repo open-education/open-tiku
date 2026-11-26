@@ -1,15 +1,41 @@
 import Auth from '@/components/home/auth';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useUserInfo } from '@/hooks/use-user';
+import { UserRoleType } from '@/type/enum';
 import { getUserInfo, handleLogout } from '@/util/user';
 import { LogOutIcon, Menu } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { NavLink, type NavLinkProps } from 'react-router';
 
 /// 网站头部导航
 
+// 菜单属性
+interface SystemMenuItem {
+  key: string;
+  url: string;
+  label: string;
+}
+
+// 系统菜单
+const defaultSystemMenuItems: SystemMenuItem[] = [
+  { key: 'question', url: '/question', label: '题库中心' },
+  { key: 'question-paper', url: '/question/paper', label: '试卷库' },
+];
+
+// 各角色专属菜单映射表
+const defaultRoleMenuMap: Record<number, SystemMenuItem[]> = {
+  [UserRoleType.Student]: [
+    { key: 'student', url: '/student', label: '学习首页' },
+    { key: 'homework', url: '/student/homework', label: '我的作业' },
+  ],
+  [UserRoleType.Teacher]: [{ key: 'ops', url: '/ops', label: '工作台' }],
+};
+
 export default function Header() {
   // 获取用户信息
+  const userInfo = useUserInfo();
+
   const { isLogin, username } = getUserInfo();
 
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -22,6 +48,17 @@ export default function Header() {
     `block w-full px-3 py-2 text-sm rounded-md transition-all ${
       isActive ? 'font-bold underline underline-offset-4' : 'text-gray-600 hover:text-gray-900'
     }`;
+
+  // 导航菜单
+  const menuItems: SystemMenuItem[] = useMemo(() => {
+    if (!userInfo || userInfo.userId <= 0) {
+      return defaultSystemMenuItems;
+    }
+
+    const roleSpecificMenus = defaultRoleMenuMap[userInfo.role] ?? [];
+
+    return [...defaultSystemMenuItems, ...roleSpecificMenus];
+  }, [userInfo]);
 
   return (
     <header className="flex items-center sticky top-0 z-50 h-16 border-b border-border bg-card backdrop-blur-sm px-2 sm:px-4">
@@ -36,12 +73,13 @@ export default function Header() {
 
         {/* 中等以上屏幕导航 Nav links */}
         <nav className="hidden md:flex items-center gap-1 flex-1">
-          <NavLink to={'/question'} className={pcLinkClass}>
-            题库中心
-          </NavLink>
-          <NavLink to={'/question/paper'} className={pcLinkClass}>
-            试卷库
-          </NavLink>
+          {menuItems.map((item) => {
+            return (
+              <NavLink key={item.key} to={item.url} end className={pcLinkClass}>
+                {item.label}
+              </NavLink>
+            );
+          })}
         </nav>
 
         {/* 移动端菜单按钮 - 仅小屏幕显示 */}
@@ -69,15 +107,16 @@ export default function Header() {
 
               {/* 导航菜单 */}
               <nav className="p-4 space-y-1 overflow-y-auto">
-                <NavLink to="/" onClick={() => setSheetOpen(false)} className={mobileLinkClass}>
+                <NavLink key="homepage" to="/" end onClick={() => setSheetOpen(false)} className={mobileLinkClass}>
                   首页
                 </NavLink>
-                <NavLink to="/question" onClick={() => setSheetOpen(false)} className={mobileLinkClass}>
-                  题库中心
-                </NavLink>
-                <NavLink to="/question/paper" onClick={() => setSheetOpen(false)} className={mobileLinkClass}>
-                  试卷库
-                </NavLink>
+                {menuItems.map((item) => {
+                  return (
+                    <NavLink key={item.key} to={item.url} end className={mobileLinkClass}>
+                      {item.label}
+                    </NavLink>
+                  );
+                })}
               </nav>
 
               {isLogin && (

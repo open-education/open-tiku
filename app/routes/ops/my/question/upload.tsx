@@ -5,7 +5,7 @@ import FileUpload from '@/components/common/upload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import { CustomPageSource, CustomUserSource, UploadFileType } from '@/type/enum';
 import type { TaskSaveReq } from '@/type/task';
 import type { TextbookFillLevel, TextbookResp } from '@/type/textbook';

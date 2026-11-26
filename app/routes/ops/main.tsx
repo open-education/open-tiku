@@ -1,4 +1,3 @@
-import { GlobalError } from '@/components/common/error';
 import { Logo, MenuList } from '@/components/common/sidebar';
 import Auth from '@/components/home/auth';
 import { Separator } from '@/components/ui/separator';
@@ -12,42 +11,24 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { useUserInfo } from '@/hooks/use-user';
-import { checkAccess, filterMenuItems, getMenuMap } from '@/util/menu';
-import { finalUserLogin } from '@/util/user';
-import { useEffect, useMemo } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router';
+import { useCurrentMenu } from '@/hooks/use-current-menu';
+import { Outlet } from 'react-router';
+import type { Route } from './+types/main';
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: '题库管理' },
+    {
+      name: 'description',
+      content: '我的题库管理',
+    },
+  ];
+}
 
 // 网站布局样式
 
-export default function Layout() {
-  // 用户登录临时 token 换票
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    finalUserLogin(navigate);
-  }, []);
-
-  const location = useLocation();
-  const currentPath = location.pathname;
-
-  const menuMap = useMemo(() => {
-    return getMenuMap();
-  }, []);
-
-  // 登录用户信息
-  const user = useUserInfo();
-
-  // 根据登录信息和角色等过滤后剩余的菜单项
-  const finalMenuItems = useMemo(() => {
-    return filterMenuItems(user);
-  }, [user]);
-
-  // 当前菜单项目
-  const currentMenu = menuMap[currentPath] || null;
-  if (!checkAccess(user, currentMenu)) {
-    return <GlobalError message="401" details="你没有权限访问这些内容" />;
-  }
+export default function Main() {
+  const { currentPath, finalMenuItems, currentMenu } = useCurrentMenu();
 
   return (
     <SidebarProvider className="animate-in fade-in duration-150">

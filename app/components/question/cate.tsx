@@ -17,7 +17,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import type { ChapterKnowledgeResp, CreateQuestionCateReq, QuestionCateResp } from '@/type/question-cate';
 import { useQuestionCateList } from '@/util/fetcher';
 import { httpClient } from '@/util/http';

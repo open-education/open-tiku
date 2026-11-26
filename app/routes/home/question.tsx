@@ -23,12 +23,14 @@ export default function Index() {
   };
 
   return (
-    <QuestionSearchList
-      pageSource={QuestionPageSource.List}
-      showFilter={true}
-      listReq={listReq}
-      updateListReq={updateListReq}
-      noDataDesc="没有查找到任何题目，如有题目，可以尝试上传题目，管理员审核通过后，其他人就可以看到该题目了。"
-    />
+    <div className="p-3">
+      <QuestionSearchList
+        pageSource={QuestionPageSource.List}
+        showFilter={true}
+        listReq={listReq}
+        updateListReq={updateListReq}
+        noDataDesc="没有查找到任何题目，如有题目，可以尝试上传题目，管理员审核通过后，其他人就可以看到该题目了。"
+      />
+    </div>
   );
 }

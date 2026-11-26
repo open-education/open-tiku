@@ -1,11 +1,25 @@
 import { UserRoleType } from '@/type/enum';
 import type { OpsMenu } from '@/type/menu';
 import type { UserInfoResp } from '@/type/user';
-import { Bot, ChartColumnIcon, CircleCheckBig, LayoutDashboard, School, Settings, Settings2, Trophy, Users, Wand } from 'lucide-react';
+import { ChartColumnIcon, CircleCheckBig, House, LayoutDashboard, NotebookPen, School, Settings, Settings2, Trophy, Users, Wand } from 'lucide-react';
 
 // 左侧菜单内容
 // 权限配置注意, 会优先直接放行 父路径
 export const menuItems: OpsMenu[] = [
+  {
+    title: '学习首页',
+    url: '/student',
+    icon: House,
+    login: true,
+    role: UserRoleType.Student,
+  },
+  {
+    title: '我的作业',
+    url: '/student/homework',
+    icon: NotebookPen,
+    login: true,
+    role: UserRoleType.Student,
+  },
   {
     title: '工作台',
     url: '/ops',
@@ -20,27 +34,6 @@ export const menuItems: OpsMenu[] = [
     login: true,
     role: UserRoleType.Normal,
     items: [{ title: '默认菜单', url: '/ops/my/custom', login: true, role: UserRoleType.Normal }],
-  },
-  {
-    title: '题目搜索',
-    url: '',
-    icon: Bot,
-    login: false,
-    role: UserRoleType.None,
-    items: [
-      {
-        title: '知识点/章节选题',
-        url: '/question',
-        login: false,
-        role: UserRoleType.None,
-      },
-      {
-        title: '试卷选题',
-        url: '/question/paper',
-        login: false,
-        role: UserRoleType.None,
-      },
-    ],
   },
   {
     title: '智能组卷',
@@ -192,6 +185,11 @@ export const getMenuMap = () => {
     title: '编辑试卷',
     login: true,
     role: UserRoleType.Normal,
+  };
+  map['/student/homework/exam'] = {
+    title: '任务作答',
+    login: true,
+    role: UserRoleType.Student,
   };
 
   return map;

@@ -6,7 +6,7 @@ import type { StatItem } from '@/components/common/list';
 import { ListCard } from '@/components/common/list';
 import { Loading } from '@/components/common/load';
 import QuestionSearchList from '@/components/question/search';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import type { QuestionListReq } from '@/type/question';
 import { useCountQuestionList } from '@/util/fetcher';
 import { ArrayUtil } from '@/util/object';

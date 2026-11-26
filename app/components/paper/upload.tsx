@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { useDelayedLoading } from '@/hooks/delayed-loading';
+import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { CityResp } from '@/type/city';
 import { CustomPageSource, CustomUserSource, PaperStatus, TextbookFillLevelType, UploadFileType } from '@/type/enum';
