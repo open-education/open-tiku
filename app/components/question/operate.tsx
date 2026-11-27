@@ -518,6 +518,15 @@ function QuestionOperateList({
             content={baseInfoResp.rejectReason}
           />
         )}
+
+        {/* 已发布投诉 */}
+        {baseInfoResp.status === QuestionStatus.Published && (
+          <Link to={`/report?id=${baseInfoResp.id}&type=1`} target="_blank">
+            <Button size="sm" variant="destructive">
+              投诉
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* 变式题列表内容 */}

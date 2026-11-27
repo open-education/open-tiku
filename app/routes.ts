@@ -11,8 +11,11 @@ export default [
     route('question/paper', 'routes/home/paper.tsx'),
 
     // 帮助文档
-    route('faqs', 'routes/home/faqs.tsx'), // Faqs
+    route('faqs', 'routes/home/faqs.tsx'),
   ]),
+
+  // 无验证无布局页面, 比如我的投诉, 无需登陆
+  layout('routes/home/no-layout.tsx', [route('report', 'routes/home/report.tsx')]),
 
   // 验证权限
   layout('routes/auth.tsx', [

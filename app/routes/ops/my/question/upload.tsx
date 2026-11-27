@@ -159,10 +159,10 @@ export default function Index() {
 
       <div className="flex flex-col gap-3 text-sm">
         <div className="flex items-center gap-1">
-          <div className="w-[6em] shrink-0 whitespace-nowrap">
+          <div className="w-[7em] shrink-0 whitespace-nowrap">
             下载模板:<span className="text-destructive">*</span>
           </div>
-          <div className="flex gap-3 min-w-0 flex-1">
+          <div className="flex gap-3 min-w-0">
             <a href="/api/file/read/file/fctk_tpl.md" download="分层题库模板.md" target="_blank">
               <Button>分层题库模板.md</Button>
             </a>
@@ -174,7 +174,7 @@ export default function Index() {
 
         {/* 选择前5层级 */}
         <div className="flex items-center gap-1">
-          <div className="w-[6em] shrink-0 whitespace-nowrap">
+          <div className="w-[7em] shrink-0 whitespace-nowrap">
             知识点/章节:<span className="text-destructive">*</span>
           </div>
           <div className="min-w-0 flex-1">
@@ -191,7 +191,7 @@ export default function Index() {
 
         {/* 根据前5层级选择后3层级 */}
         <div className="flex items-center gap-1">
-          <div className="w-[6em] shrink-0 whitespace-nowrap">
+          <div className="w-[7em] shrink-0 whitespace-nowrap">
             题型:<span className="text-destructive">*</span>
           </div>
           <div className="min-w-0 flex-1">
@@ -219,7 +219,7 @@ export default function Index() {
         </div>
 
         <div className="flex items-center gap-1">
-          <div className="w-[6em] shrink-0 whitespace-nowrap">
+          <div className="w-[7em] shrink-0 whitespace-nowrap">
             上传文件:<span className="text-destructive">*</span>
           </div>
           <div className="min-w-0 flex-1">
@@ -244,7 +244,7 @@ export default function Index() {
         </div>
 
         <div className="flex items-center gap-1">
-          <div className="w-[6em] shrink-0 whitespace-nowrap">
+          <div className="w-[7em] shrink-0 whitespace-nowrap">
             文件名称:<span className="text-destructive">*</span>
           </div>
           <div className="min-w-0 flex-1">
@@ -259,7 +259,7 @@ export default function Index() {
         </div>
 
         <div className="flex items-center gap-1">
-          <div className="w-[6em] shrink-0 whitespace-nowrap">
+          <div className="w-[7em] shrink-0 whitespace-nowrap">
             文件标识:<span className="text-destructive">*</span>
           </div>
           <div className="min-w-0 flex-1">
@@ -268,7 +268,7 @@ export default function Index() {
         </div>
 
         <div className="flex items-center gap-1">
-          <div className="w-[6em] shrink-0 whitespace-nowrap">邮箱地址:</div>
+          <div className="w-[7em] shrink-0 whitespace-nowrap">邮箱地址:</div>
           <div className="min-w-0 flex-1">
             <Input
               id="task-file-email"

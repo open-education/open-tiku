@@ -4,7 +4,6 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useUserInfo } from '@/hooks/use-user';
 import { UserRoleType } from '@/type/enum';
 import { getUserInfo, handleLogout } from '@/util/user';
-import { cn } from 'cn';
 import { LogOutIcon, Menu } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { NavLink, type NavLinkProps } from 'react-router';
