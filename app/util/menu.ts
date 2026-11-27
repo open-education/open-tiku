@@ -7,13 +7,15 @@ import { ChartColumnIcon, CircleCheckBig, House, LayoutDashboard, NotebookPen, S
 // 权限配置注意, 会优先直接放行 父路径
 export const menuItems: OpsMenu[] = [
   {
-    title: '学习首页',
+    key: 'student-dashboard',
+    title: '我的工作台',
     url: '/student',
     icon: House,
     login: true,
     role: UserRoleType.Student,
   },
   {
+    key: 'student-homework',
     title: '我的作业',
     url: '/student/homework',
     icon: NotebookPen,
@@ -21,21 +23,24 @@ export const menuItems: OpsMenu[] = [
     role: UserRoleType.Student,
   },
   {
-    title: '工作台',
+    key: 'ops-my-dashboard',
+    title: '我的工作台',
     url: '/ops',
     icon: LayoutDashboard,
     login: true,
     role: UserRoleType.Normal,
   },
   {
+    key: 'ops-my-custom',
     title: '我的个性化',
     url: '',
     icon: Settings2,
     login: true,
     role: UserRoleType.Normal,
-    items: [{ title: '默认菜单', url: '/ops/my/custom', login: true, role: UserRoleType.Normal }],
+    items: [{ key: 'ops-my-custom-default', title: '默认菜单', url: '/ops/my/custom', login: true, role: UserRoleType.Normal }],
   },
   {
+    key: 'ops-my-paper',
     title: '智能组卷',
     url: '',
     icon: Wand,
@@ -43,12 +48,14 @@ export const menuItems: OpsMenu[] = [
     role: UserRoleType.Normal,
     items: [
       {
+        key: 'ops-my-paper-select',
         title: '选题组卷',
         url: '/ops/paper',
         login: true,
         role: UserRoleType.Normal,
       },
       {
+        key: 'ops-my-paper-level',
         title: '分层组卷',
         url: '/ops/paper/level',
         login: true,
@@ -57,6 +64,7 @@ export const menuItems: OpsMenu[] = [
     ],
   },
   {
+    key: 'ops-my-trophy',
     title: '我的贡献',
     url: '',
     icon: Trophy,
@@ -64,36 +72,42 @@ export const menuItems: OpsMenu[] = [
     role: UserRoleType.Normal,
     items: [
       {
+        key: 'ops-my-trophy-question-list',
         title: '我的题目',
         url: '/ops/my/question',
         login: true,
         role: UserRoleType.Normal,
       },
       {
+        key: 'ops-my-trophy-question-add',
         title: '添加母题',
         url: '/ops/my/question/add',
         login: true,
         role: UserRoleType.Normal,
       },
       {
+        key: 'ops-my-trophy-question-upload',
         title: '上传题目',
         url: '/ops/my/question/upload',
         login: true,
         role: UserRoleType.Normal,
       },
       {
+        key: 'ops-my-trophy-question-task',
         title: '我的任务',
         url: '/ops/my/question/task',
         login: true,
         role: UserRoleType.Normal,
       },
       {
+        key: 'ops-my-trophy-paper',
         title: '我的试卷',
         url: '/ops/my/paper',
         login: true,
         role: UserRoleType.Normal,
       },
       {
+        key: 'ops-my-trophy-paper-upload',
         title: '上传试卷',
         url: '/ops/my/paper/upload',
         login: true,
@@ -102,65 +116,71 @@ export const menuItems: OpsMenu[] = [
     ],
   },
   {
-    title: '班级',
+    key: 'ops-my-class',
+    title: '我的班级',
     url: '',
     icon: School,
     login: true,
     role: UserRoleType.Teacher,
-    items: [{ title: '我的班级', url: '/ops/class', login: true, role: UserRoleType.Teacher }],
+    items: [{ key: 'ops-my-class-list', title: '我的班级', url: '/ops/class', login: true, role: UserRoleType.Teacher }],
   },
   {
-    title: '学情',
+    key: 'ops-my-analyze',
+    title: '我的学情',
     url: '/ops/my/analyze',
     icon: ChartColumnIcon,
     login: true,
     role: UserRoleType.Teacher,
   },
   {
-    title: '审核',
+    key: 'ops-my-review',
+    title: '我的审核',
     url: '',
     icon: CircleCheckBig,
     login: true,
     role: UserRoleType.Teacher,
     items: [
-      { title: '题目', url: '/ops/review/question', login: true, role: UserRoleType.Teacher },
-      { title: '试卷', url: '/ops/review/paper', login: true, role: UserRoleType.Teacher },
+      { key: 'ops-my-review-question', title: '题目', url: '/ops/review/question', login: true, role: UserRoleType.Teacher },
+      { key: 'ops-my-review-paper', title: '试卷', url: '/ops/review/paper', login: true, role: UserRoleType.Teacher },
     ],
   },
   {
+    key: 'ops-system-setting',
     title: '系统设置',
     url: '',
     icon: Settings,
     login: true,
     role: UserRoleType.Teacher,
     items: [
-      { title: '默认菜单', url: '/ops/setting', login: true, role: UserRoleType.Teacher },
-      { title: '知识点/章节', url: '/ops/setting/textbook', login: true, role: UserRoleType.Teacher },
-      { title: '挂载题型', url: '/ops/setting/ck', login: true, role: UserRoleType.Teacher },
-      { title: '通用字典', url: '/ops/setting/dict', login: true, role: UserRoleType.Teacher },
+      { key: 'ops-system-setting-menu', title: '默认菜单', url: '/ops/setting', login: true, role: UserRoleType.Teacher },
+      { key: 'ops-system-setting-textbook', title: '知识点/章节', url: '/ops/setting/textbook', login: true, role: UserRoleType.Teacher },
+      { key: 'ops-system-setting-ck', title: '挂载题型', url: '/ops/setting/ck', login: true, role: UserRoleType.Teacher },
+      { key: 'ops-system-setting-dict', title: '通用字典', url: '/ops/setting/dict', login: true, role: UserRoleType.Teacher },
     ],
   },
   {
+    key: 'ops-system-user',
     title: '用户',
     url: '',
     icon: Users,
     login: true,
     role: UserRoleType.Teacher,
     items: [
-      { title: '第三方账户列表', url: '/ops/user/account', login: true, role: UserRoleType.Teacher },
-      { title: '用户 Session 列表', url: '/ops/user/session', login: true, role: UserRoleType.Teacher },
+      { key: 'ops-system-user-list', title: '第三方账户列表', url: '/ops/user/account', login: true, role: UserRoleType.Teacher },
+      { key: 'ops-system-user-session', title: '用户 Session 列表', url: '/ops/user/session', login: true, role: UserRoleType.Teacher },
     ],
   },
 ];
 
 // key 为终端路由, value 中 title 为 title/subTitle 用户面包屑, login 是否需要登录 role 访问该路由的角色
 export const getMenuMap = () => {
-  const map: Record<string, { title: string; login: boolean; role: UserRoleType }> = {};
+  const map: Record<string, { key: string; title: string; login: boolean; role: UserRoleType }> = {};
 
   for (const menu of menuItems) {
     if (menu.items && menu.items.length > 0) {
       for (const sub of menu.items) {
         map[sub.url] = {
+          key: sub.key,
           title: `${menu.title} > ${sub.title}`,
           login: sub.login,
           role: sub.role,
@@ -168,6 +188,7 @@ export const getMenuMap = () => {
       }
     } else {
       map[menu.url] = {
+        key: menu.key,
         title: menu.title,
         login: menu.login,
         role: menu.role,
@@ -177,16 +198,19 @@ export const getMenuMap = () => {
 
   // 未配置导航栏的特殊菜单, 比如编辑路由
   map['/ops/my/question/edit'] = {
+    key: 'ops-my-trophy-question-edit',
     title: '编辑题目或添加变式题',
     login: true,
     role: UserRoleType.Normal,
   };
   map['/ops/my/paper/edit'] = {
+    key: 'ops-my-trophy-paper-edit',
     title: '编辑试卷',
     login: true,
     role: UserRoleType.Normal,
   };
   map['/student/homework/exam'] = {
+    key: 'ops-student-homework-edit',
     title: '任务作答',
     login: true,
     role: UserRoleType.Student,

@@ -17,10 +17,10 @@ import type { Route } from './+types/main';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '题库管理' },
+    { title: '我的业务空间' },
     {
       name: 'description',
-      content: '我的题库管理',
+      content: '管理网信息配置，我的题目和试卷',
     },
   ];
 }

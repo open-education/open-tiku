@@ -143,3 +143,10 @@ export enum CustomModeType {
   Chapter = 1,
   Knowledge = 2,
 }
+
+// 投诉类型
+export enum ReportType {
+  None = 0, // 无意义
+  Question = 1, // 题目
+  Paper = 2, // 试卷
+}

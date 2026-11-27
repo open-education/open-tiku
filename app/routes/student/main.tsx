@@ -4,10 +4,10 @@ import type { Route } from './+types/main';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: '我的学习' },
+    { title: '学生业务空间' },
     {
       name: 'description',
-      content: '我的学习页面',
+      content: '我的工作台，作业和做题记录',
     },
   ];
 }

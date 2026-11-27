@@ -58,9 +58,5 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     stack = error.stack;
   }
 
-  return (
-    <main className="pt-16 p-4 container mx-auto">
-      <GlobalError message={message} details={details} stack={stack} />
-    </main>
-  );
+  return <GlobalError message={message} details={details} stack={stack} />;
 }
