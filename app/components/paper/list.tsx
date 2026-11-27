@@ -15,7 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import type { CityResp } from '@/type/city';
-import { PaperDifficultyType, PaperLevelType, PaperPageSource, PaperStatus, UploadFileType } from '@/type/enum';
+import { PaperDifficultyType, PaperLevelType, PaperPageSource, PaperStatus, ReportType, UploadFileType } from '@/type/enum';
 import type { CountPaperResp, PaperApproveReq, PaperDeleteReq, PaperListResp, PaperPendingReq, PaperResp, PaperUndoReq } from '@/type/paper';
 import { httpClient } from '@/util/http';
 import { ArrayUtil, ObjectUtil } from '@/util/object';
@@ -588,7 +588,7 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
 
       {/* 已发布投诉 */}
       {source === PaperPageSource.List && item.status === PaperStatus.Published && (
-        <Link to={`/report?id=${item.id}&type=2`} target="_blank">
+        <Link to={`/report?id=${item.id}&type=${ReportType.Paper}`} target="_blank">
           <Button size="sm" variant="destructive">
             投诉
           </Button>

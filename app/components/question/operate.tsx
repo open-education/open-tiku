@@ -18,7 +18,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { useCopy } from '@/hooks/use-copy';
-import { QuestionPageSource, QuestionRelationType, QuestionStatus } from '@/type/enum';
+import { QuestionPageSource, QuestionRelationType, QuestionStatus, ReportType } from '@/type/enum';
 import type {
   CountQuestionResp,
   QuestionApproveReq,
@@ -526,7 +526,7 @@ function QuestionOperateList({
 
         {/* 已发布投诉 */}
         {pageSource === QuestionPageSource.List && baseInfoResp.status === QuestionStatus.Published && (
-          <Link to={`/report?id=${baseInfoResp.id}&type=1`} target="_blank">
+          <Link to={`/report?id=${baseInfoResp.id}&type=${ReportType.Question}`} target="_blank">
             <Button size="sm" variant="destructive">
               投诉
             </Button>
