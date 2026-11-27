@@ -437,7 +437,7 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
                   </Button>
                 }
               />
-              <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
+              <DialogContent className="w-150! max-w-[95vw]! flex flex-col">
                 <DialogHeader>
                   <DialogTitle className="text-sm font-bold">提交审核</DialogTitle>
                   <DialogDescription>请确认试卷没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
@@ -446,12 +446,13 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
                 <Separator />
 
                 <div className="space-y-3 px-4">
-                  <div className="font-semibold">检查步骤</div>
-                  <div className="text-xs space-y-2">
-                    <p>1. 试卷不能是抄袭的, 避免投诉和版权纠纷</p>
-                    <p>2. 试卷本身信息要完整</p>
-                    <p>3. 图片等信息如果有不能缺失</p>
-                    <p>4. 试卷和答案本身如果有要符合常识</p>
+                  <div className="text-sm">检查步骤</div>
+                  <div className="text-xs space-y-2 leading-relaxed">
+                    <p>1. 确保试卷为原创或已获授权，严禁搬运抄袭，避免版权纠纷。</p>
+                    <p>2. 题干、选项、解析信息完整，无错别字或语句歧义，试卷需核对无漏题、总分无误。</p>
+                    <p>3. 确认所有配图清晰、公式渲染正常，无失效链接或第三方平台水印。</p>
+                    <p>4. 答案与解析准确无误，符合事实、常识及现行教学大纲。</p>
+                    <p>5. 学科、年级、知识点及难度标签标注准确，不含任何广告导流信息。</p>
                   </div>
                 </div>
 
@@ -532,7 +533,7 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
               </Button>
             }
           />
-          <DialogContent className="w-200! max-w-[90vw]! flex flex-col">
+          <DialogContent className="w-150! max-w-[95vw]! flex flex-col">
             <DialogHeader>
               <DialogTitle className="text-sm font-bold">试卷审核</DialogTitle>
               <DialogDescription>请确认试卷没有包含违规, 涉黄, 侵权和法律法规不允许传播的信息等内容</DialogDescription>
@@ -542,12 +543,14 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
 
             <div className="space-y-3 px-4">
               <div className="font-semibold">检查步骤</div>
-              <div className="text-xs space-y-2">
-                <p>1. 试卷不能是抄袭的, 避免投诉和版权纠纷</p>
-                <p>2. 试卷本身信息要完整</p>
-                <p>3. 图片等信息如果有不能缺失</p>
-                <p>4. 题目和答案本身如果有要符合常识</p>
-                <p className="text-red-500 font-bold">5. 若你审核通过的试卷后续被投诉等纠纷较多, 我们有权利降低你的账号等级</p>
+              <div className="text-xs space-y-2 leading-relaxed">
+                <p>1. 核查版权合规性，确认非明显抄袭且无其他平台水印或广告导流。</p>
+                <p>2. 检查内容完整性，确认题干、选项、图片、公式无缺失或乱码（试卷需核对题号与分值）。</p>
+                <p>3. 校验答案与解析准确性，确保符合常识与事实，无明显逻辑或计算错误。</p>
+                <p>4. 确认科目、学段、知识点及难度标签匹配合理。</p>
+                <p className="text-destructive font-semibold">
+                  5. 若你审核通过的内容后续被多次投诉或引发版权纠纷，平台有权降低你的账号等级或取消审核资格。
+                </p>
               </div>
             </div>
 
