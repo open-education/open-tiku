@@ -520,7 +520,7 @@ function QuestionOperateList({
         )}
 
         {/* 已发布投诉 */}
-        {baseInfoResp.status === QuestionStatus.Published && (
+        {pageSource === QuestionPageSource.List && baseInfoResp.status === QuestionStatus.Published && (
           <Link to={`/report?id=${baseInfoResp.id}&type=1`} target="_blank">
             <Button size="sm" variant="destructive">
               投诉

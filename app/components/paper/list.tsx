@@ -493,6 +493,7 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
           </Dialog>
         </>
       )}
+
       {/* 撤回草稿 */}
       {source === PaperPageSource.MyPaper && item.status === PaperStatus.Published && (
         <Dialog open={openUndo} onOpenChange={setOpenUndo}>
@@ -580,6 +581,15 @@ function OperatePart({ source, item, selectedIds, onPreview, paperListRespMutate
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      )}
+
+      {/* 已发布投诉 */}
+      {source === PaperPageSource.List && item.status === PaperStatus.Published && (
+        <Link to={`/report?id=${item.id}&type=2`} target="_blank">
+          <Button size="sm" variant="destructive">
+            投诉
+          </Button>
+        </Link>
       )}
     </div>
   );
