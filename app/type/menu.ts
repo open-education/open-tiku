@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-react';
 
 // 菜单项配置
 export interface OpsMenu {
+  key: string;
   title: string;
   url: string;
   icon: LucideIcon;
@@ -12,6 +13,7 @@ export interface OpsMenu {
 }
 
 export interface OpsMenuItem {
+  key: string;
   title: string;
   url: string;
   login: boolean;

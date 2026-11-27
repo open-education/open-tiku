@@ -59,31 +59,25 @@ function MenuList({ menuItems, currentPath }: MenuListProps) {
     return currentPath === url;
   };
 
-  // 分组下是否有激活的子项
-  const isGroupActive = (item: (typeof menuItems)[number]) => item.items?.some((sub) => isActive(sub.url)) ?? false;
-
   // 受控的折叠状态
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
   // 路由变化时, 自动展开包含当前路由的分组
   useEffect(() => {
-    setOpenGroups((prev) => {
-      const next = { ...prev };
-      menuItems.forEach((item) => {
-        if (item.items && isGroupActive(item)) {
-          next[item.title] = true;
-        }
-      });
-      return next;
-    });
-  }, [currentPath]);
+    const activeItem = menuItems.find((item) => item.items?.some((sub) => isActive(sub.url)));
+
+    if (activeItem) {
+      setOpenGroups((prev) => ({
+        ...prev,
+        [activeItem.key]: true,
+      }));
+    }
+  }, [currentPath, menuItems]);
 
   return (
     <SidebarGroup>
       <SidebarMenu>
         {menuItems.map((item) => {
-          //const groupActive = isGroupActive(item);
-
           // 没有子项的菜单直接渲染
           if (!item.items) {
             return (
@@ -107,19 +101,14 @@ function MenuList({ menuItems, currentPath }: MenuListProps) {
           return (
             <Collapsible
               key={item.title}
-              open={openGroups[item.title] ?? false}
-              onOpenChange={(open) => setOpenGroups((prev) => ({ ...prev, [item.title]: open }))}
+              open={openGroups[item.key] ?? false}
+              onOpenChange={(open) => setOpenGroups((prev) => ({ ...prev, [item.key]: open }))}
               className="group/collapsible"
               render={
                 <SidebarMenuItem>
                   <CollapsibleTrigger
                     render={
-                      <SidebarMenuButton
-                        tooltip={item.title}
-                        // 分组内有激活子项时, 父级也高亮开启即可, 目前高亮视觉太乱
-                        //isActive={groupActive}
-                        className="text-sm"
-                      >
+                      <SidebarMenuButton tooltip={item.title} className="text-sm">
                         {item.icon && <item.icon />}
                         <span>{item.title}</span>
                         <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
